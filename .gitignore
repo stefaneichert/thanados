@@ -1,0 +1,22 @@
+
+# sensitive data (except example files)
+instance/*
+!instance/example_*
+
+# cache
+__pycache__/*
+
+# compiled files
+*.pyc
+
+# unit tests
+openatlas/tests/.coverage
+openatlas/tests/cover
+
+# created files
+openatlas/uploads/*
+openatlas/export/csv/*
+openatlas/export/sql/*
+
+# ide
+.idea

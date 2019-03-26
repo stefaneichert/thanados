@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div id="container1">
+        <h1>search</h1>
+<form method="post">
+    {{ form.csrf_token }}
+    {{ form.term }}
+    {{ form.search }}
+</form>
+{{ search_result|safe }}
+</div>
+{% endblock %}

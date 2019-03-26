@@ -1,0 +1,144 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<div id="container">
+    <div id="sidebar" class="hidden-xs hidden-sm">
+        <div class="sidebar-wrapper">
+            <div class="panel panel-default" id="pnlSidebar">
+                <div id="mysidebarheading" class="panel-heading">
+                    <div class="btn-group-vertical sidebarbuttons">
+                        <button type="button" class="btn btn-secondary btn-xs fa-pull-right" onclick="this.blur()" id="sidebar-max" title="enlarge sidebar">
+                            <i class="fa fa-chevron-right"></i>
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-xs fa-pull-right" onclick="this.blur()" id="sidebar-smaller" title="reduce sidebar">
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+                    </div>
+                    <h3 class="panel-title">
+                        <span id="sidebarTitle"> Pohansko Herrenhof
+                        </span>
+                    </h3>
+                </div>
+
+                <div id="mysidebarmenu" class="panel-heading">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Menu
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a id="thunaubutton" class="dropdown-item" href="#">Thunau Obere Holzwiese</a>
+                            <a id="pohanskobutton" class="dropdown-item" href="#">Pohansko Herrenhof</a>
+                            <div class="dropdown-divider"></div>
+                            <a id="searchbutton" class="dropdown-item" href="#">Filter/Search</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body" id="mypanel">
+                    <div class="panel-group" id="accordion1" style="overflow-y: hidden"> <!--content to be created by js function--> </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="map">
+        <button type="button" class="btn btn-secondary btn-xs fa-pull-right" onclick="this.blur()" id="sidebar-start" title="open sidebar">
+            <i class="fa fa-chevron-right buttonleftout"></i>
+        </button>
+    </div>
+
+    <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div id="myModalContent" class="modal-content"></div>
+        </div>
+    </div>
+
+
+    <div id="dialog" title="Filter/Search">
+        <form id="mysearchform"></form>
+    </div>
+
+    <div id="mytreeModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div id="myTreeModalContent" class="modal-content">
+                <form id="jstree-div">
+                    <input id="jstree_q" class="form-control form-control-sm" type="text" placeholder="search">
+                    <div id="jstree"></div>
+                </form>
+                <button class="btn btn-secondary btn-sm" type="button" onclick="transferNode(GlobaltargetField, GlobalNodeSelected, GlobalSelectedNodeName, Globalcriteria, GlobalappendLevel, Globaliter)" id="confirmNodeBtn">Select</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+var jsonpohansko = {{ pohanskojson|tojson }};
+var jsonthunau = {{ thunaujson|tojson }};
+var jsontypes = {{ typesjson|tojson }};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+<script src="/static/js/map.js"></script>
+
+
+{% endblock %}
+
