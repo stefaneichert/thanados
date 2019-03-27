@@ -359,8 +359,8 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         var entType = currentfeature.properties.maintype.name;
 
         var typepath =  currentfeature.properties.maintype.name;
-        if (typeof(currentfeature.properties.timespan) !== 'undefined' && typeof(currentfeature.properties.timespan.begin_from) !== 'undefined') var tsbegin = parseInt(((currentfeature.properties.timespan.begin_from).substring(0, 4)), 10);
-        if (typeof(currentfeature.properties.timespan) !== 'undefined' && typeof(currentfeature.properties.timespan.end_to) !== 'undefined') var tsend = parseInt(((currentfeature.properties.timespan.end_to).substring(0, 4)), 10);
+        if (typeof(currentfeature.properties.timespan) !== 'undefined' && typeof(currentfeature.properties.timespan.begin_from) !== 'undefined') var tsbegin = parseInt(((currentfeature.properties.timespan.begin_from)), 10);
+        if (typeof(currentfeature.properties.timespan) !== 'undefined' && typeof(currentfeature.properties.timespan.end_to) !== 'undefined') var tsend = parseInt(((currentfeature.properties.timespan.end_to)), 10);
         var timespan = tsbegin + ' to ' + tsend;
         var dateToInsert = timespan;
         if (typeof tsbegin == 'undefined') {var dateToInsert = '';};

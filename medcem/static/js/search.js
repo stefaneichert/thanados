@@ -548,9 +548,9 @@ function levelQuery(feature, entity, id, prop, val1, val2) {
 
         //set begin and end if available as integers from timestamp
         if (typeof (entity.properties.timespan.begin_from) !== 'undefined')
-            var begin = (parseInt(((entity.properties.timespan.begin_from).substring(0, 4)), 10));
+            var begin = (parseInt(((entity.properties.timespan.begin_from)), 10));
         if (typeof (entity.properties.timespan.end_to) !== 'undefined')
-            var end = (parseInt(((entity.properties.timespan.end_to).substring(0, 4)), 10));
+            var end = (parseInt(((entity.properties.timespan.end_to)), 10));
         //if begin and end are availale set a between timespan as result
         if (typeof (begin) !== 'undefined' && typeof (end) !== 'undefined' && begin >= val1 && end <= val2) {
             searchResult.push(feature.id);
@@ -604,15 +604,21 @@ function levelQuery(feature, entity, id, prop, val1, val2) {
     }
 }
 
-
-function exportToJsonFile(jsonData) {
-    let dataStr = JSON.stringify(jsonData);
-    let dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-
-    let exportFileDefaultName = 'data.json';
-
-    let linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
+function exportToJsonFile(data) {
+    var data = JSON.stringify(data).replace('\u2028', '\\u2028').replace('\u2029', '\\u2029');
+    var file = new Blob([data]);
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        var a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = 'searchresult.json';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
+    }
 }
