@@ -344,3 +344,8 @@ border-radius: 0;
 margin-left: -1px;
 margin-right: -1px;
 }
+
+.toremovebtn {
+    margin-right: 3px;
+    float: right;
+}

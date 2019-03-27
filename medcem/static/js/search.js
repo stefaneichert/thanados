@@ -423,8 +423,11 @@ function appendPlus(iter) {
             '</button>' +
             '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="mapResultBtn" onclick="finishQuery()" title="Finish search and show combined result on map">' +
             '<i class="fas fa-map-marked-alt"></i>' +
+            '</button>' +
+            '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="mapResultBtn" onclick="finishQuery(); exportToJsonFile(jsonresult)" title="Finish, show on map and download result as .json file">' +
+            '<i class="far fa-save"></i>' +
             '</button>'
-            );
+        );
     };
     $('#mysearchform').append(
             '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="resetSearchEndBtn" onclick="startsearch()"title="Reset search">' +
@@ -599,4 +602,17 @@ function levelQuery(feature, entity, id, prop, val1, val2) {
             }
         });
     }
+}
+
+
+function exportToJsonFile(jsonData) {
+    let dataStr = JSON.stringify(jsonData);
+    let dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+
+    let exportFileDefaultName = 'data.json';
+
+    let linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
 }
