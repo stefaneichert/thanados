@@ -95,9 +95,22 @@ body {
 
 #sidebar-start {
     position: absolute;
-    top: 5px;
-    left: -1px;
+    top: 50%;
+    left: -5px;
+    padding-top: 19px;
+    padding-bottom: 19px;
     z-index: 900;
+}
+
+#sidebarclosed-menu {
+    position: absolute;
+    top: 7px;
+    left: 3px;
+    z-index: 900;
+}
+
+.mapbutton {
+    background-color: #6c757d66 !important;
 }
 
 .sidebarheading {

@@ -27,10 +27,10 @@
                             Menu
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a id="thunaubutton" class="dropdown-item" href="#">Thunau Obere Holzwiese</a>
-                            <a id="pohanskobutton" class="dropdown-item" href="#">Pohansko Herrenhof</a>
+                            <a class="dropdown-item thunaubutton" href="#">Thunau Obere Holzwiese</a>
+                            <a class="dropdown-item pohanskobutton" href="#">Pohansko Herrenhof</a>
                             <div class="dropdown-divider"></div>
-                            <a id="searchbutton" class="dropdown-item" href="#">Filter/Search</a>
+                            <a class="dropdown-item searchbutton" href="#">Filter/Search</a>
                         </div>
                     </div>
                 </div>
@@ -41,9 +41,20 @@
         </div>
     </div>
     <div id="map">
-        <button type="button" class="btn btn-secondary btn-xs fa-pull-right" onclick="this.blur()" id="sidebar-start" title="open sidebar">
+        <button type="button" class="btn btn-secondary btn-xs fa-pull-right mapbutton" onclick="this.blur()" id="sidebar-start" title="open sidebar">
             <i class="fa fa-chevron-right buttonleftout"></i>
         </button>
+        <div class="dropdown" id="sidebarclosed-menu">
+            <button class="btn btn-secondary btn-sm mapbutton" type="button" onclick="this.blur()" id="dropdownMenuButtonMap" data-toggle="dropdown" title="Menu" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonMap">
+                <a class="dropdown-item thunaubutton" href="#">Thunau Obere Holzwiese</a>
+                <a class="dropdown-item pohanskobutton" href="#">Pohansko Herrenhof</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item searchbutton" href="#">Filter/Search</a>
+            </div>
+        </div>
     </div>
 
     <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
@@ -64,7 +75,9 @@
                     <input id="jstree_q" class="form-control form-control-sm" type="text" placeholder="search">
                     <div id="jstree"></div>
                 </form>
-                <button class="btn btn-secondary btn-sm" type="button" onclick="transferNode(GlobaltargetField, GlobalNodeSelected, GlobalSelectedNodeName, Globalcriteria, GlobalappendLevel, Globaliter)" id="confirmNodeBtn">Select</button>
+                <button class="btn btn-secondary btn-sm" type="button"
+                        onclick="transferNode(GlobaltargetField, GlobalNodeSelected, GlobalSelectedNodeName, Globalcriteria, GlobalappendLevel, Globaliter)" id="confirmNodeBtn">Select
+                </button>
             </div>
         </div>
     </div>
@@ -80,64 +93,10 @@ var jsontypes = {{ typesjson|tojson }};
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </script>
 
 <script src="/static/js/map.js"></script>
+<script src="/static/js/search.js"></script>
 
 
 {% endblock %}
