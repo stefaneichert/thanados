@@ -25,13 +25,6 @@ function setmap(myjson) {
         maxZoom: 30
     });
 
-//basemap for minimap
-    var mm1 = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=2245afa655044c5c8f5ef8c129c29cdb', {
-        attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        apikey: '<2245afa655044c5c8f5ef8c129c29cdb>',
-        maxZoom: 30
-    });
-
 //define map
     map = L.map('map', {
         zoom: 20,
@@ -39,17 +32,6 @@ function setmap(myjson) {
         layers: [satellite, landscape]
     });
 
-//define map control
-    var baseLayers = {
-        "Landscape": landscape,
-        "Satellite": satellite,
-    };
-
-//add layer control
-    L.control.layers(baseLayers).addTo(map);
-
-//hack for right order of basemaps
-    map.removeLayer(satellite);
 
 //style polygons
    var myStyle = {
@@ -61,19 +43,35 @@ function setmap(myjson) {
 
 //add graves
     graves = L.geoJSON(myjson, { style: myStyle }).addTo(map);
-
     map.fitBounds(graves.getBounds());
 
-    var miniMap = new L.Control.MiniMap(mm1, {
-                               toggleDisplay: true,
-                               collapsedWidth: 30,
-                               collapsedHeight: 30,
-                               zoomLevelOffset: -7});
-    //miniMap.addTo(map); //uncomment for MiniMap
 
     //add emtpty Layergroup for search results
     resultpolys = new L.LayerGroup();
     resultpolys.addTo(map);
+
+    resultpoints = new L.LayerGroup();
+    resultpoints.addTo(map);
+
+
+//define map control
+    baseLayers = {
+        "Landscape": landscape,
+        "Satellite": satellite,
+    };
+
+    var overlays = {
+		"Graves": graves,
+		"Search result shapes": resultpolys,
+		"Search result markers": resultpoints,
+	};
+
+//add layer control
+    baseControl = L.control.layers(baseLayers, overlays).addTo(map);
+
+//hack for right order of basemaps
+    map.removeLayer(satellite);
+
 
     //initiate selection of clicked polygons
     polygonSelect();
@@ -359,8 +357,8 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         var entType = currentfeature.properties.maintype.name;
 
         var typepath =  currentfeature.properties.maintype.name;
-        if (typeof(currentfeature.properties.timespan) !== 'undefined' && typeof(currentfeature.properties.timespan.begin_from) !== 'undefined') var tsbegin = parseInt(((currentfeature.properties.timespan.begin_from)), 10);
-        if (typeof(currentfeature.properties.timespan) !== 'undefined' && typeof(currentfeature.properties.timespan.end_to) !== 'undefined') var tsend = parseInt(((currentfeature.properties.timespan.end_to)), 10);
+        if (typeof(currentfeature.properties.timespan) !== 'undefined' && typeof(currentfeature.properties.timespan.begin_from) !== 'undefined') var tsbegin = parseInt((currentfeature.properties.timespan.begin_from), 10);
+        if (typeof(currentfeature.properties.timespan) !== 'undefined' && typeof(currentfeature.properties.timespan.end_to) !== 'undefined') var tsend = parseInt((currentfeature.properties.timespan.end_to), 10);
         var timespan = tsbegin + ' to ' + tsend;
         var dateToInsert = timespan;
         if (typeof tsbegin == 'undefined') {var dateToInsert = '';};
@@ -568,3 +566,4 @@ function modalset(id) {
   collapseAllOthers(id);
   $('#myModal').modal();
 }
+

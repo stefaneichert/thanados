@@ -1,0 +1,95 @@
+{
+  "_args": [
+    [
+      "leaflet-choropleth",
+      "/home/stefan/Dropbox/PrahaDev/medcem/medcem/static/vendor"
+    ]
+  ],
+  "_from": "leaflet-choropleth@latest",
+  "_id": "leaflet-choropleth@1.1.4",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/leaflet-choropleth",
+  "_nodeVersion": "7.7.1",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/leaflet-choropleth-1.1.4.tgz_1496138757617_0.07063055993057787"
+  },
+  "_npmUser": {
+    "email": "tim@timwis.com",
+    "name": "timwis"
+  },
+  "_npmVersion": "4.3.0",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "leaflet-choropleth",
+    "raw": "leaflet-choropleth",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/leaflet-choropleth/-/leaflet-choropleth-1.1.4.tgz",
+  "_shasum": "1c75d5f3236daf45c81434862ea838196315534e",
+  "_shrinkwrap": null,
+  "_spec": "leaflet-choropleth",
+  "_where": "/home/stefan/Dropbox/PrahaDev/medcem/medcem/static/vendor",
+  "author": {
+    "email": "tim@timwis.com",
+    "name": "timwis"
+  },
+  "bugs": {
+    "url": "https://github.com/timwis/leaflet-choropleth/issues"
+  },
+  "dependencies": {
+    "chroma-js": "^1.1.1",
+    "leaflet": "^1.0.2",
+    "lodash": "^4.17.4"
+  },
+  "description": "Choropleth plugin for Leaflet (color scale based on value)",
+  "devDependencies": {
+    "jsdom": "^7.2.0",
+    "mocha": "^2.3.4",
+    "mocha-jsdom": "^1.0.0",
+    "should": "^8.0.0",
+    "snazzy": "^2.0.1",
+    "standard": "^5.4.1",
+    "webpack": "^2.5.1"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "1c75d5f3236daf45c81434862ea838196315534e",
+    "tarball": "https://registry.npmjs.org/leaflet-choropleth/-/leaflet-choropleth-1.1.4.tgz"
+  },
+  "gitHead": "9cf45d4184d9958134ea80e48c04d80f5089f49e",
+  "homepage": "https://github.com/timwis/leaflet-choropleth",
+  "keywords": [
+    "chloropleth",
+    "choropleth",
+    "leaflet"
+  ],
+  "license": "MIT",
+  "main": "src/choropleth.js",
+  "maintainers": [
+    {
+      "name": "timwis",
+      "email": "tim@timwis.com"
+    }
+  ],
+  "name": "leaflet-choropleth",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/timwis/leaflet-choropleth.git"
+  },
+  "scripts": {
+    "build": "webpack -p",
+    "test": "standard src | snazzy && mocha test",
+    "watch": "webpack --watch"
+  },
+  "version": "1.1.4"
+}

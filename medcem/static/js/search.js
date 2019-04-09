@@ -13,13 +13,10 @@ function startsearch() {
 
 function initateQuery () {
   //set global variables for search results
-  jsonresult = {"type": "FeatureCollection", //prepare geojson
-                 "features": []
-                };
   finalSearchResult = [];  //array for search results
   finalSearchResultIds = [] ;
 
-  //array for search results on respective levels
+  //array for all entities on respective levels to be intersected by search results
   $.each(myjson.features, function (i, feature) {
        finalSearchResult.push(parseInt(feature.id)); //pushes all current graves' ids to array
        //push all entitites into array
@@ -33,8 +30,9 @@ function initateQuery () {
   });
 }
 
-function appendSearch(iter) {
+function appendSearch(iter) {//append search form to dialog
     $( '.toremovebtn').remove(); //removes former buttons to append new search
+    $( '.mysearchoptions').remove(); //removes former buttons to append new search
         $( '#mysearchform').append(
                    //selection for search level: grave, burial or find
                    '<div id="LevelSelect_' + iter +'_parent" class="input-group input-group-sm mb-3">' +
@@ -76,7 +74,7 @@ function appendSearch(iter) {
         });
 }
 
-function appendCriteria(iter, appendLevel) {
+function appendCriteria(iter, appendLevel) { //select search criteria after level is chosen
   $( '#PropSelect_' + iter).on('change', function() {
     var criteria = $( '#PropSelect_' + iter+ ' option:selected').val().toLowerCase(); //set criteria variable
     $( '#PropSelect_' + iter).prop('disabled', true); //disable input
@@ -84,7 +82,7 @@ function appendCriteria(iter, appendLevel) {
   });
 }
 
-function appendCriteriaSearch(iter, criteria, appendLevel) {
+function appendCriteriaSearch(iter, criteria, appendLevel) { //append respective forms depending on search criteria e.g. with values for timespan etc.
    $( '#PropSelect_' + iter +'_parent').remove(); //remove former input
    if (criteria == 'maintype' || criteria == 'type') { //if maintype or type append form with tree select
         $( '#mysearchform').append(
@@ -171,7 +169,7 @@ function appendCriteriaSearch(iter, criteria, appendLevel) {
    };
 }
 
-function appendMaterial(iter) {
+function appendMaterial(iter) { //append value input after material is chosen
            $( '#MaterialSelect_' + iter + '_parent').append(
                 '<span class="input-group-text input-group-middle">% min: </span>' +
                 '<input id="valMin_' + iter + '" class="form-control value-input" type="text">' +
@@ -188,7 +186,7 @@ function appendMaterial(iter) {
            );
 }
 
-
+//search functions depending on criteria
 function searchDimMat(criteria, appendLevel, iter, val1, val2) {
     var val1 =  $('#valMin_' + iter).val();
     var val2 =  $('#valMax_' + iter).val();
@@ -232,8 +230,7 @@ function searchTime(criteria, appendLevel, iter, val1, val2) {
     };
 }
 
-function validateNumbers(val1, val2, criteria) {
-    console.log(typeof(val1) + ' ' + val1 + ' - ' + typeof(val2) + ' ' +val2);
+function validateNumbers(val1, val2, criteria) { //validate numbers and continue of valid or resume with alert if invalid
     if (isNaN(val1) || isNaN(val2)) {
         alert('Please enter valid numbers');
         return false;
@@ -251,7 +248,7 @@ function validateNumbers(val1, val2, criteria) {
     return true;
 }
 
-function UnsetGlobalVars () {
+function UnsetGlobalVars () { //global vars needed for appended buttons
 //unset global variables
     GlobaltargetField = '';
     GlobalNodeSelected = '';
@@ -270,8 +267,6 @@ function iniateTree(iter, appendLevel, criteria, targetField) {
     var treecriteria = criteria;
     if (criteria == 'maintype')
         var treecriteria = appendLevel;
-    console.log('iter: ' + iter + ', appendLevel: ' + appendLevel + ', criteria: ' + criteria + ', treecriteria: ' + treecriteria);
-
 
     //build tree after selected criteria
     var selectedtypes = [];
@@ -342,7 +337,7 @@ function iniateTree(iter, appendLevel, criteria, targetField) {
 
 function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, appendLevel, iter, val1, val2) {
     if (GlobalNodeSelected !== ''  && Globalcriteria !== 'material') {
-    console.log('targetField: ' + targetField + ', NodeSelected: ' + NodeSelected + ', SelectedNodeName: ' + SelectedNodeName + ', criteria: ' + criteria + ', appendLevel: ' + appendLevel + ', iter: ' + iter);
+
     $(function () {
         $('#' + targetField).val(SelectedNodeName);
         $('#' + targetField).prop('disabled', true);
@@ -418,16 +413,82 @@ function appendPlus(iter) {
 
     if (finalSearchResultIds.length > 0) {
         $('#mysearchform').append(
+             '<div class="mysearchoptions input-group input-group-sm mb-3">' +
+                 '<div class="input-group-prepend">' +
+                       '<label class="input-group-text" for="fillcolor">Fill color: </label>' +
+                 '</div>' +
+                 '<input class="form-control" id="fillcolor" style="max-width: 70px" type="color" value="#000dff">' +
+                 '<span class="input-group-text input-group-middle">Opacity (%): </span>' +
+                 '<input class="form-control" id="mysearchopacity" type="range" value="10" min="0" max="100">' +
+                 '<input class="form-control" id="mysearchopacityvalue" type="number" value="10" min="0" max="100" style="max-width: 60px">' +
+            '</div>' +
+            '<div class="mysearchoptions input-group input-group-sm mb-3">' +
+                 '<div class="input-group-prepend">' +
+                     '<label class="input-group-text" for="searchbordercolor">Border color: </label>' +
+                 '</div>' +
+                 '<input class="form-control" id="colorborder" style="max-width: 70px" type="color" value="#000000">' +
+                 '<span class="input-group-text input-group-middle">Border width: </span>' +
+                 '<input class="form-control input-group-middle" id="searchborderwidth" type="number" value="0" min="0">' +
+                 '<span title="Radius for point result" class="input-group-text input-group-middle">Radius: </span>' +
+                 '<input title="Radius for point result" class="form-control" id="searchpointradius" type="number" value="8" min="1">' +
+            '</div>' +
             '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="addNewSearchCritBtn" onclick="appendSearch(Globaliter)"title="Add another search criteria">' +
             '<i class="fas fa-plus"></i>' +
             '</button>' +
-            '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="mapResultBtn" onclick="finishQuery()" title="Finish search and show combined result on map">' +
-            '<i class="fas fa-map-marked-alt"></i>' +
+            '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="mapResultBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                 '<i class="fas fa-map-marked-alt"></i>' +
             '</button>' +
+                   '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
+                            '<a class="dropdown-item" onclick="finishQuery(true)" title="Finish search and show combined result on map"" href="#">Polygons</a>' +
+                            '<a class="dropdown-item" onclick="finishQuery(false)" title="Finish search and show combined result on map"" href="#">Points</a>' +
+                   '</div>' +
             '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="mapResultBtn" onclick="finishQuery(); exportToJsonFile(jsonresult)" title="Finish, show on map and download result as .json file">' +
             '<i class="far fa-save"></i>' +
+            '</button>' +
+            '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="AdvSearchOptBtn" onclick="toggleSearchOpt()" title="Advanced Options">' +
+                 '<i class="fas fa-ellipsis-h"></i>' +
             '</button>'
         );
+        toggleSearchOpt();
+        
+        var fillInput = document.getElementById("fillcolor");
+        fillcolor = fillInput.value;
+        fillInput.addEventListener("input", function() {
+            fillcolor = fillInput.value;
+        }, false);
+        
+        mysearchopacity = 10;
+        $( '#mysearchopacity').on('input change', function() {
+                   mysearchopacity = $( '#mysearchopacity').val();
+                   $( '#mysearchopacityvalue').val(mysearchopacity);
+        });
+        $( '#mysearchopacityvalue').on('input change', function() {
+                   mysearchopacity = $( '#mysearchopacityvalue').val();
+                   if (mysearchopacity > 100) $( '#mysearchopacityvalue').val(100);
+                   if (mysearchopacity < 0) $( '#mysearchopacityvalue').val(0);
+                   $( '#mysearchopacity').val(mysearchopacity);
+        });
+        mysearchbordercolor = "#000000";
+        var searchbordercolorInput = document.getElementById("colorborder");
+        var searchbordercolor = searchbordercolorInput.value;
+        searchbordercolorInput.addEventListener("input", function() {
+            mysearchbordercolor = searchbordercolorInput.value;
+        }, false);
+        
+        mysearchborderwidth = 0;
+        $( '#searchborderwidth').on('input change', function() {
+                   mysearchborderwidth = $( '#searchborderwidth').val();
+                   if (mysearchborderwidth < 0) $( '#searchborderwidth').val(0);
+        });
+
+        mysearchpointradius = 8;
+        $( '#searchpointradius').on('input change', function() {
+                   mysearchpointradius = $( '#searchpointradius').val();
+                   if (mysearchpointradius < 0) $( '#searchpointradius').val(0);
+        });
+                
+        
+        
     };
     $('#mysearchform').append(
             '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="resetSearchEndBtn" onclick="startsearch()"title="Reset search">' +
@@ -437,17 +498,74 @@ function appendPlus(iter) {
 
 }
 
-function finishQuery() { //finish query and show results on map
-    $('#dialog').dialog('close')
+function finishQuery(mygeometry) { //finish query and show results on map
+
+    jsonresult = {"type": "FeatureCollection", //prepare geojson
+                 "features": []
+                };
+    jsonresultPoints = {"type": "FeatureCollection", //prepare geojson
+                 "features": []
+                };
+
     $.each(myjson.features, function (i, feature) {
-        if (finalSearchResultIds.includes(feature.id))
-            jsonresult.features.push(feature)
+        if (finalSearchResultIds.includes(feature.id)) {
+            jsonresult.features.push(feature);
+            //todo create menu for searchresult output
+            let pointfeature = Object.assign({}, feature);
+            pointfeature.geometry = {};
+            var arr = JSON.parse(JSON.stringify(feature.geometry.coordinates).slice(1, -1));
+            var mycenter = getCenter(arr);
+            var mypoint = { "type": "Point", "coordinates": mycenter};
+            pointfeature.geometry = mypoint;
+            jsonresultPoints.features.push(pointfeature);
+         }
     });
 
-    resultpolys.clearLayers();
-    var resultpoly = L.geoJSON(jsonresult);
-    resultpolys.addLayer(resultpoly);
+    var mysearchresultstyle = {
+    "fillColor": fillcolor,
+    "weight": mysearchborderwidth,
+    "fillOpacity": 1-mysearchopacity/100,
+    "color": mysearchbordercolor,
+    };
+
+    var geojsonMarkerOptions = {
+    radius: mysearchpointradius,
+    fillColor: fillcolor,
+    color: mysearchbordercolor,
+    weight: mysearchborderwidth,
+    opacity: 1,
+    fillOpacity: 1-mysearchopacity/100
+    };
+
+    if (mygeometry) {
+       resultpolys.clearLayers();
+       var resultpoly = L.geoJSON(jsonresult, {style: mysearchresultstyle});
+       resultpolys.addLayer(resultpoly);
+    } else
+    {
+       resultpoints.clearLayers();
+       resultpoint = L.geoJSON(jsonresultPoints, {
+          pointToLayer: function (feature, latlng) {
+             return L.circleMarker(latlng, geojsonMarkerOptions);
+             }
+        });
+        resultpoints.addLayer(resultpoint);
+    };
 }
+
+function getCenter(arr) {
+    var minX, maxX, minY, maxY;
+    for (var i = 0; i < arr.length; i++)
+    {
+        var x = arr[i][0], y = arr[i][1];
+        minX = (x < minX || minX == null) ? x : minX;
+        maxX = (x > maxX || maxX == null) ? x : maxX;
+        minY = (y < minY || minY == null) ? y : minY;
+        maxY = (y > maxY || maxY == null) ? y : maxY;
+    }
+    return [(minX + maxX) / 2, (minY + maxY) / 2];
+}
+
 
 function jsonquery(id, level, prop, val1, val2) {
     //prepare searchresult array
@@ -464,10 +582,6 @@ function jsonquery(id, level, prop, val1, val2) {
     //alert if second value is lower than first value
     if (typeof(val1 == 'string')) var val1 = parseFloat(val1.replace(',','.').replace(' ',''));
     if (typeof(val2 == 'string')) var val2 = parseFloat(val2.replace(',','.').replace(' ',''));
-    console.log ('val1: ' + val1 + '; val2: ' + val2);
-    console.log ('IDs:');
-    console.log (id);
-    console.log ('level: ' + level + ', prop: ' + prop);
 
     //loop through entities
     if (level == 'feature') {
@@ -525,12 +639,8 @@ function jsonquery(id, level, prop, val1, val2) {
 
     var distinctResultIds = Array.from(new Set(searchResultIds));
     searchResultIds = distinctResultIds;
-    console.log('searchResultIds');
-    console.log(searchResultIds);
     var intermedIds = finalSearchResultIds.filter(value => searchResultIds.includes(value));
     finalSearchResultIds = intermedIds;
-    console.log('finalSearchResuldIds2');
-    console.log(finalSearchResultIds);
 }
 
 //query entitites based on level
@@ -621,4 +731,8 @@ function exportToJsonFile(data) {
             window.URL.revokeObjectURL(url);
         }, 0);
     }
+}
+
+function toggleSearchOpt() {
+$('.mysearchoptions').toggle();
 }

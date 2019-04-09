@@ -31,6 +31,7 @@
                             <a class="dropdown-item pohanskobutton" href="#">Pohansko Herrenhof</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item searchbutton" href="#">Filter/Search</a>
+                            <a class="dropdown-item visbutton" href="#">Visualisations</a>
                         </div>
                     </div>
                 </div>
@@ -53,6 +54,7 @@
                 <a class="dropdown-item pohanskobutton" href="#">Pohansko Herrenhof</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item searchbutton" href="#">Filter/Search</a>
+                <a class="dropdown-item visbutton" href="#">Visualisations</a>
             </div>
         </div>
     </div>
@@ -66,6 +68,10 @@
 
     <div id="dialog" title="Filter/Search">
         <form id="mysearchform"></form>
+    </div>
+
+    <div id="visdialog" title="Visualisations">
+        <form id="myvisform"></form>
     </div>
 
     <div id="mytreeModal" class="modal fade" tabindex="-1" role="dialog">
@@ -98,6 +104,7 @@ var jsontypes = {{ typesjson|tojson }};
 
 <script src="/static/js/map.js"></script>
 <script src="/static/js/search.js"></script>
+<script src="/static/js/choropleth_results.js"></script>
 
 
 {% endblock %}
