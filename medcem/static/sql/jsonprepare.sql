@@ -462,6 +462,8 @@ INSERT INTO jsonprepare.tbl_medcem_data (id, name, data)
      s.name,
      (jsonb_strip_nulls(jsonb_build_object(
         'type',     'FeatureCollection',
+        'site_id',  s.id,
+        'name',     s.name,
         'features', jsonb_strip_nulls(jsonb_agg(f.grave))
     )))
     FROM jsonprepare.sites s LEFT JOIN (SELECT * FROM jsonprepare.tbl_gravescomplete ORDER BY parent_id, grave ->'properties'->>'name') f ON s.id = f.parent_id 

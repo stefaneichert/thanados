@@ -221,15 +221,27 @@ $("#sidebar-smaller").click(function () {
 });
 $(window).resize(function () {
     var navheight = ($('#mynavbar').height());
+    var containerheight = ($('#container').height());
+    console.log(containerheight);
     var headingheight = (($('#mysidebarheading').height()) + ($('#mysidebarmenu').height()));
     newListHeight = ($('#sidebar').height());
     $('#mypanel').css('max-height', newListHeight - headingheight -5 + 'px');
+    var containerheight = ($('#container').height());
+    console.log(containerheight);
+    var windowheight = ($(window).height());
+    console.log(windowheight);
+    $('body').css('max-height', windowheight -56 + 'px');
 });
 $(document).ready(function () {
     var navheight = ($('#mynavbar').height());
     var headingheight = (($('#mysidebarheading').height()) + ($('#mysidebarmenu').height()));
     newListHeight = ($('#sidebar').height());
     $('#mypanel').css('max-height', newListHeight - headingheight -5 + 'px');
+    var containerheight = ($('#container').height());
+    console.log(containerheight);
+    var windowheight = ($(window).height());
+    console.log(windowheight);
+    $('body').css('max-height', windowheight -56 + 'px');
 });
 
 //sidebar content
@@ -356,7 +368,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         if (typeof entDesc == 'undefined') {var entDesc = '';};
         var entType = currentfeature.properties.maintype.name;
 
-        var typepath =  currentfeature.properties.maintype.name;
+        var typepath =  currentfeature.properties.maintype.path;
         if (typeof(currentfeature.properties.timespan) !== 'undefined' && typeof(currentfeature.properties.timespan.begin_from) !== 'undefined') var tsbegin = parseInt((currentfeature.properties.timespan.begin_from), 10);
         if (typeof(currentfeature.properties.timespan) !== 'undefined' && typeof(currentfeature.properties.timespan.end_to) !== 'undefined') var tsend = parseInt((currentfeature.properties.timespan.end_to), 10);
         var timespan = tsbegin + ' to ' + tsend;
@@ -406,6 +418,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
                                 '<div id="myModalTypescontainer' + entId + '"></div>' +
                                 '<div id="myModalDimensionscontainer' + entId + '"></div>' +
                                 '<div id="myModalMaterialcontainer' + entId + '"></div>' +
+                                '<div id="myModalPermalink' + entId + '"></div>' +
                             '</div>' +
                             '<div id="myModalImagecontainer' + entId + '"></div>' +
                         '</div>' +
@@ -414,6 +427,10 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
                 '<div id="'+ parentDiv + '_' + entId + '"></div>'
 
         );
+
+        $('#myModalPermalink' + entId).append(
+            '<p><h6>Permalink</h6></p><a class="modalrowitem" href="../entity/view/' + myjson.site_id + '/' + entId + '">' + entName + '</a>'
+            );
 
         if (dateToInsert == '') {
             $( '#myModaltimespan' + entId ).attr("class","");
@@ -546,7 +563,7 @@ function setImages(entId, entfiles) {
 
           };
 
-          //remove image column and
+          //remove image column
           if (entfiles == undefined){
               $( '#myModalImagecontainer' + entId ).attr("class","");
               $( '#myModalImagecontainer' + entId ).empty();

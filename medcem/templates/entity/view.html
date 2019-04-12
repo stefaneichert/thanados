@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block content %}
+<div id="containerPermalink">
+    <div id="mybreadcrumb"></div>
+    <div id="mycontent"></div>
+</div>
+
+<script>
+entity_id = {{object_id}};
+systemtype = "{{system_type}}";
+place_id = {{site_id}};
+var jsonmysite = {{ mysitejson|tojson }};
+
+
+</script>
+<script src="/static/js/entity.js"></script>
+{% endblock %}

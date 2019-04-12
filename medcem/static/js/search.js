@@ -30,6 +30,7 @@ function initateQuery () {
   });
 }
 
+//todo: Add titles with instructions
 function appendSearch(iter) {//append search form to dialog
     $( '.toremovebtn').remove(); //removes former buttons to append new search
     $( '.mysearchoptions').remove(); //removes former buttons to append new search
@@ -320,11 +321,22 @@ function iniateTree(iter, appendLevel, criteria, targetField) {
      });
 
 //show tree in modal
-    $('#mytreeModal').modal(
-            {backdrop: 'static',
-                keyboard: false}
-    );
+    $( "#mytreeModal" ).dialog({
+    modal: true,
+    classes: {
+            "ui-dialog": "custom-tree"
+        }
+    });
 
+    var windowheight = ($(window).height());
+    $('.custom-tree').css('max-height', windowheight -100 + 'px');
+    $('#jstree').css('max-height', windowheight -250 + 'px')
+
+    $(window).resize(function () {
+    var windowheight = ($(window).height());
+    $('.custom-tree').css('max-height', windowheight -100 + 'px');
+    $('#jstree').css('max-height', windowheight -250 + 'px')
+    });
 
 //refresh tree if new search
     if ((typeof ($('#jstree').jstree(true).settings)) !== 'undefined') {
@@ -351,7 +363,7 @@ function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, app
 
     jsonquery(nodeIds, appendLevel, criteria, val1, val2);
     $('#' + targetField + '_Result').val(uniqueSearchResult.length + ' matches in ' + searchResult.length + ' graves');
-    $('#mytreeModal').modal('hide');
+    $('#mytreeModal').dialog("close");
     appendPlus(iter);
     }
     if (GlobalNodeSelected == '') alert('select property first');
@@ -359,7 +371,7 @@ function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, app
       $('#' + targetField).text(SelectedNodeName);
       $('#' + targetField).prop('disabled', true);
       setNodes(NodeSelected);
-      $('#mytreeModal').modal('hide');
+      $('#mytreeModal').dialog("close");
       appendMaterial(iter);
     }
     };
@@ -435,16 +447,24 @@ function appendPlus(iter) {
             '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="addNewSearchCritBtn" onclick="appendSearch(Globaliter)"title="Add another search criteria">' +
             '<i class="fas fa-plus"></i>' +
             '</button>' +
+            '<div class="dropdown">' +
             '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="mapResultBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
                  '<i class="fas fa-map-marked-alt"></i>' +
             '</button>' +
                    '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
-                            '<a class="dropdown-item" onclick="finishQuery(true)" title="Finish search and show combined result on map"" href="#">Polygons</a>' +
-                            '<a class="dropdown-item" onclick="finishQuery(false)" title="Finish search and show combined result on map"" href="#">Points</a>' +
+                            '<a class="dropdown-item" onclick="finishQuery(true)" title="Show combined result on map" href="#">Polygons</a>' +
+                            '<a class="dropdown-item" onclick="finishQuery(false)" title="Show combined result on map" href="#">Points</a>' +
                    '</div>' +
-            '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="mapResultBtn" onclick="finishQuery(); exportToJsonFile(jsonresult)" title="Finish, show on map and download result as .json file">' +
-            '<i class="far fa-save"></i>' +
+            '</div>' +
+            '<div class="dropdown">' +
+            '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                 '<i class="far fa-save"></i>' +
             '</button>' +
+                   '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
+                            '<a class="dropdown-item" onclick="finishQuery(true); exportToJsonFile(jsonresult)" title="Show combined result on map and download as GEOJSON" href="#">Polygons</a>' +
+                            '<a class="dropdown-item" onclick="finishQuery(false); exportToJsonFile(jsonresultPoints)" title="Show combined result on map and download as GEOJSON" href="#">Points</a>' +
+                   '</div>' +
+            '</div>' +
             '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="AdvSearchOptBtn" onclick="toggleSearchOpt()" title="Advanced Options">' +
                  '<i class="fas fa-ellipsis-h"></i>' +
             '</button>'
@@ -510,7 +530,6 @@ function finishQuery(mygeometry) { //finish query and show results on map
     $.each(myjson.features, function (i, feature) {
         if (finalSearchResultIds.includes(feature.id)) {
             jsonresult.features.push(feature);
-            //todo create menu for searchresult output
             let pointfeature = Object.assign({}, feature);
             pointfeature.geometry = {};
             var arr = JSON.parse(JSON.stringify(feature.geometry.coordinates).slice(1, -1));
@@ -715,6 +734,7 @@ function levelQuery(feature, entity, id, prop, val1, val2) {
 }
 
 function exportToJsonFile(data) {
+    console.log(data);
     var data = JSON.stringify(data).replace('\u2028', '\\u2028').replace('\u2029', '\\u2029');
     var file = new Blob([data]);
     if (window.navigator.msSaveOrOpenBlob) // IE10+

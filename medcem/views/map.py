@@ -1,22 +1,14 @@
 from flask import render_template, g
 
 from medcem import app
-
+from medcem.models.entity import Data
 
 @app.route('/map')
 @app.route('/map/index')
 def map_index():
-    sql_thunau = """
-        SELECT data FROM jsonprepare.tbl_medcem_data WHERE id = 50505;
-    """
-    g.cursor.execute(sql_thunau)
-    thunau = g.cursor.fetchall()
+    thunau = Data.get_data(50505)
+    pohansko = Data.get_data(50497)
 
-    sql_pohansko = """
-        SELECT data FROM jsonprepare.tbl_medcem_data WHERE id = 50497;
-        """
-    g.cursor.execute(sql_pohansko)
-    pohansko = g.cursor.fetchall()
 
     sql_types = """
             SELECT * FROM jsonprepare.typesjson;
