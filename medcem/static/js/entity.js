@@ -18,7 +18,7 @@ if (systemtype == 'feature') {
            graveId= feature.id;
            graveGeom = feature.geometry;
            getEntityData(sitename, place_id, feature);
-           $('#mybreadcrumbs').append('<li class="breadcrumb-item"><a href="../' + place_id + '/' + entId + '">' + entName + '</a></li>');
+           $('#mybreadcrumbs').append('<li class="breadcrumb-item"><a href="/entity/view/' + entId + '">' + entName + '</a></li>');
        };
    });
 }
@@ -36,8 +36,8 @@ if (systemtype == 'stratigraphic unit') {
              graveGeom = featureGeom;
              getEntityData(graveName, graveId, burial);
             $('#mybreadcrumbs').append(
-                      '<li class="breadcrumb-item"><a href="../' + place_id + '/' + graveId + '">' + graveName + '</a></li>'+
-                      '<li class="breadcrumb-item"><a href="../' + place_id + '/' + entId + '">' + entName + '</a></li>'
+                      '<li class="breadcrumb-item"><a href="/entity/view/' + graveId + '">' + graveName + '</a></li>'+
+                      '<li class="breadcrumb-item"><a href="/entity/view/' + entId + '">' + entName + '</a></li>'
                       );
          };
        });
@@ -62,9 +62,9 @@ if (systemtype == 'find') {
                    burialId = stratID;
                    getEntityData(burialName, burialId, find);
                    $('#mybreadcrumbs').append(
-                      '<li class="breadcrumb-item"><a href="../' + place_id + '/' + graveId + '">' + graveName + '</a></li>'+
-                      '<li class="breadcrumb-item"><a href="../' + place_id + '/' + burialId + '">' + burialName + '</a></li>'+
-                      '<li class="breadcrumb-item"><a href="../' + place_id + '/' + entId + '">' + entName + '</a></li>'
+                      '<li class="breadcrumb-item"><a href="/entity/view/' + graveId + '">' + graveName + '</a></li>'+
+                      '<li class="breadcrumb-item"><a href="/entity/view/' + burialId + '">' + burialName + '</a></li>'+
+                      '<li class="breadcrumb-item"><a href="/entity/view/' + entId + '">' + entName + '</a></li>'
                       );
          };
        });
@@ -205,7 +205,7 @@ function getEntityData(parentName, parentId, currentfeature) {
              };
 
             $('#myChildrencontainer' + entId).append(
-            '<a class="modalrowitem" href="../' + place_id + '/' + child.id + '">' + child.properties.name + ': ' + child.properties.maintype.name + '</a>'
+            '<a class="modalrowitem" href="/entity/view/' + child.id + '">' + child.properties.name + ': ' + child.properties.maintype.name + '</a>'
             );
         });
 
@@ -213,7 +213,7 @@ function getEntityData(parentName, parentId, currentfeature) {
              $('#myParentcontainer' + entId).append('<p><h6>Parent</h6></p>');
              };
         $('#myParentcontainer' + entId).append(
-            '<a class="modalrowitem" href="../' + place_id + '/' + parentId + '">' + parentName + '</a>'
+            '<a class="modalrowitem" href="/entity/view/' + parentId + '">' + parentName + '</a>'
             );
 
 
@@ -249,6 +249,8 @@ function getEntityData(parentName, parentId, currentfeature) {
            }
        })
 
+    L.control.scale({imperial: false}).addTo(mymap);
+
 
 
 
@@ -272,7 +274,7 @@ function setImages(entId, entfiles) {
                  $( '#myImagecontainer' + entId ).empty();
                  $.each(entfiles, function (f, files) {
                   $( '#myImagecontainer' + entId ).append(
-                       '<img src="https://dppopenatlas.oeaw.ac.at/display/' + files.id + '.bmp" class="modalimg" id="mymodalimg">'
+                       '<img src="https://thanados.openatlas.eu/display/' + files.id + '.bmp" class="modalimg" id="mymodalimg">'
                   )
                   });
               };
@@ -292,10 +294,10 @@ function setImages(entId, entfiles) {
                            '</ol>' +
                        '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
                             '<div class="carousel-item active">' +
-                                 '<img class="d-block modalimg" src="https://dppopenatlas.oeaw.ac.at/display/' + firstimage + '.bmp">' +
+                                 '<img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + firstimage + '.bmp">' +
                             '</div>' +
                             '<div class="carousel-item">' +
-                                 '<img class="d-block modalimg" src="https://dppopenatlas.oeaw.ac.at/display/' + secondimage + '.bmp">' +
+                                 '<img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + secondimage + '.bmp">' +
                             '</div>' +
                        '</div>' +
                        '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
@@ -314,7 +316,7 @@ function setImages(entId, entfiles) {
                   if(f > 1) {
                      $( '#mycarouselimages' + entId ).append(
                        '<div class="carousel-item">' +
-                             '<img class="d-block modalimg" src="https://dppopenatlas.oeaw.ac.at/display/' + files.id + '.bmp">' +
+                             '<img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + files.id + '.bmp">' +
                        '</div>'
                      );
                      $( '#mymodalimageindicators' + entId ).append(
@@ -327,4 +329,3 @@ function setImages(entId, entfiles) {
           } else { $( '#myImagecontainer' + entId ).remove()}
 }
 
-mymap.panTo(boundscenter);

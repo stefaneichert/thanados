@@ -72,6 +72,7 @@ function setmap(myjson) {
 //hack for right order of basemaps
     map.removeLayer(satellite);
 
+    L.control.scale({imperial: false}).addTo(map);
 
     //initiate selection of clicked polygons
     polygonSelect();
@@ -418,18 +419,19 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
                                 '<div id="myModalTypescontainer' + entId + '"></div>' +
                                 '<div id="myModalDimensionscontainer' + entId + '"></div>' +
                                 '<div id="myModalMaterialcontainer' + entId + '"></div>' +
-                                '<div id="myModalPermalink' + entId + '"></div>' +
                             '</div>' +
                             '<div id="myModalImagecontainer' + entId + '"></div>' +
+
                         '</div>' +
                     '</div>' +
+                    '<div class="float-right" style="margin-right: 4em; margin-bottom: -2em; margin-top: 1em;" id="myModalPermalink' + entId + '"></div>' +
                 '</div>' +
                 '<div id="'+ parentDiv + '_' + entId + '"></div>'
 
         );
 
         $('#myModalPermalink' + entId).append(
-            '<p><h6>Permalink</h6></p><a class="modalrowitem" href="../entity/view/' + myjson.site_id + '/' + entId + '">' + entName + '</a>'
+            '<a href="../entity/view/' + entId + '"><h6>Permalink</h6></a>'
             );
 
         if (dateToInsert == '') {
@@ -507,7 +509,7 @@ function setImages(entId, entfiles) {
                  $( '#myModalImagecontainer' + entId ).empty();
                  $.each(entfiles, function (f, files) {
                   $( '#myModalImagecontainer' + entId ).append(
-                       '<img src="https://dppopenatlas.oeaw.ac.at/display/' + files.id + '.bmp" class="modalimg" id="mymodalimg">'
+                       '<img src="https://thanados.openatlas.eu/display/' + files.id + '.bmp" class="modalimg" id="mymodalimg">'
                   )
                   });
               };
@@ -529,10 +531,10 @@ function setImages(entId, entfiles) {
                            '</ol>' +
                        '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
                             '<div class="carousel-item active">' +
-                                 '<img class="d-block modalimg" src="https://dppopenatlas.oeaw.ac.at/display/' + firstimage + '.bmp">' +
+                                 '<img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + firstimage + '.bmp">' +
                             '</div>' +
                             '<div class="carousel-item">' +
-                                 '<img class="d-block modalimg" src="https://dppopenatlas.oeaw.ac.at/display/' + secondimage + '.bmp">' +
+                                 '<img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + secondimage + '.bmp">' +
                             '</div>' +
                        '</div>' +
                        '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
@@ -551,7 +553,7 @@ function setImages(entId, entfiles) {
                   if(f > 1) {
                      $( '#mycarouselimages' + entId ).append(
                        '<div class="carousel-item">' +
-                             '<img class="d-block modalimg" src="https://dppopenatlas.oeaw.ac.at/display/' + files.id + '.bmp">' +
+                             '<img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + files.id + '.bmp">' +
                        '</div>'
                      );
                      $( '#mymodalimageindicators' + entId ).append(
