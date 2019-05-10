@@ -286,7 +286,7 @@ color: #6c757d;
 }
 
 .ui-dialog {
-    z-index: 1000 !important;
+    z-index: 900 !important;
     }
 
 a.ui-button:active,

@@ -11,6 +11,9 @@
                         <button type="button" class="btn btn-secondary btn-xs fa-pull-right" onclick="this.blur()" id="sidebar-smaller" title="reduce sidebar">
                             <i class="fa fa-chevron-left"></i>
                         </button>
+                        <button type="button" class="btn btn-secondary btn-xs fa-pull-right" onclick="this.blur(); modalsetsite()" title="show details" id="' + myjson.site_id + '">
+                            <i class="fa fa-info"></i>
+                        </button>
                     </div>
                     <h3 class="panel-title">
                         <span id="sidebarTitle"> Pohansko Herrenhof
@@ -57,15 +60,19 @@
         </div>
     </div>
 
-    <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+    <!-- <div id="myModalold" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg">
             <div id="myModalContent" style="padding-bottom: 2em" class="modal-content"></div>
         </div>
     </div>
-
+    --!>
 
     <div id="dialog" title="Filter/Search">
         <form id="mysearchform"></form>
+    </div>
+
+    <div id="myModal" title="mygrave">
+        <div id="myModalContent" style="padding-bottom: 2em" class="modal-content"></div>
     </div>
 
     <div id="visdialog" title="Visualisations">

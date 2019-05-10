@@ -5,122 +5,8 @@ DROP SCHEMA IF EXISTS jsonprepare CASCADE;
 CREATE SCHEMA jsonprepare;
 --create temp tables
 
--- create table with sites to be used
-DROP TABLE IF EXISTS jsonprepare.sites;
-CREATE TABLE jsonprepare.sites (id integer, name text);
-INSERT INTO jsonprepare.sites (id, name) VALUES
-(50505, 'Thunau Obere Holzwiese'),
-(50497, 'Pohansko Herrenhof'),
-(111285, 'Stará Kouřim');
-
-
--- graves
-DROP VIEW IF EXISTS jsonprepare.graves;
-DROP TABLE IF EXISTS jsonprepare.graves;
-CREATE TABLE jsonprepare.graves AS
- SELECT parent.id AS parent_id,
-    child.name AS child_name,
-    child.id AS child_id,
-    child.description,
-    date_part('year', child.begin_from)::integer AS begin_from,
-    date_part('year', child.begin_to)::integer AS begin_to,
-    child.begin_comment,
-    date_part('year', child.end_from)::integer AS end_from,
-    date_part('year', child.end_to)::integer AS end_to,
-    child.end_comment,
-    child.system_type,
-    polygon.geom --change to other geometry if needed
-   FROM model.entity parent,
-    model.entity child,
-    model.link l_p_c,
-    model.link l_c_loc,
-    gis.polygon --change to other geometry if needed
-     RIGHT JOIN model.entity location ON location.id = polygon.entity_id
-  WHERE parent.id = l_p_c.domain_id AND
-        l_p_c.range_id = child.id AND
-        l_c_loc.domain_id = child.id AND
-        l_c_loc.range_id = location.id AND
-        l_p_c.property_code ~~ 'P46'::text AND
-        l_c_loc.property_code ~~ 'P53'::text AND
-        parent.id in (50505, 50497, 111285) --change with ids of desired sites respectively with variable by python Thunau: 50505; Pohansko: 50497; Stara Kourim: 111285
-  ORDER BY child.system_type, parent.id, child.name;
-
-
---burials
-DROP VIEW IF EXISTS jsonprepare.burials;
-DROP TABLE IF EXISTS jsonprepare.burials;
-CREATE TABLE jsonprepare.burials AS
- SELECT parent.id AS parent_id,
-    child.name AS child_name,
-    child.id AS child_id,
-    child.description,
-    date_part('year', child.begin_from)::integer AS begin_from,
-    date_part('year', child.begin_to)::integer AS begin_to,
-    child.begin_comment,
-    date_part('year', child.end_from)::integer AS end_from,
-    date_part('year', child.end_to)::integer AS end_to,
-    child.end_comment,
-    child.system_type,
-    polygon.geom
-   FROM model.entity parent,
-    model.entity child,
-    model.link l_p_c,
-    model.link l_c_loc,
-    gis.polygon
-     RIGHT JOIN model.entity location ON location.id = polygon.entity_id
-  WHERE parent.id = l_p_c.domain_id AND
-        l_p_c.range_id = child.id AND
-        l_c_loc.domain_id = child.id AND
-        l_c_loc.range_id = location.id AND
-        l_p_c.property_code ~~ 'P46'::text AND
-        l_c_loc.property_code ~~ 'P53'::text AND
-        parent.id IN ( SELECT graves.child_id FROM jsonprepare.graves)
-  ORDER BY child.name;
-
-
---finds
-DROP VIEW IF EXISTS jsonprepare.finds;
-DROP TABLE IF EXISTS jsonprepare.finds;
-CREATE TABLE jsonprepare.finds AS
- SELECT parent.id AS parent_id,
-    child.name AS child_name,
-    child.id AS child_id,
-    child.description,
-    date_part('year', child.begin_from)::integer AS begin_from,
-    date_part('year', child.begin_to)::integer AS begin_to,
-    child.begin_comment,
-    date_part('year', child.end_from)::integer AS end_from,
-    date_part('year', child.end_to)::integer AS end_to,
-    child.end_comment,
-    child.system_type,
-    polygon.geom
-   FROM model.entity parent,
-    model.entity child,
-    model.link l_p_c,
-    model.link l_c_loc,
-    gis.polygon
-     RIGHT JOIN model.entity location ON location.id = polygon.entity_id
-  WHERE parent.id = l_p_c.domain_id AND
-        l_p_c.range_id = child.id AND
-        l_c_loc.domain_id = child.id AND
-        l_c_loc.range_id = location.id AND
-        l_p_c.property_code ~~ 'P46'::text AND
-        l_c_loc.property_code ~~ 'P53'::text AND
-        parent.id IN ( SELECT burials.child_id FROM jsonprepare.burials)
-  ORDER BY child.name;
-
-
--- all entities union
-CREATE TABLE jsonprepare.entitiestmp AS
-SELECT * FROM jsonprepare.graves
-UNION ALL
-SELECT * FROM jsonprepare.burials
-UNION ALL
-SELECT * FROM jsonprepare.finds
-ORDER BY parent_id, child_name;
 
 -- all types tree
-DROP VIEW IF EXISTS jsonprepare.types_all;
 DROP TABLE IF EXISTS jsonprepare.types_all;
 CREATE TABLE jsonprepare.types_all AS
  WITH RECURSIVE path(id, path, parent, name, parent_id, name_path) AS (
@@ -183,7 +69,156 @@ CREATE TABLE jsonprepare.types_all AS
    FROM path
   ORDER BY path.path;
 
---types 
+
+-- create table with sites to be used
+DROP TABLE IF EXISTS jsonprepare.sites;
+CREATE TABLE jsonprepare.sites AS (
+SELECT
+       NULL::integer AS parent_id,
+       s.name AS child_name,
+       s.id AS child_id,
+       s.description,
+       s.begin_from,
+       s.begin_to,
+       s.begin_comment,
+       s.end_from,
+       s.end_to,
+       s.end_comment,
+       s.system_type,
+       NULL::TEXT as geom
+FROM
+(SELECT
+    e.id,
+    e.name,
+    e.description,
+    date_part('year', e.begin_from)::integer AS begin_from,
+    date_part('year', e.begin_to)::integer AS begin_to,
+    e.begin_comment,
+    date_part('year', e.end_from)::integer AS end_from,
+    date_part('year', e.end_to)::integer AS end_to,
+    e.end_comment,
+    e.system_type,
+    l.range_id
+    FROM model.entity e JOIN model.link l ON e.id = l.domain_id WHERE l.property_code = 'P2' AND e.system_type = 'place' AND e.id in (50505, 50497, 111285)) AS s
+    JOIN jsonprepare.types_all t ON t.id = s.range_id WHERE t.name_path LIKE 'Place > Burial Site%'
+);
+
+UPDATE jsonprepare.sites
+SET geom = poly.geom FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
+   e.id
+   FROM model.entity e JOIN model.link l ON e.id = l.domain_id JOIN gis.polygon pl ON l.range_id = pl.entity_id WHERE l.property_code = 'P53') AS poly WHERE child_id = poly.id;
+
+UPDATE jsonprepare.sites
+SET geom = point.geom FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
+   e.id
+   FROM model.entity e JOIN model.link l ON e.id = l.domain_id JOIN gis.point pnt ON l.range_id = pnt.entity_id WHERE l.property_code = 'P53') AS point WHERE child_id = point.id AND jsonprepare.sites.geom ISNULL;
+
+
+-- graves
+DROP TABLE IF EXISTS jsonprepare.graves;
+CREATE TABLE jsonprepare.graves AS
+SELECT parent.id AS parent_id,
+    child.name AS child_name,
+    child.id AS child_id,
+    child.description,
+    date_part('year', child.begin_from)::integer AS begin_from,
+    date_part('year', child.begin_to)::integer AS begin_to,
+    child.begin_comment,
+    date_part('year', child.end_from)::integer AS end_from,
+    date_part('year', child.end_to)::integer AS end_to,
+    child.end_comment,
+    child.system_type,
+    NULL::TEXT as geom
+   FROM model.entity parent JOIN model.link l_p_c ON parent.id = l_p_c.domain_id JOIN model.entity child ON l_p_c.range_id = child.id
+        WHERE parent.id in (SELECT child_id FROM jsonprepare.sites) AND l_p_c.property_code = 'P46' ORDER BY child.system_type, parent.id, child.name;
+
+
+UPDATE jsonprepare.graves
+SET geom = poly.geom FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
+   e.id
+   FROM model.entity e JOIN model.link l ON e.id = l.domain_id JOIN gis.polygon pl ON l.range_id = pl.entity_id WHERE l.property_code = 'P53') AS poly WHERE child_id = poly.id;
+
+UPDATE jsonprepare.graves
+SET geom = point.geom FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
+   e.id
+   FROM model.entity e JOIN model.link l ON e.id = l.domain_id JOIN gis.point pnt ON l.range_id = pnt.entity_id WHERE l.property_code = 'P53') AS point WHERE child_id = point.id AND jsonprepare.graves.geom ISNULL;
+
+
+--burials
+DROP TABLE IF EXISTS jsonprepare.burials;
+CREATE TABLE jsonprepare.burials AS
+SELECT parent.id AS parent_id,
+    child.name AS child_name,
+    child.id AS child_id,
+    child.description,
+    date_part('year', child.begin_from)::integer AS begin_from,
+    date_part('year', child.begin_to)::integer AS begin_to,
+    child.begin_comment,
+    date_part('year', child.end_from)::integer AS end_from,
+    date_part('year', child.end_to)::integer AS end_to,
+    child.end_comment,
+    child.system_type,
+    NULL::TEXT as geom
+   FROM model.entity parent JOIN model.link l_p_c ON parent.id = l_p_c.domain_id JOIN model.entity child ON l_p_c.range_id = child.id
+        WHERE parent.id in (SELECT child_id FROM jsonprepare.graves) AND l_p_c.property_code = 'P46' ORDER BY child.system_type, parent.id, child.name;
+
+
+UPDATE jsonprepare.burials
+SET geom = poly.geom FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
+   e.id
+   FROM model.entity e JOIN model.link l ON e.id = l.domain_id JOIN gis.polygon pl ON l.range_id = pl.entity_id WHERE l.property_code = 'P53') AS poly WHERE child_id = poly.id;
+
+UPDATE jsonprepare.burials
+SET geom = point.geom FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
+   e.id
+   FROM model.entity e JOIN model.link l ON e.id = l.domain_id JOIN gis.point pnt ON l.range_id = pnt.entity_id WHERE l.property_code = 'P53') AS point WHERE child_id = point.id AND jsonprepare.burials.geom ISNULL;
+
+--finds
+DROP TABLE IF EXISTS jsonprepare.finds;
+CREATE TABLE jsonprepare.finds AS
+SELECT parent.id AS parent_id,
+    child.name AS child_name,
+    child.id AS child_id,
+    child.description,
+    date_part('year', child.begin_from)::integer AS begin_from,
+    date_part('year', child.begin_to)::integer AS begin_to,
+    child.begin_comment,
+    date_part('year', child.end_from)::integer AS end_from,
+    date_part('year', child.end_to)::integer AS end_to,
+    child.end_comment,
+    child.system_type,
+    NULL::TEXT as geom
+   FROM model.entity parent JOIN model.link l_p_c ON parent.id = l_p_c.domain_id JOIN model.entity child ON l_p_c.range_id = child.id
+        WHERE parent.id in (SELECT child_id FROM jsonprepare.burials) AND l_p_c.property_code = 'P46' ORDER BY child.system_type, parent.id, child.name;
+
+
+UPDATE jsonprepare.finds
+SET geom = poly.geom FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
+   e.id
+   FROM model.entity e JOIN model.link l ON e.id = l.domain_id JOIN gis.polygon pl ON l.range_id = pl.entity_id WHERE l.property_code = 'P53') AS poly WHERE child_id = poly.id;
+
+UPDATE jsonprepare.finds
+SET geom = point.geom FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
+   e.id
+   FROM model.entity e JOIN model.link l ON e.id = l.domain_id JOIN gis.point pnt ON l.range_id = pnt.entity_id WHERE l.property_code = 'P53') AS point WHERE child_id = point.id AND jsonprepare.finds.geom ISNULL;
+
+-- all entities union
+CREATE TABLE jsonprepare.entitiestmp AS
+SELECT * FROM jsonprepare.sites
+UNION ALL
+SELECT * FROM jsonprepare.graves
+UNION ALL
+SELECT * FROM jsonprepare.burials
+UNION ALL
+SELECT * FROM jsonprepare.finds
+ORDER BY parent_id, child_name;
+
+UPDATE jsonprepare.entitiestmp SET begin_comment = NULL WHERE begin_comment = '';
+UPDATE jsonprepare.entitiestmp SET end_comment = NULL WHERE end_comment = '';
+UPDATE jsonprepare.entitiestmp SET description = NULL WHERE description = '';
+
+
+--types
 DROP VIEW IF EXISTS jsonprepare.types_main;
 DROP TABLE IF EXISTS jsonprepare.types_main;
 CREATE TABLE jsonprepare.types_main AS
@@ -205,7 +240,7 @@ DROP VIEW IF EXISTS jsonprepare.maintype;
 DROP TABLE IF EXISTS jsonprepare.maintype;
 CREATE TABLE jsonprepare.maintype AS
     SELECT * FROM jsonprepare.types_main WHERE
-    path LIKE 'Feature >%' OR path LIKE 'Stratigraphic Unit >%' OR path LIKE 'Find >%'
+    path LIKE 'Place >%' OR path LIKE 'Feature >%' OR path LIKE 'Stratigraphic Unit >%' OR path LIKE 'Find >%'
   ORDER BY entity_id, path;
 
 --types dimensions
@@ -230,12 +265,12 @@ DROP VIEW IF EXISTS jsonprepare.types;
 DROP TABLE IF EXISTS jsonprepare.types;
 CREATE TABLE jsonprepare.types AS
     SELECT * FROM jsonprepare.types_main WHERE
-    path NOT LIKE 'Dimensions >%' AND path NOT LIKE 'Feature >%' AND path NOT LIKE 'Stratigraphic Unit >%' AND path NOT LIKE 'Find >%' AND path NOT LIKE 'Material >%'
+    path NOT LIKE 'Dimensions >%' AND path NOT LIKE 'Place >%' AND path NOT LIKE 'Feature >%' AND path NOT LIKE 'Stratigraphic Unit >%' AND path NOT LIKE 'Find >%' AND path NOT LIKE 'Material >%'
   ORDER BY entity_id, path;
 
 --entities with maintypes
 CREATE TABLE jsonprepare.entities AS
-SELECT 
+SELECT
   e.*,
   t.id AS type_id,
   t.parent_id AS parenttype_id,
@@ -244,7 +279,6 @@ SELECT
   FROM jsonprepare.entitiestmp e JOIN jsonprepare.maintype t ON e.child_id = t.entity_id;
 
 --files
-DROP VIEW IF EXISTS jsonprepare.files;
 DROP TABLE IF EXISTS jsonprepare.files;
 CREATE TABLE jsonprepare.files AS
  SELECT entities.child_id AS parent_id,
@@ -256,9 +290,50 @@ CREATE TABLE jsonprepare.files AS
   WHERE entities.child_id = link.range_id AND link.domain_id = entity.id AND entity.system_type ~~ 'file'::text
   ORDER BY entities.child_id;
 
+DROP TABLE IF EXISTS jsonprepare.filestmp;
+CREATE TABLE jsonprepare.filestmp AS
+(SELECT files.*,
+       fe.description AS Source,
+       fl.description AS Reference
+FROM (
+SELECT f.*,
+       lic.name AS license
+FROM
+(SELECT license.*
+       FROM
+   (SELECT l.range_id,
+           l.domain_id,
+           e.name
+           FROM model.link l JOIN model.entity e ON l.range_id = e.id WHERE l.property_code = 'P2') AS license LEFT JOIN jsonprepare.types_all t ON t.id = license.range_id WHERE t.name_path LIKE 'License%') AS lic RIGHT JOIN jsonprepare.files f ON f.id = lic.domain_id) as files LEFT JOIN model.link fl ON files.id = fl.range_id LEFT JOIN model.entity fe ON fl.domain_id = fe.id);
+
+
+DROP TABLE jsonprepare.files;
+CREATE TABLE jsonprepare.files AS
+(SELECT * FROM jsonprepare.filestmp);
+
+
+--references
+DROP TABLE IF EXISTS jsonprepare.reference;
+CREATE TABLE jsonprepare.reference AS
+ SELECT entities.child_id AS parent_id,
+    entity.name as abbreviation,
+    entity.description AS title,
+    link.description AS reference,
+    entity.id
+   FROM jsonprepare.entities,
+    model.link,
+    model.entity
+  WHERE entities.child_id = link.range_id AND link.domain_id = entity.id AND entity.system_type ~~ 'bibliography'::text
+  ORDER BY entities.child_id;
+
+
+UPDATE jsonprepare.reference SET abbreviation = NULL WHERE abbreviation = '';
+UPDATE jsonprepare.reference SET title = NULL WHERE title = '';
+UPDATE jsonprepare.reference SET reference = NULL WHERE reference = '';
+
 -- create table with types and files of all entities
 DROP TABLE IF EXISTS jsonprepare.types_and_files;
-CREATE TABLE jsonprepare.types_and_files (entity_id integer, types jsonb, files jsonb, dimensions jsonb, material jsonb, timespan jsonb);
+CREATE TABLE jsonprepare.types_and_files (entity_id integer, types jsonb, files jsonb, dimensions jsonb, material jsonb, timespan jsonb, reference jsonb);
 
 -- insert type data
 INSERT INTO jsonprepare.types_and_files (entity_id, types)
@@ -276,10 +351,26 @@ ON e.child_id = irgendwas.entity_id;
 UPDATE jsonprepare.types_and_files SET files = (SELECT files FROM (
 SELECT e.child_id, files
     FROM jsonprepare.entities e INNER JOIN
-          (select t.parent_id, jsonb_agg(jsonb_build_object(
+          (select t.parent_id, jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
                                           'id', t.id,
-                                          'name',t.name
-                                          )) AS files FROM jsonprepare.files t GROUP BY parent_id) AS irgendwas
+                                          'name',t.name,
+                                          'license',t.license,
+                                          'source',t.source,
+                                          'reference',t.reference
+                                          ))) AS files FROM jsonprepare.files t GROUP BY parent_id) AS irgendwas
+ON e.child_id = irgendwas.parent_id) f where entity_id = f.child_id);
+
+
+-- insert bibliography data
+UPDATE jsonprepare.types_and_files SET reference = (SELECT reference FROM (
+SELECT e.child_id, reference
+    FROM jsonprepare.entities e INNER JOIN
+          (select t.parent_id, jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
+                                          'id', t.id,
+                                          'abbreviation',t.abbreviation,
+                                          'title',t.title,
+                                          'reference',t.reference
+                                          ))) AS reference FROM jsonprepare.reference t GROUP BY parent_id) AS irgendwas
 ON e.child_id = irgendwas.parent_id) f where entity_id = f.child_id);
 
 -- insert dimension data
@@ -321,14 +412,18 @@ WHERE entity_id = irgendwas.child_id);
 
 
 
----finds json
+--temp table with all info
 DROP TABLE IF EXISTS jsonprepare.tmp;
 CREATE TABLE jsonprepare.tmp AS
 (SELECT * FROM jsonprepare.entities e RIGHT OUTER JOIN jsonprepare.types_and_files t ON e.child_id = t.entity_id);
 
 UPDATE jsonprepare.tmp SET timespan = NULL WHERE timespan = '{}';
+UPDATE jsonprepare.tmp SET description = NULL WHERE description = '';
+UPDATE jsonprepare.tmp SET begin_comment = NULL WHERE begin_comment = '';
+UPDATE jsonprepare.tmp SET end_comment = NULL WHERE end_comment = '';
 
 
+---finds json
 DROP TABLE IF EXISTS jsonprepare.tbl_finds;
 CREATE TABLE jsonprepare.tbl_finds (id integer, parent_id integer, properties jsonb, files jsonb);
 
@@ -346,7 +441,8 @@ SELECT f.child_id, f.parent_id, f.files, jsonb_strip_nulls(jsonb_build_object(
                 'description', f.description,
                 'timespan', f.timespan,
                 'dimensions', f.dimensions,
-                'material', f.material
+                'material', f.material,
+                'references', f.reference
                 )) AS finds FROM (SELECT * FROM jsonprepare.tmp WHERE system_type LIKE 'find') f ORDER BY f.child_name;
 
 
@@ -384,13 +480,14 @@ SELECT f.child_id AS id,
                 'description', f.description,
                 'timespan', f.timespan,
                 'dimensions', f.dimensions,
-                'material', f.material
+                'material', f.material,
+                'references', f.reference
                 )) AS burials,
         jsonb_strip_nulls(jsonb_agg(fi.find))
                  FROM (SELECT * FROM jsonprepare.tmp WHERE system_type LIKE 'stratigraphic unit') f
                  LEFT JOIN jsonprepare.tbl_findscomplete fi ON f.child_id = fi.parent_id
                  GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.typename, f.path,
-                          f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_type
+                          f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_type, f.reference
                  ORDER BY f.child_name;
 
 UPDATE jsonprepare.tbl_burials f SET finds = NULL WHERE f.finds = '[null]';
@@ -414,7 +511,7 @@ INSERT INTO jsonprepare.tbl_graves (id, parent_id, files, geom, properties, buri
 SELECT f.child_id,
        f.parent_id,
        f.files,
-       ST_AsGeoJSON(f.geom)::jsonb,
+       f.geom::jsonb,
        jsonb_strip_nulls(jsonb_build_object(
                 'name', f.child_name,
                 'maintype', jsonb_build_object(
@@ -428,11 +525,12 @@ SELECT f.child_id,
                 'description', f.description,
                 'timespan', f.timespan,
                 'dimensions', f.dimensions,
-                'material', f.material
+                'material', f.material,
+                'references', f.reference
                 )) AS graves,
         jsonb_strip_nulls(jsonb_agg(fi.burial))
                  FROM (SELECT * FROM jsonprepare.tmp WHERE system_type LIKE 'feature') f LEFT JOIN jsonprepare.tbl_burialscomplete fi ON f.child_id = fi.parent_id
-                 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan,
+                 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.reference,
                           f.geom, f.typename, f.path, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_type
                  ORDER BY f.child_name;
 
@@ -453,60 +551,113 @@ SELECT id, parent_id, jsonb_strip_nulls(jsonb_build_object(
                 'burials', f.burials
                 )) AS graves FROM jsonprepare.tbl_graves f ORDER BY f.properties->'name' asc;
 
+-- get data for sites
+DROP TABLE IF EXISTS jsonprepare.tbl_sites;
+CREATE TABLE jsonprepare.tbl_sites (id integer, name text, polygon text, point text);
+
+INSERT INTO jsonprepare.tbl_sites (id, name)
+SELECT child_id,
+       child_name
+FROM jsonprepare.sites;
+
+UPDATE jsonprepare.tbl_sites
+SET polygon = (SELECT g.geom FROM
+   (SELECT ST_AsGeoJSON(geom) AS geom,
+       domain_id
+       FROM gis.polygon p JOIN model.link l ON p.entity_id = l.range_id) g WHERE jsonprepare.tbl_sites.id = g.domain_id);
+
+UPDATE jsonprepare.tbl_sites
+SET point = (SELECT g.geom FROM
+   (SELECT ST_AsGeoJSON(geom) AS geom,
+       domain_id
+       FROM gis.point p JOIN model.link l ON p.entity_id = l.range_id) g WHERE jsonprepare.tbl_sites.id = g.domain_id);
+
+
+DROP TABLE IF EXISTS jsonprepare.tbl_sitescomplete;
+CREATE TABLE jsonprepare.tbl_sitescomplete (id integer, name text, properties jsonb);
+INSERT INTO jsonprepare.tbl_sitescomplete (id, name, properties)
+SELECT s.id,
+       s.name,
+       jsonb_strip_nulls(jsonb_build_object(
+                'maintype', jsonb_build_object(
+                      'name', f.typename,
+                      'path', f.path,
+                      'id', f.type_id,
+                      'parent_id', f.parenttype_id,
+                      'systemtype', f.system_type
+                ),
+                'types', f.types,
+                'description', f.description,
+                'timespan', f.timespan,
+                'dimensions', f.dimensions,
+                'material', f.material,
+                'references', f.reference,
+                'files', f.files,
+                'center', s.point::jsonb,
+                'shape', s.polygon::jsonb
+                )) AS sites
+              FROM (SELECT * FROM jsonprepare.tmp WHERE system_type LIKE 'place') f LEFT JOIN jsonprepare.tbl_sites s ON f.child_id = s.id
+                 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.reference,
+                          f.geom, f.typename, f.path, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_type, s.id, s.name,
+                          s.point, s.polygon
+                 ORDER BY f.child_name;
+
+
 DROP TABLE IF EXISTS jsonprepare.tbl_medcem_data;
 CREATE TABLE jsonprepare.tbl_medcem_data (id integer, name text, data jsonb);
 
 INSERT INTO jsonprepare.tbl_medcem_data (id, name, data)
    SELECT
-     s.id,
-     s.name,
+     s.id AS id,
+     s.name AS name,
      (jsonb_strip_nulls(jsonb_build_object(
         'type',     'FeatureCollection',
         'site_id',  s.id,
         'name',     s.name,
+        'properties', s.properties,
         'features', jsonb_strip_nulls(jsonb_agg(f.grave))
     )))
-    FROM jsonprepare.sites s LEFT JOIN (SELECT * FROM jsonprepare.tbl_gravescomplete ORDER BY parent_id, grave ->'properties'->>'name') f ON s.id = f.parent_id 
-    GROUP BY s.id, s.name;
+    FROM jsonprepare.tbl_sitescomplete s LEFT JOIN (SELECT * FROM jsonprepare.tbl_gravescomplete ORDER BY parent_id, grave ->'properties'->>'name') f ON s.id = f.parent_id
+    GROUP BY s.id, s.name, s.properties;
 
 
--- DELETE Centerpoints of all entities used
+-- DELETE Centerpoints of all entities used if polygons exists
 
-DELETE FROM gis.point WHERE id in (
-SELECT
-  point.id
-
-FROM
-  jsonprepare.entities AS ent,
-  gis.point,
-  model.link,
-  model.entity
-WHERE
-  ent.child_id = link.domain_id AND
-  point.entity_id = entity.id AND
-  link.range_id = entity.id);
-
+-- DELETE FROM gis.point WHERE id in (
+-- SELECT
+--   point.id
+--
+-- FROM
+--   jsonprepare.entities AS ent,
+--   gis.point,
+--   model.link,
+--   model.entity
+-- WHERE
+--   ent.child_id = link.domain_id AND
+--   point.entity_id = entity.id AND
+--   link.range_id = entity.id);
+--
 -- Create Centerpoints (on surface) of existing polygons
-
-INSERT INTO gis.point (entity_id, type, geom) (
-SELECT id2, ('centerpoint'), ST_PointOnSurface(polyg) AS geom2 FROM
-
-(SELECT
-  ent.child_id,
-  ent.child_name,
-  ent.parent_id,
-  polygon.geom AS polyg,
-  polygon.entity_id AS id2
-
-FROM
-  jsonprepare.entities AS ent,
-  gis.polygon,
-  model.link,
-  model.entity
-WHERE
-  ent.child_id = link.domain_id AND
-  polygon.entity_id = entity.id AND
-  link.range_id = entity.id) AS x);
+--
+-- INSERT INTO gis.point (entity_id, type, geom) (
+-- SELECT id2, ('centerpoint'), ST_PointOnSurface(polyg) AS geom2 FROM
+--
+-- (SELECT
+--   ent.child_id,
+--   ent.child_name,
+--   ent.parent_id,
+--   polygon.geom AS polyg,
+--   polygon.entity_id AS id2
+--
+-- FROM
+--   jsonprepare.entities AS ent,
+--   gis.polygon,
+--   model.link,
+--   model.entity
+-- WHERE
+--   ent.child_id = link.domain_id AND
+--   polygon.entity_id = entity.id AND
+--   link.range_id = entity.id) AS x);
 
 
 
