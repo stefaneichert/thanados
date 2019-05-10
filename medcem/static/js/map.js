@@ -664,7 +664,7 @@ function setImages(entId, entfiles) {
             $('#myModalImagecontainer' + entId).empty();
             $.each(entfiles, function (f, files) {
                 $('#myModalImagecontainer' + entId).append(
-                        '<img src="https://thanados.openatlas.eu/display/' + files.id + '.bmp" class="modalimg" id="mymodalimg">'
+                        '<a href="https://thanados.openatlas.eu/display/' + files.id + '.bmp" data-featherlight><img src="https://thanados.openatlas.eu/display/' + files.id + '.bmp" class="modalimg" id="mymodalimg"></a>'
                         )
             });
         }
@@ -686,10 +686,10 @@ function setImages(entId, entfiles) {
                     '</ol>' +
                     '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
                     '<div class="carousel-item active">' +
-                    '<img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + firstimage + '.bmp">' +
+                    '<a href="https://thanados.openatlas.eu/display/' + firstimage + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + firstimage + '.bmp"></a>' +
                     '</div>' +
                     '<div class="carousel-item">' +
-                    '<img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + secondimage + '.bmp">' +
+                    '<a href="https://thanados.openatlas.eu/display/' + secondimage + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + secondimage + '.bmp"></a>' +
                     '</div>' +
                     '</div>' +
                     '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
@@ -708,7 +708,7 @@ function setImages(entId, entfiles) {
                 if (f > 1) {
                     $('#mycarouselimages' + entId).append(
                             '<div class="carousel-item">' +
-                            '<img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + files.id + '.bmp">' +
+                            '<a href="https://thanados.openatlas.eu/display/' + files.id + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + files.id + '.bmp"></a>' +
                             '</div>'
                             );
                     $('#mymodalimageindicators' + entId).append(

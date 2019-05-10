@@ -111,8 +111,8 @@ function appendvisbuttons(iter) {
             '<label class="input-group-text" for="MethodSelect_' + iter + '">Method: </label>' +
             '</div>' +
             '<select class="custom-select empty" id="MethodSelect_' + iter + '">' +
-            '<option selected value="q">quantile</option>' +
-            '<option value="e">equidistant</option>' +
+            '<option selected value="e">equidistant</option>' +
+            '<option value="q">quantile</option>' +
             '<option value="k">k-means</option>' +
             '</select>' +
             '</div>' +
@@ -172,7 +172,7 @@ function appendvisbuttons(iter) {
             $('#borderwidth').val(0);
     });
 
-    mymode = 'q';
+    mymode = 'e';
     $('#MethodSelect_' + iter).on('change', function () {
         mymode = $('#MethodSelect_' + iter + ' option:selected').val();
     });
