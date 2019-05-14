@@ -33,8 +33,7 @@ if (systemtype == 'feature') {
                 "site_id": jsonmysite.site_id,
                 "name": jsonmysite.name
             };
-        }
-        ;
+        };
     });
 }
 
