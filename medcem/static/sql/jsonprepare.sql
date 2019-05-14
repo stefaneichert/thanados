@@ -331,9 +331,27 @@ UPDATE jsonprepare.reference SET abbreviation = NULL WHERE abbreviation = '';
 UPDATE jsonprepare.reference SET title = NULL WHERE title = '';
 UPDATE jsonprepare.reference SET reference = NULL WHERE reference = '';
 
+--external references/urls
+DROP TABLE IF EXISTS jsonprepare.extrefs;
+CREATE TABLE jsonprepare.extrefs AS
+ SELECT entities.child_id AS parent_id,
+    entity.name as url,
+    link.description AS name,
+    entity.description AS description,
+    entity.id
+   FROM jsonprepare.entities,
+    model.link,
+    model.entity
+  WHERE entities.child_id = link.range_id AND link.domain_id = entity.id AND entity.system_type ~~ 'external reference'::text
+  ORDER BY entities.child_id;
+
+
+UPDATE jsonprepare.extrefs SET description = NULL WHERE description = '';
+UPDATE jsonprepare.extrefs SET name = NULL WHERE name = '';
+
 -- create table with types and files of all entities
 DROP TABLE IF EXISTS jsonprepare.types_and_files;
-CREATE TABLE jsonprepare.types_and_files (entity_id integer, types jsonb, files jsonb, dimensions jsonb, material jsonb, timespan jsonb, reference jsonb);
+CREATE TABLE jsonprepare.types_and_files (entity_id integer, types jsonb, files jsonb, dimensions jsonb, material jsonb, timespan jsonb, reference jsonb, extrefs jsonb);
 
 -- insert type data
 INSERT INTO jsonprepare.types_and_files (entity_id, types)
@@ -371,6 +389,18 @@ SELECT e.child_id, reference
                                           'title',t.title,
                                           'reference',t.reference
                                           ))) AS reference FROM jsonprepare.reference t GROUP BY parent_id) AS irgendwas
+ON e.child_id = irgendwas.parent_id) f where entity_id = f.child_id);
+
+--insert external refs data
+UPDATE jsonprepare.types_and_files SET extrefs = (SELECT extref FROM (
+SELECT e.child_id, extref
+    FROM jsonprepare.entities e INNER JOIN
+          (select t.parent_id, jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
+                                          'id', t.id,
+                                          'url',t.url,
+                                          'name',t.name,
+                                          'description',t.description
+                                          ))) AS extref FROM jsonprepare.extrefs t GROUP BY parent_id) AS irgendwas
 ON e.child_id = irgendwas.parent_id) f where entity_id = f.child_id);
 
 -- insert dimension data
@@ -442,7 +472,8 @@ SELECT f.child_id, f.parent_id, f.files, jsonb_strip_nulls(jsonb_build_object(
                 'timespan', f.timespan,
                 'dimensions', f.dimensions,
                 'material', f.material,
-                'references', f.reference
+                'references', f.reference,
+                'externalreference', f.extrefs
                 )) AS finds FROM (SELECT * FROM jsonprepare.tmp WHERE system_type LIKE 'find') f ORDER BY f.child_name;
 
 
@@ -481,13 +512,14 @@ SELECT f.child_id AS id,
                 'timespan', f.timespan,
                 'dimensions', f.dimensions,
                 'material', f.material,
-                'references', f.reference
+                'references', f.reference,
+                'externalreference', f.extrefs
                 )) AS burials,
         jsonb_strip_nulls(jsonb_agg(fi.find))
                  FROM (SELECT * FROM jsonprepare.tmp WHERE system_type LIKE 'stratigraphic unit') f
                  LEFT JOIN jsonprepare.tbl_findscomplete fi ON f.child_id = fi.parent_id
                  GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.typename, f.path,
-                          f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_type, f.reference
+                          f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_type, f.reference, f.extrefs
                  ORDER BY f.child_name;
 
 UPDATE jsonprepare.tbl_burials f SET finds = NULL WHERE f.finds = '[null]';
@@ -526,11 +558,12 @@ SELECT f.child_id,
                 'timespan', f.timespan,
                 'dimensions', f.dimensions,
                 'material', f.material,
-                'references', f.reference
+                'references', f.reference,
+                'externalreference', f.extrefs
                 )) AS graves,
         jsonb_strip_nulls(jsonb_agg(fi.burial))
                  FROM (SELECT * FROM jsonprepare.tmp WHERE system_type LIKE 'feature') f LEFT JOIN jsonprepare.tbl_burialscomplete fi ON f.child_id = fi.parent_id
-                 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.reference,
+                 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.reference, f.extrefs,
                           f.geom, f.typename, f.path, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_type
                  ORDER BY f.child_name;
 
@@ -592,12 +625,13 @@ SELECT s.id,
                 'dimensions', f.dimensions,
                 'material', f.material,
                 'references', f.reference,
+                'externalreference', f.extrefs,
                 'files', f.files,
                 'center', s.point::jsonb,
                 'shape', s.polygon::jsonb
                 )) AS sites
               FROM (SELECT * FROM jsonprepare.tmp WHERE system_type LIKE 'place') f LEFT JOIN jsonprepare.tbl_sites s ON f.child_id = s.id
-                 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.reference,
+                 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.reference, f.extrefs,
                           f.geom, f.typename, f.path, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_type, s.id, s.name,
                           s.point, s.polygon
                  ORDER BY f.child_name;

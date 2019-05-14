@@ -13,6 +13,8 @@ $('#mybreadcrumb').append(
 
 if (systemtype == 'place') {
     getEntityData(sitename, jsonmysite.id, jsonmysite);
+    mycitation = '"' + sitename + '".';
+    myjson = jsonmysite;
 }
 
 
@@ -24,6 +26,13 @@ if (systemtype == 'feature') {
             graveGeom = feature.geometry;
             getEntityData(sitename, place_id, feature);
             $('#mybreadcrumbs').append('<li class="breadcrumb-item"><a href="/entity/view/' + entId + '">' + entName + '</a></li>');
+            mycitation = '"' + sitename + ': ' + entName + '".';
+            myjson = {"type": "FeatureCollection", //prepare geojson
+                "features": [feature],
+                "properties": jsonmysite.properties,
+                "site_id": jsonmysite.site_id,
+                "name": jsonmysite.name
+            };
         }
         ;
     });
@@ -45,6 +54,14 @@ if (systemtype == 'stratigraphic unit') {
                         '<li class="breadcrumb-item"><a href="/entity/view/' + graveId + '">' + graveName + '</a></li>' +
                         '<li class="breadcrumb-item"><a href="/entity/view/' + entId + '">' + entName + '</a></li>'
                         );
+                mycitation = '"' + sitename + ': ' + graveName + ': ' + entName + '".';
+                myjson = {"type": "FeatureCollection", //prepare geojson
+                    "features": [feature],
+                    "properties": jsonmysite.properties,
+                    "site_id": jsonmysite.site_id,
+                    "name": jsonmysite.name
+                };
+
             }
             ;
         });
@@ -57,6 +74,7 @@ if (systemtype == 'find') {
         var featureName = feature.properties.name;
         var featureID = feature.id;
         var featureGeom = feature.geometry;
+
         $.each(feature.burials, function (b, burial) {
             var stratName = burial.properties.name;
             var stratID = burial.id;
@@ -73,6 +91,13 @@ if (systemtype == 'find') {
                             '<li class="breadcrumb-item"><a href="/entity/view/' + burialId + '">' + burialName + '</a></li>' +
                             '<li class="breadcrumb-item"><a href="/entity/view/' + entId + '">' + entName + '</a></li>'
                             );
+                    mycitation = '"' + sitename + ': ' + graveName + ': ' + burialName + ': ' + entName + '".';
+                    myjson = {"type": "FeatureCollection", //prepare geojson
+                        "features": [feature],
+                        "properties": jsonmysite.properties,
+                        "site_id": jsonmysite.site_id,
+                        "name": jsonmysite.name
+                    };
                 }
                 ;
             });
@@ -80,11 +105,12 @@ if (systemtype == 'find') {
     });
 }
 
-
+mycitation1 = ' From: Stefan Eichert et al., Medieval Cemeteries Online: >>' + window.location + '<<. After: ';
 
 
 
 function getEntityData(parentName, parentId, currentfeature) {
+    globalfeature = currentfeature;
     if (currentfeature.type == "FeatureCollection") {
         entId = currentfeature.site_id;
         entName = currentfeature.name;
@@ -149,7 +175,13 @@ function getEntityData(parentName, parentId, currentfeature) {
             '<div class="container-fluid">' +
             '<div class="row">' +
             '<div id="myData_' + entId + '" class="col-md">' +
-            '<h4 style="margin-bottom: 1em; margin-top: 0.5em" id="myname_' + entId + '">' + entName + '</h4>' +
+            '<div class="row">' +
+            '<h4 style="margin-bottom: 1em; margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '">' + entName + '</h4>' +
+            '<div style="margin-top: 0.8em; margin-bottom: 0.8em; margin-right: 0.8em; margin-left: auto">' +
+            '<button type="button" onclick="this.blur()" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#citeModal">Citation</button>' +
+            '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-outline-secondary" >JSON</button>' +
+            '</div>' +
+            '</div>' +
             '<div id="mytype_' + entId + '" class="modalrowitem" title="' + typepath + '">' + entType + '</div>' +
             '<div id="mytimespan' + entId + '" class="modalrowitem">' + dateToInsert + '</div>' +
             '<div id="myDescr' + entId + '">' + entDesc + '</div>' +
@@ -238,35 +270,113 @@ function getEntityData(parentName, parentId, currentfeature) {
 
 
     $('#myMetadatacontainer' + entId).empty();
+    $('#myMetadatacontainer' + entId).append(
+            '<p><h6>Sources</h6></p>' +
+            '<table class="table table-sm table-hover">' +
+            '<thead class="thead-light">' +
+            '<tr>' +
+            '<th scope="col">#</th>' +
+            '<th scope="col">Title</th>' +
+            '<th scope="col">Page</th>' +
+            '</tr>' +
+            '</thead>' +
+            '<tbody id="mytablebody">'
+            );
+
     if (typeof (currentfeature.properties.references) !== 'undefined') {
+        $.each(currentfeature.properties.references, function (t, ref) {
+            if (typeof (ref.title) !== 'undefined') {
+                var title = ref.title;
+                var citeme = title;
+            } else {
+                var title = '';
+                var citeme = 'unknown source';
+            }
+            if (typeof (ref.reference) !== 'undefined') {
+                var page = ref.reference
+                var citeme = citeme + ' ' + page + '.';
+            } else
+                var page = '';
+
+            $('#mytablebody').append(
+                    '<tr>' +
+                    '<th scope="row">' + (t + 1) + '</th>' +
+                    '<td>' + title + '</td>' +
+                    '<td>' + page + '</td>' +
+                    '</tr>');
+            if (t == 0) {
+                mycitation2 = citeme
+            } else {
+                mycitation2 += '. ' + citeme
+            }
+            ;
+        });
+    } else {
+        $.each(jsonmysite.properties.references, function (t, ref) {
+            if (typeof (ref.title) !== 'undefined') {
+                var title = ref.title;
+                var citeme = title;
+            } else {
+                var title = '';
+                var citeme = 'unknown source';
+            }
+            if (typeof (ref.reference) !== 'undefined') {
+                var page = ref.reference;
+                var citeme = citeme + ' ' + page;
+            } else {
+                var page = '';
+            }
+            $('#mytablebody').append(
+                    '<tr>' +
+                    '<th scope="row">' + (t + 1) + '</th>' +
+                    '<td>' + title + '</td>' +
+                    '<td>' + page + '</td>' +
+                    '</tr>');
+            if (t == 0) {
+                mycitation2 = citeme
+            } else {
+                mycitation2 += '. ' + citeme
+            }
+            ;
+        });
+    }
+    ;
+
+    if (typeof (currentfeature.properties.externalreference) !== 'undefined') {
         $('#myMetadatacontainer' + entId).append(
-                '<p><h6>Bibliography</h6></p>' +
+                '<p><h6>External references</h6></p>' +
                 '<table class="table table-sm table-hover">' +
                 '<thead class="thead-light">' +
                 '<tr>' +
                 '<th scope="col">#</th>' +
-                '<th scope="col">Title</th>' +
-                '<th scope="col">Page</th>' +
+                '<th scope="col">URL</th>' +
+                '<th scope="col">Name</th>' +
+                '<th scope="col">Description</th>' +
                 '</tr>' +
                 '</thead>' +
-                '<tbody id="mytablebody">'
+                '<tbody id="myexttablebody">'
                 );
     }
 
-    $.each(currentfeature.properties.references, function (t, ref) {
-        if (typeof (ref.title) !== 'undefined') {
-            var title = ref.title
+    $.each(currentfeature.properties.externalreference, function (t, ref) {
+        if (typeof (ref.url) !== 'undefined') {
+            var url = ref.url
         } else
-            var title = '';
-        if (typeof (ref.reference) !== 'undefined') {
-            var page = ref.reference
+            var url = '';
+        if (typeof (ref.name) !== 'undefined') {
+            var name = ref.name
         } else
-            var page = '';
-        $('#mytablebody').append(
+            var name = '';
+        if (typeof (ref.description) !== 'undefined') {
+            var description = ref.description
+        } else
+            var description = '';
+        $('#myexttablebody').append(
                 '<tr>' +
                 '<th scope="row">' + (t + 1) + '</th>' +
-                '<td>' + title + '</td>' +
-                '<td>' + page + '</td>' +
+                '<td><a href="' + url + '" target="_blank">' + url + '</a></td>' +
+                '<td>' + name + '</td>' +
+                '<td>' + description + '</td>' +
                 '</tr>');
     });
 
@@ -541,3 +651,18 @@ function toggleSubunits() {
     }
     $('.subunits').toggle();
 }
+
+var today = new Date();
+var dd = String(today.getDate()).padStart(2, '0');
+var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+var yyyy = today.getFullYear();
+
+today = yyyy + '/' + mm + '/' + dd;
+mysource = (mycitation + mycitation1 + mycitation2 + ' [Accessed: ' + today + ']');
+mysource = mysource.replace(/(\r\n|\n|\r)/gm, "");
+$('#mycitation').append('<textarea class="form-control form-control-sm" id="Textarea1" rows="15">' + mysource + '</textarea>');
+L.extend(myjson, {//add necessary properties from json
+    source: mysource
+});
+console.log(myjson);
+
