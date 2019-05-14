@@ -25,6 +25,7 @@ function appendvis(iter) { //append vis form to dialog
             '<option value="gravedim">Graves</option>' +
             '<option value="burialdim">Burials</option>' +
             '<option value="findcount">No. of finds per grave</option>' +
+            '<option value="sex">Sex</option>' +
             '</select>' +
             '</div>');
     //after main level is selected:
