@@ -9,19 +9,22 @@ CREATE SCHEMA jsonprepare;
 -- all types tree
 DROP TABLE IF EXISTS jsonprepare.types_all;
 CREATE TABLE jsonprepare.types_all AS
- WITH RECURSIVE path(id, path, parent, name, parent_id, name_path) AS (
+ WITH RECURSIVE path(id, path, parent, name, description, parent_id, name_path) AS (
          SELECT types_all.child_id,
             ''::text || types_all.child_id::text AS path,
             NULL::text AS text,
             types_all.child_name,
+            types_all.description,
             types_all.parent_id,
             ''::text || types_all.child_name AS name_path
            FROM ( SELECT x.child_id,
                     x.child_name,
+                    x.description,
                     x.parent_id,
                     e.name AS parent_name
                    FROM ( SELECT entity.id AS child_id,
                             entity.name AS child_name,
+                            entity.description AS description,
                             link.range_id AS parent_id,
                             link.property_code
                            FROM model.entity
@@ -39,6 +42,7 @@ CREATE TABLE jsonprepare.types_all AS
                 END) || types_all.child_id::text,
             parentpath.path,
             types_all.child_name,
+            types_all.description,
             types_all.parent_id,
             (parentpath.name_path ||
                 CASE parentpath.name_path
@@ -47,10 +51,12 @@ CREATE TABLE jsonprepare.types_all AS
                 END) || types_all.child_name
            FROM ( SELECT x.child_id,
                     x.child_name,
+                    x.description,
                     x.parent_id,
                     e.name AS parent_name
                    FROM ( SELECT entity.id AS child_id,
                             entity.name AS child_name,
+                            entity.description AS description,
                             link.range_id AS parent_id,
                             link.property_code
                            FROM model.entity
@@ -62,12 +68,15 @@ CREATE TABLE jsonprepare.types_all AS
           WHERE types_all.parent_id::text = parentpath.id::text
         )
  SELECT path.name,
+    path.description,
     path.id,
     path.path,
     path.parent_id,
     path.name_path
    FROM path
   ORDER BY path.path;
+
+
 
 
 -- create table with sites to be used
@@ -227,6 +236,7 @@ CREATE TABLE jsonprepare.types_main AS
     types_all.parent_id,
     entitiestmp.child_id AS entity_id,
     types_all.name,
+    types_all.description,
     link.description AS value,
     types_all.name_path AS path
    FROM jsonprepare.types_all,
@@ -234,6 +244,8 @@ CREATE TABLE jsonprepare.types_main AS
     model.link
   WHERE entitiestmp.child_id = link.domain_id AND link.range_id = types_all.id
   ORDER BY entity_id, types_all.name_path;
+
+  UPDATE jsonprepare.types_main SET description = NULL WHERE description = '';
 
 --types main
 DROP VIEW IF EXISTS jsonprepare.maintype;
@@ -360,6 +372,7 @@ INSERT INTO jsonprepare.types_and_files (entity_id, types)
           (select t.entity_id, jsonb_agg(jsonb_build_object(
                                           'id', t.id,
                                           'name',t.name,
+                                          'description', t.description,
                                           'value', t.value,
                                           'path', t.path)) AS types FROM jsonprepare.types t GROUP BY entity_id) AS irgendwas
 ON e.child_id = irgendwas.entity_id;
