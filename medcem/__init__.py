@@ -2,11 +2,6 @@ import psycopg2.extras
 from flask import Flask, g, request
 from flask_wtf.csrf import CsrfProtect
 
-try:
-    import mod_wsgi
-except ImportError:
-    mod_wsgi = None
-
 app = Flask(__name__, instance_relative_config=True)
 csrf = CsrfProtect(app)  # Make sure all forms are CSRF protected
 csrf.init_app(app)
