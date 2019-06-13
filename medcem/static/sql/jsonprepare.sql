@@ -1297,6 +1297,41 @@ SET sex = REPLACE(sex, ']"', ']');
 UPDATE jsonprepare.chart_data
 SET sex = (SELECT sex::JSONB FROM jsonprepare.chart_sex);
 
+--age at death estimation for boxplot/violin plot
+DROP TABLE IF EXISTS jsonprepare.ageatdeath;
+CREATE TABLE jsonprepare.ageatdeath AS (
+SELECT 	ar.sitename,
+	jsonb_build_object(
+		'name', ar.sitename,
+		'min', ar.min,
+		'max', ar.max,
+		'avg', ar.avg) FROM
+
+(SELECT
+	sitename,
+	array_agg(agemin) AS min,
+	array_agg(agemax) AS max,
+	array_agg(average) AS avg
+	FROM
+
+(SELECT
+	a.sitename,
+	(((a.age::jsonb)->0)::text)::double precision AS agemin,
+	(((a.age::jsonb)->1)::text)::double precision AS agemax,
+	(((((a.age::jsonb)->0)::text)::double precision) + ((((a.age::jsonb)->1)::text)::double precision))/2 AS average
+FROM
+
+(SELECT
+	s.child_name AS sitename,
+	t.description AS age
+	FROM
+	jsonprepare.sites s
+	JOIN jsonprepare.graves g ON s.child_id = g.parent_id
+	JOIN jsonprepare.burials b ON b.parent_id = g.child_id
+	JOIN jsonprepare.types t ON t.entity_id = b.child_id
+	WHERE t.path LIKE '%> Age%'
+	ORDER BY sitename) AS a) age GROUP BY sitename) ar)
+
 
 
 

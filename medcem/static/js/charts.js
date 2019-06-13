@@ -94,6 +94,78 @@ var sexchart = new Chart(sctx, {
 });
 
 
+boxplotData = {
+    // define label tree
+    labels: ['Thunau', 'Kourim', 'Pohansko'],
+    datasets: [{
+        label: 'min',
+        backgroundColor: 'rgba(255,0,0,0.5)',
+        borderColor: 'red',
+        borderWidth: 1,
+        outlierColor: '#999999',
+        padding: 10,
+        itemRadius: 0,
+        outlierColor: '#999999',
+        data: [
+            thunau_age.age.min,
+            kourim_age.age.min,
+            pohansko_age.age.min]
+    },
+        {
+            label: 'avg',
+            backgroundColor: 'rgba(0,0,255,0.5)',
+            borderColor: 'blue',
+            borderWidth: 1,
+            outlierColor: '#999999',
+            padding: 10,
+            itemRadius: 0,
+            outlierColor: '#999999',
+            data: [
+                thunau_age.age.avg,
+                kourim_age.age.avg,
+                pohansko_age.age.avg]
+        },
+        {
+            label: 'max',
+            backgroundColor: 'rgba(230, 126, 34, 0.5)',
+            borderColor: 'orange',
+            borderWidth: 1,
+            outlierColor: '#999999',
+            padding: 10,
+            itemRadius: 0,
+            outlierColor: '#999999',
+            data: [
+                thunau_age.age.max,
+                kourim_age.age.max,
+                pohansko_age.age.max
+            ]
+        }]
+};
+
+
+var sctx = document.getElementById('age-chart').getContext('2d');
+var agechart = new Chart(sctx, {
+    // The type of chart we want to create
+    type: 'violin',
+    data: boxplotData,
+    options: {
+        responsive: true,
+        legend: {
+            position: 'top',
+        },
+        maintainAspectRatio: false,
+        scales: {
+            yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'age'
+                }
+            }]
+        },
+    }
+});
+
+
 /*function getRandomColor() {
     var letters = '0123456789ABCDEF'.split('');
     var color = '#';

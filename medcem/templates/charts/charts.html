@@ -81,16 +81,40 @@
                 </div>
             </div>
         </div>
+         <div class="col col-lg-6 mymargin">
+            <div class="card">
+                <div class="card-header" id="headingFour">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link" type="button" data-toggle="collapse"
+                                data-target="#collapseFour" aria-expanded="true"
+                                aria-controls="collapseFour">
+                            Age at death
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapseFour" class="collapse show" aria-labelledby="headingFour">
+                    <div class="card-body">
+                        <div id="age-chart-container">
+                            <canvas id="age-chart" class="chartcontainer"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 </div>
 <script>
     depth_data = {{ depth_data|tojson }};
     sex_data = {{ sex_data|tojson }};
+    thunau_age = {{ thunau_age|tojson }};
+    pohansko_age = {{ pohansko_age|tojson }};
+    kourim_age = {{ kourim_age|tojson }};
     orientation_data = {{ orientation_data|tojson }};
 
 </script>
 <script src="/static/vendor/charts/chart.js/dist/Chart.bundle.min.js"></script>
+<script src="/static/vendor/charts/chartjs-chart-box-and-violin-plot/build/Chart.BoxPlot.min.js"></script>
 <script src="/static/vendor/charts/chartjs-plugin-colorschemes/dist/chartjs-plugin-colorschemes.min.js"></script>
 <script src="/static/js/charts.js"></script>
 {% endblock %}
