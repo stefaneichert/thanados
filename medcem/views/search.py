@@ -19,7 +19,7 @@ def search_index():
         sql = """
               SELECT name FROM model.entity WHERE name LIKE %(term)s;
               """
-        g.cursor.execute(sql, {"term":'%' + form.term.data + '%'})
+        g.cursor.execute(sql, {"term": '%' + form.term.data + '%'})
         for row in g.cursor.fetchall():
             search_result += row.name + '<br>'
     return render_template('search/index.html', form=form, search_result=search_result)
