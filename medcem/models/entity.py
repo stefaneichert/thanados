@@ -10,6 +10,24 @@ class Data:
         return g.cursor.fetchall()
 
     @staticmethod
+    def get_depth():
+        sql = 'SELECT depth FROM jsonprepare.chart_data;'
+        g.cursor.execute(sql)
+        return g.cursor.fetchall()
+
+    @staticmethod
+    def get_orientation():
+        sql = 'SELECT orientation FROM jsonprepare.chart_data;'
+        g.cursor.execute(sql)
+        return g.cursor.fetchall()
+
+    @staticmethod
+    def get_sex():
+        sql = 'SELECT sex FROM jsonprepare.chart_data;'
+        g.cursor.execute(sql)
+        return g.cursor.fetchall()
+
+    @staticmethod
     def get_system_type(id_):
         sql = "SELECT system_type FROM model.entity WHERE id = %(object_id)s;"
         g.cursor.execute(sql, {"object_id": id_})

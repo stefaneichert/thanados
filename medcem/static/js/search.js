@@ -36,50 +36,50 @@ function appendSearch(iter) {//append search form to dialog
     $('.toremovebtn').remove(); //removes former buttons to append new search
     $('.mysearchoptions').remove(); //removes former buttons to append new search
     $('#mysearchform').append(
-            //selection for search level: grave, burial or find
-            '<div id="LevelSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
-            '<div class="input-group-prepend">' +
-            '<label class="input-group-text" for="LevelSelect_' + iter + '">' + iter + '. </label>' +
-            '</div>' +
-            '<select class="custom-select empty" id="LevelSelect_' + iter + '">' +
-            '<option selected disabled>Select search level...</option>' +
-            '<option value="feature">Graves</option>' +
-            '<option value="strat">Burials</option>' +
-            '<option value="find">Finds</option>' +
-            '</select>' +
-            '</div>');
+        //selection for search level: grave, burial or find
+        '<div id="LevelSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
+        '<div class="input-group-prepend">' +
+        '<label class="input-group-text" for="LevelSelect_' + iter + '">' + iter + '. </label>' +
+        '</div>' +
+        '<select class="custom-select empty" id="LevelSelect_' + iter + '">' +
+        '<option selected disabled>Select search level...</option>' +
+        '<option value="feature">Graves</option>' +
+        '<option value="strat">Burials</option>' +
+        '<option value="find">Finds</option>' +
+        '</select>' +
+        '</div>');
     //after main level is selected:
     $('#LevelSelect_' + iter).on('change', function () {
-        var appendLevel = $('#LevelSelect_' + iter + ' option:selected').val(); //set level as variable
+        appendLevel = $('#LevelSelect_' + iter + ' option:selected').val(); //set level as variable
         $('#LevelSelect_' + iter).prop('disabled', true); //disble former selection field
         if (iter == 1)
             $('#LevelSelect_' + iter + '_parent').append(//add reset button on first iteration
-                    '<div class="input-group-append">' +
-                    '<button class="btn btn-secondary btn-sm" type="button" id="resetsearchbutton" onclick="startsearch()" title="Reset search">' +
-                    '<i class="fas fa-sync-alt"></i>' +
-                    '</button>' +
-                    '</div>'
-                    );
-        $('#mysearchform').append(
-                //selection for property to choose: maintype, types, dimensions, material or timespan
-                '<div id="PropSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
-                '<select class="custom-select empty" id="PropSelect_' + iter + '">' +
-                '<option selected disabled>Select search criteria...</option>' +
-                '<option value="maintype">Maintype</option>' +
-                '<option value="type">Types</option>' +
-                '<option value="timespan">Timespan</option>' +
-                '<option value="dimension">Dimensions</option>' +
-                '<option value="material">Material</option>' +
-                '</select>' +
+                '<div class="input-group-append">' +
+                '<button class="btn btn-secondary btn-sm" type="button" id="resetsearchbutton" onclick="startsearch()" title="Reset search">' +
+                '<i class="fas fa-sync-alt"></i>' +
+                '</button>' +
                 '</div>'
-                );
+            );
+        $('#mysearchform').append(
+            //selection for property to choose: maintype, types, dimensions, material or timespan
+            '<div id="PropSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
+            '<select class="custom-select empty" id="PropSelect_' + iter + '">' +
+            '<option selected disabled>Select search criteria...</option>' +
+            '<option value="maintype">Maintype</option>' +
+            '<option value="type">Types</option>' +
+            '<option value="timespan">Timespan</option>' +
+            '<option value="dimension">Dimensions</option>' +
+            '<option value="material">Material</option>' +
+            '</select>' +
+            '</div>'
+        );
         appendCriteria(iter, appendLevel);
     });
 }
 
 function appendCriteria(iter, appendLevel) { //select search criteria after level is chosen
     $('#PropSelect_' + iter).on('change', function () {
-        var criteria = $('#PropSelect_' + iter + ' option:selected').val().toLowerCase(); //set criteria variable
+        criteria = $('#PropSelect_' + iter + ' option:selected').val().toLowerCase(); //set criteria variable
         $('#PropSelect_' + iter).prop('disabled', true); //disable input
         appendCriteriaSearch(iter, criteria, appendLevel); //append further search options
     });
@@ -89,15 +89,15 @@ function appendCriteriaSearch(iter, criteria, appendLevel) { //append respective
     $('#PropSelect_' + iter + '_parent').remove(); //remove former input
     if (criteria == 'maintype' || criteria == 'type') { //if maintype or type append form with tree select
         $('#mysearchform').append(
-                '<div id="MaintypeSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="MaintypeSelect_' + iter + '">Type </label>' +
-                '</div>' +
-                '<input id="MaintypeSelect_' + iter + '" class="form-control" onclick="this.blur()" type="text" placeholder="Select type.." readonly>' +
-                '<input id="MaintypeSelect_' + iter + '_Result" class="form-control" onclick="this.blur()" type="text" readonly disabled>' +
-                '</div>'
-                );
-        var targetField = 'MaintypeSelect_' + iter;
+            '<div id="MaintypeSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
+            '<div class="input-group-prepend">' +
+            '<label class="input-group-text" for="MaintypeSelect_' + iter + '">Type </label>' +
+            '</div>' +
+            '<input id="MaintypeSelect_' + iter + '" class="form-control" onclick="this.blur()" type="text" placeholder="Select type.." readonly>' +
+            '<input id="MaintypeSelect_' + iter + '_Result" class="form-control" onclick="this.blur()" type="text" readonly disabled>' +
+            '</div>'
+        );
+        targetField = 'MaintypeSelect_' + iter;
         iniateTree(iter, appendLevel, criteria, targetField); //open tree to select value and add variable to form after
     }
     ;
@@ -109,20 +109,20 @@ function appendCriteriaSearch(iter, criteria, appendLevel) { //append respective
         Globaliter = iter;
 
         $('#mysearchform').append(
-                '<div id="TimespanSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<span class="input-group-text dim-label">Timespan min: </span>' +
-                '</div>' +
-                '<input id="valMin_' + iter + '" class="form-control value-input" type="text">' +
-                '<span class="input-group-text input-group-middle">max: </span>' +
-                '<input id="valMax_' + iter + '" class="form-control value-input" type="text">' +
-                '<div class="input-group-append">' +
-                '<button class="btn btn-secondary btn-sm" type="button" id="timespanbutton_' + iter + '" onclick="searchTime(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for timespan">' +
-                '<i class="fas fa-search"></i>' +
-                '</button>' +
-                '</div>' +
-                '</div>'
-                );
+            '<div id="TimespanSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
+            '<div class="input-group-prepend">' +
+            '<span class="input-group-text dim-label">Timespan min: </span>' +
+            '</div>' +
+            '<input id="valMin_' + iter + '" class="form-control value-input" type="text">' +
+            '<span class="input-group-text input-group-middle">max: </span>' +
+            '<input id="valMax_' + iter + '" class="form-control value-input" type="text">' +
+            '<div class="input-group-append">' +
+            '<button class="btn btn-secondary btn-sm" type="button" id="timespanbutton_' + iter + '" onclick="searchTime(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for timespan">' +
+            '<i class="fas fa-search"></i>' +
+            '</button>' +
+            '</div>' +
+            '</div>'
+        );
     }
     ;
     if (criteria == 'dimension') {//if dimension append form with select
@@ -131,45 +131,45 @@ function appendCriteriaSearch(iter, criteria, appendLevel) { //append respective
         GlobalappendLevel = appendLevel;
         Globaliter = iter;
         $('#mysearchform').append(
-                '<div id="DimensionSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
-                '<select class="custom-select  dim-label empty" id="DimensionSelect_' + iter + '">' +
-                '<option selected disabled>Select dimension...</option>' +
-                '<option value="15679">Height/Depth (cm)</option>' +
-                '<option value="26189">Length (cm)</option>' +
-                '<option value="26188">Width (cm)</option>' +
-                '<option value="26191">Diameter (cm)</option>' +
-                '<option value="26190">Thickness (cm)</option>' +
-                '<option value="26192">Orientation (°)</option>' +
-                '<option value="15680">Weight (g)</option>' +
-                '</select>' +
-                '</div>'
-                );
+            '<div id="DimensionSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
+            '<select class="custom-select  dim-label empty" id="DimensionSelect_' + iter + '">' +
+            '<option selected disabled>Select dimension...</option>' +
+            '<option value="15679">Height/Depth (cm)</option>' +
+            '<option value="26189">Length (cm)</option>' +
+            '<option value="26188">Width (cm)</option>' +
+            '<option value="26191">Diameter (cm)</option>' +
+            '<option value="26190">Thickness (cm)</option>' +
+            '<option value="26192">Orientation (°)</option>' +
+            '<option value="15680">Weight (g)</option>' +
+            '</select>' +
+            '</div>'
+        );
         $('#DimensionSelect_' + iter).on('change', function () {
             $('#DimensionSelect_' + iter).prop('disabled', true); //disable input
             $('#DimensionSelect_' + iter + '_parent').append(//append input of values
-                    '<span class="input-group-text input-group-middle">min: </span>' +
-                    '<input id="valMin_' + iter + '" class="form-control value-input" type="text">' +
-                    '<span class="input-group-text input-group-middle">max: </span>' +
-                    '<input id="valMax_' + iter + '" class="form-control value-input" type="text">' +
-                    '<div class="input-group-append">' +
-                    '<button class="btn btn-secondary btn-sm" type="button" id="dimMatButton_' + iter + '" onclick="searchDimMat(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for dimension">' +
-                    '<i class="fas fa-search"></i>' +
-                    '</button>' +
-                    '</div>'
-                    )
+                '<span class="input-group-text input-group-middle">min: </span>' +
+                '<input id="valMin_' + iter + '" class="form-control value-input" type="text">' +
+                '<span class="input-group-text input-group-middle">max: </span>' +
+                '<input id="valMax_' + iter + '" class="form-control value-input" type="text">' +
+                '<div class="input-group-append">' +
+                '<button class="btn btn-secondary btn-sm" type="button" id="dimMatButton_' + iter + '" onclick="searchDimMat(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for dimension">' +
+                '<i class="fas fa-search"></i>' +
+                '</button>' +
+                '</div>'
+            )
         });
     }
     ;
 
     if (criteria == 'material') { //if material append form with tree select
         $('#mysearchform').append(
-                '<div id="MaterialSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<span id="MaterialSelect_' + iter + '" class="input-group-text"></span>' +
-                '</div>' +
-                '</div>'
-                );
-        var targetField = 'MaterialSelect_' + iter;
+            '<div id="MaterialSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
+            '<div class="input-group-prepend">' +
+            '<span id="MaterialSelect_' + iter + '" class="input-group-text"></span>' +
+            '</div>' +
+            '</div>'
+        );
+        targetField = 'MaterialSelect_' + iter;
         iniateTree(iter, appendLevel, criteria, targetField);
     }
     ;
@@ -177,40 +177,39 @@ function appendCriteriaSearch(iter, criteria, appendLevel) { //append respective
 
 function appendMaterial(iter) { //append value input after material is chosen
     $('#MaterialSelect_' + iter + '_parent').append(
-            '<span class="input-group-text input-group-middle">% min: </span>' +
-            '<input id="valMin_' + iter + '" class="form-control value-input" type="text">' +
-            '<div class="input-group-append">' +
-            '<span class="input-group-text input-group-middle">% max: </span>' +
-            '</div>' +
-            '<input id="valMax_' + iter + '" class="form-control value-input" type="text">' +
-            '<div class="input-group-append">' +
-            '<button class="btn btn-secondary btn-sm" type="button" id="dimMatButton_' + iter + '" onclick="searchDimMat(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for dimension">' +
-            '<i class="fas fa-search"></i>' +
-            '</button>' +
-            '</div>'
-
-            );
+        '<span class="input-group-text input-group-middle">% min: </span>' +
+        '<input id="valMin_' + iter + '" class="form-control value-input" type="text">' +
+        '<div class="input-group-append">' +
+        '<span class="input-group-text input-group-middle">% max: </span>' +
+        '</div>' +
+        '<input id="valMax_' + iter + '" class="form-control value-input" type="text">' +
+        '<div class="input-group-append">' +
+        '<button class="btn btn-secondary btn-sm" type="button" id="dimMatButton_' + iter + '" onclick="searchDimMat(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for dimension">' +
+        '<i class="fas fa-search"></i>' +
+        '</button>' +
+        '</div>'
+    );
 }
 
 //search functions depending on criteria
 function searchDimMat(criteria, appendLevel, iter, val1, val2) {
-    var val1 = $('#valMin_' + iter).val();
-    var val2 = $('#valMax_' + iter).val();
-    var goOn = validateNumbers(val1, val2, criteria);
+    val1 = $('#valMin_' + iter).val();
+    val2 = $('#valMax_' + iter).val();
+    goOn = validateNumbers(val1, val2, criteria);
     if (goOn) {
         $('#dimMatButton_' + iter).prop('disabled', true);
         $('#mysearchform').append(
-                '<div id="dimMatResult_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
-                '<input id="dimMatResult_' + iter + '" class="form-control" onclick="this.blur()" type="text" disabled>' +
-                '</div>'
-                );
+            '<div id="dimMatResult_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
+            '<input id="dimMatResult_' + iter + '" class="form-control" onclick="this.blur()" type="text" disabled>' +
+            '</div>'
+        );
         $('#valMin_' + iter).prop('disabled', true);
         $('#valMax_' + iter).prop('disabled', true);
-        var dimId = $('#DimensionSelect_' + iter + ' option:selected').val(); //set criteria variable
+        dimId = $('#DimensionSelect_' + iter + ' option:selected').val(); //set criteria variable
         if (criteria == 'material')
-            var dimId = nodeIds;
+            dimId = nodeIds;
         if (criteria == 'dimension')
-            var dimId = $('#DimensionSelect_' + iter + ' option:selected').val().toLowerCase();
+            dimId = $('#DimensionSelect_' + iter + ' option:selected').val().toLowerCase();
         jsonquery(dimId, appendLevel, criteria, val1, val2);
         $('#dimMatResult_' + iter).val(uniqueSearchResult.length + ' matches in ' + searchResult.length + ' graves');
         appendPlus(iter);
@@ -219,17 +218,17 @@ function searchDimMat(criteria, appendLevel, iter, val1, val2) {
 }
 
 function searchTime(criteria, appendLevel, iter, val1, val2) {
-    var val1 = $('#valMin_' + iter).val();
-    var val2 = $('#valMax_' + iter).val();
-    var nodeIds = [];
-    var goOn = validateNumbers(val1, val2, criteria);
+    val1 = $('#valMin_' + iter).val();
+    val2 = $('#valMax_' + iter).val();
+    nodeIds = [];
+    goOn = validateNumbers(val1, val2, criteria);
     if (goOn) {
         $('#timespanbutton_' + iter).prop('disabled', true);
         $('#mysearchform').append(
-                '<div id="TimespanResult_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
-                '<input id="TimespanResult_' + iter + '" class="form-control" onclick="this.blur()" type="text" disabled>' +
-                '</div>'
-                );
+            '<div id="TimespanResult_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
+            '<input id="TimespanResult_' + iter + '" class="form-control" onclick="this.blur()" type="text" disabled>' +
+            '</div>'
+        );
         $('#valMin_' + iter).prop('disabled', true);
         $('#valMax_' + iter).prop('disabled', true);
         jsonquery(nodeIds, appendLevel, criteria, val1, val2);
@@ -276,12 +275,12 @@ function UnsetGlobalVars() { //global vars needed for appended buttons
 function iniateTree(iter, appendLevel, criteria, targetField) {
     UnsetGlobalVars(); //reset vars
     //define search criteria
-    var treecriteria = criteria;
+    treecriteria = criteria;
     if (criteria == 'maintype')
-        var treecriteria = appendLevel;
+        treecriteria = appendLevel;
 
     //build tree after selected criteria
-    var selectedtypes = [];
+    selectedtypes = [];
     $.each(jsontypes, function (j, entry) {
         if (entry.level == treecriteria) {
             selectedtypes.push(entry);
@@ -290,28 +289,30 @@ function iniateTree(iter, appendLevel, criteria, targetField) {
 
     $(function () {
         $('#jstree').jstree({
-            'core': {
-                "data": selectedtypes,
-                "themes": {"icons": false,
-                    "dots": false}
-            },
-            "search": {
-                "show_only_matches": true, //filtering
-                "show_only_matches_children": true
+                'core': {
+                    "data": selectedtypes,
+                    "themes": {
+                        "icons": false,
+                        "dots": false
+                    }
+                },
+                "search": {
+                    "show_only_matches": true, //filtering
+                    "show_only_matches_children": true
 
-            },
-            "plugins": ["search"]
-        },
-                )
+                },
+                "plugins": ["search"]
+            }
+        )
 
         //add search functionality
-        var to = false;
+        to = false;
         $('#jstree_q').keyup(function () {
             if (to) {
                 clearTimeout(to);
             }
             to = setTimeout(function () {
-                var v = $('#jstree_q').val();
+                v = $('#jstree_q').val();
                 $('#jstree').jstree(true).search(v);
             }, 250);
         });
@@ -319,9 +320,9 @@ function iniateTree(iter, appendLevel, criteria, targetField) {
 
     //retrieve values of selected node
     $('#jstree').on("changed.jstree", function (e, data) {
-        var NodeSelected = parseInt(data.selected);
-        var node = $('#jstree').jstree().get_node(NodeSelected);
-        var SelectedNodeName = node.text;
+        NodeSelected = parseInt(data.selected);
+        node = $('#jstree').jstree().get_node(NodeSelected);
+        SelectedNodeName = node.text;
         //make variables global
         GlobaltargetField = targetField;
         GlobalNodeSelected = NodeSelected;
@@ -329,6 +330,7 @@ function iniateTree(iter, appendLevel, criteria, targetField) {
         Globalcriteria = criteria;
         GlobalappendLevel = appendLevel;
         Globaliter = iter;
+        $('#jstree_q').val(GlobalSelectedNodeName);
     });
 
 //show tree in modal
@@ -339,12 +341,12 @@ function iniateTree(iter, appendLevel, criteria, targetField) {
         }
     });
 
-    var windowheight = ($(window).height());
+    windowheight = ($(window).height());
     $('.custom-tree').css('max-height', windowheight - 100 + 'px');
     $('#jstree').css('max-height', windowheight - 250 + 'px')
 
     $(window).resize(function () {
-        var windowheight = ($(window).height());
+        windowheight = ($(window).height());
         $('.custom-tree').css('max-height', windowheight - 100 + 'px');
         $('#jstree').css('max-height', windowheight - 250 + 'px')
     });
@@ -368,9 +370,9 @@ function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, app
 
         setNodes(NodeSelected);
         if (typeof (val1) == 'undefined')
-            var val1 = '';
+            val1 = '';
         if (typeof (val2) == 'undefined')
-            var val2 = '';
+            val2 = '';
 
         jsonquery(nodeIds, appendLevel, criteria, val1, val2);
         $('#' + targetField + '_Result').val(uniqueSearchResult.length + ' matches in ' + searchResult.length + ' graves');
@@ -399,7 +401,7 @@ function setNodes(state) {
 function traverse(state) {
 
     // Get the actual node
-    var node = $('#jstree').jstree().get_node(state);
+    node = $('#jstree').jstree().get_node(state);
 
     // Add it to the results
     nodes.push(node);
@@ -422,7 +424,7 @@ function getNodeIds(nodes) {
 function appendPlus(iter) {
     Globaliter = iter + 1;
     if (iter > 1) {
-        var resultlength = [];
+        resultlength = [];
         $.each(myjson.features, function (i, feature) {
             if (finalSearchResultIds.includes(feature.id)) {
                 resultlength.push(feature.properties.name);
@@ -430,62 +432,62 @@ function appendPlus(iter) {
         });
 
         $('#mysearchform').append(
-                '<div class="input-group input-group-sm mb-3">' +
-                '<input id="finalresult_' + iter + '" class="form-control combiresult" onclick="this.blur()" title="' + resultlength + '" type="text" placeholder="' + resultlength.length + ' combined matches" readonly disabled>' +
-                '</div>'
-                );
+            '<div class="input-group input-group-sm mb-3">' +
+            '<input id="finalresult_' + iter + '" class="form-control combiresult" onclick="this.blur()" title="' + resultlength + '" type="text" placeholder="' + resultlength.length + ' combined matches" readonly disabled>' +
+            '</div>'
+        );
     }
     ;
 
     if (finalSearchResultIds.length > 0) {
         $('#mysearchform').append(
-                '<div class="mysearchoptions input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="fillcolor">Fill color: </label>' +
-                '</div>' +
-                '<input class="form-control" id="fillcolor" style="max-width: 70px" type="color" value="#000dff">' +
-                '<span class="input-group-text input-group-middle">Opacity (%): </span>' +
-                '<input class="form-control" id="mysearchopacity" type="range" value="10" min="0" max="100">' +
-                '<input class="form-control" id="mysearchopacityvalue" type="number" value="10" min="0" max="100" style="max-width: 60px">' +
-                '</div>' +
-                '<div class="mysearchoptions input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="searchbordercolor">Border color: </label>' +
-                '</div>' +
-                '<input class="form-control" id="colorborder" style="max-width: 70px" type="color" value="#000000">' +
-                '<span class="input-group-text input-group-middle">Border width: </span>' +
-                '<input class="form-control input-group-middle" id="searchborderwidth" type="number" value="0" min="0">' +
-                '<span title="Radius for point result" class="input-group-text input-group-middle">Radius: </span>' +
-                '<input title="Radius for point result" class="form-control" id="searchpointradius" type="number" value="8" min="1">' +
-                '</div>' +
-                '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="addNewSearchCritBtn" onclick="appendSearch(Globaliter)"title="Add another search criteria">' +
-                '<i class="fas fa-plus"></i>' +
-                '</button>' +
-                '<div class="dropdown">' +
-                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="mapResultBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
-                '<i class="fas fa-map-marked-alt"></i>' +
-                '</button>' +
-                '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
-                '<a class="dropdown-item" onclick="finishQuery(true)" title="Show combined result on map" href="#">Polygons</a>' +
-                '<a class="dropdown-item" onclick="finishQuery(false)" title="Show combined result on map" href="#">Points</a>' +
-                '</div>' +
-                '</div>' +
-                '<div class="dropdown">' +
-                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
-                '<i class="far fa-save"></i>' +
-                '</button>' +
-                '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
-                '<a class="dropdown-item" onclick="finishQuery(true); exportToJsonFile(jsonresult)" title="Show combined result on map and download as GEOJSON" href="#">Polygons</a>' +
-                '<a class="dropdown-item" onclick="finishQuery(false); exportToJsonFile(jsonresultPoints)" title="Show combined result on map and download as GEOJSON" href="#">Points</a>' +
-                '</div>' +
-                '</div>' +
-                '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="AdvSearchOptBtn" onclick="toggleSearchOpt()" title="Advanced Options">' +
-                '<i class="fas fa-ellipsis-h"></i>' +
-                '</button>'
-                );
+            '<div class="mysearchoptions input-group input-group-sm mb-3">' +
+            '<div class="input-group-prepend">' +
+            '<label class="input-group-text" for="fillcolor">Fill color: </label>' +
+            '</div>' +
+            '<input class="form-control" id="fillcolor" style="max-width: 70px" type="color" value="#000dff">' +
+            '<span class="input-group-text input-group-middle">Opacity (%): </span>' +
+            '<input class="form-control" id="mysearchopacity" type="range" value="10" min="0" max="100">' +
+            '<input class="form-control" id="mysearchopacityvalue" type="number" value="10" min="0" max="100" style="max-width: 60px">' +
+            '</div>' +
+            '<div class="mysearchoptions input-group input-group-sm mb-3">' +
+            '<div class="input-group-prepend">' +
+            '<label class="input-group-text" for="searchbordercolor">Border color: </label>' +
+            '</div>' +
+            '<input class="form-control" id="colorborder" style="max-width: 70px" type="color" value="#000000">' +
+            '<span class="input-group-text input-group-middle">Border width: </span>' +
+            '<input class="form-control input-group-middle" id="searchborderwidth" type="number" value="0" min="0">' +
+            '<span title="Radius for point result" class="input-group-text input-group-middle">Radius: </span>' +
+            '<input title="Radius for point result" class="form-control" id="searchpointradius" type="number" value="8" min="1">' +
+            '</div>' +
+            '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="addNewSearchCritBtn" onclick="appendSearch(Globaliter)" title="Add another search criteria">' +
+            '<i class="fas fa-plus"></i>' +
+            '</button>' +
+            '<div class="dropdown">' +
+            '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="mapResultBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+            '<i class="fas fa-map-marked-alt"></i>' +
+            '</button>' +
+            '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
+            '<a class="dropdown-item" onclick="finishQuery(true)" title="Show combined result on map" href="#">Polygons</a>' +
+            '<a class="dropdown-item" onclick="finishQuery(false)" title="Show combined result on map" href="#">Points</a>' +
+            '</div>' +
+            '</div>' +
+            '<div class="dropdown">' +
+            '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+            '<i class="far fa-save"></i>' +
+            '</button>' +
+            '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
+            '<a class="dropdown-item" onclick="finishQuery(true); exportToJsonFile(jsonresult)" title="Show combined result on map and download as GEOJSON" href="#">Polygons</a>' +
+            '<a class="dropdown-item" onclick="finishQuery(false); exportToJsonFile(jsonresultPoints)" title="Show combined result on map and download as GEOJSON" href="#">Points</a>' +
+            '</div>' +
+            '</div>' +
+            '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="AdvSearchOptBtn" onclick="toggleSearchOpt()" title="Advanced Options">' +
+            '<i class="fas fa-ellipsis-h"></i>' +
+            '</button>'
+        );
         toggleSearchOpt();
 
-        var fillInput = document.getElementById("fillcolor");
+        fillInput = document.getElementById("fillcolor");
         fillcolor = fillInput.value;
         fillInput.addEventListener("input", function () {
             fillcolor = fillInput.value;
@@ -505,8 +507,8 @@ function appendPlus(iter) {
             $('#mysearchopacity').val(mysearchopacity);
         });
         mysearchbordercolor = "#000000";
-        var searchbordercolorInput = document.getElementById("colorborder");
-        var searchbordercolor = searchbordercolorInput.value;
+        searchbordercolorInput = document.getElementById("colorborder");
+        searchbordercolor = searchbordercolorInput.value;
         searchbordercolorInput.addEventListener("input", function () {
             mysearchbordercolor = searchbordercolorInput.value;
         }, false);
@@ -527,42 +529,44 @@ function appendPlus(iter) {
     }
     ;
     $('#mysearchform').append(
-            '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="resetSearchEndBtn" onclick="startsearch()"title="Reset search">' +
-            '<i class="fas fa-sync-alt"></i>' +
-            '</button>'
-            );
+        '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="resetSearchEndBtn" onclick="startsearch()" title="Reset search">' +
+        '<i class="fas fa-sync-alt"></i>' +
+        '</button>'
+    );
 }
 
 function finishQuery(mygeometry) { //finish query and show results on map
 
-    jsonresult = {"type": "FeatureCollection", //prepare geojson
+    jsonresult = {
+        "type": "FeatureCollection", //prepare geojson
         "features": []
     };
-    jsonresultPoints = {"type": "FeatureCollection", //prepare geojson
+    jsonresultPoints = {
+        "type": "FeatureCollection", //prepare geojson
         "features": []
     };
 
     $.each(mypolyjson.features, function (i, feature) {
         if (finalSearchResultIds.includes(feature.id)) {
             jsonresult.features.push(feature);
-            let pointfeature = Object.assign({}, feature);
+            pointfeature = Object.assign({}, feature);
             pointfeature.geometry = {};
-            var arr = JSON.parse(JSON.stringify(feature.geometry.coordinates).slice(1, -1));
-            var mycenter = getCenter(arr);
-            var mypoint = {"type": "Point", "coordinates": mycenter};
+            arr = JSON.parse(JSON.stringify(feature.geometry.coordinates).slice(1, -1));
+            mycenter = getCenter(arr);
+            mypoint = {"type": "Point", "coordinates": mycenter};
             pointfeature.geometry = mypoint;
             jsonresultPoints.features.push(pointfeature);
         }
     });
 
-    var mysearchresultstyle = {
+    mysearchresultstyle = {
         "fillColor": fillcolor,
         "weight": mysearchborderwidth,
         "fillOpacity": 1 - mysearchopacity / 100,
         "color": mysearchbordercolor,
     };
 
-    var geojsonMarkerOptions = {
+    geojsonMarkerOptions = {
         radius: mysearchpointradius,
         fillColor: fillcolor,
         color: mysearchbordercolor,
@@ -573,10 +577,9 @@ function finishQuery(mygeometry) { //finish query and show results on map
 
     if (mygeometry) {
         resultpolys.clearLayers();
-        var resultpoly = L.geoJSON(jsonresult, {style: mysearchresultstyle});
+        resultpoly = L.geoJSON(jsonresult, {style: mysearchresultstyle});
         resultpolys.addLayer(resultpoly);
-    } else
-    {
+    } else {
         resultpoints.clearLayers();
         resultpoint = L.geoJSON(jsonresultPoints, {
             pointToLayer: function (feature, latlng) {
@@ -589,10 +592,9 @@ function finishQuery(mygeometry) { //finish query and show results on map
 }
 
 function getCenter(arr) {
-    var minX, maxX, minY, maxY;
-    for (var i = 0; i < arr.length; i++)
-    {
-        var x = arr[i][0], y = arr[i][1];
+    minX, maxX, minY, maxY;
+    for (i = 0; i < arr.length; i++) {
+        x = arr[i][0], y = arr[i][1];
         minX = (x < minX || minX == null) ? x : minX;
         maxX = (x > maxX || maxX == null) ? x : maxX;
         minY = (y < minY || minY == null) ? y : minY;
@@ -610,15 +612,15 @@ function jsonquery(id, level, prop, val1, val2) {
     //convert values to valid integers
     //set values to catch whole range if undefined
     if (val1 == '' || typeof (val1) == 'undefined' || val2 == undefined)
-        var val1 = "-99999999999";
+        val1 = "-99999999999";
     if (val2 == '' || typeof (val2) == 'undefined' || val2 == undefined)
-        var val2 = "99999999999";
+        val2 = "99999999999";
 
     //alert if second value is lower than first value
     if (typeof (val1 == 'string'))
-        var val1 = parseFloat(val1.replace(',', '.').replace(' ', ''));
+        val1 = parseFloat(val1.replace(',', '.').replace(' ', ''));
     if (typeof (val2 == 'string'))
-        var val2 = parseFloat(val2.replace(',', '.').replace(' ', ''));
+        val2 = parseFloat(val2.replace(',', '.').replace(' ', ''));
 
     //loop through entities
     if (level == 'feature') {
@@ -672,14 +674,20 @@ function jsonquery(id, level, prop, val1, val2) {
 
     //intersect Search results
     uniqueSearchResult = searchResult;
-    var distinctResult = Array.from(new Set(searchResult));
+    distinctResult = Array.from(new Set(searchResult));
     searchResult = distinctResult;
-    var intermed = finalSearchResult.filter(value => searchResult.includes(value));
+    // intermed = finalSearchResult.filter(value => searchResult.includes(value));
+    intermed = finalSearchResult.filter(function (n) {
+        return searchResult.indexOf(n) !== -1;
+    });
     finalSearchResult = intermed;
 
-    var distinctResultIds = Array.from(new Set(searchResultIds));
+    distinctResultIds = Array.from(new Set(searchResultIds));
     searchResultIds = distinctResultIds;
-    var intermedIds = finalSearchResultIds.filter(value => searchResultIds.includes(value));
+    // intermedIds = finalSearchResultIds.filter(value => searchResultIds.includes(value);
+    intermedIds = finalSearchResultIds.filter(function (n) {
+        return searchResultIds.indexOf(n) !== -1;
+    });
     finalSearchResultIds = intermedIds;
 }
 
@@ -699,9 +707,9 @@ function levelQuery(feature, entity, id, prop, val1, val2) {
 
         //set begin and end if available as integers from timestamp
         if (typeof (entity.properties.timespan.begin_from) !== 'undefined')
-            var begin = (parseInt(((entity.properties.timespan.begin_from)), 10));
+            begin = (parseInt(((entity.properties.timespan.begin_from)), 10));
         if (typeof (entity.properties.timespan.end_to) !== 'undefined')
-            var end = (parseInt(((entity.properties.timespan.end_to)), 10));
+            end = (parseInt(((entity.properties.timespan.end_to)), 10));
         //if begin and end are availale set a between timespan as result
         if (typeof (begin) !== 'undefined' && typeof (end) !== 'undefined' && begin >= val1 && end <= val2) {
             searchResult.push(feature.id);
@@ -749,9 +757,9 @@ function levelQuery(feature, entity, id, prop, val1, val2) {
     //get results of matching material with values and operators
     if (prop == 'material' && (typeof (entity.properties.material)) !== 'undefined') {
         $.each(entity.properties.material, function (m, mat) {
-            var tempMatValue = mat.value;
+            tempMatValue = mat.value;
             if (mat.value == '0' || mat.value == '')
-                var tempMatValue = 100;
+                tempMatValue = 100;
             if (id.includes(mat.id) && tempMatValue >= val1 && tempMatValue <= val2) {
                 searchResult.push(feature.id);
                 if (finalSearchResultIds.includes(entity.id))
@@ -760,7 +768,6 @@ function levelQuery(feature, entity, id, prop, val1, val2) {
         });
     }
 }
-
 
 
 function toggleSearchOpt() {

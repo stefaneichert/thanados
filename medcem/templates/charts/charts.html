@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+{% block content %}
+<div id="mycontent" style="overflow-y: auto">
+    <div class="row" style="margin: 1em">
+        <div class="col col-lg-6 mymargin">
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link" type="button" data-toggle="collapse"
+                                data-target="#collapseOne" aria-expanded="true"
+                                aria-controls="collapseOne">
+                            Depth of graves
+                        </button>
+                        <button id="depthchart_percentage" class="btn btn-sm btn-secondary fa-pull-right" title="percentage" style="margin-left: 0.5em" onclick="updateChart(depthchart, setChartData(depth_data, false, true, true), true)">
+                            %
+                        </button>
+                        <button id="depthchart_absolute" class="btn btn-sm btn-secondary fa-pull-right" title="absolute" onclick="updateChart(depthchart, setChartData(depth_data, false, false, true), false)">
+                            &Sigma;
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne">
+                    <div class="card-body">
+                        <div id="depth-chart-container">
+                            <canvas id="depth-chart" class="chartcontainer"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col col-lg-6 mymargin mymargin">
+            <div class="card">
+                <div class="card-header" id="headingTwo">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link" type="button" data-toggle="collapse"
+                                data-target="#collapseTwo" aria-expanded="true"
+                                aria-controls="collapseTwo">
+                            Orientation of skeletons
+                        </button>
+                        <button id="orientationchart_percentage" class="btn btn-sm btn-secondary fa-pull-right" title="percentage" style="margin-left: 0.5em" onclick="updateChart(orientationchart, setChartData(orientation_data, false, true, false), true)">
+                            %
+                        </button>
+                        <button id="orientationchart_absolute" class="btn btn-sm btn-secondary fa-pull-right" title="absolute" onclick="updateChart(orientationchart, setChartData(orientation_data, false, false, false), false)">
+                            &Sigma;
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">
+                    <div class="card-body">
+                        <div id="orientation-chart-container">
+                            <canvas id="orientation-chart" class="chartcontainer"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="w-100"></div>
+        <div class="col col-lg-6 mymargin">
+            <div class="card">
+                <div class="card-header" id="headingThree">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link" type="button" data-toggle="collapse"
+                                data-target="#collapseThree" aria-expanded="true"
+                                aria-controls="collapseThree">
+                            Sex of indiviuals
+                        </button>
+                        <button id="sexchart_percentage" class="btn btn-sm btn-secondary fa-pull-right" title="percentage" style="margin-left: 0.5em" onclick="updateChart(sexchart, setChartData(sex_data, true, true, false), true)">
+                            %
+                        </button>
+                        <button id="sexchart_absolute" class="btn btn-sm btn-secondary fa-pull-right" title="absolute" onclick="updateChart(sexchart, setChartData(sex_data, true, false, false), false)">
+                            &Sigma;
+                        </button>
+                    </h5>
+                </div>
+                <div id="collapseThree" class="collapse show" aria-labelledby="headingThree">
+                    <div class="card-body">
+                        <div id="sex-chart-container">
+                            <canvas id="sex-chart" class="chartcontainer"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    depth_data = {{ depth_data|tojson }};
+    sex_data = {{ sex_data|tojson }};
+    orientation_data = {{ orientation_data|tojson }};
+
+</script>
+<script src="/static/vendor/charts/chart.js/dist/Chart.bundle.min.js"></script>
+<script src="/static/vendor/charts/chartjs-plugin-colorschemes/dist/chartjs-plugin-colorschemes.min.js"></script>
+<script src="/static/js/charts.js"></script>
+{% endblock %}

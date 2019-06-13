@@ -1,15 +1,14 @@
 console.log(jsonmysite);
-
 sitename = jsonmysite.name;
 console.log(sitename);
 console.log(systemtype);
 
 $('#mybreadcrumb').append(
-        '<nav aria-label="breadcrumb">' +
-        '<ol id="mybreadcrumbs" class="breadcrumb">' +
-        '<li class="breadcrumb-item"><a href="/entity/view/' + jsonmysite.site_id + '">' + sitename + '</a></li>' +
-        '</ol>' +
-        '</nav>');
+    '<nav aria-label="breadcrumb">' +
+    '<ol id="mybreadcrumbs" class="breadcrumb">' +
+    '<li class="breadcrumb-item"><a href="/entity/view/' + jsonmysite.site_id + '">' + sitename + '</a></li>' +
+    '</ol>' +
+    '</nav>');
 
 if (systemtype == 'place') {
     getEntityData(sitename, jsonmysite.id, jsonmysite);
@@ -27,13 +26,15 @@ if (systemtype == 'feature') {
             getEntityData(sitename, place_id, feature);
             $('#mybreadcrumbs').append('<li class="breadcrumb-item"><a href="/entity/view/' + entId + '">' + entName + '</a></li>');
             mycitation = '"' + sitename + ': ' + entName + '".';
-            myjson = {"type": "FeatureCollection", //prepare geojson
+            myjson = {
+                "type": "FeatureCollection", //prepare geojson
                 "features": [feature],
                 "properties": jsonmysite.properties,
                 "site_id": jsonmysite.site_id,
                 "name": jsonmysite.name
             };
-        };
+        }
+        ;
     });
 }
 
@@ -50,11 +51,12 @@ if (systemtype == 'stratigraphic unit') {
                 graveGeom = featureGeom;
                 getEntityData(graveName, graveId, burial);
                 $('#mybreadcrumbs').append(
-                        '<li class="breadcrumb-item"><a href="/entity/view/' + graveId + '">' + graveName + '</a></li>' +
-                        '<li class="breadcrumb-item"><a href="/entity/view/' + entId + '">' + entName + '</a></li>'
-                        );
+                    '<li class="breadcrumb-item"><a href="/entity/view/' + graveId + '">' + graveName + '</a></li>' +
+                    '<li class="breadcrumb-item"><a href="/entity/view/' + entId + '">' + entName + '</a></li>'
+                );
                 mycitation = '"' + sitename + ': ' + graveName + ': ' + entName + '".';
-                myjson = {"type": "FeatureCollection", //prepare geojson
+                myjson = {
+                    "type": "FeatureCollection", //prepare geojson
                     "features": [feature],
                     "properties": jsonmysite.properties,
                     "site_id": jsonmysite.site_id,
@@ -86,12 +88,13 @@ if (systemtype == 'find') {
                     burialId = stratID;
                     getEntityData(burialName, burialId, find);
                     $('#mybreadcrumbs').append(
-                            '<li class="breadcrumb-item"><a href="/entity/view/' + graveId + '">' + graveName + '</a></li>' +
-                            '<li class="breadcrumb-item"><a href="/entity/view/' + burialId + '">' + burialName + '</a></li>' +
-                            '<li class="breadcrumb-item"><a href="/entity/view/' + entId + '">' + entName + '</a></li>'
-                            );
+                        '<li class="breadcrumb-item"><a href="/entity/view/' + graveId + '">' + graveName + '</a></li>' +
+                        '<li class="breadcrumb-item"><a href="/entity/view/' + burialId + '">' + burialName + '</a></li>' +
+                        '<li class="breadcrumb-item"><a href="/entity/view/' + entId + '">' + entName + '</a></li>'
+                    );
                     mycitation = '"' + sitename + ': ' + graveName + ': ' + burialName + ': ' + entName + '".';
-                    myjson = {"type": "FeatureCollection", //prepare geojson
+                    myjson = {
+                        "type": "FeatureCollection", //prepare geojson
                         "features": [feature],
                         "properties": jsonmysite.properties,
                         "site_id": jsonmysite.site_id,
@@ -105,7 +108,6 @@ if (systemtype == 'find') {
 }
 
 mycitation1 = ' From: Stefan Eichert et al., Medieval Cemeteries Online: >>' + window.location + '<<. After: ';
-
 
 
 function getEntityData(parentName, parentId, currentfeature) {
@@ -171,32 +173,32 @@ function getEntityData(parentName, parentId, currentfeature) {
     entdims = currentfeature.properties.dimensions;
     entmaterial = currentfeature.properties.material;
     $('#mycontent').append(
-            '<div class="container-fluid">' +
-            '<div class="row">' +
-            '<div id="myData_' + entId + '" class="col-md">' +
-            '<div class="row">' +
-            '<h4 style="margin-bottom: 1em; margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '">' + entName + '</h4>' +
-            '<div style="margin-top: 0.8em; margin-bottom: 0.8em; margin-right: 0.8em; margin-left: auto">' +
-            '<button type="button" onclick="this.blur()" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#citeModal">Citation</button>' +
-            '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-outline-secondary" >JSON</button>' +
-            '</div>' +
-            '</div>' +
-            '<div id="mytype_' + entId + '" class="modalrowitem" title="' + typepath + '">' + entType + '</div>' +
-            '<div id="mytimespan' + entId + '" class="modalrowitem">' + dateToInsert + '</div>' +
-            '<div id="myDescr' + entId + '">' + entDesc + '</div>' +
-            '<div id="myTypescontainer' + entId + '"></div>' +
-            '<div id="myDimensionscontainer' + entId + '"></div>' +
-            '<div id="myMaterialcontainer' + entId + '"></div>' +
-            '<div id="myChildrencontainer' + entId + '"></div>' +
-            '<div id="myParentcontainer' + entId + '"></div>' +
-            '</div>' +
-            '<div id="myImagecontainer' + entId + '" class="col-md-auto" style="margin-top: 4em" ></div>' +
-            '<div id="myMapcontainer" class="col-md" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; margin-right: 1em"></div>' +
-            '</div>' +
-            '<div id="myMetadatacontainer' + entId + '"></div>' +
-            '</div>' +
-            '</div>'
-            );
+        '<div class="container-fluid">' +
+        '<div class="row">' +
+        '<div id="myData_' + entId + '" class="col-md">' +
+        '<div class="row">' +
+        '<h4 style="margin-bottom: 1em; margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '">' + entName + '</h4>' +
+        '<div style="margin-top: 0.8em; margin-bottom: 0.8em; margin-right: 0.8em; margin-left: auto">' +
+        '<button type="button" onclick="this.blur()" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#citeModal">Citation</button>' +
+        '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-outline-secondary" >JSON</button>' +
+        '</div>' +
+        '</div>' +
+        '<div id="mytype_' + entId + '" class="modalrowitem" title="' + typepath + '">' + entType + '</div>' +
+        '<div id="mytimespan' + entId + '" class="modalrowitem">' + dateToInsert + '</div>' +
+        '<div id="myDescr' + entId + '">' + entDesc + '</div>' +
+        '<div id="myTypescontainer' + entId + '"></div>' +
+        '<div id="myDimensionscontainer' + entId + '"></div>' +
+        '<div id="myMaterialcontainer' + entId + '"></div>' +
+        '<div id="myChildrencontainer' + entId + '"></div>' +
+        '<div id="myParentcontainer' + entId + '"></div>' +
+        '</div>' +
+        '<div id="myImagecontainer' + entId + '" class="col-md-auto" style="margin-top: 4em" ></div>' +
+        '<div id="myMapcontainer" class="col-md" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; margin-right: 1em"></div>' +
+        '</div>' +
+        '<div id="myMetadatacontainer' + entId + '"></div>' +
+        '</div>' +
+        '</div>'
+    );
 
     if (dateToInsert == '') {
         $('#mytimespan' + entId).attr("class", "");
@@ -214,7 +216,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         var classification = types.name;
         var classtype = types.path;
         $('#myTypescontainer' + entId).append(
-                '<div class="modalrowitem" title="' + classtype + '">' + classification + '</div>');
+            '<div class="modalrowitem" title="' + classtype + '">' + classification + '</div>');
     });
 
     $('#myDimensionscontainer' + entId).empty();
@@ -228,19 +230,19 @@ function getEntityData(parentName, parentId, currentfeature) {
 
         if (dimension == 'Degrees') {
             $('#myDimensionscontainer' + entId).append(
-                    '<div class="modalrowitem">' + dimension + ': ' + dimvalue + '°</div>');
+                '<div class="modalrowitem">' + dimension + ': ' + dimvalue + '°</div>');
         }
         ;
 
         if (dimension == 'Weight') {
             $('#myDimensionscontainer' + entId).append(
-                    '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' g</div>');
+                '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' g</div>');
         }
         ;
 
         if (dimension !== 'Degrees' && dimension !== 'Weight') {
             $('#myDimensionscontainer' + entId).append(
-                    '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' cm</div>');
+                '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' cm</div>');
         }
         ;
 
@@ -257,12 +259,12 @@ function getEntityData(parentName, parentId, currentfeature) {
         var matpath = material.path;
         if (matvalue > 0) {
             $('#myMaterialcontainer' + entId).append(
-                    '<div class="modalrowitem" title="' + matpath + '">' + materialname + ': ' + matvalue + '%</div>');
+                '<div class="modalrowitem" title="' + matpath + '">' + materialname + ': ' + matvalue + '%</div>');
         }
         ;
         if (matvalue == 0) {
             $('#myMaterialcontainer' + entId).append(
-                    '<div class="modalrowitem" title="' + matpath + '">' + materialname + '</div>');
+                '<div class="modalrowitem" title="' + matpath + '">' + materialname + '</div>');
         }
         ;
     });
@@ -270,39 +272,39 @@ function getEntityData(parentName, parentId, currentfeature) {
 
     $('#myMetadatacontainer' + entId).empty();
     $('#myMetadatacontainer' + entId).append(
-            '<p><h6>Sources</h6></p>' +
-            '<table class="table table-sm table-hover">' +
-            '<thead class="thead-light">' +
-            '<tr>' +
-            '<th scope="col">#</th>' +
-            '<th scope="col">Title</th>' +
-            '<th scope="col">Page</th>' +
-            '</tr>' +
-            '</thead>' +
-            '<tbody id="mytablebody">'
-            );
+        '<p><h6>Sources</h6></p>' +
+        '<table class="table table-sm table-hover">' +
+        '<thead class="thead-light">' +
+        '<tr>' +
+        '<th scope="col">#</th>' +
+        '<th scope="col">Title</th>' +
+        '<th scope="col">Page</th>' +
+        '</tr>' +
+        '</thead>' +
+        '<tbody id="mytablebody">'
+    );
 
     if (typeof (currentfeature.properties.references) !== 'undefined') {
         $.each(currentfeature.properties.references, function (t, ref) {
             if (typeof (ref.title) !== 'undefined') {
-                var title = ref.title;
-                var citeme = title;
+                title = ref.title;
+                citeme = title;
             } else {
-                var title = '';
-                var citeme = 'unknown source';
+                title = '';
+                citeme = 'unknown source';
             }
             if (typeof (ref.reference) !== 'undefined') {
-                var page = ref.reference
-                var citeme = citeme + ' ' + page + '.';
+                page = ref.reference
+                citeme = citeme + ' ' + page + '.';
             } else
-                var page = '';
+                page = '';
 
             $('#mytablebody').append(
-                    '<tr>' +
-                    '<th scope="row">' + (t + 1) + '</th>' +
-                    '<td>' + title + '</td>' +
-                    '<td>' + page + '</td>' +
-                    '</tr>');
+                '<tr>' +
+                '<th scope="row">' + (t + 1) + '</th>' +
+                '<td>' + title + '</td>' +
+                '<td>' + page + '</td>' +
+                '</tr>');
             if (t == 0) {
                 mycitation2 = citeme
             } else {
@@ -313,24 +315,24 @@ function getEntityData(parentName, parentId, currentfeature) {
     } else {
         $.each(jsonmysite.properties.references, function (t, ref) {
             if (typeof (ref.title) !== 'undefined') {
-                var title = ref.title;
-                var citeme = title;
+                title = ref.title;
+                citeme = title;
             } else {
-                var title = '';
-                var citeme = 'unknown source';
+                title = '';
+                citeme = 'unknown source';
             }
             if (typeof (ref.reference) !== 'undefined') {
-                var page = ref.reference;
-                var citeme = citeme + ' ' + page;
+                page = ref.reference;
+                citeme = citeme + ' ' + page;
             } else {
-                var page = '';
+                page = '';
             }
             $('#mytablebody').append(
-                    '<tr>' +
-                    '<th scope="row">' + (t + 1) + '</th>' +
-                    '<td>' + title + '</td>' +
-                    '<td>' + page + '</td>' +
-                    '</tr>');
+                '<tr>' +
+                '<th scope="row">' + (t + 1) + '</th>' +
+                '<td>' + title + '</td>' +
+                '<td>' + page + '</td>' +
+                '</tr>');
             if (t == 0) {
                 mycitation2 = citeme
             } else {
@@ -343,40 +345,40 @@ function getEntityData(parentName, parentId, currentfeature) {
 
     if (typeof (currentfeature.properties.externalreference) !== 'undefined') {
         $('#myMetadatacontainer' + entId).append(
-                '<p><h6>External references</h6></p>' +
-                '<table class="table table-sm table-hover">' +
-                '<thead class="thead-light">' +
-                '<tr>' +
-                '<th scope="col">#</th>' +
-                '<th scope="col">URL</th>' +
-                '<th scope="col">Name</th>' +
-                '<th scope="col">Description</th>' +
-                '</tr>' +
-                '</thead>' +
-                '<tbody id="myexttablebody">'
-                );
+            '<p><h6>External references</h6></p>' +
+            '<table class="table table-sm table-hover">' +
+            '<thead class="thead-light">' +
+            '<tr>' +
+            '<th scope="col">#</th>' +
+            '<th scope="col">URL</th>' +
+            '<th scope="col">Name</th>' +
+            '<th scope="col">Description</th>' +
+            '</tr>' +
+            '</thead>' +
+            '<tbody id="myexttablebody">'
+        );
     }
 
     $.each(currentfeature.properties.externalreference, function (t, ref) {
         if (typeof (ref.url) !== 'undefined') {
-            var url = ref.url
+            url = ref.url
         } else
-            var url = '';
+            url = '';
         if (typeof (ref.name) !== 'undefined') {
-            var name = ref.name
+            name = ref.name
         } else
-            var name = '';
+            name = '';
         if (typeof (ref.description) !== 'undefined') {
-            var description = ref.description
+            description = ref.description
         } else
-            var description = '';
+            description = '';
         $('#myexttablebody').append(
-                '<tr>' +
-                '<th scope="row">' + (t + 1) + '</th>' +
-                '<td><a href="' + url + '" target="_blank">' + url + '</a></td>' +
-                '<td>' + name + '</td>' +
-                '<td>' + description + '</td>' +
-                '</tr>');
+            '<tr>' +
+            '<th scope="row">' + (t + 1) + '</th>' +
+            '<td><a href="' + url + '" target="_blank">' + url + '</a></td>' +
+            '<td>' + name + '</td>' +
+            '<td>' + description + '</td>' +
+            '</tr>');
     });
 
     if (systemtype == 'place') {
@@ -387,62 +389,62 @@ function getEntityData(parentName, parentId, currentfeature) {
     ;
     if (typeof (files) !== 'undefined') {
         $('#myMetadatacontainer' + entId).append(
-                '<p><h6>Files</h6></p>' +
-                '<table class="table table-sm table-hover">' +
-                '<thead class="thead-light">' +
-                '<tr>' +
-                '<th scope="col">#</th>' +
-                '<th scope="col">ID</th>' +
-                '<th scope="col">Name</th>' +
-                '<th scope="col">Source</th>' +
-                '<th scope="col">Ref.</th>' +
-                '<th scope="col">License</th>' +
-                '</tr>' +
-                '</thead>' +
-                '<tbody id="myfiletablebody">'
-                );
+            '<p><h6>Files</h6></p>' +
+            '<table class="table table-sm table-hover">' +
+            '<thead class="thead-light">' +
+            '<tr>' +
+            '<th scope="col">#</th>' +
+            '<th scope="col">ID</th>' +
+            '<th scope="col">Name</th>' +
+            '<th scope="col">Source</th>' +
+            '<th scope="col">Ref.</th>' +
+            '<th scope="col">License</th>' +
+            '</tr>' +
+            '</thead>' +
+            '<tbody id="myfiletablebody">'
+        );
     }
 
     $.each(files, function (t, file) {
         if (typeof (file.source) !== 'undefined') {
-            var source = file.source
+            source = file.source
         } else
-            var source = '';
+            source = '';
         if (typeof (file.reference) !== 'undefined') {
-            var reference = file.reference
+            reference = file.reference
         } else
-            var reference = '';
+            reference = '';
         if (typeof (file.license) !== 'undefined') {
-            var license = file.license
+            license = file.license
         } else
-            var license = '';
+            license = '';
 
         $('#myfiletablebody').append(
-                '<tr>' +
-                '<th scope="row">' + (t + 1) + '</th>' +
-                '<td>' + file.id + '</td>' +
-                '<td><a href="https://thanados.openatlas.eu/display/' + file.id + '.bmp" target="_blank">' + file.name + '</a></td>' +
-                '<td>' + source + '</td>' +
-                '<td>' + reference + '</td>' +
-                '<td>' + license + '</td>' +
-                '</tr>');
+            '<tr>' +
+            '<th scope="row">' + (t + 1) + '</th>' +
+            '<td>' + file.id + '</td>' +
+            '<td><a href="https://thanados.openatlas.eu/display/' + file.id + '.bmp" target="_blank">' + file.name + '</a></td>' +
+            '<td>' + source + '</td>' +
+            '<td>' + reference + '</td>' +
+            '<td>' + license + '</td>' +
+            '</tr>');
     });
 
 
     $.each(children, function (c, child) {
         if ($('#myChildrencontainer' + entId).is(':empty')) {
             $('#myChildrencontainer' + entId).append(
-                    '<p>' +
-                    '<div class="d-inline">' +
-                    '<h6>' + children.length + ' Subunit(s)<a href="#" onclick="toggleSubunits()" title="show/hide"><i id="subbtn" class="collapsetitle1 collapsebutton1 fa fa-chevron-down"></i></a></h6>' +
-                    '</div>' +
-                    '</p>');
+                '<p>' +
+                '<div class="d-inline">' +
+                '<h6>' + children.length + ' Subunit(s)<a href="#" onclick="toggleSubunits()" title="show/hide"><i id="subbtn" class="collapsetitle1 collapsebutton1 fa fa-chevron-down"></i></a></h6>' +
+                '</div>' +
+                '</p>');
         }
         ;
 
         $('#myChildrencontainer' + entId).append(
-                '<a class="modalrowitem subunits" href="/entity/view/' + child.id + '">' + child.properties.name + ': ' + child.properties.maintype.name + '</a>'
-                );
+            '<a class="modalrowitem subunits" href="/entity/view/' + child.id + '">' + child.properties.name + ': ' + child.properties.maintype.name + '</a>'
+        );
     });
 
     if (children.length > 15) {
@@ -456,31 +458,31 @@ function getEntityData(parentName, parentId, currentfeature) {
         }
         ;
         $('#myParentcontainer' + entId).append(
-                '<a class="modalrowitem" href="/entity/view/' + parentId + '">' + parentName + '</a>'
-                );
+            '<a class="modalrowitem" href="/entity/view/' + parentId + '">' + parentName + '</a>'
+        );
     }
 
 
-    var landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=2245afa655044c5c8f5ef8c129c29cdb', {
+    landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=2245afa655044c5c8f5ef8c129c29cdb', {
         attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         apikey: '<2245afa655044c5c8f5ef8c129c29cdb>',
         maxZoom: 30
     });
 
-    var myStyle = {
+    myStyle = {
         "color": "#6c757d",
         "weight": 1.5,
         "fillOpacity": 0.5
     };
 
-    var myStyleSquare = {
+    myStyleSquare = {
         "color": "#6c757d",
         "weight": 1.5,
         "fillOpacity": 0.2,
         "dashArray": [4, 4]
     };
 
-    var mymap = L.map('myMapcontainer', {
+    mymap = L.map('myMapcontainer', {
         zoom: 25,
         layers: [landscape]
     });
@@ -501,7 +503,8 @@ function getEntityData(parentName, parentId, currentfeature) {
 
     graves = L.geoJSON(jsonmysite, {
         filter: polygonFilter,
-        style: myStyle});
+        style: myStyle
+    });
 
     graves.addTo(mymap);
 
@@ -509,12 +512,12 @@ function getEntityData(parentName, parentId, currentfeature) {
     pointgraves = L.geoJSON(jsonmysite, {
         filter: pointFilter,
         pointToLayer: function (feature, latlng) {
-            var lefttoplat = (latlng.lat - 0.000003);
-            var lefttoplon = (latlng.lng - 0.000005);
-            var rightbottomlat = (latlng.lat + 0.000003);
-            var rightbottomlon = (latlng.lng + 0.000005);
-            var bounds = [[lefttoplat, lefttoplon], [rightbottomlat, rightbottomlon]];
-            var rect = L.rectangle(bounds).toGeoJSON(13);
+            lefttoplat = (latlng.lat - 0.000003);
+            lefttoplon = (latlng.lng - 0.000005);
+            rightbottomlat = (latlng.lat + 0.000003);
+            rightbottomlon = (latlng.lng + 0.000005);
+            bounds = [[lefttoplat, lefttoplon], [rightbottomlat, rightbottomlon]];
+            rect = L.rectangle(bounds).toGeoJSON(13);
             L.extend(rect, {//add necessary properties from json
                 properties: feature.properties,
                 id: feature.id,
@@ -543,11 +546,11 @@ function getEntityData(parentName, parentId, currentfeature) {
     mymap.fitBounds(graves.getBounds());
 
     if (currentfeature.type !== "FeatureCollection") {
-        var polys = L.geoJSON(mypolyjson, {
+        polys = L.geoJSON(mypolyjson, {
             onEachFeature: function (feature, layer) {
                 if (graveId == feature.id) {
-                    var polyPoints = layer.getLatLngs();
-                    var selectedpoly = L.polygon(polyPoints, {color: 'red'}).addTo(mymap);
+                    polyPoints = layer.getLatLngs();
+                    selectedpoly = L.polygon(polyPoints, {color: 'red'}).addTo(mymap);
                     boundscenter = (selectedpoly.getBounds()).getCenter();
                 }
                 ;
@@ -559,13 +562,11 @@ function getEntityData(parentName, parentId, currentfeature) {
     L.control.scale({imperial: false}).addTo(mymap);
 
 
-
-
-    var maximumHeight = (($(window).height() - $('#mynavbar').height()) - $('#mybreadcrumb').height());
+    maximumHeight = (($(window).height() - $('#mynavbar').height()) - $('#mybreadcrumb').height());
     $('#mycontent').css('max-height', (maximumHeight - 17) + 'px');
 
     $(window).resize(function () {
-        var maximumHeight = (($(window).height() - $('#mynavbar').height()) - $('#mybreadcrumb').height());
+        maximumHeight = (($(window).height() - $('#mynavbar').height()) - $('#mybreadcrumb').height());
         $('#mycontent').css('max-height', (maximumHeight - 17) + 'px');
     });
 
@@ -581,8 +582,8 @@ function setImages(entId, entfiles) {
             $('#myImagecontainer' + entId).empty();
             $.each(entfiles, function (f, files) {
                 $('#myImagecontainer' + entId).append(
-                        '<a href="https://thanados.openatlas.eu/display/' + files.id + '.bmp" data-featherlight><img src="https://thanados.openatlas.eu/display/' + files.id + '.bmp" class="modalimg" id="mymodalimg"></a>'
-                        )
+                    '<a href="https://thanados.openatlas.eu/display/' + files.id + '.bmp" data-featherlight><img src="https://thanados.openatlas.eu/display/' + files.id + '.bmp" class="modalimg" id="mymodalimg"></a>'
+                )
             });
         }
         ;
@@ -594,41 +595,41 @@ function setImages(entId, entfiles) {
             secondimage = entfiles[1].id;
             //create carousel and apppend first two images
             $('#myImagecontainer' + entId).append(
-                    '<div id="carouselExampleIndicators' + entId + '" class="carousel slide" data-ride="carousel" data-interval="false">' +
-                    '<ol id="mymodalimageindicators' + entId + '" class="carousel-indicators">' +
-                    '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="0" class="active"></li>' +
-                    '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="1"></li>' +
-                    '</ol>' +
-                    '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
-                    '<div class="carousel-item active">' +
-                    '<a href="https://thanados.openatlas.eu/display/' + firstimage + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + firstimage + '.bmp"></a>' +
-                    '</div>' +
-                    '<div class="carousel-item">' +
-                    '<a href="https://thanados.openatlas.eu/display/' + secondimage + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + secondimage + '.bmp"></a>' +
-                    '</div>' +
-                    '</div>' +
-                    '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
-                    '<span aria-hidden="true"><button onclick="this.blur()" type="button" class="btn btn-secondary"><</button></span>' +
-                    '<span class="sr-only">Previous</span>' +
-                    '</a>' +
-                    '<a class="carousel-control-next" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="next">' +
-                    '<span aria-hidden="true"><button onclick="this.blur()"type="button" class="btn btn-secondary">></button></span>' +
-                    '<span class="sr-only">Next</span>' +
-                    '</a>' +
-                    '</div>'
-                    );
+                '<div id="carouselExampleIndicators' + entId + '" class="carousel slide" data-ride="carousel" data-interval="false">' +
+                '<ol id="mymodalimageindicators' + entId + '" class="carousel-indicators">' +
+                '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="0" class="active"></li>' +
+                '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="1"></li>' +
+                '</ol>' +
+                '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
+                '<div class="carousel-item active">' +
+                '<a href="https://thanados.openatlas.eu/display/' + firstimage + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + firstimage + '.bmp"></a>' +
+                '</div>' +
+                '<div class="carousel-item">' +
+                '<a href="https://thanados.openatlas.eu/display/' + secondimage + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + secondimage + '.bmp"></a>' +
+                '</div>' +
+                '</div>' +
+                '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
+                '<span aria-hidden="true"><button onclick="this.blur()" type="button" class="btn btn-secondary"><</button></span>' +
+                '<span class="sr-only">Previous</span>' +
+                '</a>' +
+                '<a class="carousel-control-next" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="next">' +
+                '<span aria-hidden="true"><button onclick="this.blur()" type="button" class="btn btn-secondary">></button></span>' +
+                '<span class="sr-only">Next</span>' +
+                '</a>' +
+                '</div>'
+            );
 
             //append further images to carousel
             $.each(entfiles, function (f, files) {
                 if (f > 1) {
                     $('#mycarouselimages' + entId).append(
-                            '<div class="carousel-item">' +
-                            '<a href="https://thanados.openatlas.eu/display/' + files.id + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + files.id + '.bmp"></a>' +
-                            '</div>'
-                            );
+                        '<div class="carousel-item">' +
+                        '<a href="https://thanados.openatlas.eu/display/' + files.id + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + files.id + '.bmp"></a>' +
+                        '</div>'
+                    );
                     $('#mymodalimageindicators' + entId).append(
-                            '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="' + f + '"></li>'
-                            );
+                        '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="' + f + '"></li>'
+                    );
                 }
                 ;
             });
@@ -641,7 +642,7 @@ function setImages(entId, entfiles) {
 }
 
 function toggleSubunits() {
-    var down = ($('#subbtn').hasClass("fa-chevron-down"));
+    down = ($('#subbtn').hasClass("fa-chevron-down"));
     if (down) {
         $('#subbtn').removeClass('fa-chevron-down').addClass('fa-chevron-right');
     }
@@ -651,15 +652,15 @@ function toggleSubunits() {
     $('.subunits').toggle();
 }
 
-var today = new Date();
-var dd = String(today.getDate()).padStart(2, '0');
-var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-var yyyy = today.getFullYear();
+today = new Date();
+dd = String(today.getDate()).padStart(2, '0');
+mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+yyyy = today.getFullYear();
 
 today = yyyy + '/' + mm + '/' + dd;
 mysource = (mycitation + mycitation1 + mycitation2 + ' [Accessed: ' + today + ']');
 mysource = mysource.replace(/(\r\n|\n|\r)/gm, "");
-$('#mycitation').append('<textarea class="form-control form-control-sm" id="Textarea1" rows="15">' + mysource + '</textarea>');
+$('#mycitation').append('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');
 L.extend(myjson, {//add necessary properties from json
     source: mysource
 });

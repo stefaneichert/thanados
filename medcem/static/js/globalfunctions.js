@@ -5,13 +5,13 @@ function exportToJsonFile(data) {
         site_id: myjson.site_id
     });
     console.log(data);
-    var data = JSON.stringify(data).replace('\u2028', '\\u2028').replace('\u2029', '\\u2029');
-    var file = new Blob([data]);
+    var mydata = JSON.stringify(data).replace('\u2028', '\\u2028').replace('\u2029', '\\u2029');
+    var file = new Blob([mydata]);
     if (window.navigator.msSaveOrOpenBlob) // IE10+
         window.navigator.msSaveOrOpenBlob(file, filename);
     else { // Others
         var a = document.createElement("a"),
-                url = URL.createObjectURL(file);
+            url = URL.createObjectURL(file);
         a.href = url;
         a.download = 'export.json';
         document.body.appendChild(a);

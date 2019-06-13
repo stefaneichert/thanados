@@ -51,7 +51,7 @@ function setmap(myjson) {
         "color": "#6c757d",
         "weight": 1.5,
         "fillOpacity": 0.5
-                //"opacity": 0.4
+        //"opacity": 0.4
     };
 
     var myStyleSquare = {
@@ -64,7 +64,8 @@ function setmap(myjson) {
     //add graves with polygon geometry
     graves = L.geoJSON(myjson, {
         filter: polygonFilter,
-        style: myStyle});
+        style: myStyle
+    });
 
     graves.addTo(map);
 
@@ -101,7 +102,6 @@ function setmap(myjson) {
         properties: myjson.properties,
         site_id: myjson.site_id
     });
-    console.log(mypolyjson);
     map.fitBounds(graves.getBounds());
 
     //add emtpty Layergroup for search results
@@ -140,24 +140,24 @@ function setmap(myjson) {
 //openpolygon for active sidebargrave
 function showpolygon(id) {
     var polys = L.geoJSON(mypolyjson, {
-        onEachFeature: function (feature, layer) {
-            if (feature.id == id) {
-                if (feature.properties.maintype.systemtype == 'feature') {
-                    selectedpolys.clearLayers();
-                    var polyPoints = layer.getLatLngs()
-                    var selectedpoly = L.polygon(polyPoints, {color: 'red'});
-                    selectedpolys.addLayer(selectedpoly);
-                    var boundscenter = (selectedpoly.getBounds()).getCenter();
-                    map.panTo(boundscenter);
-                }
-                if (typeof (newMarker) !== 'undefined') {
-                    map.removeLayer(newMarker);
+            onEachFeature: function (feature, layer) {
+                if (feature.id == id) {
+                    if (feature.properties.maintype.systemtype == 'feature') {
+                        selectedpolys.clearLayers();
+                        var polyPoints = layer.getLatLngs()
+                        var selectedpoly = L.polygon(polyPoints, {color: 'red'});
+                        selectedpolys.addLayer(selectedpoly);
+                        var boundscenter = (selectedpoly.getBounds()).getCenter();
+                        map.panTo(boundscenter);
+                    }
+                    if (typeof (newMarker) !== 'undefined') {
+                        map.removeLayer(newMarker);
+                    }
+                    ;
                 }
                 ;
             }
-            ;
         }
-    }
     );
 }
 ;
@@ -213,7 +213,6 @@ function polygonSelect() {
 }
 
 
-
 //check if marker is inside polygon and return values
 function isMarkerInsidePolygon(checkmarker, poly) {
     if (poly.feature.geometry.type == "Polygon") {
@@ -225,7 +224,7 @@ function isMarkerInsidePolygon(checkmarker, poly) {
                 var xi = polyPoints[i].lat, yi = polyPoints[i].lng;
                 var xj = polyPoints[j].lat, yj = polyPoints[j].lng;
                 var intersect = ((yi > y) != (yj > y))
-                        && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                    && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
                 if (intersect)
                     inside = !inside;
             }
@@ -248,21 +247,22 @@ function isMarkerInsidePolygon(checkmarker, poly) {
 //min mid max sidebar
 $('#sidebar-start').toggle();
 $('#sidebarclosed-menu').toggle();
+
 function animateSidebar() {
-    var sidebarSize = $("#sidebar").width();
+    sidebarSize = $("#sidebar").width();
     switch (sidebarSize) {
         case 0:
-            var sidebarNewSize = 350
+            sidebarNewSize = 350
             $('#sidebar-start').toggle();
             $('#sidebarclosed-menu').toggle();
             break;
         case 350:
-            var sidebarNewSize = 0
+            sidebarNewSize = 0
             $('#sidebar-start').toggle();
             $('#sidebarclosed-menu').toggle();
             break;
         default:
-            var sidebarNewSize = 350
+            sidebarNewSize = 350
             $('#sidebar-max').attr("disabled", false);
     }
     ;
@@ -272,6 +272,7 @@ function animateSidebar() {
         map.invalidateSize();
     });
 }
+
 function animateSidebarMax() {
     $("#sidebar").animate({
         width: "100%"
@@ -297,24 +298,24 @@ $("#sidebar-smaller").click(function () {
 });
 
 $(window).resize(function () {
-    var navheight = ($('#mynavbar').height());
-    var containerheight = ($('#container').height());
-    var headingheight = (($('#mysidebarheading').height()) + ($('#mysidebarmenu').height()));
+    navheight = ($('#mynavbar').height());
+    containerheight = ($('#container').height());
+    headingheight = (($('#mysidebarheading').height()) + ($('#mysidebarmenu').height()));
     newListHeight = ($('#sidebar').height());
     $('#mypanel').css('max-height', newListHeight - headingheight - 5 + 'px');
-    var containerheight = ($('#container').height());
-    var windowheight = ($(window).height());
+    containerheight = ($('#container').height());
+    windowheight = ($(window).height());
     $('body').css('max-height', windowheight - 56 + 'px');
 });
 
 $(document).ready(function () {
-    var navheight = ($('#mynavbar').height());
-    var containerheight = ($('#container').height());
-    var headingheight = (($('#mysidebarheading').height()) + ($('#mysidebarmenu').height()));
+    navheight = ($('#mynavbar').height());
+    containerheight = ($('#container').height());
+    headingheight = (($('#mysidebarheading').height()) + ($('#mysidebarmenu').height()));
     newListHeight = ($('#sidebar').height());
     $('#mypanel').css('max-height', newListHeight - headingheight - 65 + 'px');
-    var containerheight = ($('#container').height());
-    var windowheight = ($(window).height());
+    containerheight = ($('#container').height());
+    windowheight = ($(window).height());
     $('body').css('max-height', windowheight - 56 + 'px');
 });
 
@@ -334,21 +335,21 @@ function setSidebarContent(myjson) {
         }
         ;
         $('#accordion1').append(
-                '<div id="' + gravediv + '" style="max-height: 42px">' +
-                '<a grave="' + features.id + '" onclick="collapseAllOthers(' + features.id + '); toggleButtons(' + features.id + ', true)" for="collapse' + gravediv + '" class="entity sidebarheading"' +
-                'data-toggle="collapse" aria-expanded="true" aria-controls="#collapse' + gravediv + '" data-parent="#accordion1" href="#collapse' + gravediv + '">' +
-                '<i id="btn' + features.id + '" class="collapsetitle collapsebutton fa fa-chevron-right fa-pull-left"></i>' +
-                '<div class="collapsetitle">' + gravename +
-                '</div>' +
-                '</a>' +
-                '<button type="button" class="gravebutton btn btn-secondary btn-xs" onclick="this.blur(); modalset(this.id)" title="show details" id="' + features.id + '">' +
-                '<i class="fa fa-info"></i>' +
-                '</button>' +
-                '</div>' +
-                '<div id="collapse' + gravediv + '" class="panel-collapse collapse">' +
-                '<div class="sidebardescription">' + gravedescription + '</div>' +
-                '<div id= "desc_' + gravediv + '"></div>' +
-                '</div>');
+            '<div id="' + gravediv + '" style="max-height: 42px">' +
+            '<a grave="' + features.id + '" onclick="collapseAllOthers(' + features.id + '); toggleButtons(' + features.id + ', true)" for="collapse' + gravediv + '" class="entity sidebarheading" ' +
+            'data-toggle="collapse" aria-expanded="true" aria-controls="#collapse' + gravediv + '" data-parent="#accordion1" href="#collapse' + gravediv + '">' +
+            '<i id="btn' + features.id + '" class="collapsetitle collapsebutton fa fa-chevron-right fa-pull-left"></i>' +
+            '<div class="collapsetitle">' + gravename +
+            '</div>' +
+            '</a>' +
+            '<button type="button" class="gravebutton btn btn-secondary btn-xs" onclick="this.blur(); modalset(this.id)" title="show details" id="' + features.id + '">' +
+            '<i class="fa fa-info"></i>' +
+            '</button>' +
+            '</div>' +
+            '<div id="collapse' + gravediv + '" class="panel-collapse collapse">' +
+            '<div class="sidebardescription">' + gravedescription + '</div>' +
+            '<div id= "desc_' + gravediv + '"></div>' +
+            '</div>');
         $.each(features.burials, function (u, burials) {
             burialdiv = gravediv + '_b' + burials.id;
             burialname = burials.properties.name;
@@ -362,16 +363,16 @@ function setSidebarContent(myjson) {
             }
             ;
             $('#desc_' + gravediv).append(
-                    '<div id="' + burialdiv + '">' +
-                    '<a onclick="toggleButtons(' + burials.id + ')" for="collapse' + burialdiv + '" class="entity subheading" data-toggle="collapse" aria-expanded="true" aria-controls="#collapse' + burialdiv + '" data-parent="#' + burialdiv + '" href="#collapse' + burialdiv + '">' +
-                    '<i id="btn' + burials.id + '" class="collapsetitle1 collapsebutton1 fa fa-chevron-right fa-pull-right"></i>' +
-                    '<div class="collapsetitle1">' + burialname + '</div>' +
-                    '</a>' +
-                    '</div>' +
-                    '<div id="collapse' + burialdiv + '" class="panel-collapse collapse">' +
-                    '<div class="sidebardescription1">' + burialdescription + '</div>' +
-                    '<div id="desc_' + burialdiv + '"></div>' +
-                    '</div>');
+                '<div id="' + burialdiv + '">' +
+                '<a onclick="toggleButtons(' + burials.id + ')" for="collapse' + burialdiv + '" class="entity subheading" data-toggle="collapse" aria-expanded="true" aria-controls="#collapse' + burialdiv + '" data-parent="#' + burialdiv + '" href="#collapse' + burialdiv + '">' +
+                '<i id="btn' + burials.id + '" class="collapsetitle1 collapsebutton1 fa fa-chevron-right fa-pull-right"></i>' +
+                '<div class="collapsetitle1">' + burialname + '</div>' +
+                '</a>' +
+                '</div>' +
+                '<div id="collapse' + burialdiv + '" class="panel-collapse collapse">' +
+                '<div class="sidebardescription1">' + burialdescription + '</div>' +
+                '<div id="desc_' + burialdiv + '"></div>' +
+                '</div>');
             $.each(burials.finds, function (f, finds) {
                 finddiv = burialdiv + '_f' + finds.id;
                 findname = finds.properties.name;
@@ -385,16 +386,16 @@ function setSidebarContent(myjson) {
                 }
                 ;
                 $('#desc_' + burialdiv).append(
-                        '<div id="' + finddiv + '">' +
-                        '<a onclick="toggleButtons(' + finds.id + ')" for="collapse' + finddiv + '"class="entity entity subheading" data-toggle="collapse" aria-expanded="true" aria-controls="#collapse' + finddiv + '" data-parent="#' + finddiv + '" href="#collapse' + finddiv + '">' +
-                        '<i id="btn' + finds.id + '" class="collapsetitle2 collapsebutton2 fa fa-chevron-right fa-pull-right"></i>' +
-                        '<div class="collapsetitle2">' + findname + '</div>' +
-                        '</a>' +
-                        '</div>' +
-                        '<div id="collapse' + finddiv + '" class="panel-collapse collapse">' +
-                        '<div class="sidebardescription2">' + finddescription + '</div>' +
-                        '</div>' +
-                        '</div>');
+                    '<div id="' + finddiv + '">' +
+                    '<a onclick="toggleButtons(' + finds.id + ')" for="collapse' + finddiv + '" class="entity entity subheading" data-toggle="collapse" aria-expanded="true" aria-controls="#collapse' + finddiv + '" data-parent="#' + finddiv + '" href="#collapse' + finddiv + '">' +
+                    '<i id="btn' + finds.id + '" class="collapsetitle2 collapsebutton2 fa fa-chevron-right fa-pull-right"></i>' +
+                    '<div class="collapsetitle2">' + findname + '</div>' +
+                    '</a>' +
+                    '</div>' +
+                    '<div id="collapse' + finddiv + '" class="panel-collapse collapse">' +
+                    '<div class="sidebardescription2">' + finddescription + '</div>' +
+                    '</div>' +
+                    '</div>');
             });
         })
     });
@@ -412,7 +413,6 @@ function toggleButtons(id, grave) {
         $('#btn' + id).removeClass('fa-chevron-right').addClass('fa-chevron-down');
         showpolygon(id);
     }
-
 }
 ;
 
@@ -458,6 +458,7 @@ $(".pohanskobutton").click(function () {
 
 //Modal
 //get current entity data and appent to modal
+// noinspection JSDuplicatedDeclaration
 function getModalData(parentDiv, currentfeature, parenttimespan) {
 
     if (currentfeature.type == "FeatureCollection") {
@@ -530,7 +531,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
             var children = currentfeature.finds;
             var iconpath = '/static/images/icons/burial.png';
         }
-
+        ;
         if (currentfeature.properties.maintype.systemtype == 'find') {
             var iconpath = '/static/images/icons/find.png';
         }
@@ -547,34 +548,33 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     var entmaterial = currentfeature.properties.material;
 
     $('#' + parentDiv).append(
-            '<div class="modal-header">' +
-            '<h5 class="modal-title">' +
-            '<img src="' + iconpath + '" width="30" height="30" class="modaltitleicon">' + entName + '</h5>' +
-            closebutton +
-            '</div>' +
-            '<div class="modal-body">' +
-            '<div class="container-fluid">' +
-            '<div class="row">' +
-            '<div id="myModalData_' + entId + '">' +
-            '<div id="myModaltype_' + entId + '" class="modalrowitem" title="' + typepath + '">' + entType + '</div>' +
-            '<div id="myModaltimespan' + entId + '" class="modalrowitem">' + dateToInsert + '</div>' +
-            '<div id="myModalDescr' + entId + '">' + entDesc + '</div>' +
-            '<div id="myModalTypescontainer' + entId + '"></div>' +
-            '<div id="myModalDimensionscontainer' + entId + '"></div>' +
-            '<div id="myModalMaterialcontainer' + entId + '"></div>' +
-            '</div>' +
-            '<div id="myModalImagecontainer' + entId + '"></div>' +
-            '</div>' +
-            '</div>' +
-            '<div class="float-right" style="margin-right: 4em; margin-bottom: -2em; margin-top: 1em;" id="myModalPermalink' + entId + '"></div>' +
-            '</div>' +
-            '<div id="' + parentDiv + '_' + entId + '"></div>'
-
-            );
+        '<div class="modal-header">' +
+        '<h5 class="modal-title">' +
+        '<img src="' + iconpath + '" width="30" height="30" class="modaltitleicon">' + entName + '</h5>' +
+        closebutton +
+        '</div>' +
+        '<div class="modal-body">' +
+        '<div class="container-fluid">' +
+        '<div class="row">' +
+        '<div id="myModalData_' + entId + '">' +
+        '<div id="myModaltype_' + entId + '" class="modalrowitem" title="' + typepath + '">' + entType + '</div>' +
+        '<div id="myModaltimespan' + entId + '" class="modalrowitem">' + dateToInsert + '</div>' +
+        '<div id="myModalDescr' + entId + '">' + entDesc + '</div>' +
+        '<div id="myModalTypescontainer' + entId + '"></div>' +
+        '<div id="myModalDimensionscontainer' + entId + '"></div>' +
+        '<div id="myModalMaterialcontainer' + entId + '"></div>' +
+        '</div>' +
+        '<div id="myModalImagecontainer' + entId + '"></div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="float-right" style="margin-right: 4em; margin-bottom: -2em; margin-top: 1em;" id="myModalPermalink' + entId + '"></div>' +
+        '</div>' +
+        '<div id="' + parentDiv + '_' + entId + '"></div>'
+    );
 
     $('#myModalPermalink' + entId).append(
-            '<a href="../entity/view/' + entId + '" target="_blank"><h6>Permalink</h6></a>'
-            );
+        '<a href="../entity/view/' + entId + '" target="_blank"><h6>Permalink</h6></a>'
+    );
 
     if (dateToInsert == '') {
         $('#myModaltimespan' + entId).attr("class", "");
@@ -591,7 +591,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         var classification = types.name;
         var classtype = types.path;
         $('#myModalTypescontainer' + entId).append(
-                '<div class="modalrowitem" title="' + classtype + '">' + classification + '</div>');
+            '<div class="modalrowitem" title="' + classtype + '">' + classification + '</div>');
     });
 
     $('#myModalDimensionscontainer' + entId).empty();
@@ -605,22 +605,19 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
 
         if (dimension == 'Degrees') {
             $('#myModalDimensionscontainer' + entId).append(
-                    '<div class="modalrowitem">' + dimension + ': ' + dimvalue + '°</div>');
+                '<div class="modalrowitem">' + dimension + ': ' + dimvalue + '°</div>');
         }
         ;
-
         if (dimension == 'Weight') {
             $('#myModalDimensionscontainer' + entId).append(
-                    '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' g</div>');
+                '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' g</div>');
         }
         ;
-
         if (dimension !== 'Degrees' && dimension !== 'Weight') {
             $('#myModalDimensionscontainer' + entId).append(
-                    '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' cm</div>');
+                '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' cm</div>');
         }
         ;
-
     });
 
     $('#myModalMaterialcontainer' + entId).empty();
@@ -634,12 +631,12 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         var matpath = material.path;
         if (matvalue > 0) {
             $('#myModalMaterialcontainer' + entId).append(
-                    '<div class="modalrowitem" title="' + matpath + '">' + materialname + ': ' + matvalue + '%</div>');
+                '<div class="modalrowitem" title="' + matpath + '">' + materialname + ': ' + matvalue + '%</div>');
         }
         ;
         if (matvalue == 0) {
             $('#myModalMaterialcontainer' + entId).append(
-                    '<div class="modalrowitem" title="' + matpath + '">' + materialname + '</div>');
+                '<div class="modalrowitem" title="' + matpath + '">' + materialname + '</div>');
         }
         ;
     });
@@ -664,8 +661,8 @@ function setImages(entId, entfiles) {
             $('#myModalImagecontainer' + entId).empty();
             $.each(entfiles, function (f, files) {
                 $('#myModalImagecontainer' + entId).append(
-                        '<a href="https://thanados.openatlas.eu/display/' + files.id + '.bmp" data-featherlight><img src="https://thanados.openatlas.eu/display/' + files.id + '.bmp" class="modalimg" id="mymodalimg"></a>'
-                        )
+                    '<a href="https://thanados.openatlas.eu/display/' + files.id + '.bmp" data-featherlight><img src="https://thanados.openatlas.eu/display/' + files.id + '.bmp" class="modalimg" id="mymodalimg"></a>'
+                )
             });
         }
         ;
@@ -679,47 +676,46 @@ function setImages(entId, entfiles) {
             secondimage = entfiles[1].id;
             //create carousel and apppend first two images
             $('#myModalImagecontainer' + entId).append(
-                    '<div id="carouselExampleIndicators' + entId + '" class="carousel slide" data-ride="carousel" data-interval="false">' +
-                    '<ol id="mymodalimageindicators' + entId + '" class="carousel-indicators">' +
-                    '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="0" class="active"></li>' +
-                    '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="1"></li>' +
-                    '</ol>' +
-                    '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
-                    '<div class="carousel-item active">' +
-                    '<a href="https://thanados.openatlas.eu/display/' + firstimage + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + firstimage + '.bmp"></a>' +
-                    '</div>' +
-                    '<div class="carousel-item">' +
-                    '<a href="https://thanados.openatlas.eu/display/' + secondimage + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + secondimage + '.bmp"></a>' +
-                    '</div>' +
-                    '</div>' +
-                    '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
-                    '<span aria-hidden="true"><button onclick="this.blur()" type="button" class="btn btn-secondary"><</button></span>' +
-                    '<span class="sr-only">Previous</span>' +
-                    '</a>' +
-                    '<a class="carousel-control-next" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="next">' +
-                    '<span aria-hidden="true"><button onclick="this.blur()"type="button" class="btn btn-secondary">></button></span>' +
-                    '<span class="sr-only">Next</span>' +
-                    '</a>' +
-                    '</div>'
-                    );
+                '<div id="carouselExampleIndicators' + entId + '" class="carousel slide" data-ride="carousel" data-interval="false">' +
+                '<ol id="mymodalimageindicators' + entId + '" class="carousel-indicators">' +
+                '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="0" class="active"></li>' +
+                '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="1"></li>' +
+                '</ol>' +
+                '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
+                '<div class="carousel-item active">' +
+                '<a href="https://thanados.openatlas.eu/display/' + firstimage + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + firstimage + '.bmp"></a>' +
+                '</div>' +
+                '<div class="carousel-item">' +
+                '<a href="https://thanados.openatlas.eu/display/' + secondimage + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + secondimage + '.bmp"></a>' +
+                '</div>' +
+                '</div>' +
+                '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
+                '<span aria-hidden="true"><button onclick="this.blur()" type="button" class="btn btn-secondary"><</button></span>' +
+                '<span class="sr-only">Previous</span>' +
+                '</a>' +
+                '<a class="carousel-control-next" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="next">' +
+                '<span aria-hidden="true"><button onclick="this.blur()" type="button" class="btn btn-secondary"></button></span>' +
+                '<span class="sr-only">Next</span>' +
+                '</a>' +
+                '</div>'
+            );
 
             //append further images to carousel
             $.each(entfiles, function (f, files) {
                 if (f > 1) {
                     $('#mycarouselimages' + entId).append(
-                            '<div class="carousel-item">' +
-                            '<a href="https://thanados.openatlas.eu/display/' + files.id + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + files.id + '.bmp"></a>' +
-                            '</div>'
-                            );
+                        '<div class="carousel-item">' +
+                        '<a href="https://thanados.openatlas.eu/display/' + files.id + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + files.id + '.bmp"></a>' +
+                        '</div>'
+                    );
                     $('#mymodalimageindicators' + entId).append(
-                            '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="' + f + '"></li>'
-                            );
+                        '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="' + f + '"></li>'
+                    );
                 }
                 ;
             });
         }
         ;
-
     }
     ;
 
@@ -730,7 +726,6 @@ function setImages(entId, entfiles) {
         $('#myModalData_' + entId).attr("class", "modalwithoutimage");
     }
     ;
-
 }
 
 //initiate modal
@@ -743,12 +738,22 @@ function modalset(id) {
     showpolygon(id);
     collapseAllOthers(id);
     //$('#myModal').modal();
-    $("#myModal").dialog({width: 500, height: (newListHeight - 138), title: globalentName, position: {my: 'right bottom', at: 'right bottom-19', of: window}});
+    $("#myModal").dialog({
+        width: 500,
+        height: (newListHeight - 138),
+        title: globalentName,
+        position: {my: 'right bottom', at: 'right bottom-19', of: window}
+    });
     $("#myModal").scrollTop("0");
 }
 
 function modalsetsite() {
     getModalData(0, myjson);
-    $("#myModal").dialog({width: 500, height: (newListHeight - 138), title: myjson.name, position: {my: 'right bottom', at: 'right bottom-19', of: window}});
+    $("#myModal").dialog({
+        width: 500,
+        height: (newListHeight - 138),
+        title: myjson.name,
+        position: {my: 'right bottom', at: 'right bottom-19', of: window}
+    });
     $("#myModal").scrollTop("0");
 }
