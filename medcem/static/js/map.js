@@ -455,6 +455,18 @@ $(".pohanskobutton").click(function () {
     $(".ui-dialog-content").dialog("close");
 });
 
+$(".kourimbutton").click(function () {
+    map.remove();
+    $("#accordion1").empty();
+    myjson = jsonkourim;
+    setmap(myjson);
+    console.log('Kourim')
+    console.log(myjson);
+    $("#sidebarTitle").text("Stará Kouřim");
+    $("#mypanel").animate({scrollTop: 0});
+    $(".ui-dialog-content").dialog("close");
+});
+
 
 //Modal
 //get current entity data and appent to modal

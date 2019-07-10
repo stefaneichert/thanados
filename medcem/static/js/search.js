@@ -592,9 +592,9 @@ function finishQuery(mygeometry) { //finish query and show results on map
 }
 
 function getCenter(arr) {
-    minX, maxX, minY, maxY;
-    for (i = 0; i < arr.length; i++) {
-        x = arr[i][0], y = arr[i][1];
+    var minX, maxX, minY, maxY;
+    for (var i = 0; i < arr.length; i++) {
+        var x = arr[i][0], y = arr[i][1];
         minX = (x < minX || minX == null) ? x : minX;
         maxX = (x > maxX || maxX == null) ? x : maxX;
         minY = (y < minY || minY == null) ? y : minY;

@@ -7,6 +7,8 @@ DROP SCHEMA IF EXISTS jsonprepare CASCADE;
 CREATE SCHEMA jsonprepare;
 --create temp tables
 
+--hack to remove "Eastern Alps revisited" type
+DELETE FROM model.entity WHERE id = 11821;
 
 -- all types tree
 DROP TABLE IF EXISTS jsonprepare.types_all;
@@ -109,7 +111,8 @@ CREATE TABLE jsonprepare.sites AS (
                    JOIN model.link l ON e.id = l.domain_id
           WHERE l.property_code = 'P2'
             AND e.system_type = 'place'
-            AND e.id in (50505, 50497, 111285)) AS s
+            AND e.id in (50505, 50497, 111285)) -- comment for all sites
+            AS s
              JOIN jsonprepare.types_all t ON t.id = s.range_id
     WHERE t.name_path LIKE 'Place > Burial Site%'
 );
@@ -405,6 +408,11 @@ SELECT e.*,
        t.path
 FROM jsonprepare.entitiestmp e
          JOIN jsonprepare.maintype t ON e.child_id = t.entity_id;
+
+--update timespan where values are missing
+UPDATE jsonprepare.entities SET begin_to = begin_from WHERE begin_to ISNULL;
+UPDATE jsonprepare.entities SET end_to = end_from WHERE end_to ISNULL;
+
 
 --files
 DROP TABLE IF EXISTS jsonprepare.files;
@@ -1305,7 +1313,7 @@ SELECT 	ar.sitename,
 		'name', ar.sitename,
 		'min', ar.min,
 		'max', ar.max,
-		'avg', ar.avg) FROM
+		'avg', ar.avg) AS age FROM
 
 (SELECT
 	sitename,
@@ -1330,7 +1338,9 @@ FROM
 	JOIN jsonprepare.burials b ON b.parent_id = g.child_id
 	JOIN jsonprepare.types t ON t.entity_id = b.child_id
 	WHERE t.path LIKE '%> Age%'
-	ORDER BY sitename) AS a) age GROUP BY sitename) ar)
+	ORDER BY sitename) AS a) age GROUP BY sitename) ar);
+
+
 
 
 

@@ -8,6 +8,7 @@ from medcem.models.entity import Data
 def map_index():
     thunau = Data.get_data(50505)
     pohansko = Data.get_data(50497)
+    kourim = Data.get_data(111285)
     sql_types = """
             SELECT * FROM jsonprepare.typesjson;
             """
@@ -17,5 +18,6 @@ def map_index():
     return render_template('map/index.html',
                            pohanskojson=pohansko[0].data,
                            thunaujson=thunau[0].data,
+                           kourimjson=kourim[0].data,
                            typesjson=types[0].types)
 

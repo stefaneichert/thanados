@@ -66,3 +66,50 @@ class Data:
             g.cursor.execute(sql, {"object_id": id_})
             place_id = g.cursor.fetchone()[0]
         return place_id
+
+    @staticmethod
+    def get_typedata(level, searchterm):
+        if level == 'grave':
+            sql = """
+                SELECT jsonb_agg(jsonb_build_object (
+	            'id', t.id,
+	            'site', t.sitename,
+	            'type', t.type,
+	            'count', t.count
+	            )) as types FROM
+		        (SELECT 
+		        m.id,
+		        m.name AS sitename,
+		        t.name AS type,
+		        count(t.name) 
+		        FROM model.entity m 
+		        JOIN jsonprepare.entities e ON e.parent_id = m.id 
+		        JOIN jsonprepare.types_main t ON e.child_id = t.entity_id
+		        WHERE t.path LIKE %(term)s
+		        GROUP BY m.id, sitename, type
+		        ORDER BY 1) as t;"""
+            g.cursor.execute(sql, {"term": searchterm})
+            return g.cursor.fetchall()
+        if level == 'burial':
+            sql = """
+                            SELECT jsonb_agg(jsonb_build_object (
+            	            'id', t.id,
+            	            'site', t.sitename,
+            	            'type', t.type,
+            	            'count', t.count
+            	            )) as types FROM
+            		        (SELECT 
+            		        m.id,
+            		        m.name AS sitename,
+            		        t.name AS type,
+            		        count(t.name) 
+            		        FROM model.entity m 
+            		        JOIN jsonprepare.entities e ON e.parent_id = m.id
+            		        JOIN jsonprepare.entities e1 ON e1.parent_id = e.child_id
+            		        JOIN jsonprepare.types_main t ON e1.child_id = t.entity_id
+            		        WHERE t.path LIKE %(term)s
+            		        GROUP BY m.id, sitename, type
+            		        ORDER BY 1) as t;"""
+        g.cursor.execute(sql, {"term": searchterm})
+        return g.cursor.fetchall()
+

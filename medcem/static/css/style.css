@@ -290,7 +290,7 @@ body {
 }
 
 .ui-dialog {
-    z-index: 900 !important;
+    z-index: 899 !important;
 }
 
 a.ui-button:active,
