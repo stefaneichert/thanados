@@ -1,0 +1,127 @@
+{
+  "_args": [
+    [
+      "chartjs-chart-box-and-violin-plot",
+      "/home/stefan/Dropbox/PrahaDev"
+    ]
+  ],
+  "_from": "chartjs-chart-box-and-violin-plot@latest",
+  "_hasShrinkwrap": false,
+  "_id": "chartjs-chart-box-and-violin-plot@2.1.0",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/chartjs-chart-box-and-violin-plot",
+  "_nodeVersion": "8.15.1",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/chartjs-chart-box-and-violin-plot_2.1.0_1555585671889_0.9501238676652437"
+  },
+  "_npmUser": {
+    "email": "contact@datavisyn.io",
+    "name": "datavisyn"
+  },
+  "_npmVersion": "6.9.0",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "chartjs-chart-box-and-violin-plot",
+    "raw": "chartjs-chart-box-and-violin-plot",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/chartjs-chart-box-and-violin-plot/-/chartjs-chart-box-and-violin-plot-2.1.0.tgz",
+  "_shasum": "ff3abfcaf0be0c082e8b4a3c1e5682be59f1643c",
+  "_shrinkwrap": null,
+  "_spec": "chartjs-chart-box-and-violin-plot",
+  "_where": "/home/stefan/Dropbox/PrahaDev",
+  "author": {
+    "email": "samuel.gratzl@datavisyn.io",
+    "name": "Samuel Gratzl",
+    "url": "http://datavisyn.io"
+  },
+  "bugs": {
+    "url": "https://github.com/datavisyn/chartjs-chart-box-and-violin-plot/issues"
+  },
+  "contributors": [
+    {
+      "name": "Stefan Luger",
+      "email": "stefan.luger@datavisyn.io",
+      "url": "https://github.com/sluger"
+    }
+  ],
+  "dependencies": {
+    "@sgratzl/science": "^2.0.0",
+    "chart.js": "^2.8.0"
+  },
+  "description": "Chart.js module for charting boxplots",
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^24.1.0",
+    "eslint": "^5.13.0",
+    "jest": "^24.1.0",
+    "release-it": "^10.1.0",
+    "rimraf": "^2.6.3",
+    "rollup": "^1.1.2",
+    "rollup-plugin-babel": "^4.3.2",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-node-resolve": "^4.0.0",
+    "rollup-watch": "^4.3.1",
+    "uglify-es": "^3.3.9"
+  },
+  "directories": {},
+  "dist": {
+    "fileCount": 16,
+    "integrity": "sha512-tr5L0VPsTJODndiIBLfQzrwZCaUY1tbPhtPW0D/xvGdD69NTWS89O13Fi33dHL2sXQwvGq1Hyqnn5e83VUKCgQ==",
+    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJcuFqICRA9TVsSAnZWagAAMj0P/jc4J5XYoxaMMGNdLuud\ndgS/B+9TYNEKAWJRb7HmgWblid9yCoLuCfsLdIeJt2QEuJwqDWfZ0sFVOTR/\ntNiJAPnRjY3r3BL3J3SGnmcY04Aff8+WX0j7LKLQiOdhRrTpsoEmfpTnIObV\nxlkwceUhp3yDQDDNFY5D7jLOlUJW/3IVGARGxoPDr3VLQxfZc0bOu5jTryA1\nCWACfckCfiYiSpHRVhqj80YA9/i3qvVGkQK0vAqipeSFPxw0zYor8Yhi2Sst\nzEH43Efi+wN9N1/1yWtno8SlmvnySyNyYDtrPNEM8o+yqgCMVBwX7EHdAcd1\ntlw1J1xxhnJJEt17Vw2Ngf51p3obwXx8jTslPxOFk8ploI4++N5krqUW/Ti2\nDaavRONzEQdWEbhlqrM+PCrITDevzgTGrCnKvTi4fGIh6uicVcRifKEwxiqg\nKaLi1Ma7Mk7LUU/ZA/CcKKXXS8DI3ykvhkxYBT5nbaUNcnLwhvZ1IRLPSgqg\nSITjDTdRh9YsyNLg/+vwswopCDZWCwJJS3/5YKXeWEtKizsJSW3WRX+OzED+\nNb54D3mspZTxiHGKF0hlLAKNf74AwOkyqBq2leMmTReYmZkbTnwImGxcuB1O\nmHcf/18byC35EBVwf5mHM+OR2gQNMcX9Gz7ieJ2UEDHUzig3vgctyImzNWhd\n99eF\r\n=OUSq\r\n-----END PGP SIGNATURE-----\r\n",
+    "shasum": "ff3abfcaf0be0c082e8b4a3c1e5682be59f1643c",
+    "tarball": "https://registry.npmjs.org/chartjs-chart-box-and-violin-plot/-/chartjs-chart-box-and-violin-plot-2.1.0.tgz",
+    "unpackedSize": 119200
+  },
+  "gitHead": "b1592c8678aa21663d57da38d0cb2d9894b63e5a",
+  "homepage": "https://github.com/datavisyn/chartjs-chart-box-and-violin-plot#readme",
+  "license": "MIT",
+  "main": "build/Chart.BoxPlot.js",
+  "maintainers": [
+    {
+      "name": "datavisyn",
+      "email": "contact@datavisyn.io"
+    },
+    {
+      "name": "sgratzl",
+      "email": "samuel_gratzl@gmx.at"
+    }
+  ],
+  "module": "build/Chart.BoxPlot.mjs",
+  "name": "chartjs-chart-box-and-violin-plot",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/datavisyn/chartjs-chart-box-and-violin-plot.git"
+  },
+  "scripts": {
+    "build": "npm run build:prod",
+    "build:dev": "rollup -c -i src/index.js",
+    "build:prod": "npm run build:dev && uglifyjs build/Chart.BoxPlot.js -c -m -o build/Chart.BoxPlot.min.js",
+    "clean": "rimraf build",
+    "prebuild": "npm run clean && npm test",
+    "prepare": "npm run build:dev",
+    "prepublishOnly": "npm run build:prod",
+    "preversion": "npm run test",
+    "release:major": "release-it major",
+    "release:minor": "release-it minor",
+    "release:patch": "release-it patch",
+    "release:pre": "release-it --preRelease=alpha --npm.tag=next",
+    "test": "eslint src",
+    "test:watch": "jest --watch",
+    "watch": "rollup -c -w -i src/index.js"
+  },
+  "unpkg": "build/Chart.BoxPlot.min.js",
+  "version": "2.1.0"
+}

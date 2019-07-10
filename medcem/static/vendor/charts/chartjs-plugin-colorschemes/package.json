@@ -1,0 +1,109 @@
+{
+  "_args": [
+    [
+      "chartjs-plugin-colorschemes",
+      "/home/stefan/Downloads"
+    ]
+  ],
+  "_from": "chartjs-plugin-colorschemes@latest",
+  "_hasShrinkwrap": false,
+  "_id": "chartjs-plugin-colorschemes@0.3.0",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/chartjs-plugin-colorschemes",
+  "_nodeVersion": "10.15.0",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/chartjs-plugin-colorschemes_0.3.0_1548266670445_0.5513506924577671"
+  },
+  "_npmUser": {
+    "email": "nagi@nagi-p.com",
+    "name": "nagix"
+  },
+  "_npmVersion": "6.4.1",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "chartjs-plugin-colorschemes",
+    "raw": "chartjs-plugin-colorschemes",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/chartjs-plugin-colorschemes/-/chartjs-plugin-colorschemes-0.3.0.tgz",
+  "_shasum": "d8af2a9ecd98cd254f617ff4ded914b8f8e70991",
+  "_shrinkwrap": null,
+  "_spec": "chartjs-plugin-colorschemes",
+  "_where": "/home/stefan/Downloads",
+  "author": {
+    "email": "nagi@nagi-p.com",
+    "name": "Akihiko Kusanagi",
+    "url": "https://nagix.github.io/"
+  },
+  "bugs": {
+    "url": "https://github.com/nagix/chartjs-plugin-colorschemes/issues"
+  },
+  "dependencies": {
+    "chart.js": "^2.5.0"
+  },
+  "description": "Predefined color schemes for Chart.js",
+  "devDependencies": {
+    "eslint-config-chartjs": "^0.1.0",
+    "gulp": "^4.0.0",
+    "gulp-eslint": "^5.0.0",
+    "gulp-file": "^0.4.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-replace": "^1.0.0",
+    "gulp-streamify": "^1.0.2",
+    "gulp-uglify": "^3.0.0",
+    "gulp-zip": "^4.2.0",
+    "merge2": "^1.2.3",
+    "rollup-stream": "^1.24.1",
+    "vinyl-source-stream": "^2.0.0"
+  },
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "dist": {
+    "fileCount": 19,
+    "integrity": "sha512-fvykQ5fxRWwngGDK7mVhxQ0dRG/+KxgO2bwIoUxnzTDXrjhUBSYFTiGakw/0VoG3tzt6zIvgQ1MQKcdtuVVbSg==",
+    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJcSKyvCRA9TVsSAnZWagAA8+oP/2oYnIeKWZv3Iu8+ZIaB\nxttt1FQcjlHSRfhnJBONVstlsOpZCjc/h6d15W3kMkwzlthofIgMp7yKISRL\nSQ9Zvb7j+UaQ7y6wjOdEYJyaSqLe/TsIa8qzcTnqbvUFFkK9tNm/acv4mCJz\nkkJyHdAsFrieSfuQ8PEpkHH3x7aadSNiYotz0io1QQwE7m9rkYXPo4+YH35x\nR66mpDqaqdsKkyEhaVgu/ZoPwAz8bIYiS3W6wXql2Ls0qvbhJi/h1x4wfgSp\n/4VnZVDqkE1v/5ZtuBLipPX5qWOkFWGCdmTg/bTejCHnVNoaSsRCm319vcRS\nJcDgLVgZEzLPA4ATfYIo6DxcbRgIfUwEVYAYdsXQPsxrUOkKTONizqIhe3uw\n4KN9hL1hMIf27t2ZE51qjqmuhaRgvP8iisH01YLu9Ou9Z9LFTGiDDFlrhCJ+\ni87I4ybSZujHYK8o+Hbg5WQFQxx/Ik3hIXorGM0eaGkLPKI75SeGMwdbOoDJ\n/iLPmHiNbMlflLhoaXsZHik0ovXOm2WGBmHBqaMzPzC2NaM9wGAccspzNDe0\nTEzPD7rSl1h1jWjEUVq83KO/3b79rVl2AfWOEXYIT6YOwMlynmrrCcD0aue4\nI5kG0BdwOi4X/uCeipbAepKznoNtmTjqHwVruolb1lhZirOzPaEI7RwT1VUV\n/VeP\r\n=fd1i\r\n-----END PGP SIGNATURE-----\r\n",
+    "shasum": "d8af2a9ecd98cd254f617ff4ded914b8f8e70991",
+    "tarball": "https://registry.npmjs.org/chartjs-plugin-colorschemes/-/chartjs-plugin-colorschemes-0.3.0.tgz",
+    "unpackedSize": 410510
+  },
+  "gitHead": "31e9ad181680ece53602e7cef7467d09369e6416",
+  "homepage": "https://nagix.github.io/chartjs-plugin-colorschemes",
+  "jsdelivr": "dist/chartjs-plugin-colorschemes.min.js",
+  "keywords": [
+    "brewer",
+    "chart.js",
+    "color",
+    "office",
+    "palette",
+    "plugin",
+    "scheme",
+    "tableau"
+  ],
+  "license": "MIT",
+  "main": "dist/chartjs-plugin-colorschemes.js",
+  "maintainers": [
+    {
+      "name": "nagix",
+      "email": "nagi@nagi-p.com"
+    }
+  ],
+  "name": "chartjs-plugin-colorschemes",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nagix/chartjs-plugin-colorschemes.git"
+  },
+  "unpkg": "dist/chartjs-plugin-colorschemes.min.js",
+  "version": "0.3.0"
+}

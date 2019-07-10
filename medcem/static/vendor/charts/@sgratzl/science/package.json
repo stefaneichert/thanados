@@ -1,0 +1,122 @@
+{
+  "_args": [
+    [
+      "@sgratzl/science@^2.0.0",
+      "/home/stefan/Dropbox/PrahaDev/node_modules/chartjs-chart-box-and-violin-plot"
+    ]
+  ],
+  "_from": "@sgratzl/science@>=2.0.0 <3.0.0",
+  "_hasShrinkwrap": false,
+  "_id": "@sgratzl/science@2.0.0",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/@sgratzl/science",
+  "_nodeVersion": "10.13.0",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/science_2.0.0_1545231196955_0.3925594595381756"
+  },
+  "_npmUser": {
+    "email": "samuel_gratzl@gmx.at",
+    "name": "sgratzl"
+  },
+  "_npmVersion": "6.4.1",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "@sgratzl/science",
+    "raw": "@sgratzl/science@^2.0.0",
+    "rawSpec": "^2.0.0",
+    "scope": "@sgratzl",
+    "spec": ">=2.0.0 <3.0.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "/chartjs-chart-box-and-violin-plot"
+  ],
+  "_resolved": "https://registry.npmjs.org/@sgratzl/science/-/science-2.0.0.tgz",
+  "_shasum": "9154f6f5d55c5712f48887c25492a4dc7bc6cc99",
+  "_shrinkwrap": null,
+  "_spec": "@sgratzl/science@^2.0.0",
+  "_where": "/home/stefan/Dropbox/PrahaDev/node_modules/chartjs-chart-box-and-violin-plot",
+  "author": {
+    "name": "Jason Davies",
+    "url": "http://www.jasondavies.com/"
+  },
+  "bugs": {
+    "url": "https://github.com/sgratzl/science.js/issues"
+  },
+  "contributors": [
+    {
+      "name": "Samuel Gratzl",
+      "email": "sam@sgratzl.com",
+      "url": "https://www.sgratzl.com"
+    }
+  ],
+  "dependencies": {},
+  "description": "Scientific and statistical computing in JavaScript.",
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "release-it": "^9.2.0",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.68.0",
+    "rollup-plugin-babel": "^4.1.0",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-node-resolve": "^4.0.0",
+    "rollup-watch": "^4.3.1",
+    "uglify-es": "^3.3.9",
+    "vows": "^0.8.0"
+  },
+  "directories": {},
+  "dist": {
+    "fileCount": 45,
+    "integrity": "sha512-LO3gArm8rVczcksg35xnZbOLEOE091VjyvvzR8mnPjP5K5+xqZEWhBi+lDcEk50dAlfPBoBHfwmu+MmiiSpXHw==",
+    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJcGltdCRA9TVsSAnZWagAAG9IP/Av3dXp9dZrSiWw9Wftw\n/xNpXoCIhdUVZVaxwQuRMX3J5Q9tqZSNU9cLBzm2Fu/Ebw1nB10oyZhAdz2h\nJ/c2N4fhJfz0FZjBWilAotbhRJACzghaDYsL2I76+WbWTny6f/Y67ZscBu/+\nRAMXDRxYVQrHSpnJgx/qN7icZ74FKOqD4t7MRaNIAKtGveJ8JYpbAfYHNQUT\n6RxpSs1OWzsniUE+UNrKYpQV50p3lhIu1SKhq4lTA3c3LTJcDOxLfFnaKef7\n+uKiv5xmNp7lnjQ7HQkMwbFUPuNE9r4JjCgDdN8UAW29Dvf34VkAVmfke9Zn\ni/QJccxZv5x9wmXTfMViknX8l4Xt6l52aqG7MGYX17qUGNOIMhBsx/XPlG9E\nI9hgUhhI4DG8w4Sah/I0uwjhvCjOFBXtCIKyFZTUnp7vfx3SvCZYIP6IAc3r\nLqbDIe5qvtT62S42hrlCGITI+mKZE68HKZKziIBbp3gK1+JTcq5hY8cu3oVq\nhPP59V9d0PmZ2vbn2rm51jd1/k17yNsQVrys+6HHZddku49pdy285T12l/fm\nHM4N9c0KlSCHP3DQP3YFP9kqUGUBWpovznkglrQApHdnEokIRo8DtyL4e0qq\nCyzS8HqDy5K9emN0hxjR1VKCrG9W26uThoi8nG2rHy7LpbarH66CcDGzcyHw\nUkLi\r\n=JJiH\r\n-----END PGP SIGNATURE-----\r\n",
+    "shasum": "9154f6f5d55c5712f48887c25492a4dc7bc6cc99",
+    "tarball": "https://registry.npmjs.org/@sgratzl/science/-/science-2.0.0.tgz",
+    "unpackedSize": 164654
+  },
+  "gitHead": "99649221fe9fa8596a1afc6b632e45f4da8b4fe2",
+  "homepage": "https://github.com/sgratzl/science.js",
+  "keywords": [
+    "mathematics",
+    "science",
+    "statistics"
+  ],
+  "license": "SEE LICENSE IN LICENSE",
+  "main": "build/science.js",
+  "maintainers": [
+    {
+      "name": "sgratzl",
+      "email": "samuel_gratzl@gmx.at"
+    }
+  ],
+  "module": "build/science.mjs",
+  "name": "@sgratzl/science",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/sgratzl/science.js.git"
+  },
+  "scripts": {
+    "build": "npm run build:prod",
+    "build:dev": "rollup -c -i src/index.js",
+    "build:prod": "npm run build:dev && uglifyjs build/science.js -c -m -o build/science.min.js",
+    "clean": "rimraf build",
+    "prebuild": "npm run clean && npm test",
+    "prepare": "npm run build:dev",
+    "pretest": "npm run build:dev",
+    "preversion": "npm run test",
+    "release:major": "release-it major",
+    "release:minor": "release-it minor",
+    "release:patch": "release-it patch",
+    "release:pre": "release-it --preRelease=alpha --npm.tag=next",
+    "test": "vows",
+    "test:watch": "vows --watch",
+    "watch": "rollup -c -w -i src/index.js"
+  },
+  "unpkg": "build/science.min.js",
+  "version": "2.0.0"
+}
