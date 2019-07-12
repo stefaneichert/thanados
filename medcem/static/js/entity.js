@@ -1,7 +1,17 @@
-console.log(jsonmysite);
 sitename = jsonmysite.name;
-console.log(sitename);
-console.log(systemtype);
+
+$('#HelpModalLabel').empty();
+$('#HelpModalLabel').append('Entity View');
+$('#helptext').empty();
+$('#helptext').append(
+    '<p>This page contains detailed information on the selected entity. This can be a site, a grave, a burial or a find.</p>' +
+    '<i>It includes description, classification, properties and values</i><br>' +
+    '<img src="/static/images/help/entity_view/entity_view_1.jpg" width="100%" height="auto" style="margin-bottom: 2em">' +
+    '<br><i>A static map is displayed showing the whole site with the entity along with image(s) of the entity </i><br>' +
+    '<img src="/static/images/help/entity_view/entity_view_2.jpg" width="100%" height="auto" style="margin-bottom: 2em">' +
+    '<br><i>In the metadata section a bibliography, external references like DOIs and image sources are displayed</i><br>' +
+    '<img src="/static/images/help/entity_view/entity_view_3.jpg" width="100%" height="auto" style="margin-bottom: 2em">'
+);
 
 $('#mybreadcrumb').append(
     '<nav aria-label="breadcrumb">' +
@@ -9,6 +19,7 @@ $('#mybreadcrumb').append(
     '<li class="breadcrumb-item"><a href="/entity/view/' + jsonmysite.site_id + '">' + sitename + '</a></li>' +
     '</ol>' +
     '</nav>');
+
 
 if (systemtype == 'place') {
     getEntityData(sitename, jsonmysite.id, jsonmysite);
@@ -107,6 +118,8 @@ if (systemtype == 'find') {
     });
 }
 
+$('#mybreadcrumbs').append('<button type="button" onclick="this.blur()" data-toggle="modal" data-target="#HelpModal" style="margin-left: auto" class="btn btn-sm btn-secondary float-right" title="Help"><i class="fas fa-info"></i></button>');
+
 mycitation1 = ' From: Stefan Eichert et al., Medieval Cemeteries Online: >>' + window.location + '<<. After: ';
 
 
@@ -126,16 +139,20 @@ function getEntityData(parentName, parentId, currentfeature) {
     ;
     entType = currentfeature.properties.maintype.name;
     typepath = currentfeature.properties.maintype.path;
-    if (typeof (currentfeature.properties.timespan) !== 'undefined' && typeof (currentfeature.properties.timespan.begin_from) !== 'undefined')
+    var tsbegin;
+    var tsend;
+    if (typeof (currentfeature.properties.timespan) !== 'undefined' && typeof (currentfeature.properties.timespan.begin_from) !== 'undefined') {
         tsbegin = parseInt((currentfeature.properties.timespan.begin_from), 10);
-    if (typeof (currentfeature.properties.timespan) !== 'undefined' && typeof (currentfeature.properties.timespan.end_to) !== 'undefined')
-        tsend = parseInt((currentfeature.properties.timespan.end_to), 10);
-    timespan = tsbegin + ' to ' + tsend;
-    dateToInsert = timespan;
-    if (typeof tsbegin == 'undefined') {
-        dateToInsert = '';
+        if (typeof (currentfeature.properties.timespan) !== 'undefined' && typeof (currentfeature.properties.timespan.end_to) !== 'undefined')
+            tsend = parseInt((currentfeature.properties.timespan.end_to), 10)
     }
     ;
+    if (typeof (tsbegin !== 'undefined')) timespan = tsbegin + ' to ' + tsend;
+    if (typeof tsbegin == 'undefined') {
+        timespan = '';
+    }
+    ;
+    dateToInsert = timespan;
 
     if (currentfeature.properties.maintype.systemtype == 'place') {
         children = currentfeature.features;
@@ -179,8 +196,9 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div class="row">' +
         '<h4 style="margin-bottom: 1em; margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '">' + entName + '</h4>' +
         '<div style="margin-top: 0.8em; margin-bottom: 0.8em; margin-right: 0.8em; margin-left: auto">' +
-        '<button type="button" onclick="this.blur()" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#citeModal">Citation</button>' +
-        '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-outline-secondary" >JSON</button>' +
+        '<button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>' +
+        '<a href="/map/' + place_id + '" style="margin-left: 0.1em" class="button btn btn-sm btn-secondary"><i class="fas fa-map-marked-alt" title="Detailed site map"></i></a>' +
+        '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-secondary" title="Download data as GeoJSON"><i class="fas fa-download"></i></button>' +
         '</div>' +
         '</div>' +
         '<div id="mytype_' + entId + '" class="modalrowitem" title="' + typepath + '">' + entType + '</div>' +
@@ -443,7 +461,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         ;
 
         $('#myChildrencontainer' + entId).append(
-            '<a class="modalrowitem subunits" href="/entity/view/' + child.id + '">' + child.properties.name + ': ' + child.properties.maintype.name + '</a>'
+            '<a class="modalrowitem subunits" href="/entity/view/' + child.id + '" title="' + child.properties.maintype.name + '">' + child.properties.name + '</a>'
         );
     });
 
@@ -484,6 +502,14 @@ function getEntityData(parentName, parentId, currentfeature) {
 
     mymap = L.map('myMapcontainer', {
         zoom: 25,
+        keyboard: false,
+        dragging: false,
+        zoomControl: false,
+        boxZoom: false,
+        doubleClickZoom: false,
+        scrollWheelZoom: false,
+        tap: false,
+        touchZoom: false,
         layers: [landscape]
     });
 
@@ -570,7 +596,26 @@ function getEntityData(parentName, parentId, currentfeature) {
         $('#mycontent').css('max-height', (maximumHeight - 17) + 'px');
     });
 
+    var osm2 = new L.TileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=2245afa655044c5c8f5ef8c129c29cdb',
+        {
+            apikey: '<2245afa655044c5c8f5ef8c129c29cdb>',
+            minZoom: 0,
+            maxZoom: 13,
+            attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }
+    );
+    var rect1 = {color: "#ff1100", weight: 15};
 
+    mapcenter = mymap.getCenter();
+    var miniMap = new L.Control.MiniMap(osm2,
+        {
+            centerFixed: mapcenter,
+            zoomLevelFixed: 6,
+            toggleDisplay: true,
+            collapsedWidth: 24,
+            collapsedHeight: 24,
+            aimingRectOptions: rect1
+        }).addTo(mymap);
 }
 
 
@@ -664,5 +709,5 @@ $('#mycitation').append('<div style="border: 1px solid #dee2e6; border-radius: 5
 L.extend(myjson, {//add necessary properties from json
     source: mysource
 });
-console.log(myjson);
+
 

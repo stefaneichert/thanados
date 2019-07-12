@@ -3,12 +3,9 @@ from flask import render_template, g
 from medcem import app
 from medcem.models.entity import Data
 
-@app.route('/map')
-@app.route('/map/index')
-def map_index():
-    thunau = Data.get_data(50505)
-    pohansko = Data.get_data(50497)
-    kourim = Data.get_data(111285)
+@app.route('/map/<int:object_id>')
+def map(object_id: int, format_=None):
+    myjson = Data.get_data(object_id)
     sql_types = """
             SELECT * FROM jsonprepare.typesjson;
             """
@@ -16,8 +13,7 @@ def map_index():
     types = g.cursor.fetchall()
 
     return render_template('map/index.html',
-                           pohanskojson=pohansko[0].data,
-                           thunaujson=thunau[0].data,
-                           kourimjson=kourim[0].data,
+                           myjson = myjson[0].data,
+                           object_id=object_id,
                            typesjson=types[0].types)
 

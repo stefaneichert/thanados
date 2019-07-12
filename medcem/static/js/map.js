@@ -1,9 +1,9 @@
 //initiate map with certain json
 $(document).ready(function () {
     //hardcoded first site
-    myjson = jsonpohansko;
+    //myjson = jsonpohansko;
+    $("#sidebarTitle").text(myjson.name);
     setmap(myjson);
-    console.log('Pohansko');
     console.log(myjson);
 });
 
@@ -27,14 +27,17 @@ function setmap(myjson) {
 //set sidebar to current json
     setSidebarContent(myjson);
 
+    //set attribution title
+    mywindowtitle = 'Medieval Cemeteries at the Periphery of the Carolingian World: ' + myjson.name + '. ';
+
 //define basemaps
     var landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=2245afa655044c5c8f5ef8c129c29cdb', {
-        attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        attribution: mywindowtitle + '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         apikey: '<2245afa655044c5c8f5ef8c129c29cdb>',
         maxZoom: 30
     });
     var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+        attribution: mywindowtitle + 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
         maxZoom: 30
     });
 
@@ -134,6 +137,17 @@ function setmap(myjson) {
 
     //initiate selection of clicked polygons
     polygonSelect();
+
+    L.easyPrint({
+        title: 'Export Map as Image',
+        position: 'topright',
+        sizeModes: ['Current', 'A4Portrait', 'A4Landscape'],
+        filename: 'myMap',
+        exportOnly: true,
+        hideControlContainer: false,
+        customWindowTitle: "mywindowtitle"
+    }).addTo(map);
+
 }
 ;
 
@@ -317,6 +331,9 @@ $(document).ready(function () {
     containerheight = ($('#container').height());
     windowheight = ($(window).height());
     $('body').css('max-height', windowheight - 56 + 'px');
+    mapwidth = ($('#map').width());
+    console.log('map :' + mapwidth);
+    if (mapwidth < 600) animateSidebar();
 });
 
 //sidebar content
@@ -431,7 +448,7 @@ function collapseAllOthers(collapseDiv) {
 }
 
 //buttons to select between sites
-$(".thunaubutton").click(function () {
+/*$(".thunaubutton").click(function () {
     map.remove();
     $("#accordion1").empty();
     myjson = jsonthunau;
@@ -465,7 +482,7 @@ $(".kourimbutton").click(function () {
     $("#sidebarTitle").text("Stará Kouřim");
     $("#mypanel").animate({scrollTop: 0});
     $(".ui-dialog-content").dialog("close");
-});
+});*/
 
 
 //Modal
@@ -706,7 +723,7 @@ function setImages(entId, entfiles) {
                 '<span class="sr-only">Previous</span>' +
                 '</a>' +
                 '<a class="carousel-control-next" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="next">' +
-                '<span aria-hidden="true"><button onclick="this.blur()" type="button" class="btn btn-secondary"></button></span>' +
+                '<span aria-hidden="true"><button onclick="this.blur()" type="button" class="btn btn-secondary">></button></span>' +
                 '<span class="sr-only">Next</span>' +
                 '</a>' +
                 '</div>'
@@ -752,7 +769,7 @@ function modalset(id) {
     //$('#myModal').modal();
     $("#myModal").dialog({
         width: 500,
-        height: (newListHeight - 138),
+        height: (newListHeight - 188),
         title: globalentName,
         position: {my: 'right bottom', at: 'right bottom-19', of: window}
     });

@@ -13,7 +13,7 @@
                         </button>
                     </div>
                     <h3 class="panel-title">
-                        <span id="sidebarTitle"> Pohansko Herrenhof
+                        <span id="sidebarTitle">
                         </span>
                     </h3>
                 </div>
@@ -26,11 +26,11 @@
                             Menu
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item thunaubutton" href="#">Thunau Obere
+                            <!--<a class="dropdown-item thunaubutton" href="#">Thunau Obere
                                 Holzwiese</a>
                             <a class="dropdown-item pohanskobutton" href="#">Pohansko Herrenhof</a>
                             <a class="dropdown-item kourimbutton" href="#">Stará Kouřim</a>
-                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-divider"></div>-->
                             <a class="dropdown-item searchbutton" href="#">Filter/Search</a>
                             <a class="dropdown-item visbutton" href="#">Visualisations</a>
                         </div>
@@ -60,10 +60,10 @@
                 <i class="fas fa-bars"></i>
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonMap">
-                <a class="dropdown-item thunaubutton" href="#">Thunau Obere Holzwiese</a>
+               <!-- <a class="dropdown-item thunaubutton" href="#">Thunau Obere Holzwiese</a>
                 <a class="dropdown-item pohanskobutton" href="#">Pohansko Herrenhof</a>
                 <a class="dropdown-item kourimbutton" href="#">Stará Kouřim</a>
-                <div class="dropdown-divider"></div>
+                <div class="dropdown-divider"></div>-->
                 <a class="dropdown-item searchbutton" href="#">Filter/Search</a>
                 <a class="dropdown-item visbutton" href="#">Visualisations</a>
             </div>
@@ -111,9 +111,7 @@
 
 
 
-var jsonpohansko = {{ pohanskojson|tojson }};
-var jsonthunau = {{ thunaujson|tojson }};
-var jsonkourim = {{ kourimjson|tojson }};
+var myjson = {{ myjson|tojson }};
 var jsontypes = {{ typesjson|tojson }};
 
 
@@ -126,7 +124,7 @@ var jsontypes = {{ typesjson|tojson }};
 
 
 </script>
-
+<script src="/static/vendor/leafletplugins/leaflet-easyPrint-gh-pages/dist/bundle.js"></script>
 <script src="/static/js/map.js"></script>
 <script src="/static/js/search.js"></script>
 <script src="/static/js/choropleth_results.js"></script>

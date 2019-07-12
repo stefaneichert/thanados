@@ -1,7 +1,7 @@
 //prepare charts/plots and data
 
 //depth of graves: Data contains site and no of graves of a depth interval of 20cm
-mydepthdata = setChartData(depth_data, false, false, true);
+mydepthdata = setChartData(depth_data, false, true, true);
 depthconfig = {
     // The type of chart we want to create
     type: 'bar',
@@ -21,7 +21,7 @@ depthconfig = {
             yAxes: [{
                 scaleLabel: {
                     display: true,
-                    labelString: 'no.'
+                    labelString: '%'
                 }
             }]
         },
@@ -36,7 +36,7 @@ var ctx = document.getElementById('depth-chart').getContext('2d');
 var depthchart = new Chart(ctx, depthconfig);
 
 // orientation of graves: Data contains site and no of graves of a orientation interval of 20°
-var myorientationdata = setChartData(orientation_data, false, false, false);
+var myorientationdata = setChartData(orientation_data, false, true, false);
 var orientationconfig = {
     // The type of chart we want to create
     type: 'bar',
@@ -56,7 +56,7 @@ var orientationconfig = {
             yAxes: [{
                 scaleLabel: {
                     display: true,
-                    labelString: 'no.'
+                    labelString: '%'
                 }
             }]
         },
