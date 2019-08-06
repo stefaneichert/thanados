@@ -35,3 +35,13 @@ var val = $(".leaflet-control-attribution").html();
 console.log(val);
 $(".leaflet-control-attribution").html(val.substring(2, val.length));
 }
+
+$(document).ready(function () {
+    $('#show_passwords').show();
+    $('#show_passwords').change(function () {
+        $('#password')[0].type = this.checked ? 'text' : 'password';
+    });
+    $("form").each(function () {
+        $(this).validate();
+    });
+})

@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+<form method="post">
+    {{ form.csrf_token }}
+    {{ form.username.label }}
+    {{ form.username(class_='required') }}
+    {{ form.password.label }}
+    {{ form.password(class_='required') }}
+    {{ form.show_passwords.label }}
+    {{ form.show_passwords }}
+    {{ form.save }}
+</form>
+{{ error_html|safe }}
+{% endblock %}

@@ -1,10 +1,12 @@
 from flask import render_template, g
+from flask_login import login_required
 
 from medcem import app
 from medcem.models.entity import Data
 
 
 @app.route('/charts')
+@login_required
 def charts():
     depth = Data.get_depth()
     constr = Data.get_typedata('grave', 'Grave Constr%')

@@ -10,7 +10,7 @@ app.config.from_object('config.default')  # Load config/INSTANCE_NAME.py
 app.config.from_pyfile('production.py')  # Load instance/INSTANCE_NAME.py
 
 
-from medcem.views import index, map, about, kourim, entity, charts
+from medcem.views import index, map, about, kourim, entity, charts, login
 
 
 def connect():
