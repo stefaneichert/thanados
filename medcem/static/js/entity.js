@@ -210,7 +210,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myParentcontainer' + entId + '"></div>' +
         '</div>' +
         '<div id="myImagecontainer' + entId + '" class="col-md-auto" style="margin-top: 4em" ></div>' +
-        '<div id="myMapcontainer" title="Static map of site with entity higlighted. For interactive map please click map button" class="col-md" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; margin-right: 1em"></div>' +
+        '<div id="myMapcontainer" title="Static map of site with entity higlighted. For interactive map please click the map button in the left top corner." class="col-md" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; margin-right: 1em"></div>' +
         '</div>' +
         '<div id="myMetadatacontainer' + entId + '"></div>' +
         '</div>' +
