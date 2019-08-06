@@ -194,16 +194,15 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div class="row">' +
         '<div id="myData_' + entId + '" class="col-md">' +
         '<div class="row">' +
-        '<h4 style="margin-bottom: 1em; margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '">' + entName + '</h4>' +
+        '<h4 style="margin-bottom: 1em; margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '" title="Name of entity">' + entName + '</h4>' +
         '<div style="margin-top: 0.8em; margin-bottom: 0.8em; margin-right: 0.8em; margin-left: auto">' +
         '<button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>' +
-        '<a href="/map/' + place_id + '" style="margin-left: 0.1em" class="button btn btn-sm btn-secondary"><i class="fas fa-map-marked-alt" title="Detailed site map"></i></a>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-secondary" title="Download data as GeoJSON"><i class="fas fa-download"></i></button>' +
         '</div>' +
         '</div>' +
         '<div id="mytype_' + entId + '" class="modalrowitem" title="' + typepath + '">' + entType + '</div>' +
-        '<div id="mytimespan' + entId + '" class="modalrowitem">' + dateToInsert + '</div>' +
-        '<div id="myDescr' + entId + '">' + entDesc + '</div>' +
+        '<div id="mytimespan' + entId + '" class="modalrowitem" title="Timespan/daterange of entity">' + dateToInsert + '</div>' +
+        '<div id="myDescr' + entId + '" title="Description of entity">' + entDesc + '</div>' +
         '<div id="myTypescontainer' + entId + '"></div>' +
         '<div id="myDimensionscontainer' + entId + '"></div>' +
         '<div id="myMaterialcontainer' + entId + '"></div>' +
@@ -211,7 +210,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myParentcontainer' + entId + '"></div>' +
         '</div>' +
         '<div id="myImagecontainer' + entId + '" class="col-md-auto" style="margin-top: 4em" ></div>' +
-        '<div id="myMapcontainer" class="col-md" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; margin-right: 1em"></div>' +
+        '<div id="myMapcontainer" title="Static map of site with entity higlighted. For interactive map please click map button" class="col-md" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; margin-right: 1em"></div>' +
         '</div>' +
         '<div id="myMetadatacontainer' + entId + '"></div>' +
         '</div>' +
@@ -441,7 +440,7 @@ function getEntityData(parentName, parentId, currentfeature) {
             '<tr>' +
             '<th scope="row">' + (t + 1) + '</th>' +
             '<td>' + file.id + '</td>' +
-            '<td><a href="https://thanados.openatlas.eu/display/' + file.id + '.bmp" target="_blank">' + file.name + '</a></td>' +
+            '<td><a href="/static/images/entities/' + file.id + '.jpg" target="_blank">' + file.name + '</a></td>' +
             '<td>' + source + '</td>' +
             '<td>' + reference + '</td>' +
             '<td>' + license + '</td>' +
@@ -482,7 +481,7 @@ function getEntityData(parentName, parentId, currentfeature) {
 
 
     landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=2245afa655044c5c8f5ef8c129c29cdb', {
-        attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        attribution: 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         apikey: '<2245afa655044c5c8f5ef8c129c29cdb>',
         maxZoom: 30
     });
@@ -601,7 +600,7 @@ function getEntityData(parentName, parentId, currentfeature) {
             apikey: '<2245afa655044c5c8f5ef8c129c29cdb>',
             minZoom: 0,
             maxZoom: 13,
-            attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            attribution: 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         }
     );
     var rect1 = {color: "#ff1100", weight: 15};
@@ -616,6 +615,9 @@ function getEntityData(parentName, parentId, currentfeature) {
             collapsedHeight: 24,
             aimingRectOptions: rect1
         }).addTo(mymap);
+
+    L.easyButton('fas fa-map-marked-alt', function(btn, map){openInNewTab('/map/' + place_id);'Open detailed map of site'}).addTo(mymap);
+    attributionChange();
 }
 
 
@@ -627,7 +629,7 @@ function setImages(entId, entfiles) {
             $('#myImagecontainer' + entId).empty();
             $.each(entfiles, function (f, files) {
                 $('#myImagecontainer' + entId).append(
-                    '<a href="https://thanados.openatlas.eu/display/' + files.id + '.bmp" data-featherlight><img src="https://thanados.openatlas.eu/display/' + files.id + '.bmp" class="modalimg" id="mymodalimg"></a>'
+                    '<a href="/static/images/entities/' + files.id + '.jpg" data-featherlight><img src="/static/images/entities/' + files.id + '.jpg" class="modalimg" id="mymodalimg"></a>'
                 )
             });
         }
@@ -647,10 +649,10 @@ function setImages(entId, entfiles) {
                 '</ol>' +
                 '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
                 '<div class="carousel-item active">' +
-                '<a href="https://thanados.openatlas.eu/display/' + firstimage + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + firstimage + '.bmp"></a>' +
+                '<a href="/static/images/entities/' + firstimage + '.jpg" data-featherlight><img class="d-block modalimg" src="/static/images/entities/' + firstimage + '.jpg"></a>' +
                 '</div>' +
                 '<div class="carousel-item">' +
-                '<a href="https://thanados.openatlas.eu/display/' + secondimage + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + secondimage + '.bmp"></a>' +
+                '<a href="/static/images/entities/' + secondimage + '.jpg" data-featherlight><img class="d-block modalimg" src="/static/images/entities/' + secondimage + '.jpg"></a>' +
                 '</div>' +
                 '</div>' +
                 '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
@@ -669,7 +671,7 @@ function setImages(entId, entfiles) {
                 if (f > 1) {
                     $('#mycarouselimages' + entId).append(
                         '<div class="carousel-item">' +
-                        '<a href="https://thanados.openatlas.eu/display/' + files.id + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + files.id + '.bmp"></a>' +
+                        '<a href="/static/images/entities/' + files.id + '.jpg" data-featherlight><img class="d-block modalimg" src="/static/images/entities/' + files.id + '.jpg"></a>' +
                         '</div>'
                     );
                     $('#mymodalimageindicators' + entId).append(
@@ -710,4 +712,6 @@ L.extend(myjson, {//add necessary properties from json
     source: mysource
 });
 
+//add title to breadcrumb items
+$('.breadcrumb-item').prop('title', 'Path of the entity. Click to navigate');
 

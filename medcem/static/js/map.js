@@ -32,12 +32,12 @@ function setmap(myjson) {
 
 //define basemaps
     var landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=2245afa655044c5c8f5ef8c129c29cdb', {
-        attribution: mywindowtitle + '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        attribution: mywindowtitle + 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         apikey: '<2245afa655044c5c8f5ef8c129c29cdb>',
         maxZoom: 30
     });
-    var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: mywindowtitle + 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+    var satellite = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'], attribution: mywindowtitle + 'Tiles: &copy; Google Maps ',
         maxZoom: 30
     });
 
@@ -114,6 +114,9 @@ function setmap(myjson) {
     resultpoints = new L.LayerGroup();
     resultpoints.addTo(map);
 
+    choroplethLayer = new L.LayerGroup();
+    choroplethLayer.addTo(map);
+
 
 //define map control
     baseLayers = {
@@ -147,9 +150,12 @@ function setmap(myjson) {
         hideControlContainer: false,
         customWindowTitle: "mywindowtitle"
     }).addTo(map);
-
+map.on('baselayerchange', function (e) {attributionChange()});
+attributionChange();
 }
 ;
+
+
 
 //openpolygon for active sidebargrave
 function showpolygon(id) {
@@ -332,7 +338,6 @@ $(document).ready(function () {
     windowheight = ($(window).height());
     $('body').css('max-height', windowheight - 56 + 'px');
     mapwidth = ($('#map').width());
-    console.log('map :' + mapwidth);
     if (mapwidth < 600) animateSidebar();
 });
 
@@ -690,7 +695,7 @@ function setImages(entId, entfiles) {
             $('#myModalImagecontainer' + entId).empty();
             $.each(entfiles, function (f, files) {
                 $('#myModalImagecontainer' + entId).append(
-                    '<a href="https://thanados.openatlas.eu/display/' + files.id + '.bmp" data-featherlight><img src="https://thanados.openatlas.eu/display/' + files.id + '.bmp" class="modalimg" id="mymodalimg"></a>'
+                    '<a href="/static/images/entities/' + files.id + '.jpg" data-featherlight><img src="/static/images/entities/' + files.id + '.jpg" class="modalimg" id="mymodalimg"></a>'
                 )
             });
         }
@@ -712,10 +717,10 @@ function setImages(entId, entfiles) {
                 '</ol>' +
                 '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
                 '<div class="carousel-item active">' +
-                '<a href="https://thanados.openatlas.eu/display/' + firstimage + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + firstimage + '.bmp"></a>' +
+                '<a href="/static/images/entities/' + firstimage + '.jpg" data-featherlight><img class="d-block modalimg" src="/static/images/entities/' + firstimage + '.jpg"></a>' +
                 '</div>' +
                 '<div class="carousel-item">' +
-                '<a href="https://thanados.openatlas.eu/display/' + secondimage + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + secondimage + '.bmp"></a>' +
+                '<a href="/static/images/entities/' + secondimage + '.jpg" data-featherlight><img class="d-block modalimg" src="/static/images/entities/' + secondimage + '.jpg"></a>' +
                 '</div>' +
                 '</div>' +
                 '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
@@ -734,7 +739,7 @@ function setImages(entId, entfiles) {
                 if (f > 1) {
                     $('#mycarouselimages' + entId).append(
                         '<div class="carousel-item">' +
-                        '<a href="https://thanados.openatlas.eu/display/' + files.id + '.bmp" data-featherlight><img class="d-block modalimg" src="https://thanados.openatlas.eu/display/' + files.id + '.bmp"></a>' +
+                        '<a href="/static/images/entities/' + files.id + '.jpg" data-featherlight><img class="d-block modalimg" src="/static/images/entities/' + files.id + '.jpg"></a>' +
                         '</div>'
                     );
                     $('#mymodalimageindicators' + entId).append(
@@ -786,3 +791,4 @@ function modalsetsite() {
     });
     $("#myModal").scrollTop("0");
 }
+

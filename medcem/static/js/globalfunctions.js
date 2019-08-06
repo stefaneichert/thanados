@@ -22,3 +22,16 @@ function exportToJsonFile(data) {
         }, 0);
     }
 }
+
+function openInNewTab(url) {
+  var win = window.open(url, '_blank');
+  win.focus();
+}
+
+
+function attributionChange() {
+    $(".leaflet-control-attribution").find(':first-child').remove();
+var val = $(".leaflet-control-attribution").html();
+console.log(val);
+$(".leaflet-control-attribution").html(val.substring(2, val.length));
+}
