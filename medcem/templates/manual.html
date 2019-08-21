@@ -1,0 +1,144 @@
+{% extends "layout.html" %}
+{% block content %}
+<nav id="mysubmenu" class="navbar sticky-top navbar-light bg-light">
+    <a class="navbar-brand" href="#catalog">Catalog</a>
+    <a class="navbar-brand" href="#maps">Maps</a>
+    <a class="navbar-brand" href="#search">Filter/Search</a>
+    <a class="navbar-brand" href="#visualisations">Visualisations</a>
+    <a class="navbar-brand" href="#charts">Charts</a>
+</nav>
+<div id="mycontent">
+    <h2 class="my-heading container">Manual</h2>
+    <div class="container with-margin">
+        <h3 id="catalog">Catalog</h3>
+        <p class="lead text-muted" style="margin-top: 2em; margin-bottom: 2em">
+            With <b> "Cemeteries" </b> in the top menu you can select the respective cemetery and browse its catalog
+            data along with a static map, images, bibliography
+            and other metadata. Here you can also download <i class="fas fa-download"></i> the data as GeoJSON files and
+            get the correct citation <i class="fas fa-quote-right"></i> for
+            the respective entry or open the interactive map. From the level of the cemetery you can then browse the
+            graves by selecting the
+            respective one under the "subunits" sections. From the level of the grave you can then access the
+            skeleton(s) by
+            selecting the respective subunit and from there you can access the finds that are associated with the
+            skeleton. In the navigation bar at the top, underneath the menu bar you can always see the path of the
+            current object. If you want to download images, you can do that by right clicking on the image and save it
+            on your computer. Please respect the copyright information given in the metadata section. </p>
+        <img class="border aboutimage" src="/static/images/about/entity.jpg">
+        <p class="text-center lead text-muted font-italic">Screenshot: catalog entry of a grave with sources and
+            metadata</p>
+        <br>
+        <h3 id="maps">Maps</h3>
+        <p class="lead text-muted" style="margin-top: 2em; margin-bottom: 2em">
+            With <b> "Maps" </b> in the top menu you can access a detailed and interactive map of the cemetery. Here
+            you will
+            find the plot of the graveyard with each grave. You can click the graves to access further information or
+            use the sidebar to navigate between them. If you click the info <i class="fas fa-info"></i> button in the
+            sidebar respectively the
+            grave in the map you can access detailed info about the grave and its contents. There you will
+            find a description along with classifications, dimensions, images etc. For accessing the permanent link of
+            the respective object (cemetery, grave, skeleton or find), you can select the "Permalink" reference in the
+            detailed view.
+            The sidebar can be turned on and off by selecting <i class="fa fa-chevron-left"></i> or <i
+                class="fa fa-chevron-right"></i>.
+            The map allows for various background layers which you can select by clicking the top right menu button in
+            the map. Here you can also toggle the layers to be shown: graves, search results and visualisations. If you
+            want to change the order of these layers, just turn them off and on again. The last one to be turned on will
+            be the top layer. For downloading the map as image simply click the download button in the right top corner
+            underneath the layer control.</p>
+        <img class="border aboutimage" src="/static/images/about/map.jpg">
+        <p class="text-center lead text-muted font-italic">Screenshot: map view of a cemetery with info window</p>
+        <h3 id="search">Filter/Search</h3>
+        <p class="lead text-muted" style="margin-top: 2em; margin-bottom: 2em">
+            By clicking the <b> "Menu" </b> button in the sidebar, or if the sidebar is closed, <i
+                class="fas fa-bars"></i> in the map, you can
+            search for
+            various properties of the graves, skeletons or finds along with their combinations. Also you can create
+            certain visualisations of various attributes.
+        </p>
+        <img class="border aboutimage" src="/static/images/about/search1.jpg">
+        <p class="text-center lead text-muted font-italic">Screenshot: search on finds level with material as
+            criteria</p>
+        <p class="lead text-muted" style="margin-top: 2em; margin-bottom: 2em">
+            When selecting the <b> "Filter/Search" </b> option a window will open to define your search parameters. You
+            can
+            search on three levels: <b> "Graves" </b> will query the information that belongs to the grave itself. <b>
+            "Burials" </b> will
+            concern the human remains/skeletons in the grave and <b> "Finds" </b> will deal with the artifacts that are
+            associated with the buried individual.
+            In the second step you will be asked what to search for. <b> "Maintype" </b> deals with the main
+            classification of
+            the entity. In case of a grave this is for example a differentiation between e.g. "single grave" or "bone
+            deposition" etc. In case of a burial (which is the term used here for the human remains in the grave) it
+            distinguishes e.g. between "skeleton" or "cremation" etc. On the level of "finds" this classifies the type
+            of find, e.g. "weapon", "pottery", "jewelry" etc. These classifications are structured hierarchically and
+            you can select a category using a tree of terms. When you select for example "weapon" also all subterms of
+            this classification like "sword" or "axe" etc. will be considered for your search. If you type your
+            searchterm into the textbox, the matching terms will be highlighted.
+            You can always reset your search by selecting <i class="fas fa-sync-alt"></i><br>
+            <b> "Properties" </b> concerns other attributes the respective entity can have: E.g. the construction of a
+            grave, the sex of an individual or the position of a find in a grave etc.
+            Please note that regardless of the level (grave, burial or find) all properties are listed in the tree
+            selection. However a property like "grave construction" will in fact only be associated with the grave-level
+            and not with finds nor skeletons. Neither will anthropological properties be associated with finds etc. <br>
+            <b>"Timespan"</b> can be used to filter regarding to the chronological properties of the respective entity.
+            Here you can define a minimum and/or a maximum year. It is possible to define a timespan with two dates or
+            only a minimum respectively maximum date.
+            <br>
+            <b>"Dimensions"</b> can be used to filter regarding to the value of a certain attribute, again with minimum
+            and/or maximum.
+            <br>
+            <b>"Material"</b> can be used to filter regarding to material an artifact is made of. This applies mostly to
+            finds and hardly to the other levels.
+            Here you can select a material from the tree selection and define a minimum/maximum in percent. If you leave
+            the values blank artifacts with any amount of the selected material are shown as results. If you define a
+            minimum and/or maximum only matching amounts will be shown. This can for example be used to filter for items
+            that consist of a certain copper alloy with e.g. more than 80% of copper etc.
+            Once the search criteria are selected the search engine will tell you how many matches have been found.
+
+            Once the first search is finished with results you can either <b> add another search </b> by clicking the <i
+                class="fas fa-plus"></i>
+            button and proceed as described above. The results of both searches will then be intersected. Or you can <b>display
+            the results on the map </b>as polygons or points by
+            clicking the <i class="fas fa-map-marked-alt"></i> button. For <b>saving the results as GeoJSON </b>file
+            select the <i class="far fa-save"></i> button.
+            To customize the style of search results on the map select the <i
+                class="fas fa-ellipsis-h"></i> button for advanced options. Here you can pick custom colors, borders
+            etc.
+        </p>
+        </p>
+        <img class="border aboutimage" src="/static/images/about/search2.jpg">
+        <p class="text-center lead text-muted font-italic">Screenshot: Search results displayed as polygons on the map
+            with custom color</p>
+        <h3 id="visualisations">Visualisations</h3>
+        <p class="lead text-muted" style="margin-top: 2em; margin-bottom: 2em">
+            Like with the filter/search function you can also create <b> choropleth visualisations </b> and display them
+            on the
+            map. This works with most properties that have a certain value and with categories like female/male etc.
+            Just select the visualisation option in the menu button and proceed with the desired option. Once the
+            criteria are chosen you can also select custom styles for displaying the data by selecting <i
+                class="fas fa-ellipsis-h"></i> and show them on the map by clicking <i
+                class="fas fa-map-marked-alt"></i>.
+        </p>
+        <img class="border aboutimage" src="/static/images/about/vis1.jpg">
+        <p class="text-center lead text-muted font-italic">Screenshot: Age at death estimation of the buried individuals
+            with custom colors</p>
+        </p>
+        <h3 id="charts">Charts</h3>
+        <p class="lead text-muted" style="margin-top: 2em; margin-bottom: 2em">
+            In the menu bar with "Charts" you can access various pre-defined charts respectively plots of certain
+            attributes of the cemeteries. You can toggle options like absolute values or percentage by clicking the top
+            right buttons in the plots. Also you can turn datasets on or off by clicking the legend entries. If you
+            hover the pointer over a certain plot element additional information is shown. </p>
+            <img class="border aboutimage" src="/static/images/about/charts.jpg">
+        <p class="text-center lead text-muted font-italic">Screenshot: Age at death estimation of the buried individuals</p>
+
+
+    </div>
+
+</div>
+
+
+<script src="/static/js/manual.js"></script>
+
+{% endblock %}

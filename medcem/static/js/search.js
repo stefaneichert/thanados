@@ -66,7 +66,7 @@ function appendSearch(iter) {//append search form to dialog
             '<select class="custom-select empty" id="PropSelect_' + iter + '">' +
             '<option selected disabled>Select search criteria...</option>' +
             '<option value="maintype">Maintype</option>' +
-            '<option value="type">Types</option>' +
+            '<option value="type">Properties</option>' +
             '<option value="timespan">Timespan</option>' +
             '<option value="dimension">Dimensions</option>' +
             '<option value="material">Material</option>' +

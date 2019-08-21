@@ -425,3 +425,17 @@ a.ui-button:active,
     margin-top: 1em;
 }
 
+.footerimg {
+    padding: 1em;
+}
+
+.aboutimage {
+    max-width: 100%;
+    margin: 1em;
+    height: auto;
+}
+
+#mysubmenu {
+    padding-left: 4.1em;
+    padding-right: 4.1em;
+}

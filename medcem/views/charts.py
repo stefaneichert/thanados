@@ -6,7 +6,7 @@ from medcem.models.entity import Data
 
 
 @app.route('/charts')
-@login_required
+# @login_required
 def charts():
     depth = Data.get_depth()
     constr = Data.get_typedata('grave', 'Grave Constr%')

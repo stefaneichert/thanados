@@ -1,14 +1,32 @@
 {% extends "layout.html" %}
 {% block content %}
-<form method="post">
-    {{ form.csrf_token }}
-    {{ form.username.label }}
-    {{ form.username(class_='required') }}
-    {{ form.password.label }}
-    {{ form.password(class_='required') }}
-    {{ form.show_passwords.label }}
-    {{ form.show_passwords }}
-    {{ form.save }}
-</form>
+<div id="container1" style="margin-left: 2em; max-width: 600px; margin-right: 20%">
+    <form method="post">
+        {{ form.csrf_token }}
+        <div class="input-group mb-3 input-group-sm mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Username: </span>
+            </div>
+            {{ form.username(class_='required, form-control') }}
+        </div>
+        <div class="input-group mb-3 input-group-sm mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Password: </span>
+            </div>
+            {{ form.password(class_='required, form-control') }}
+        </div>
+        <div class="input-group mb-3 input-group-sm mb-3" style="width: 100%">
+            <div class="input-group-prepend">
+                <span class="input-group-text">show password</span>
+                {{ form.show_passwords(type_='radio')  }}
+            </div>
+            <div class="input-group-append float-right">
+                {{ form.save(class_='btn btn-secondary')  }}
+            </div>
+        </div>
+    </form>
+</div>
+
+
 {{ error_html|safe }}
 {% endblock %}
