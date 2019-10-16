@@ -1,7 +1,7 @@
-    maximumHeight = ((($(window).height() - $('#mynavbar').height()) - $('#mysubmenu').height()) - $('#myfooter').height());
-    $('#mycontent').css('max-height', (maximumHeight - 27) + 'px');
+    maximumHeight = ($(window).height() - $('#mynavbar').height())
+    $('#mycontent').css('max-height', (maximumHeight - 10) + 'px');
 
     $(window).resize(function () {
-        maximumHeight = ((($(window).height() - $('#mynavbar').height()) - $('#mysubmenu').height()) - $('#myfooter').height());
-        $('#mycontent').css('max-height', (maximumHeight - 27) + 'px');
+        maximumHeight = ($(window).height() - $('#mynavbar').height());
+        $('#mycontent').css('max-height', (maximumHeight - 10) + 'px');
     });

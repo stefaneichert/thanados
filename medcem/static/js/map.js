@@ -41,6 +41,17 @@ function setmap(myjson) {
         maxZoom: 30
     });
 
+    var basemap = L.tileLayer.wms('http://geoportal.cuzk.cz/WMS_ZM10_PUB/WMService.aspx', {
+        layers: 'GR_ZM10',
+        maxZoom: 30
+    });
+
+    if (myjson.site_id == 111285) {
+        var imageUrl = '/static/images/entities/112757.png';
+        var imageBounds = [[49.99800, 14.99246], [49.99747, 14.99328]];
+        plot = L.imageOverlay(imageUrl, imageBounds);
+    }
+
 //define map
     map = L.map('map', {
         zoom: 20,
@@ -71,6 +82,7 @@ function setmap(myjson) {
     });
 
     graves.addTo(map);
+
 
     //if geometry is point create a rectangle around that point
     pointgraves = L.geoJSON(myjson, {
@@ -122,12 +134,13 @@ function setmap(myjson) {
     baseLayers = {
         "Landscape": landscape,
         "Satellite": satellite,
+        "BasemapCZ": basemap,
     };
 
     var overlays = {
         "Graves": graves,
         "Search result shapes": resultpolys,
-        "Search result markers": resultpoints,
+        "Search result markers": resultpoints
     };
 
 //add layer control
@@ -150,11 +163,12 @@ function setmap(myjson) {
         hideControlContainer: false,
         customWindowTitle: "mywindowtitle"
     }).addTo(map);
-map.on('baselayerchange', function (e) {attributionChange()});
-attributionChange();
+    map.on('baselayerchange', function (e) {
+        attributionChange()
+    });
+    attributionChange();
 }
 ;
-
 
 
 //openpolygon for active sidebargrave

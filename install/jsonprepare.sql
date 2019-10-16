@@ -655,7 +655,7 @@ DROP TABLE IF EXISTS jsonprepare.tmp;
 CREATE TABLE jsonprepare.tmp AS
     (SELECT *
      FROM jsonprepare.entities e
-              RIGHT OUTER JOIN jsonprepare.types_and_files t ON e.child_id = t.entity_id);
+              LEFT JOIN jsonprepare.types_and_files t ON e.child_id = t.entity_id);
 
 UPDATE jsonprepare.tmp
 SET timespan = NULL

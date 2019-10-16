@@ -550,7 +550,8 @@ function setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth,
         "Graves": graves,
         "Search results": resultpolys,
         "Search result markers": resultpoints,
-        "Visualisations": choroplethLayer
+        "Visualisations": choroplethLayer,
+        "Cemetery map" : plot,
     };
     map.removeControl(baseControl);
     baseControl = L.control.layers(baseLayers, overlays).addTo(map);

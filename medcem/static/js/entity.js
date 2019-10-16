@@ -1,18 +1,5 @@
 sitename = jsonmysite.name;
 
-$('#HelpModalLabel').empty();
-$('#HelpModalLabel').append('Entity View');
-$('#helptext').empty();
-$('#helptext').append(
-    '<p>This page contains detailed information on the selected entity. This can be a site, a grave, a burial or a find.</p>' +
-    '<i>It includes description, classification, properties and values</i><br>' +
-    '<img src="/static/images/help/entity_view/entity_view_1.jpg" width="100%" height="auto" style="margin-bottom: 2em">' +
-    '<br><i>A static map is displayed showing the whole site with the entity along with image(s) of the entity </i><br>' +
-    '<img src="/static/images/help/entity_view/entity_view_2.jpg" width="100%" height="auto" style="margin-bottom: 2em">' +
-    '<br><i>In the metadata section a bibliography, external references like DOIs and image sources are displayed</i><br>' +
-    '<img src="/static/images/help/entity_view/entity_view_3.jpg" width="100%" height="auto" style="margin-bottom: 2em">'
-);
-
 $('#mybreadcrumb').append(
     '<nav aria-label="breadcrumb">' +
     '<ol id="mybreadcrumbs" class="breadcrumb">' +
@@ -118,7 +105,7 @@ if (systemtype == 'find') {
     });
 }
 
-$('#mybreadcrumbs').append('<button type="button" onclick="this.blur()" data-toggle="modal" data-target="#HelpModal" style="margin-left: auto" class="btn btn-sm btn-secondary float-right" title="Help"><i class="fas fa-info"></i></button>');
+
 
 mycitation1 = ' From: Stefan Eichert et al., Medieval Cemeteries Online: >>' + window.location + '<<. After: ';
 
