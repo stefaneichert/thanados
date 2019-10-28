@@ -2,7 +2,7 @@ from flask import render_template, flash, g
 from flask_wtf import Form
 from wtforms import StringField, SubmitField
 
-from medcem import app
+from thanados import app
 
 
 class SearchForm(Form):

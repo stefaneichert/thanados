@@ -1,7 +1,5 @@
 //initiate map with certain json
 $(document).ready(function () {
-    //hardcoded first site
-    //myjson = jsonpohansko;
     $("#sidebarTitle").text(myjson.name);
     setmap(myjson);
     console.log(myjson);
@@ -28,7 +26,7 @@ function setmap(myjson) {
     setSidebarContent(myjson);
 
     //set attribution title
-    mywindowtitle = 'Medieval Cemeteries at the Periphery of the Carolingian World: ' + myjson.name + '. ';
+    mywindowtitle = 'THANADOS: ' + myjson.name + '. ';
 
 //define basemaps
     var landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=2245afa655044c5c8f5ef8c129c29cdb', {

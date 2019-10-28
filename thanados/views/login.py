@@ -8,8 +8,8 @@ from werkzeug.utils import redirect
 from wtforms import BooleanField, PasswordField, StringField, SubmitField
 from wtforms.validators import InputRequired
 
-from medcem import app
-from medcem.models.user import UserMapper
+from thanados import app
+from thanados.models.user import UserMapper
 
 login_manager = LoginManager()
 login_manager.init_app(app)

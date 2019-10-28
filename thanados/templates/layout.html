@@ -4,15 +4,15 @@
     <meta>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
-    <title>Medieval Cemeteries Online</title>
+    <title>THANADOS</title>
 
     <link rel="icon" href="/static/favicon.ico">
-    <link href="/static/vendor/bootstrap-4.3.1-dist/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/vendor/node_modules/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
     <link href="/static/vendor/leaflet/leaflet.css" rel="stylesheet"/>
     <script src="/static/vendor/leaflet/leaflet.js"></script>
     <script src="/static/vendor/leafletplugins/leaflet-providers-master/leaflet-providers.js"></script>
     <script src="/static/vendor/jquery/jquery-3.3.1.min.js"></script>
-    <script src="/static/vendor/bootstrap-4.3.1-dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/vendor/node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
     <link href="/static/vendor/jquery-ui-1.12.1.custom/jquery-ui.css" rel="stylesheet">
     <script src="/static/vendor/jquery-ui-1.12.1.custom/jquery-ui.js"></script>
     <link href="/static/css/style.css" rel="stylesheet">
@@ -37,7 +37,7 @@
 <nav id="mynavbar" class="navbar navbar-expand-md navbar-dark bg-dark fixed-top" role="navigation">
     <div class="container-fluid" style="padding-left: 0px">
         <a class="navbar-brand" href="/">
-            <img src="/static/images/icons/logo.png" width="30" height="30" alt="" title="Home">
+            <img src="/static/images/icons/logo.png" height="30" alt="" title="Home">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
                 aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,8 +51,6 @@
                        aria-haspopup="true"
                        aria-expanded="false">Cemeteries</a>
                     <div class="dropdown-menu" aria-labelledby="dropdown01">
-                        <a class="dropdown-item" href="/entity/view/111285">Stará Kouřim</a>
-                        <a class="dropdown-item" href="/entity/view/50497">Pohansko Herrenhof</a>
                         <a class="dropdown-item" href="/entity/view/50505">Thunau Obere Holzwiese</a>
                     </div>
                 </li>
@@ -61,15 +59,13 @@
                        aria-haspopup="true"
                        aria-expanded="false">Maps</a>
                     <div class="dropdown-menu" aria-labelledby="dropdown01">
-                        <a class="dropdown-item" href="/map/111285">Stará Kouřim</a>
-                        <a class="dropdown-item" href="/map/50497">Pohansko Herrenhof</a>
                         <a class="dropdown-item" href="/map/50505">Thunau Obere Holzwiese</a>
                     </div>
                 </li>
 
-                <li class="nav-item">
+                {#<li class="nav-item">
                     <a class="nav-link" href="{{ url_for('charts') }}">Charts</a>
-                </li>
+                </li>#}
             </ul>
             <ul class="navbar-nav ml-auto">
 

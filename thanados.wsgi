@@ -2,4 +2,4 @@ import os
 import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from medcem import app as application
+from thanados import app as application

@@ -1,12 +1,12 @@
 from flask import render_template, g
 from flask_login import login_required
 
-from medcem import app
-from medcem.models.entity import Data
+from thanados import app
+from thanados.models.entity import Data
 
 
 @app.route('/charts')
-# @login_required
+#@login_required#
 def charts():
     depth = Data.get_depth()
     constr = Data.get_typedata('grave', 'Grave Constr%')
@@ -16,17 +16,17 @@ def charts():
     sex = Data.get_sex()
     orientation = Data.get_orientation()
     sql_thunau = """
-                SELECT age FROM jsonprepare.ageatdeath WHERE sitename = 'Gars Thunau Obere Holzwiese';
+                SELECT age FROM thanadosjson.ageatdeath WHERE sitename = 'Gars Thunau Obere Holzwiese';
                 """
     g.cursor.execute(sql_thunau)
     thunau = g.cursor.fetchall()
     sql_kourim = """
-                    SELECT age FROM jsonprepare.ageatdeath WHERE sitename = 'Stará Kouřim';
+                    SELECT age FROM thanadosjson.ageatdeath WHERE sitename = 'Stará Kouřim';
                     """
     g.cursor.execute(sql_kourim)
     kourim = g.cursor.fetchall()
     sql_pohansko = """
-                        SELECT age FROM jsonprepare.ageatdeath WHERE sitename = 'Břeslav Pohansko Herrenhof';
+                        SELECT age FROM thanadosjson.ageatdeath WHERE sitename = 'Břeslav Pohansko Herrenhof';
                         """
     g.cursor.execute(sql_pohansko)
     pohansko = g.cursor.fetchall()
@@ -64,10 +64,10 @@ SELECT '{"types": [' || string_agg (jsonstring, ', ') || ']}' AS mydata FROM
             		        t.name AS type,
             		        t.path
             		        FROM model.entity m 
-            		        JOIN jsonprepare.entities e ON e.parent_id = m.id
-            		        JOIN jsonprepare.entities e1 ON e1.parent_id = e.child_id
-            		        JOIN jsonprepare.entities e2 ON e2.parent_id = e1.child_id
-            		        JOIN jsonprepare.types_main t ON e2.child_id = t.entity_id
+            		        JOIN thanadosjson.entities e ON e.parent_id = m.id
+            		        JOIN thanadosjson.entities e1 ON e1.parent_id = e.child_id
+            		        JOIN thanadosjson.entities e2 ON e2.parent_id = e1.child_id
+            		        JOIN thanadosjson.types_main t ON e2.child_id = t.entity_id
             		        WHERE t.path LIKE 'Find%'
             		        --GROUP BY m.id, sitename, type, t.path
             		        ORDER BY 1, 4) t GROUP BY t.sitename, t.id) j)j

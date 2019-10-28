@@ -1,6 +1,6 @@
 from flask import render_template
 
-from medcem import app
+from thanados import app
 
 
 @app.route('/about')

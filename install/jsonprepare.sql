@@ -1,18 +1,18 @@
 -- noinspection SqlResolveForFile
 
 --prepare one geojson file of all entities
-DROP SCHEMA IF EXISTS jsonprepare CASCADE;
+DROP SCHEMA IF EXISTS thanadosjson CASCADE;
 
 
-CREATE SCHEMA jsonprepare;
+CREATE SCHEMA thanadosjson;
 --create temp tables
 
 --hack to remove "Eastern Alps revisited" type
 DELETE FROM model.entity WHERE id = 11821;
 
 -- all types tree
-DROP TABLE IF EXISTS jsonprepare.types_all;
-CREATE TABLE jsonprepare.types_all AS
+DROP TABLE IF EXISTS thanadosjson.types_all;
+CREATE TABLE thanadosjson.types_all AS
 WITH RECURSIVE path(id, path, parent, name, description, parent_id, name_path) AS (
     SELECT types_all.child_id,
            ''::text || types_all.child_id::text AS path,
@@ -82,8 +82,8 @@ ORDER BY path.path;
 
 
 -- create table with sites to be used
-DROP TABLE IF EXISTS jsonprepare.sites;
-CREATE TABLE jsonprepare.sites AS (
+DROP TABLE IF EXISTS thanadosjson.sites;
+CREATE TABLE thanadosjson.sites AS (
     SELECT NULL::integer AS parent_id,
            s.name        AS child_name,
            s.id          AS child_id,
@@ -111,13 +111,13 @@ CREATE TABLE jsonprepare.sites AS (
                    JOIN model.link l ON e.id = l.domain_id
           WHERE l.property_code = 'P2'
             AND e.system_type = 'place'
-            AND e.id in (50505, 50497, 111285)) -- comment for all sites
+            AND e.id in (50505)) -- comment for all sites
             AS s
-             JOIN jsonprepare.types_all t ON t.id = s.range_id
+             JOIN thanadosjson.types_all t ON t.id = s.range_id
     WHERE t.name_path LIKE 'Place > Burial Site%'
 );
 
-UPDATE jsonprepare.sites
+UPDATE thanadosjson.sites
 SET geom = poly.geom
 FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
              e.id
@@ -127,7 +127,7 @@ FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
       WHERE l.property_code = 'P53') AS poly
 WHERE child_id = poly.id;
 
-UPDATE jsonprepare.sites
+UPDATE thanadosjson.sites
 SET geom = point.geom
 FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
              e.id
@@ -136,12 +136,12 @@ FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
                JOIN gis.point pnt ON l.range_id = pnt.entity_id
       WHERE l.property_code = 'P53') AS point
 WHERE child_id = point.id
-  AND jsonprepare.sites.geom ISNULL;
+  AND thanadosjson.sites.geom ISNULL;
 
 
 -- graves
-DROP TABLE IF EXISTS jsonprepare.graves;
-CREATE TABLE jsonprepare.graves AS
+DROP TABLE IF EXISTS thanadosjson.graves;
+CREATE TABLE thanadosjson.graves AS
 SELECT parent.id                                    AS parent_id,
        child.name                                   AS child_name,
        child.id                                     AS child_id,
@@ -157,12 +157,12 @@ SELECT parent.id                                    AS parent_id,
 FROM model.entity parent
          JOIN model.link l_p_c ON parent.id = l_p_c.domain_id
          JOIN model.entity child ON l_p_c.range_id = child.id
-WHERE parent.id in (SELECT child_id FROM jsonprepare.sites)
+WHERE parent.id in (SELECT child_id FROM thanadosjson.sites)
   AND l_p_c.property_code = 'P46'
 ORDER BY child.system_type, parent.id, child.name;
 
 
-UPDATE jsonprepare.graves
+UPDATE thanadosjson.graves
 SET geom = poly.geom
 FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
              e.id
@@ -172,7 +172,7 @@ FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
       WHERE l.property_code = 'P53') AS poly
 WHERE child_id = poly.id;
 
-UPDATE jsonprepare.graves
+UPDATE thanadosjson.graves
 SET geom = point.geom
 FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
              e.id
@@ -181,12 +181,12 @@ FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
                JOIN gis.point pnt ON l.range_id = pnt.entity_id
       WHERE l.property_code = 'P53') AS point
 WHERE child_id = point.id
-  AND jsonprepare.graves.geom ISNULL;
+  AND thanadosjson.graves.geom ISNULL;
 
 
 --burials
-DROP TABLE IF EXISTS jsonprepare.burials;
-CREATE TABLE jsonprepare.burials AS
+DROP TABLE IF EXISTS thanadosjson.burials;
+CREATE TABLE thanadosjson.burials AS
 SELECT parent.id                                    AS parent_id,
        child.name                                   AS child_name,
        child.id                                     AS child_id,
@@ -202,12 +202,12 @@ SELECT parent.id                                    AS parent_id,
 FROM model.entity parent
          JOIN model.link l_p_c ON parent.id = l_p_c.domain_id
          JOIN model.entity child ON l_p_c.range_id = child.id
-WHERE parent.id in (SELECT child_id FROM jsonprepare.graves)
+WHERE parent.id in (SELECT child_id FROM thanadosjson.graves)
   AND l_p_c.property_code = 'P46'
 ORDER BY child.system_type, parent.id, child.name;
 
 
-UPDATE jsonprepare.burials
+UPDATE thanadosjson.burials
 SET geom = poly.geom
 FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
              e.id
@@ -217,7 +217,7 @@ FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
       WHERE l.property_code = 'P53') AS poly
 WHERE child_id = poly.id;
 
-UPDATE jsonprepare.burials
+UPDATE thanadosjson.burials
 SET geom = point.geom
 FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
              e.id
@@ -226,11 +226,11 @@ FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
                JOIN gis.point pnt ON l.range_id = pnt.entity_id
       WHERE l.property_code = 'P53') AS point
 WHERE child_id = point.id
-  AND jsonprepare.burials.geom ISNULL;
+  AND thanadosjson.burials.geom ISNULL;
 
 --finds
-DROP TABLE IF EXISTS jsonprepare.finds;
-CREATE TABLE jsonprepare.finds AS
+DROP TABLE IF EXISTS thanadosjson.finds;
+CREATE TABLE thanadosjson.finds AS
 SELECT parent.id                                    AS parent_id,
        child.name                                   AS child_name,
        child.id                                     AS child_id,
@@ -246,12 +246,12 @@ SELECT parent.id                                    AS parent_id,
 FROM model.entity parent
          JOIN model.link l_p_c ON parent.id = l_p_c.domain_id
          JOIN model.entity child ON l_p_c.range_id = child.id
-WHERE parent.id in (SELECT child_id FROM jsonprepare.burials)
+WHERE parent.id in (SELECT child_id FROM thanadosjson.burials)
   AND l_p_c.property_code = 'P46'
 ORDER BY child.system_type, parent.id, child.name;
 
 
-UPDATE jsonprepare.finds
+UPDATE thanadosjson.finds
 SET geom = poly.geom
 FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
              e.id
@@ -261,7 +261,7 @@ FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
       WHERE l.property_code = 'P53') AS poly
 WHERE child_id = poly.id;
 
-UPDATE jsonprepare.finds
+UPDATE thanadosjson.finds
 SET geom = point.geom
 FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
              e.id
@@ -270,37 +270,37 @@ FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
                JOIN gis.point pnt ON l.range_id = pnt.entity_id
       WHERE l.property_code = 'P53') AS point
 WHERE child_id = point.id
-  AND jsonprepare.finds.geom ISNULL;
+  AND thanadosjson.finds.geom ISNULL;
 
 -- all entities union
-CREATE TABLE jsonprepare.entitiestmp AS
+CREATE TABLE thanadosjson.entitiestmp AS
 SELECT *
-FROM jsonprepare.sites
+FROM thanadosjson.sites
 UNION ALL
 SELECT *
-FROM jsonprepare.graves
+FROM thanadosjson.graves
 UNION ALL
 SELECT *
-FROM jsonprepare.burials
+FROM thanadosjson.burials
 UNION ALL
 SELECT *
-FROM jsonprepare.finds
+FROM thanadosjson.finds
 ORDER BY parent_id, child_name;
 
-UPDATE jsonprepare.entitiestmp
+UPDATE thanadosjson.entitiestmp
 SET begin_comment = NULL
 WHERE begin_comment = '';
-UPDATE jsonprepare.entitiestmp
+UPDATE thanadosjson.entitiestmp
 SET end_comment = NULL
 WHERE end_comment = '';
-UPDATE jsonprepare.entitiestmp
+UPDATE thanadosjson.entitiestmp
 SET description = NULL
 WHERE description = '';
 
 
 --types
-DROP TABLE IF EXISTS jsonprepare.types_main;
-CREATE TABLE jsonprepare.types_main AS
+DROP TABLE IF EXISTS thanadosjson.types_main;
+CREATE TABLE thanadosjson.types_main AS
 SELECT DISTINCT types_all.id,
                 types_all.parent_id,
                 entitiestmp.child_id AS entity_id,
@@ -308,22 +308,22 @@ SELECT DISTINCT types_all.id,
                 types_all.description,
                 link.description     AS value,
                 types_all.name_path  AS path
-FROM jsonprepare.types_all,
-     jsonprepare.entitiestmp,
+FROM thanadosjson.types_all,
+     thanadosjson.entitiestmp,
      model.link
 WHERE entitiestmp.child_id = link.domain_id
   AND link.range_id = types_all.id
 ORDER BY entity_id, types_all.name_path;
 
-UPDATE jsonprepare.types_main
+UPDATE thanadosjson.types_main
 SET description = NULL
 WHERE description = '';
 
 --types main
-DROP TABLE IF EXISTS jsonprepare.maintype;
-CREATE TABLE jsonprepare.maintype AS
+DROP TABLE IF EXISTS thanadosjson.maintype;
+CREATE TABLE thanadosjson.maintype AS
 SELECT *
-FROM jsonprepare.types_main
+FROM thanadosjson.types_main
 WHERE path LIKE 'Place >%'
    OR path LIKE 'Feature >%'
    OR path LIKE 'Stratigraphic Unit >%'
@@ -331,10 +331,10 @@ WHERE path LIKE 'Place >%'
 ORDER BY entity_id, path;
 
 --types dimensions
-DROP TABLE IF EXISTS jsonprepare.dimensiontypes;
-CREATE TABLE jsonprepare.dimensiontypes AS
+DROP TABLE IF EXISTS thanadosjson.dimensiontypes;
+CREATE TABLE thanadosjson.dimensiontypes AS
 SELECT *
-FROM jsonprepare.types_main
+FROM thanadosjson.types_main
 WHERE path LIKE 'Dimensions >%'
 ORDER BY entity_id, path;
 
@@ -352,9 +352,9 @@ FROM (SELECT l.domain,
                    d.value    AS orientation,
                    d.name,
                    d.id       AS range
-            FROM jsonprepare.graves g
-                     JOIN jsonprepare.burials b ON g.child_id = b.parent_id
-                     JOIN jsonprepare.dimensiontypes d ON b.child_id = d.entity_id
+            FROM thanadosjson.graves g
+                     JOIN thanadosjson.burials b ON g.child_id = b.parent_id
+                     JOIN thanadosjson.dimensiontypes d ON b.child_id = d.entity_id
             WHERE d.name = 'Degrees') AS l) AS d
 WHERE DOMAIN || ':' || range NOT IN
       (SELECT domain_id || ':' || range_id
@@ -365,32 +365,32 @@ WHERE DOMAIN || ':' || range NOT IN
       (SELECT parent_id
        from (SELECT parent_id,
                     count(parent_id) as count
-             FROM jsonprepare.burials
+             FROM thanadosjson.burials
              GROUP BY parent_id) c
        WHERE c.count > 1);
 
 --types dimensions (redo because of updated links)
-DROP TABLE IF EXISTS jsonprepare.dimensiontypes;
-CREATE TABLE jsonprepare.dimensiontypes AS
+DROP TABLE IF EXISTS thanadosjson.dimensiontypes;
+CREATE TABLE thanadosjson.dimensiontypes AS
 SELECT *
-FROM jsonprepare.types_main
+FROM thanadosjson.types_main
 WHERE path LIKE 'Dimensions >%'
 ORDER BY entity_id, path;
 
 --types material
-DROP TABLE IF EXISTS jsonprepare.materialtypes;
-CREATE TABLE jsonprepare.materialtypes AS
+DROP TABLE IF EXISTS thanadosjson.materialtypes;
+CREATE TABLE thanadosjson.materialtypes AS
 SELECT *
-FROM jsonprepare.types_main
+FROM thanadosjson.types_main
 WHERE path LIKE 'Material >%'
 ORDER BY entity_id, path;
 
 
 --other types
-DROP TABLE IF EXISTS jsonprepare.types;
-CREATE TABLE jsonprepare.types AS
+DROP TABLE IF EXISTS thanadosjson.types;
+CREATE TABLE thanadosjson.types AS
 SELECT *
-FROM jsonprepare.types_main
+FROM thanadosjson.types_main
 WHERE path NOT LIKE 'Dimensions >%'
   AND path NOT LIKE 'Place >%'
   AND path NOT LIKE 'Feature >%'
@@ -400,27 +400,27 @@ WHERE path NOT LIKE 'Dimensions >%'
 ORDER BY entity_id, path;
 
 --entities with maintypes
-CREATE TABLE jsonprepare.entities AS
+CREATE TABLE thanadosjson.entities AS
 SELECT e.*,
        t.id        AS type_id,
        t.parent_id AS parenttype_id,
        t.name      AS typename,
        t.path
-FROM jsonprepare.entitiestmp e
-         JOIN jsonprepare.maintype t ON e.child_id = t.entity_id;
+FROM thanadosjson.entitiestmp e
+         JOIN thanadosjson.maintype t ON e.child_id = t.entity_id;
 
 --update timespan where values are missing
-UPDATE jsonprepare.entities SET begin_to = begin_from WHERE begin_to ISNULL;
-UPDATE jsonprepare.entities SET end_to = end_from WHERE end_to ISNULL;
+UPDATE thanadosjson.entities SET begin_to = begin_from WHERE begin_to ISNULL;
+UPDATE thanadosjson.entities SET end_to = end_from WHERE end_to ISNULL;
 
 
 --files
-DROP TABLE IF EXISTS jsonprepare.files;
-CREATE TABLE jsonprepare.files AS
+DROP TABLE IF EXISTS thanadosjson.files;
+CREATE TABLE thanadosjson.files AS
 SELECT entities.child_id AS parent_id,
        entity.name,
        entity.id
-FROM jsonprepare.entities,
+FROM thanadosjson.entities,
      model.link,
      model.entity
 WHERE entities.child_id = link.range_id
@@ -428,8 +428,8 @@ WHERE entities.child_id = link.range_id
   AND entity.system_type ~~ 'file'::text
 ORDER BY entities.child_id;
 
-DROP TABLE IF EXISTS jsonprepare.filestmp;
-CREATE TABLE jsonprepare.filestmp AS
+DROP TABLE IF EXISTS thanadosjson.filestmp;
+CREATE TABLE thanadosjson.filestmp AS
     (SELECT files.*,
             fe.description AS Source,
             fl.description AS Reference
@@ -443,28 +443,28 @@ CREATE TABLE jsonprepare.filestmp AS
                           FROM model.link l
                                    JOIN model.entity e ON l.range_id = e.id
                           WHERE l.property_code = 'P2') AS license
-                             LEFT JOIN jsonprepare.types_all t ON t.id = license.range_id
+                             LEFT JOIN thanadosjson.types_all t ON t.id = license.range_id
                     WHERE t.name_path LIKE 'License%') AS lic
-                       RIGHT JOIN jsonprepare.files f ON f.id = lic.domain_id) as files
+                       RIGHT JOIN thanadosjson.files f ON f.id = lic.domain_id) as files
               LEFT JOIN model.link fl ON files.id = fl.range_id
               LEFT JOIN model.entity fe ON fl.domain_id = fe.id);
 
 
-DROP TABLE jsonprepare.files;
-CREATE TABLE jsonprepare.files AS
+DROP TABLE thanadosjson.files;
+CREATE TABLE thanadosjson.files AS
     (SELECT *
-     FROM jsonprepare.filestmp);
+     FROM thanadosjson.filestmp);
 
 
 --references
-DROP TABLE IF EXISTS jsonprepare.reference;
-CREATE TABLE jsonprepare.reference AS
+DROP TABLE IF EXISTS thanadosjson.reference;
+CREATE TABLE thanadosjson.reference AS
 SELECT entities.child_id  AS parent_id,
        entity.name        as abbreviation,
        entity.description AS title,
        link.description   AS reference,
        entity.id
-FROM jsonprepare.entities,
+FROM thanadosjson.entities,
      model.link,
      model.entity
 WHERE entities.child_id = link.range_id
@@ -473,25 +473,25 @@ WHERE entities.child_id = link.range_id
 ORDER BY entities.child_id;
 
 
-UPDATE jsonprepare.reference
+UPDATE thanadosjson.reference
 SET abbreviation = NULL
 WHERE abbreviation = '';
-UPDATE jsonprepare.reference
+UPDATE thanadosjson.reference
 SET title = NULL
 WHERE title = '';
-UPDATE jsonprepare.reference
+UPDATE thanadosjson.reference
 SET reference = NULL
 WHERE reference = '';
 
 --external references/urls
-DROP TABLE IF EXISTS jsonprepare.extrefs;
-CREATE TABLE jsonprepare.extrefs AS
+DROP TABLE IF EXISTS thanadosjson.extrefs;
+CREATE TABLE thanadosjson.extrefs AS
 SELECT entities.child_id  AS parent_id,
        entity.name        as url,
        link.description   AS name,
        entity.description AS description,
        entity.id
-FROM jsonprepare.entities,
+FROM thanadosjson.entities,
      model.link,
      model.entity
 WHERE entities.child_id = link.range_id
@@ -500,16 +500,16 @@ WHERE entities.child_id = link.range_id
 ORDER BY entities.child_id;
 
 
-UPDATE jsonprepare.extrefs
+UPDATE thanadosjson.extrefs
 SET description = NULL
 WHERE description = '';
-UPDATE jsonprepare.extrefs
+UPDATE thanadosjson.extrefs
 SET name = NULL
 WHERE name = '';
 
 -- create table with types and files of all entities
-DROP TABLE IF EXISTS jsonprepare.types_and_files;
-CREATE TABLE jsonprepare.types_and_files
+DROP TABLE IF EXISTS thanadosjson.types_and_files;
+CREATE TABLE thanadosjson.types_and_files
 (
     entity_id  integer,
     types      jsonb,
@@ -522,9 +522,9 @@ CREATE TABLE jsonprepare.types_and_files
 );
 
 -- insert type data
-INSERT INTO jsonprepare.types_and_files (entity_id, types)
+INSERT INTO thanadosjson.types_and_files (entity_id, types)
 SELECT e.child_id, types
-FROM jsonprepare.entities e
+FROM thanadosjson.entities e
          INNER JOIN
      (SELECT t.entity_id,
              jsonb_agg(jsonb_build_object(
@@ -533,17 +533,17 @@ FROM jsonprepare.entities e
                      'description', t.description,
                      'value', t.value,
                      'path', t.path)) AS types
-      FROM jsonprepare.types t
+      FROM thanadosjson.types t
       GROUP BY entity_id) AS irgendwas
      ON e.child_id = irgendwas.entity_id;
 
 
 -- insert file data
-UPDATE jsonprepare.types_and_files
+UPDATE thanadosjson.types_and_files
 SET files = (SELECT files
              FROM (
                       SELECT e.child_id, files
-                      FROM jsonprepare.entities e
+                      FROM thanadosjson.entities e
                                INNER JOIN
                            (SELECT t.parent_id,
                                    jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
@@ -553,18 +553,18 @@ SET files = (SELECT files
                                            'source', t.source,
                                            'reference', t.reference
                                        ))) AS files
-                            FROM jsonprepare.files t
+                            FROM thanadosjson.files t
                             GROUP BY parent_id) AS irgendwas
                            ON e.child_id = irgendwas.parent_id) f
              WHERE entity_id = f.child_id);
 
 
 -- insert bibliography data
-UPDATE jsonprepare.types_and_files
+UPDATE thanadosjson.types_and_files
 SET reference = (SELECT reference
                  FROM (
                           SELECT e.child_id, reference
-                          FROM jsonprepare.entities e
+                          FROM thanadosjson.entities e
                                    INNER JOIN
                                (SELECT t.parent_id,
                                        jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
@@ -573,17 +573,17 @@ SET reference = (SELECT reference
                                                'title', t.title,
                                                'reference', t.reference
                                            ))) AS reference
-                                FROM jsonprepare.reference t
+                                FROM thanadosjson.reference t
                                 GROUP BY parent_id) AS irgendwas
                                ON e.child_id = irgendwas.parent_id) f
                  WHERE entity_id = f.child_id);
 
 --insert external refs data
-UPDATE jsonprepare.types_and_files
+UPDATE thanadosjson.types_and_files
 SET extrefs = extref
 FROM (
          SELECT e.child_id, extref
-         FROM jsonprepare.entities e
+         FROM thanadosjson.entities e
                   INNER JOIN
               (SELECT t.parent_id,
                       jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
@@ -592,17 +592,17 @@ FROM (
                               'name', t.name,
                               'description', t.description
                           ))) AS extref
-               FROM jsonprepare.extrefs t
+               FROM thanadosjson.extrefs t
                GROUP BY parent_id) AS irgendwas
               ON e.child_id = irgendwas.parent_id) f
 WHERE entity_id = f.child_id;
 
 -- insert dimension data
-UPDATE jsonprepare.types_and_files
+UPDATE thanadosjson.types_and_files
 SET dimensions = dimtypes
 FROM (
          SELECT e.child_id, dimtypes
-         FROM jsonprepare.entities e
+         FROM thanadosjson.entities e
                   INNER JOIN
               (SELECT t.entity_id,
                       jsonb_agg(jsonb_build_object(
@@ -610,17 +610,17 @@ FROM (
                               'name', t.name,
                               'value', t.value,
                               'path', t.path)) AS dimtypes
-               FROM jsonprepare.dimensiontypes t
+               FROM thanadosjson.dimensiontypes t
                GROUP BY entity_id) AS irgendwas
               ON e.child_id = irgendwas.entity_id) f
 WHERE entity_id = f.child_id;
 
 -- insert material data
-UPDATE jsonprepare.types_and_files
+UPDATE thanadosjson.types_and_files
 SET material = mattypes
 FROM (
          SELECT e.child_id, mattypes
-         FROM jsonprepare.entities e
+         FROM thanadosjson.entities e
                   INNER JOIN
               (SELECT t.entity_id,
                       jsonb_agg(jsonb_build_object(
@@ -628,14 +628,14 @@ FROM (
                               'name', t.name,
                               'value', t.value,
                               'path', t.path)) AS mattypes
-               FROM jsonprepare.materialtypes t
+               FROM thanadosjson.materialtypes t
                GROUP BY entity_id) AS irgendwas
               ON e.child_id = irgendwas.entity_id) f
 WHERE entity_id = f.child_id;
 
 
 -- insert timespan data
-UPDATE jsonprepare.types_and_files
+UPDATE thanadosjson.types_and_files
 SET timespan = time
 FROM (
          SELECT child_id,
@@ -646,34 +646,34 @@ FROM (
                         'end_from', f.end_from,
                         'end_to', f.end_to,
                         'end_comment', f.end_comment)) AS time
-         FROM jsonprepare.entities f) AS irgendwas
+         FROM thanadosjson.entities f) AS irgendwas
 WHERE entity_id = irgendwas.child_id;
 
 
 --temp table with all info
-DROP TABLE IF EXISTS jsonprepare.tmp;
-CREATE TABLE jsonprepare.tmp AS
+DROP TABLE IF EXISTS thanadosjson.tmp;
+CREATE TABLE thanadosjson.tmp AS
     (SELECT *
-     FROM jsonprepare.entities e
-              LEFT JOIN jsonprepare.types_and_files t ON e.child_id = t.entity_id);
+     FROM thanadosjson.entities e
+              LEFT JOIN thanadosjson.types_and_files t ON e.child_id = t.entity_id);
 
-UPDATE jsonprepare.tmp
+UPDATE thanadosjson.tmp
 SET timespan = NULL
 WHERE timespan = '{}';
-UPDATE jsonprepare.tmp
+UPDATE thanadosjson.tmp
 SET description = NULL
 WHERE description = '';
-UPDATE jsonprepare.tmp
+UPDATE thanadosjson.tmp
 SET begin_comment = NULL
 WHERE begin_comment = '';
-UPDATE jsonprepare.tmp
+UPDATE thanadosjson.tmp
 SET end_comment = NULL
 WHERE end_comment = '';
 
 
 ---finds json
-DROP TABLE IF EXISTS jsonprepare.tbl_finds;
-CREATE TABLE jsonprepare.tbl_finds
+DROP TABLE IF EXISTS thanadosjson.tbl_finds;
+CREATE TABLE thanadosjson.tbl_finds
 (
     id         integer,
     parent_id  integer,
@@ -681,7 +681,7 @@ CREATE TABLE jsonprepare.tbl_finds
     files      jsonb
 );
 
-INSERT INTO jsonprepare.tbl_finds (id, parent_id, files, properties)
+INSERT INTO thanadosjson.tbl_finds (id, parent_id, files, properties)
 SELECT f.child_id,
        f.parent_id,
        f.files,
@@ -702,20 +702,20 @@ SELECT f.child_id,
                'references', f.reference,
                'externalreference', f.extrefs
            )) AS finds
-FROM (SELECT * FROM jsonprepare.tmp WHERE system_type LIKE 'find') f
+FROM (SELECT * FROM thanadosjson.tmp WHERE system_type LIKE 'find') f
 ORDER BY f.child_name;
 
 
 
-DROP TABLE IF EXISTS jsonprepare.tbl_findscomplete;
-CREATE TABLE jsonprepare.tbl_findscomplete
+DROP TABLE IF EXISTS thanadosjson.tbl_findscomplete;
+CREATE TABLE thanadosjson.tbl_findscomplete
 (
     id        integer,
     parent_id integer,
     find      jsonb
 );
 
-INSERT INTO jsonprepare.tbl_findscomplete (id, parent_id, find)
+INSERT INTO thanadosjson.tbl_findscomplete (id, parent_id, find)
 SELECT id,
        parent_id,
        jsonb_strip_nulls(jsonb_build_object(
@@ -723,13 +723,13 @@ SELECT id,
                'properties', f.properties,
                'files', f.files
            )) AS finds
-FROM jsonprepare.tbl_finds f;
+FROM thanadosjson.tbl_finds f;
 --ORDER BY f.properties -> 'name' asc;
 
 
 --burial
-DROP TABLE IF EXISTS jsonprepare.tbl_burials;
-CREATE TABLE jsonprepare.tbl_burials
+DROP TABLE IF EXISTS thanadosjson.tbl_burials;
+CREATE TABLE thanadosjson.tbl_burials
 (
     id         integer,
     parent_id  integer,
@@ -738,7 +738,7 @@ CREATE TABLE jsonprepare.tbl_burials
     files      jsonb
 );
 
-INSERT INTO jsonprepare.tbl_burials (id, parent_id, files, properties, finds)
+INSERT INTO thanadosjson.tbl_burials (id, parent_id, files, properties, finds)
 SELECT f.child_id AS id,
        f.parent_id,
        f.files,
@@ -760,27 +760,27 @@ SELECT f.child_id AS id,
                'externalreference', f.extrefs
            ))     AS burials,
        jsonb_strip_nulls(jsonb_agg(fi.find))
-FROM (SELECT * FROM jsonprepare.tmp WHERE system_type LIKE 'stratigraphic unit') f
-         LEFT JOIN jsonprepare.tbl_findscomplete fi ON f.child_id = fi.parent_id
+FROM (SELECT * FROM thanadosjson.tmp WHERE system_type LIKE 'stratigraphic unit') f
+         LEFT JOIN thanadosjson.tbl_findscomplete fi ON f.child_id = fi.parent_id
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.typename, f.path,
          f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_type, f.reference, f.extrefs
 ORDER BY f.child_name;
 
-UPDATE jsonprepare.tbl_burials f
+UPDATE thanadosjson.tbl_burials f
 SET finds = NULL
 WHERE f.finds = '[
   null
 ]';
 
-DROP TABLE IF EXISTS jsonprepare.tbl_burialscomplete;
-CREATE TABLE jsonprepare.tbl_burialscomplete
+DROP TABLE IF EXISTS thanadosjson.tbl_burialscomplete;
+CREATE TABLE thanadosjson.tbl_burialscomplete
 (
     id        integer,
     parent_id integer,
     burial    jsonb
 );
 
-INSERT INTO jsonprepare.tbl_burialscomplete (id, parent_id, burial)
+INSERT INTO thanadosjson.tbl_burialscomplete (id, parent_id, burial)
 SELECT id,
        parent_id,
        jsonb_strip_nulls(jsonb_build_object(
@@ -789,12 +789,12 @@ SELECT id,
                'files', f.files,
                'finds', f.finds
            )) AS burials
-FROM jsonprepare.tbl_burials f;
+FROM thanadosjson.tbl_burials f;
 --ORDER BY f.properties -> 'name' asc;
 
 --graves
-DROP TABLE IF EXISTS jsonprepare.tbl_graves;
-CREATE TABLE jsonprepare.tbl_graves
+DROP TABLE IF EXISTS thanadosjson.tbl_graves;
+CREATE TABLE thanadosjson.tbl_graves
 (
     id         integer,
     parent_id  integer,
@@ -804,7 +804,7 @@ CREATE TABLE jsonprepare.tbl_graves
     burials    jsonb
 );
 
-INSERT INTO jsonprepare.tbl_graves (id, parent_id, files, geom, properties, burials)
+INSERT INTO thanadosjson.tbl_graves (id, parent_id, files, geom, properties, burials)
 SELECT f.child_id,
        f.parent_id,
        f.files,
@@ -827,29 +827,29 @@ SELECT f.child_id,
                'externalreference', f.extrefs
            )) AS graves,
        jsonb_strip_nulls(jsonb_agg(fi.burial))
-FROM (SELECT * FROM jsonprepare.tmp WHERE system_type LIKE 'feature') f
-         LEFT JOIN jsonprepare.tbl_burialscomplete fi ON f.child_id = fi.parent_id
+FROM (SELECT * FROM thanadosjson.tmp WHERE system_type LIKE 'feature') f
+         LEFT JOIN thanadosjson.tbl_burialscomplete fi ON f.child_id = fi.parent_id
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.reference, f.extrefs,
          f.geom, f.typename, f.path, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files,
          f.system_type
 ORDER BY f.child_name;
 
-UPDATE jsonprepare.tbl_graves f
+UPDATE thanadosjson.tbl_graves f
 SET burials = NULL
 WHERE f.burials = '[
   null
 ]';
 
 
-DROP TABLE IF EXISTS jsonprepare.tbl_gravescomplete;
-CREATE TABLE jsonprepare.tbl_gravescomplete
+DROP TABLE IF EXISTS thanadosjson.tbl_gravescomplete;
+CREATE TABLE thanadosjson.tbl_gravescomplete
 (
     id        integer,
     parent_id integer,
     grave     jsonb
 );
 
-INSERT INTO jsonprepare.tbl_gravescomplete (id, parent_id, grave)
+INSERT INTO thanadosjson.tbl_gravescomplete (id, parent_id, grave)
 SELECT id,
        parent_id,
        jsonb_strip_nulls(jsonb_build_object(
@@ -861,12 +861,12 @@ SELECT id,
                'files', f.files,
                'burials', f.burials
            )) AS graves
-FROM jsonprepare.tbl_graves f;
+FROM thanadosjson.tbl_graves f;
 --ORDER BY f.properties -> 'name' asc;
 
 -- get data for sites
-DROP TABLE IF EXISTS jsonprepare.tbl_sites;
-CREATE TABLE jsonprepare.tbl_sites
+DROP TABLE IF EXISTS thanadosjson.tbl_sites;
+CREATE TABLE thanadosjson.tbl_sites
 (
     id      integer,
     name    text,
@@ -874,36 +874,36 @@ CREATE TABLE jsonprepare.tbl_sites
     point   text
 );
 
-INSERT INTO jsonprepare.tbl_sites (id, name)
+INSERT INTO thanadosjson.tbl_sites (id, name)
 SELECT child_id,
        child_name
-FROM jsonprepare.sites;
+FROM thanadosjson.sites;
 
-UPDATE jsonprepare.tbl_sites
+UPDATE thanadosjson.tbl_sites
 SET polygon = geom
 FROM (SELECT ST_AsGeoJSON(geom) AS geom,
              domain_id
       FROM gis.polygon p
                JOIN model.link l ON p.entity_id = l.range_id) g
-WHERE jsonprepare.tbl_sites.id = g.domain_id;
+WHERE thanadosjson.tbl_sites.id = g.domain_id;
 
-UPDATE jsonprepare.tbl_sites
+UPDATE thanadosjson.tbl_sites
 SET point = geom
 FROM (SELECT ST_AsGeoJSON(geom) AS geom,
              domain_id
       FROM gis.point p
                JOIN model.link l ON p.entity_id = l.range_id) g
-WHERE jsonprepare.tbl_sites.id = g.domain_id;
+WHERE thanadosjson.tbl_sites.id = g.domain_id;
 
 
-DROP TABLE IF EXISTS jsonprepare.tbl_sitescomplete;
-CREATE TABLE jsonprepare.tbl_sitescomplete
+DROP TABLE IF EXISTS thanadosjson.tbl_sitescomplete;
+CREATE TABLE thanadosjson.tbl_sitescomplete
 (
     id         integer,
     name       text,
     properties jsonb
 );
-INSERT INTO jsonprepare.tbl_sitescomplete (id, name, properties)
+INSERT INTO thanadosjson.tbl_sitescomplete (id, name, properties)
 SELECT s.id,
        s.name,
        jsonb_strip_nulls(jsonb_build_object(
@@ -925,8 +925,8 @@ SELECT s.id,
                'center', s.point::jsonb,
                'shape', s.polygon::jsonb
            )) AS sites
-FROM (SELECT * FROM jsonprepare.tmp WHERE system_type LIKE 'place') f
-         LEFT JOIN jsonprepare.tbl_sites s ON f.child_id = s.id
+FROM (SELECT * FROM thanadosjson.tmp WHERE system_type LIKE 'place') f
+         LEFT JOIN thanadosjson.tbl_sites s ON f.child_id = s.id
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.reference, f.extrefs,
          f.geom, f.typename, f.path, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files,
          f.system_type, s.id, s.name,
@@ -934,15 +934,15 @@ GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.ref
 ORDER BY f.child_name;
 
 
-DROP TABLE IF EXISTS jsonprepare.tbl_medcem_data;
-CREATE TABLE jsonprepare.tbl_medcem_data
+DROP TABLE IF EXISTS thanadosjson.tbl_thanados_data;
+CREATE TABLE thanadosjson.tbl_thanados_data
 (
     id   integer,
     name text,
     data jsonb
 );
 
-INSERT INTO jsonprepare.tbl_medcem_data (id, name, data)
+INSERT INTO thanadosjson.tbl_thanados_data (id, name, data)
 SELECT s.id   AS id,
        s.name AS name,
        (jsonb_strip_nulls(jsonb_build_object(
@@ -952,17 +952,17 @@ SELECT s.id   AS id,
                'properties', s.properties,
                'features', jsonb_strip_nulls(jsonb_agg(f.grave))
            )))
-FROM jsonprepare.tbl_sitescomplete s
-         LEFT JOIN (SELECT * FROM jsonprepare.tbl_gravescomplete ORDER BY parent_id, grave -> 'properties' ->> 'name') f
+FROM thanadosjson.tbl_sitescomplete s
+         LEFT JOIN (SELECT * FROM thanadosjson.tbl_gravescomplete ORDER BY parent_id, grave -> 'properties' ->> 'name') f
                    ON s.id = f.parent_id
 GROUP BY s.id, s.name, s.properties;
 
 
 -- create table with all types for json
-DROP TABLE IF EXISTS jsonprepare.typesforjson;
-CREATE TABLE jsonprepare.typesforjson AS
+DROP TABLE IF EXISTS thanadosjson.typesforjson;
+CREATE TABLE thanadosjson.typesforjson AS
 SELECT DISTINCT 'type' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
-FROM jsonprepare.types_all
+FROM thanadosjson.types_all
 WHERE --set types to display in jstree
     name_path LIKE 'Anthropology%'
    OR name_path LIKE 'Grave Construction%'
@@ -972,37 +972,37 @@ WHERE --set types to display in jstree
    OR name_path LIKE 'Stylistic Classification%'
 UNION ALL
 SELECT DISTINCT 'dimensions' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
-FROM jsonprepare.types_all
+FROM thanadosjson.types_all
 WHERE name_path LIKE 'Dimensions%'
 UNION ALL
 SELECT DISTINCT 'material' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
-FROM jsonprepare.types_all
+FROM thanadosjson.types_all
 WHERE name_path LIKE 'Material%'
 UNION ALL
 SELECT DISTINCT 'find' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
-FROM jsonprepare.types_all
+FROM thanadosjson.types_all
 WHERE name_path LIKE 'Find >%'
 UNION ALL
 SELECT DISTINCT 'strat' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
-FROM jsonprepare.types_all
+FROM thanadosjson.types_all
 WHERE name_path LIKE 'Stratigraphic Unit%'
 UNION ALL
 SELECT DISTINCT 'feature' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
-FROM jsonprepare.types_all
+FROM thanadosjson.types_all
 WHERE name_path LIKE 'Feature%'
 
 ORDER BY level, name_path;
 
-UPDATE jsonprepare.typesforjson
+UPDATE thanadosjson.typesforjson
 SET parent = '#'
 WHERE parent ISNULL; --necessary for jstree
-INSERT INTO jsonprepare.typesforjson (level, id, text, parent, path, name_path)
+INSERT INTO thanadosjson.typesforjson (level, id, text, parent, path, name_path)
 VALUES ('find', '13368', 'Find', '#', '13368', 'Find');
 --hack because find has no parent
 
 -- create table with all types as json
-DROP TABLE IF EXISTS jsonprepare.typesjson;
-CREATE TABLE jsonprepare.typesjson AS (
+DROP TABLE IF EXISTS thanadosjson.typesjson;
+CREATE TABLE thanadosjson.typesjson AS (
     SELECT jsonb_agg(jsonb_build_object('id', id,
                                         'text', text,
                                         'parent', parent,
@@ -1011,14 +1011,14 @@ CREATE TABLE jsonprepare.typesjson AS (
                                         'level', level
         )) as types
     FROM (SELECT *
-          FROM jsonprepare.typesforjson AS types
+          FROM thanadosjson.typesforjson AS types
           GROUP BY types.level, types.id, types.text, types.parent, types.name_path, types.path
           ORDER BY name_path) as u);
 
 
 -- prepare data for charts
-DROP TABLE IF EXISTS jsonprepare.depth_labels;
-CREATE TABLE jsonprepare.depth_labels AS (
+DROP TABLE IF EXISTS thanadosjson.depth_labels;
+CREATE TABLE thanadosjson.depth_labels AS (
 -- get labels for depth of graves
     SELECT jsonb_agg(js.json_object_keys)
                AS labels
@@ -1061,9 +1061,9 @@ CREATE TABLE jsonprepare.depth_labels AS (
                                   SELECT g.parent_id,
                                          s.name AS site_name,
                                          d.value::double precision
-                                  FROM jsonprepare.tbl_sites s
-                                           JOIN jsonprepare.graves g ON g.parent_id = s.id
-                                           JOIN jsonprepare.dimensiontypes d ON g.child_id = d.entity_id
+                                  FROM thanadosjson.tbl_sites s
+                                           JOIN thanadosjson.graves g ON g.parent_id = s.id
+                                           JOIN thanadosjson.dimensiontypes d ON g.child_id = d.entity_id
                                   WHERE d.name = 'Height'
                               ) v
 
@@ -1072,8 +1072,8 @@ CREATE TABLE jsonprepare.depth_labels AS (
                 LIMIT 1) AS ok) AS js);
 
 --get values
-DROP TABLE IF EXISTS jsonprepare.depth;
-CREATE TABLE jsonprepare.depth AS (
+DROP TABLE IF EXISTS thanadosjson.depth;
+CREATE TABLE thanadosjson.depth AS (
     SELECT parent_id                                  AS "site_id",
            site_name                                  AS "label",
            '[' ||
@@ -1113,17 +1113,17 @@ CREATE TABLE jsonprepare.depth AS (
              SELECT g.parent_id,
                     s.name AS site_name,
                     d.value::double precision
-             FROM jsonprepare.tbl_sites s
-                      JOIN jsonprepare.graves g ON g.parent_id = s.id
-                      JOIN jsonprepare.dimensiontypes d ON g.child_id = d.entity_id
+             FROM thanadosjson.tbl_sites s
+                      JOIN thanadosjson.graves g ON g.parent_id = s.id
+                      JOIN thanadosjson.dimensiontypes d ON g.child_id = d.entity_id
              WHERE d.name = 'Height'
          ) v
 
     GROUP BY parent_id, site_name);
 
 
-DROP TABLE IF EXISTS jsonprepare.chart_data;
-CREATE TABLE jsonprepare.chart_data
+DROP TABLE IF EXISTS thanadosjson.chart_data;
+CREATE TABLE thanadosjson.chart_data
 (
     depth       JSONB,
     orientation JSONB,
@@ -1131,32 +1131,32 @@ CREATE TABLE jsonprepare.chart_data
 );
 
 
-DROP TABLE IF EXISTS jsonprepare.chart_depth;
-CREATE TABLE jsonprepare.chart_depth
+DROP TABLE IF EXISTS thanadosjson.chart_depth;
+CREATE TABLE thanadosjson.chart_depth
 (
     depth TEXT
 );
-INSERT INTO jsonprepare.chart_depth (depth)
+INSERT INTO thanadosjson.chart_depth (depth)
 SELECT jsonb_build_object(
                'labels', dl.labels,
                'datasets', jsonb_agg(d)
            )
-FROM jsonprepare.depth_labels dl,
-     jsonprepare.depth d
+FROM thanadosjson.depth_labels dl,
+     thanadosjson.depth d
 GROUP BY dl.labels;
 
-UPDATE jsonprepare.chart_depth
+UPDATE thanadosjson.chart_depth
 SET depth = REPLACE(depth, '"[', '[');
-UPDATE jsonprepare.chart_depth
+UPDATE thanadosjson.chart_depth
 SET depth = REPLACE(depth, ']"', ']');
 
-INSERT INTO jsonprepare.chart_data (depth)
+INSERT INTO thanadosjson.chart_data (depth)
 SELECT depth::JSONB
-FROM jsonprepare.chart_depth;
+FROM thanadosjson.chart_depth;
 
 
-DROP TABLE IF EXISTS jsonprepare.orientation_labels;
-CREATE TABLE jsonprepare.orientation_labels AS (
+DROP TABLE IF EXISTS thanadosjson.orientation_labels;
+CREATE TABLE thanadosjson.orientation_labels AS (
 -- get labels for orientation of graves
     SELECT jsonb_agg(js.json_object_keys)
                AS labels
@@ -1185,9 +1185,9 @@ CREATE TABLE jsonprepare.orientation_labels AS (
                                   SELECT g.parent_id,
                                          s.name AS site_name,
                                          d.value::double precision
-                                  FROM jsonprepare.tbl_sites s
-                                           JOIN jsonprepare.graves g ON g.parent_id = s.id
-                                           JOIN jsonprepare.dimensiontypes d ON g.child_id = d.entity_id
+                                  FROM thanadosjson.tbl_sites s
+                                           JOIN thanadosjson.graves g ON g.parent_id = s.id
+                                           JOIN thanadosjson.dimensiontypes d ON g.child_id = d.entity_id
                                   WHERE d.name = 'Degrees'
                               ) v
 
@@ -1196,8 +1196,8 @@ CREATE TABLE jsonprepare.orientation_labels AS (
                 LIMIT 1) AS ok) AS js);
 
 --get values
-DROP TABLE IF EXISTS jsonprepare.orientation;
-CREATE TABLE jsonprepare.orientation AS (
+DROP TABLE IF EXISTS thanadosjson.orientation;
+CREATE TABLE thanadosjson.orientation AS (
     SELECT parent_id                                                   AS "site_id",
            site_name                                                   AS "label",
            '[' ||
@@ -1223,9 +1223,9 @@ CREATE TABLE jsonprepare.orientation AS (
              SELECT g.parent_id,
                     s.name AS site_name,
                     d.value::double precision
-             FROM jsonprepare.tbl_sites s
-                      JOIN jsonprepare.graves g ON g.parent_id = s.id
-                      JOIN jsonprepare.dimensiontypes d ON g.child_id = d.entity_id
+             FROM thanadosjson.tbl_sites s
+                      JOIN thanadosjson.graves g ON g.parent_id = s.id
+                      JOIN thanadosjson.dimensiontypes d ON g.child_id = d.entity_id
              WHERE d.name = 'Degrees'
          ) v
 
@@ -1233,30 +1233,30 @@ CREATE TABLE jsonprepare.orientation AS (
 
 
 
-DROP TABLE IF EXISTS jsonprepare.chart_orientation;
-CREATE TABLE jsonprepare.chart_orientation
+DROP TABLE IF EXISTS thanadosjson.chart_orientation;
+CREATE TABLE thanadosjson.chart_orientation
 (
     orientation TEXT
 );
-INSERT INTO jsonprepare.chart_orientation (orientation)
+INSERT INTO thanadosjson.chart_orientation (orientation)
 SELECT jsonb_build_object(
                'labels', dl.labels,
                'datasets', jsonb_agg(d)
            )
-FROM jsonprepare.orientation_labels dl,
-     jsonprepare.orientation d
+FROM thanadosjson.orientation_labels dl,
+     thanadosjson.orientation d
 GROUP BY dl.labels;
 
-UPDATE jsonprepare.chart_orientation
+UPDATE thanadosjson.chart_orientation
 SET orientation = REPLACE(orientation, '"[', '[');
-UPDATE jsonprepare.chart_orientation
+UPDATE thanadosjson.chart_orientation
 SET orientation = REPLACE(orientation, ']"', ']');
 
-UPDATE jsonprepare.chart_data
-SET orientation = (SELECT orientation::JSONB FROM jsonprepare.chart_orientation);
+UPDATE thanadosjson.chart_data
+SET orientation = (SELECT orientation::JSONB FROM thanadosjson.chart_orientation);
 
-DROP TABLE IF EXISTS jsonprepare.sex;
-CREATE TABLE jsonprepare.sex AS (
+DROP TABLE IF EXISTS thanadosjson.sex;
+CREATE TABLE thanadosjson.sex AS (
     SELECT s.parent_id AS site_id,
            s.site_name AS "label",
            '[' ||
@@ -1269,45 +1269,45 @@ CREATE TABLE jsonprepare.sex AS (
              SELECT g.parent_id,
                     s.name AS site_name,
                     d.name
-             FROM jsonprepare.tbl_sites s
-                      JOIN jsonprepare.graves g ON g.parent_id = s.id
-                      JOIN jsonprepare.burials b ON g.child_id = b.parent_id
-                      JOIN jsonprepare.types d ON b.child_id = d.entity_id
+             FROM thanadosjson.tbl_sites s
+                      JOIN thanadosjson.graves g ON g.parent_id = s.id
+                      JOIN thanadosjson.burials b ON g.child_id = b.parent_id
+                      JOIN thanadosjson.types d ON b.child_id = d.entity_id
              WHERE d.path LIKE 'Sex%') s
              JOIN (
         SELECT g.parent_id        AS site_id,
                count(g.parent_id) AS burialcount
-        FROM jsonprepare.tbl_sites s
-                 JOIN jsonprepare.graves g ON g.parent_id = s.id
-                 JOIN jsonprepare.burials b ON g.child_id = b.parent_id
+        FROM thanadosjson.tbl_sites s
+                 JOIN thanadosjson.graves g ON g.parent_id = s.id
+                 JOIN thanadosjson.burials b ON g.child_id = b.parent_id
         GROUP by g.parent_id
     ) bc ON s.parent_id = bc.site_id
     GROUP BY site_name, parent_id, burialcount);
 
-DROP TABLE IF EXISTS jsonprepare.chart_sex;
-CREATE TABLE jsonprepare.chart_sex
+DROP TABLE IF EXISTS thanadosjson.chart_sex;
+CREATE TABLE thanadosjson.chart_sex
 (
     sex TEXT
 );
 
-INSERT INTO jsonprepare.chart_sex (sex)
+INSERT INTO thanadosjson.chart_sex (sex)
     (SELECT jsonb_build_object(
                     'labels', array_to_json('{"male", "female", "unknown"}'::TEXT[]),
                     'datasets', jsonb_agg(d)
                 )
-     FROM jsonprepare.sex d);
+     FROM thanadosjson.sex d);
 
-UPDATE jsonprepare.chart_sex
+UPDATE thanadosjson.chart_sex
 SET sex = REPLACE(sex, '"[', '[');
-UPDATE jsonprepare.chart_sex
+UPDATE thanadosjson.chart_sex
 SET sex = REPLACE(sex, ']"', ']');
 
-UPDATE jsonprepare.chart_data
-SET sex = (SELECT sex::JSONB FROM jsonprepare.chart_sex);
+UPDATE thanadosjson.chart_data
+SET sex = (SELECT sex::JSONB FROM thanadosjson.chart_sex);
 
 --age at death estimation for boxplot/violin plot
-DROP TABLE IF EXISTS jsonprepare.ageatdeath;
-CREATE TABLE jsonprepare.ageatdeath AS (
+DROP TABLE IF EXISTS thanadosjson.ageatdeath;
+CREATE TABLE thanadosjson.ageatdeath AS (
 SELECT 	ar.sitename,
 	jsonb_build_object(
 		'name', ar.sitename,
@@ -1333,10 +1333,10 @@ FROM
 	s.child_name AS sitename,
 	t.description AS age
 	FROM
-	jsonprepare.sites s
-	JOIN jsonprepare.graves g ON s.child_id = g.parent_id
-	JOIN jsonprepare.burials b ON b.parent_id = g.child_id
-	JOIN jsonprepare.types t ON t.entity_id = b.child_id
+	thanadosjson.sites s
+	JOIN thanadosjson.graves g ON s.child_id = g.parent_id
+	JOIN thanadosjson.burials b ON b.parent_id = g.child_id
+	JOIN thanadosjson.types t ON t.entity_id = b.child_id
 	WHERE t.path LIKE '%> Age%'
 	ORDER BY sitename) AS a) age GROUP BY sitename) ar);
 

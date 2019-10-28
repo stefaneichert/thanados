@@ -107,7 +107,7 @@ if (systemtype == 'find') {
 
 
 
-mycitation1 = ' From: Stefan Eichert et al., Medieval Cemeteries Online: >>' + window.location + '<<. After: ';
+mycitation1 = ' From: Stefan Eichert et al., THANADOS: >>' + window.location + '<<. After: ';
 
 
 function getEntityData(parentName, parentId, currentfeature) {

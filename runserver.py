@@ -1,2 +1,2 @@
-from medcem import app
+from thanados import app
 app.run()
