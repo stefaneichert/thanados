@@ -318,23 +318,23 @@ a.ui-button:active,
 
 .dropdown-item {
     color: rgba(255, 255, 255, 0.5) !important;
-    background-color: #555a5f !important;
+    background-color: #696969 !important;
     border: 0;
 }
 
 .dropdown-item:hover, .dropdown-item:focus {
     color: rgba(255, 255, 255, 0.75) !important;
-    background-color: #555a5f !important;
+    background-color: #696969 !important;
 }
 
 .dropdown-menu {
-    background-color: #555a5f !important;
+    background-color: #696969 !important;
     border: 0;
     border-radius: 0;
 }
 
 .bg-dark {
-    background-color: #555a5f !important;
+    background-color: #696969 !important;
 }
 
 .input-group-addon {
@@ -461,4 +461,16 @@ a:hover {
 .logo-heading {
     max-width: 100%;
     max-height: 90px;
+}
+
+.mylist {
+    position: relative;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: -1px;
+    margin-left: 3em;
+}
+
+#myfooter {
+    background-color: #f2f2f2;
+    padding: 0.5em;
 }
