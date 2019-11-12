@@ -106,7 +106,6 @@ if (systemtype == 'find') {
 }
 
 
-
 mycitation1 = ' From: Stefan Eichert et al., THANADOS: >>' + window.location + '<<. After: ';
 
 
@@ -194,12 +193,12 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myTypescontainer' + entId + '"></div>' +
         '<div id="myDimensionscontainer' + entId + '"></div>' +
         '<div id="myMaterialcontainer' + entId + '"></div>' +
-        '<div id="myChildrencontainer' + entId + '"></div>' +
         '<div id="myParentcontainer' + entId + '"></div>' +
         '</div>' +
         '<div id="myImagecontainer' + entId + '" class="col-md-auto" style="margin-top: 4em" ></div>' +
         '<div id="myMapcontainer" title="Static map of site with entity higlighted. For interactive map please click the map button in the left top corner." class="col-md" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; margin-right: 1em"></div>' +
         '</div>' +
+        '<div id="myChildrencontainer' + entId + '"></div>' +
         '<div id="myMetadatacontainer' + entId + '"></div>' +
         '</div>' +
         '</div>'
@@ -380,7 +379,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         $('#myexttablebody').append(
             '<tr>' +
             '<th scope="row">' + (t + 1) + '</th>' +
-            '<td><a href="' + url + '" target="_blank">' + url + '</a></td>' +
+            '<td><a href="' + url + '">' + url + '</a></td>' +
             '<td>' + name + '</td>' +
             '<td>' + description + '</td>' +
             '</tr>');
@@ -428,31 +427,33 @@ function getEntityData(parentName, parentId, currentfeature) {
             '<tr>' +
             '<th scope="row">' + (t + 1) + '</th>' +
             '<td>' + file.id + '</td>' +
-            '<td><a href="/static/images/entities/' + file.id + '.jpg" target="_blank">' + file.name + '</a></td>' +
+            '<td><a href="/static/images/entities/' + file.id + '.jpg">' + file.name + '</a></td>' +
             '<td>' + source + '</td>' +
             '<td>' + reference + '</td>' +
             '<td>' + license + '</td>' +
             '</tr>');
     });
 
+    if (children != '' && children[0].id !== 0) {
+        $.each(children, function (c, child) {
+            if ($('#myChildrencontainer' + entId).is(':empty')) {
+                $('#myChildrencontainer' + entId).append(
+                    '<p>' +
+                    '<div class="d-inline">' +
+                    '<h6>' + children.length + ' Subunit(s)<a href="#" onclick="toggleSubunits()" title="show/hide"><i id="subbtn" class="collapsetitle1 collapsebutton1 fa fa-chevron-down"></i></a></h6>' +
+                    '</div>' +
+                    '</p>');
+            }
+            ;
 
-    $.each(children, function (c, child) {
-        if ($('#myChildrencontainer' + entId).is(':empty')) {
             $('#myChildrencontainer' + entId).append(
-                '<p>' +
-                '<div class="d-inline">' +
-                '<h6>' + children.length + ' Subunit(s)<a href="#" onclick="toggleSubunits()" title="show/hide"><i id="subbtn" class="collapsetitle1 collapsebutton1 fa fa-chevron-down"></i></a></h6>' +
-                '</div>' +
-                '</p>');
-        }
-        ;
+                '<a class="modalrowitem subunits" href="/entity/view/' + child.id + '" title="' + child.properties.maintype.name + '">' + child.properties.name + '</a>'
+            );
+        });
+    }
+    ;
 
-        $('#myChildrencontainer' + entId).append(
-            '<a class="modalrowitem subunits" href="/entity/view/' + child.id + '" title="' + child.properties.maintype.name + '">' + child.properties.name + '</a>'
-        );
-    });
-
-    if (children.length > 15) {
+    if (children.length > 200) {
         toggleSubunits();
     }
 
@@ -471,24 +472,24 @@ function getEntityData(parentName, parentId, currentfeature) {
     landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=2245afa655044c5c8f5ef8c129c29cdb', {
         attribution: 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         apikey: '<2245afa655044c5c8f5ef8c129c29cdb>',
-        maxZoom: 30
+        maxZoom: 22
     });
 
     myStyle = {
-        "color": "#6c757d",
+        "color": "rgba(0,123,217,0.75)",
         "weight": 1.5,
-        "fillOpacity": 0.5
+        "fillOpacity": 0.8
     };
 
     myStyleSquare = {
-        "color": "#6c757d",
+        "color": "rgba(0,123,217,0.75)",
         "weight": 1.5,
-        "fillOpacity": 0.2,
+        "fillOpacity": 0.5,
         "dashArray": [4, 4]
     };
 
     mymap = L.map('myMapcontainer', {
-        zoom: 25,
+        zoom: 18,
         keyboard: false,
         dragging: false,
         zoomControl: false,
@@ -502,76 +503,88 @@ function getEntityData(parentName, parentId, currentfeature) {
 
 
 //add graves
-
-    function polygonFilter(feature) {
-        if (feature.geometry.type == "Polygon")
-            return true
-    }
+    if (children != '' && children[0].id !== 0 || globalfeature.properties.maintype.systemtype == 'find') {
+        function polygonFilter(feature) {
+            if (feature.geometry.type == "Polygon")
+                return true
+        }
 
 //filter to get points from the geojson
-    function pointFilter(feature) {
-        if (feature.geometry.type == "Point")
-            return true
-    }
+        function pointFilter(feature) {
+            if (feature.geometry.type == "Point")
+                return true
+        }
 
-    graves = L.geoJSON(jsonmysite, {
-        filter: polygonFilter,
-        style: myStyle
-    });
 
-    graves.addTo(mymap);
+        graves = L.geoJSON(jsonmysite, {
+            filter: polygonFilter,
+            style: myStyle
+        });
+
+        graves.addTo(mymap);
 
 //if geometry is point create a rectangle around that point
-    pointgraves = L.geoJSON(jsonmysite, {
-        filter: pointFilter,
-        pointToLayer: function (feature, latlng) {
-            lefttoplat = (latlng.lat - 0.000003);
-            lefttoplon = (latlng.lng - 0.000005);
-            rightbottomlat = (latlng.lat + 0.000003);
-            rightbottomlon = (latlng.lng + 0.000005);
-            bounds = [[lefttoplat, lefttoplon], [rightbottomlat, rightbottomlon]];
-            rect = L.rectangle(bounds).toGeoJSON(13);
-            L.extend(rect, {//add necessary properties from json
-                properties: feature.properties,
-                id: feature.id,
-                parent: feature.parent,
-                burials: feature.burials,
-                derivedPoly: "true"
-            });
-            graves.addData(rect);
-        },
-    });
+        pointgraves = L.geoJSON(jsonmysite, {
+            filter: pointFilter,
+            pointToLayer: function (feature, latlng) {
+                lefttoplat = (latlng.lat - 0.000003);
+                lefttoplon = (latlng.lng - 0.000005);
+                rightbottomlat = (latlng.lat + 0.000003);
+                rightbottomlon = (latlng.lng + 0.000005);
+                bounds = [[lefttoplat, lefttoplon], [rightbottomlat, rightbottomlon]];
+                rect = L.rectangle(bounds).toGeoJSON(13);
+                //point = L.marker(latlng).addTo(mymap)
+                L.extend(rect, {//add necessary properties from json
+                    properties: feature.properties,
+                    id: feature.id,
+                    parent: feature.parent,
+                    burials: feature.burials,
+                    derivedPoly: "true"
+                });
+                graves.addData(rect);
 
-    //style the point geometry graves with a dashed line
-    graves.eachLayer(function (layer) {
-        if (layer.feature.derivedPoly == 'true') {
-            layer.setStyle(myStyleSquare)
-        }
-    });
 
-    mypolyjson = (graves.toGeoJSON(13));
-    L.extend(mypolyjson, {
-        name: jsonmysite.name,
-        properties: jsonmysite.properties,
-        site_id: jsonmysite.site_id
-    });
+            },
+        });
 
-    mymap.fitBounds(graves.getBounds());
-
-    if (currentfeature.type !== "FeatureCollection") {
-        polys = L.geoJSON(mypolyjson, {
-            onEachFeature: function (feature, layer) {
-                if (graveId == feature.id) {
-                    polyPoints = layer.getLatLngs();
-                    selectedpoly = L.polygon(polyPoints, {color: 'red'}).addTo(mymap);
-                    boundscenter = (selectedpoly.getBounds()).getCenter();
-                }
-                ;
+        //style the point geometry graves with a dashed line
+        graves.eachLayer(function (layer) {
+            if (layer.feature.derivedPoly == 'true') {
+                layer.setStyle(myStyleSquare)
             }
-        })
+        });
+
+        mypolyjson = (graves.toGeoJSON(13));
+        L.extend(mypolyjson, {
+            name: jsonmysite.name,
+            properties: jsonmysite.properties,
+            site_id: jsonmysite.site_id
+        });
+
+        mymap.fitBounds(graves.getBounds());
+        if ((mymap.getZoom()) > 20) mymap.setZoom(20);
+
+
+        if (currentfeature.type !== "FeatureCollection") {
+            polys = L.geoJSON(mypolyjson, {
+                onEachFeature: function (feature, layer) {
+                    if (graveId == feature.id) {
+                        polyPoints = layer.getLatLngs();
+                        selectedpoly = L.polygon(polyPoints, {color: 'red'}).addTo(mymap);
+                        boundscenter = (selectedpoly.getBounds()).getCenter();
+                    }
+                    ;
+                }
+            })
+        }
+        ;
     }
     ;
 
+    if (children !== '') {if (children[0].id == 0) {
+        graves = L.marker([jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]]).addTo(mymap);
+
+    }};
     L.control.scale({imperial: false}).addTo(mymap);
 
 
@@ -593,7 +606,15 @@ function getEntityData(parentName, parentId, currentfeature) {
     );
     var rect1 = {color: "#ff1100", weight: 15};
 
-    mapcenter = mymap.getCenter();
+    if (children != '' && children[0].id !== 0 || globalfeature.properties.maintype.systemtype == 'find') {
+        mapcenter = mymap.getCenter();
+    } else {
+        mapcenter = graves.getLatLng();
+        mymap.panTo(mapcenter);
+        if ((mymap.getZoom()) > 20) mymap.setZoom(20);
+    }
+    ;
+
     var miniMap = new L.Control.MiniMap(osm2,
         {
             centerFixed: mapcenter,
@@ -604,7 +625,10 @@ function getEntityData(parentName, parentId, currentfeature) {
             aimingRectOptions: rect1
         }).addTo(mymap);
 
-    L.easyButton('fas fa-map-marked-alt', function(btn, map){openInNewTab('/map/' + place_id);'Open detailed map of site'}).addTo(mymap);
+    L.easyButton('fas fa-map-marked-alt', function (btn, map) {
+        openInNewTab('/map/' + place_id);
+        'Open detailed map of site'
+    }).addTo(mymap);
     attributionChange();
 }
 

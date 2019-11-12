@@ -24,7 +24,7 @@ function exportToJsonFile(data) {
 }
 
 function openInNewTab(url) {
-  var win = window.open(url, '_blank');
+  var win = window.open(url, '_self'); //change to _blank for new tabs.
   win.focus();
 }
 

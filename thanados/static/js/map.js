@@ -1,8 +1,10 @@
 //initiate map with certain json
 $(document).ready(function () {
     $("#sidebarTitle").text(myjson.name);
+    markerset = false;
     setmap(myjson);
     console.log(myjson);
+
 });
 
 //set map and sidebar content//
@@ -23,7 +25,7 @@ function pointFilter(feature) {
 
 function setmap(myjson) {
 //set sidebar to current json
-    setSidebarContent(myjson);
+    if (myjson.features[0].id !== 0) setSidebarContent(myjson);
 
     //set attribution title
     mywindowtitle = 'THANADOS: ' + myjson.name + '. ';
@@ -60,14 +62,14 @@ function setmap(myjson) {
 
 //style polygons
     var myStyle = {
-        "color": "#6c757d",
+        "color": "rgba(0,123,217,0.75)",
         "weight": 1.5,
         "fillOpacity": 0.5
         //"opacity": 0.4
     };
 
     var myStyleSquare = {
-        "color": "#6c757d",
+        "color": "rgba(0,123,217,0.75)",
         "weight": 1.5,
         "fillOpacity": 0.2,
         "dashArray": [4, 4]
@@ -86,21 +88,30 @@ function setmap(myjson) {
     pointgraves = L.geoJSON(myjson, {
         filter: pointFilter,
         pointToLayer: function (feature, latlng) {
-            var lefttoplat = (latlng.lat - 0.000003);
-            var lefttoplon = (latlng.lng - 0.000005);
-            var rightbottomlat = (latlng.lat + 0.000003);
-            var rightbottomlon = (latlng.lng + 0.000005);
-            var bounds = [[lefttoplat, lefttoplon], [rightbottomlat, rightbottomlon]];
-            var rect = L.rectangle(bounds).toGeoJSON(13);
-            L.extend(rect, {//add necessary properties from json
-                properties: feature.properties,
-                id: feature.id,
-                parent: feature.parent,
-                burials: feature.burials,
-                derivedPoly: "true"
-            });
-            graves.addData(rect);
-        },
+            if (feature.id !== 0) {
+                var lefttoplat = (latlng.lat - 0.000003);
+                var lefttoplon = (latlng.lng - 0.000005);
+                var rightbottomlat = (latlng.lat + 0.000003);
+                var rightbottomlon = (latlng.lng + 0.000005);
+                var bounds = [[lefttoplat, lefttoplon], [rightbottomlat, rightbottomlon]];
+                var rect = L.rectangle(bounds).toGeoJSON(13);
+                L.extend(rect, {//add necessary properties from json
+                    properties: feature.properties,
+                    id: feature.id,
+                    parent: feature.parent,
+                    burials: feature.burials,
+                    derivedPoly: "true"
+                });
+                graves.addData(rect);
+                markerset = false;
+            }
+            else {
+                var popupLine = '<a id="' + myjson.site_id + '" onclick="modalsetsite()" href="#"><p><b>' + feature.properties.name + ' </b><br>(' + myjson.properties.maintype.name + ')</p></a>';
+                var marker = L.marker(latlng).bindPopup(popupLine).addTo(map);
+                centerpoint = latlng;
+                markerset = true;
+            };
+            },
     });
 
     //style the point geometry graves with a dashed line
@@ -115,7 +126,14 @@ function setmap(myjson) {
         properties: myjson.properties,
         site_id: myjson.site_id
     });
-    map.fitBounds(graves.getBounds());
+    if (markerset) {
+        map.panTo(centerpoint);
+        map.setZoom(20);
+    } else {
+    map.fitBounds(graves.getBounds())};
+    myzoom = (map.getZoom());
+    if (myzoom > 20) map.setZoom(20);
+
 
     //add emtpty Layergroup for search results
     resultpolys = new L.LayerGroup();
@@ -619,7 +637,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     );
 
     $('#myModalPermalink' + entId).append(
-        '<a href="../entity/view/' + entId + '" target="_blank"><h6>Permalink</h6></a>'
+        '<a href="../entity/view/' + entId + '"><h6>Permalink</h6></a>'
     );
 
     if (dateToInsert == '') {
@@ -797,7 +815,7 @@ function modalsetsite() {
     getModalData(0, myjson);
     $("#myModal").dialog({
         width: 500,
-        height: (newListHeight - 138),
+        height: (newListHeight - 188),
         title: myjson.name,
         position: {my: 'right bottom', at: 'right bottom-19', of: window}
     });

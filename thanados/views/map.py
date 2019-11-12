@@ -9,7 +9,7 @@ from thanados.models.entity import Data
 def map(object_id: int, format_=None):
     myjson = Data.get_data(object_id)
     sql_types = """
-            SELECT * FROM thanadosjson.typesjson;
+            SELECT * FROM thanados.typesjson;
             """
     g.cursor.execute(sql_types)
     types = g.cursor.fetchall()

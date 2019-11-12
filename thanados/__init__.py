@@ -10,7 +10,7 @@ app.config.from_object('config.default')  # Load config/INSTANCE_NAME.py
 app.config.from_pyfile('production.py')  # Load instance/INSTANCE_NAME.py
 
 
-from thanados.views import index, map, about, entity, charts, login, manual
+from thanados.views import index, map, about, entity, charts, login, manual, sites
 
 
 def connect():

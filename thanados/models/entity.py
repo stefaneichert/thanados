@@ -5,25 +5,25 @@ class Data:
 
     @staticmethod
     def get_data(place_id):
-        sql = 'SELECT data FROM thanadosjson.tbl_thanados_data WHERE id = %(place_id)s;'
+        sql = 'SELECT data FROM thanados.tbl_thanados_data WHERE id = %(place_id)s;'
         g.cursor.execute(sql, {'place_id': place_id})
         return g.cursor.fetchall()
 
     @staticmethod
     def get_depth():
-        sql = 'SELECT depth FROM thanadosjson.chart_data;'
+        sql = 'SELECT depth FROM thanados.chart_data;'
         g.cursor.execute(sql)
         return g.cursor.fetchall()
 
     @staticmethod
     def get_orientation():
-        sql = 'SELECT orientation FROM thanadosjson.chart_data;'
+        sql = 'SELECT orientation FROM thanados.chart_data;'
         g.cursor.execute(sql)
         return g.cursor.fetchall()
 
     @staticmethod
     def get_sex():
-        sql = 'SELECT sex FROM thanadosjson.chart_data;'
+        sql = 'SELECT sex FROM thanados.chart_data;'
         g.cursor.execute(sql)
         return g.cursor.fetchall()
 
@@ -83,8 +83,8 @@ class Data:
 		        t.name AS type,
 		        count(t.name) 
 		        FROM model.entity m 
-		        JOIN thanadosjson.entities e ON e.parent_id = m.id 
-		        JOIN thanadosjson.types_main t ON e.child_id = t.entity_id
+		        JOIN thanados.entities e ON e.parent_id = m.id 
+		        JOIN thanados.types_main t ON e.child_id = t.entity_id
 		        WHERE t.path LIKE %(term)s
 		        GROUP BY m.id, sitename, type
 		        ORDER BY 1) as t;"""
@@ -104,9 +104,9 @@ class Data:
             		        t.name AS type,
             		        count(t.name) 
             		        FROM model.entity m 
-            		        JOIN thanadosjson.entities e ON e.parent_id = m.id
-            		        JOIN thanadosjson.entities e1 ON e1.parent_id = e.child_id
-            		        JOIN thanadosjson.types_main t ON e1.child_id = t.entity_id
+            		        JOIN thanados.entities e ON e.parent_id = m.id
+            		        JOIN thanados.entities e1 ON e1.parent_id = e.child_id
+            		        JOIN thanados.types_main t ON e1.child_id = t.entity_id
             		        WHERE t.path LIKE %(term)s
             		        GROUP BY m.id, sitename, type
             		        ORDER BY 1) as t;"""
