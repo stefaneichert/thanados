@@ -11,7 +11,13 @@ __pycache__/*
 
 # created files
 thanados/static/images/entities/*
+
+# files for specific projects
 install/hacks.sql
+thanados/templates/about/aboutmedcem.html
+thanados/templates/about/aboutthanados.html
+thanados/templates/index/indexmedcem.html
+thanados/templates/index/indexthanados.html
 
 # ide
 .idea

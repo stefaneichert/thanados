@@ -2,6 +2,12 @@
 -- !!! Important!!!! Doing a backup before is highly recommended!!!!
 -- noinspection SqlResolveForFile
 
+
+--hack to remove "Eastern Alps revisited" type.
+/*DELETE
+FROM model.entity
+WHERE id = 11821;
+*/
 --prepare one geojson file of all entities
 DROP SCHEMA IF EXISTS thanados CASCADE;
 
@@ -10,10 +16,10 @@ CREATE SCHEMA thanados;
 --create temp tables
 
 -- fill timespan dates if NULL with from_values
-UPDATE model.entity SET begin_to = begin_from WHERE begin_from IS NOT NULL and begin_to IS NULL;
-UPDATE model.entity SET begin_from = begin_to WHERE begin_to IS NOT NULL and begin_from IS NULL;
-UPDATE model.entity SET end_to = end_from WHERE end_from IS NOT NULL and end_to IS NULL;
-UPDATE model.entity SET end_from = end_to WHERE end_to IS NOT NULL and end_from IS NULL;
+-- UPDATE model.entity SET begin_to = begin_from WHERE begin_from IS NOT NULL and begin_to IS NULL;
+-- UPDATE model.entity SET begin_from = begin_to WHERE begin_to IS NOT NULL and begin_from IS NULL;
+-- UPDATE model.entity SET end_to = end_from WHERE end_from IS NOT NULL and end_to IS NULL;
+-- UPDATE model.entity SET end_from = end_to WHERE end_to IS NOT NULL and end_from IS NULL;
 
 -- all types tree
 DROP TABLE IF EXISTS thanados.types_all;
@@ -118,7 +124,7 @@ CREATE TABLE thanados.sites AS (
                    JOIN model.link l ON e.id = l.domain_id
           WHERE l.property_code = 'P2'
             AND e.system_type = 'place'
-            --AND e.id in (50505, 50497, 111285, 47363) -- uncomment and replace IDs with desired IDs
+            -- AND e.id in (50505, 50497, 111285) -- Thunau, Pohansko and Stara Kourin.  uncomment and replace IDs with desired IDs
             )
              AS s
              JOIN thanados.types_all t ON t.id = s.range_id
@@ -403,10 +409,10 @@ FROM thanados.types_main
 WHERE path LIKE 'Dimensions >%'
 ORDER BY entity_id, path;
 
---hack for setting burial orientation to grave orientation if grave does not have any. Remove if you do not wish to edit the original database
-INSERT INTO model.link (domain_id, range_id, property_code, description)
+--hack for setting burial orientation to grave orientation if grave does not have any. Comment/Uncomment if you do not wish/are willing to edit the original database
+-- INSERT INTO model.link (domain_id, range_id, property_code, description)
 
-SELECT domain,
+/*SELECT domain,
        range,
        'P2',
        orientation::double precision
@@ -432,7 +438,7 @@ WHERE DOMAIN || ':' || range NOT IN
                     count(parent_id) as count
              FROM thanados.burials
              GROUP BY parent_id) c
-       WHERE c.count > 1);
+       WHERE c.count > 1);*/
 
 --types dimensions (redo because of updated links)
 DROP TABLE IF EXISTS thanados.dimensiontypes;
