@@ -2,7 +2,7 @@
 
 THANADOS is an open source, web application for the presentation of archaeological data especially for burial studies.
 
-The data is based on the [OpenAtlas](http://openatlas.eu/website) application
+The data is based on the [OpenAtlas](https://openatlas.eu) application
 
 The information is mapped as a network using classes and properties of the [CIDOC CRM](http://www.cidoc-crm.org/).
 

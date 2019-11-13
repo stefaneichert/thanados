@@ -1,3 +1,5 @@
+-- script to prepare OpenAtlas data for Thanados.
+-- !!! Important!!!! Doing a backup before is highly recommended!!!!
 -- noinspection SqlResolveForFile
 
 --prepare one geojson file of all entities
@@ -6,11 +8,6 @@ DROP SCHEMA IF EXISTS thanados CASCADE;
 
 CREATE SCHEMA thanados;
 --create temp tables
-
---hack to remove "Eastern Alps revisited" type
-DELETE
-FROM model.entity
-WHERE id = 11821;
 
 -- fill timespan dates if NULL with from_values
 UPDATE model.entity SET begin_to = begin_from WHERE begin_from IS NOT NULL and begin_to IS NULL;
@@ -121,13 +118,14 @@ CREATE TABLE thanados.sites AS (
                    JOIN model.link l ON e.id = l.domain_id
           WHERE l.property_code = 'P2'
             AND e.system_type = 'place'
-            --AND e.id in (50505, 50497, 111285, 47363) -- comment for all sites or select id of sites desired
+            --AND e.id in (50505, 50497, 111285, 47363) -- uncomment and replace IDs with desired IDs
             )
              AS s
              JOIN thanados.types_all t ON t.id = s.range_id
-    WHERE t.name_path LIKE 'Place > Burial Site%'
+    WHERE t.name_path LIKE 'Place > Burial Site%' -- replace Burial Site with the top parent of the place category of which you want to show
 );
 
+-- set polygons as main geometry where available
 UPDATE thanados.sites
 SET geom = poly.geom
 FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
@@ -138,6 +136,7 @@ FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
       WHERE l.property_code = 'P53') AS poly
 WHERE child_id = poly.id;
 
+-- get centerpoint data if a point geometry is available
 UPDATE thanados.sites
 SET (lat, lon) = (ST_X(point.geom), ST_Y(point.geom))
 FROM (SELECT geom,
@@ -148,7 +147,7 @@ FROM (SELECT geom,
       WHERE l.property_code = 'P53') AS point
 WHERE child_id = point.id;
 
-
+-- set point as main geometry if no polygon is available
 UPDATE thanados.sites
 SET geom = point.geom
 FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
@@ -160,6 +159,7 @@ FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
 WHERE child_id = point.id
   AND thanados.sites.geom ISNULL;
 
+-- get centerpoint data of polygons
 UPDATE thanados.sites
 SET (lat, lon) = (ST_X(center), ST_Y(center))
 FROM (SELECT ST_PointOnSurface(geom) AS center,
@@ -171,7 +171,7 @@ FROM (SELECT ST_PointOnSurface(geom) AS center,
 WHERE child_id = poly.id;
 
 
--- graves
+-- graves table with all data on grave level
 DROP TABLE IF EXISTS thanados.graves;
 CREATE TABLE thanados.graves AS
 SELECT parent.id                                    AS parent_id,
@@ -195,6 +195,7 @@ WHERE parent.id in (SELECT child_id FROM thanados.sites)
   AND l_p_c.property_code = 'P46'
 ORDER BY child.system_type, parent.id, child.name;
 
+-- if no graves are available create an intermediate feature to be displayed on the map
 INSERT INTO thanados.graves (
 SELECT
 	child_id AS parent_id,
@@ -357,9 +358,9 @@ UPDATE thanados.entitiestmp
 SET description = NULL
 WHERE description = '';
 UPDATE thanados.entitiestmp
-SET description = (SELECT split_part(description, '##German', 1)); --remove German descriptions
+SET description = (SELECT split_part(description, '##German', 1)); --remove German descriptions. Replace ##German with characters of string. This string and the following characters will be removed in the description
 UPDATE thanados.entitiestmp
-SET description = (SELECT split_part(description, '##Deutsch', 1)); --remove German descriptions
+SET description = (SELECT split_part(description, '##Deutsch', 1)); --remove German descriptions. See above
 
 
 --types
@@ -402,7 +403,7 @@ FROM thanados.types_main
 WHERE path LIKE 'Dimensions >%'
 ORDER BY entity_id, path;
 
---hack for setting burial orientation to grave orientation if grave does not have any
+--hack for setting burial orientation to grave orientation if grave does not have any. Remove if you do not wish to edit the original database
 INSERT INTO model.link (domain_id, range_id, property_code, description)
 
 SELECT domain,
@@ -837,9 +838,7 @@ ORDER BY f.child_name;
 
 UPDATE thanados.tbl_burials f
 SET finds = NULL
-WHERE f.finds = '[
-  null
-]';
+WHERE f.finds = '[null]';
 
 DROP TABLE IF EXISTS thanados.tbl_burialscomplete;
 CREATE TABLE thanados.tbl_burialscomplete
