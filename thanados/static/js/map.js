@@ -654,6 +654,9 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         ;
         var classification = types.name;
         var classtype = types.path;
+        var typevalue = types.value;
+        var typeunit = types.description;
+        if (typeof(typevalue) !== 'undefined') var classification = (types.name + ': ' + typevalue + ' ' + typeunit);
         $('#myModalTypescontainer' + entId).append(
             '<div class="modalrowitem" title="' + classtype + '">' + classification + '</div>');
     });

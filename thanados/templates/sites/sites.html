@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
     <link href="/static/vendor/leafletplugins/Leaflet.markercluster-1.4.1/dist/MarkerCluster.css" rel="stylesheet">
-    <link href="/static/vendor/leafletplugins/Leaflet.markercluster-1.4.1/dist/MarkerCluster.Default.css" rel="stylesheet">
+    <link href="/static/vendor/leafletplugins/Leaflet.markercluster-1.4.1/dist/MarkerCluster.Default.css"
+          rel="stylesheet">
     <link href="/static/vendor/leafletplugins/leaflet.fullscreen-master/Control.FullScreen.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet">
     <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
@@ -12,51 +13,51 @@
 
     <div id="mycontent" class="container-fluid">
 
-    <h2 class="my-heading container">Sites</h2>
+        <h2 class="my-heading container">Sites</h2>
 
-    <div class="row" style="width: 100%">
-        <div class="col">
+        <div class="row" style="width: 100%">
+            <div class="col">
 
-            <table id="sitelist" class="display table table-striped table-bordered" width="100%">
-                <div class="row" style="width: 100%; margin-left: 0.1em">
-                    <div class="col">
-                        <label for="amount">Begin between</label>
-                        <input type="text" id="amount" readonly style="border:0;">
-                        <div id="slider-range"></div>
-                        </p>
+                <table id="sitelist" class="display table table-striped table-bordered" width="100%">
+                    <div class="row" style="width: 100%; margin-left: 0.1em">
+                        <div class="col">
+                            <label for="amount">Begin between</label>
+                            <input type="text" id="amount" readonly style="border:0;">
+                            <div id="slider-range"></div>
+                            </p>
+                        </div>
+                        <div class="col">
+                            <label for="amount2">End between</label>
+                            <input type="text" id="amount2" readonly style="border:0;">
+                            <div id="slider-range2"></div>
+                            </p>
+                        </div>
                     </div>
-                    <div class="col">
-                        <label for="amount2">End between</label>
-                        <input type="text" id="amount2" readonly style="border:0;">
-                        <div id="slider-range2"></div>
-                        </p>
-                    </div>
-                </div>
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Begin</th>
-                    <th>End</th>
-                </tr>
-                </thead>
-            </table>
-            <p>
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Begin</th>
+                        <th>End</th>
+                    </tr>
+                    </thead>
+                </table>
+                <p>
 
 
+            </div>
+            <div class="col">
+                <div id="map" style="min-width: 300px"></div>
+            </div>
         </div>
-        <div class="col">
-            <div id="map" style="min-width: 300px"></div>
+        <div style="display: none">
+            <input type="text" id="min" name="min">
+            <input type="text" id="max" name="max">
+            <input type="text" id="min1" name="min">
+            <input type="text" id="max1" name="max">
         </div>
-    </div>
-    <div style="display: none">
-        <input type="text" id="min" name="min">
-        <input type="text" id="max" name="max">
-        <input type="text" id="min1" name="min">
-        <input type="text" id="max1" name="max">
-    </div>
 
-
+    </div>
 
     <script>    sitelist = {{ sitelist|tojson }};    </script>
     <script src="/static/js/sites.js"></script>

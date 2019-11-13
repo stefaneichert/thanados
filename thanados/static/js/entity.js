@@ -219,6 +219,9 @@ function getEntityData(parentName, parentId, currentfeature) {
         ;
         var classification = types.name;
         var classtype = types.path;
+        var typevalue = types.value;
+        var typeunit = types.description;
+        if (typeof(typevalue) !== 'undefined') var classification = (types.name + ': ' + typevalue + ' ' + typeunit);
         $('#myTypescontainer' + entId).append(
             '<div class="modalrowitem" title="' + classtype + '">' + classification + '</div>');
     });
@@ -503,7 +506,7 @@ function getEntityData(parentName, parentId, currentfeature) {
 
 
 //add graves
-    if (children != '' && children[0].id !== 0 || globalfeature.properties.maintype.systemtype == 'find') {
+    if (children != '' && children[0].id !== 0 || globalfeature.properties.maintype.systemtype !== 'feature') {
         function polygonFilter(feature) {
             if (feature.geometry.type == "Polygon")
                 return true
@@ -606,7 +609,7 @@ function getEntityData(parentName, parentId, currentfeature) {
     );
     var rect1 = {color: "#ff1100", weight: 15};
 
-    if (children != '' && children[0].id !== 0 || globalfeature.properties.maintype.systemtype == 'find') {
+    if (children != '' && children[0].id !== 0 || globalfeature.properties.maintype.systemtype !== 'find'|| globalfeature.properties.maintype.systemtype !== 'stratigraphic unit') {
         mapcenter = mymap.getCenter();
     } else {
         mapcenter = graves.getLatLng();

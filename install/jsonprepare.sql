@@ -195,6 +195,23 @@ WHERE parent.id in (SELECT child_id FROM thanados.sites)
   AND l_p_c.property_code = 'P46'
 ORDER BY child.system_type, parent.id, child.name;
 
+INSERT INTO thanados.graves (
+SELECT
+	child_id AS parent_id,
+	child_name,
+	'0' AS child_id,
+	description,
+	begin_from,
+	begin_to,
+	begin_comment,
+	end_from,
+	end_to,
+	end_comment,
+	'feature' AS system_type,
+	geom,
+	NULL as lon,
+	NULL as lat
+	 FROM thanados.sites WHERE child_id NOT IN (SELECT DISTINCT parent_id FROM thanados.graves));
 
 UPDATE thanados.graves
 SET geom = poly.geom
@@ -219,7 +236,7 @@ WHERE child_id = point.id
 
 UPDATE thanados.graves g
 SET geom = a.geom
-FROM (SELECT s.child_id, s.geom FROM thanados.sites s JOIN thanados.graves g ON g.parent_id = s.child_id WHERE g.geom IS NULL) a WHERE a.child_id = g.parent_id;
+FROM (SELECT s.child_id, s.geom FROM thanados.sites s JOIN thanados.graves g ON g.parent_id = s.child_id WHERE g.geom IS NULL) a WHERE a.child_id = g.parent_id AND g.geom IS NULL;
 
 
 
@@ -454,7 +471,7 @@ SELECT e.*,
        t.name      AS typename,
        t.path
 FROM thanados.entitiestmp e
-         JOIN thanados.maintype t ON e.child_id = t.entity_id;
+         LEFT JOIN thanados.maintype t ON e.child_id = t.entity_id;
 
 --update timespan where values are missing
 UPDATE thanados.entities
@@ -891,6 +908,10 @@ SET burials = NULL
 WHERE f.burials = '[
   null
 ]';
+
+UPDATE thanados.tbl_graves f
+SET burials = NULL
+WHERE id = 0;
 
 
 DROP TABLE IF EXISTS thanados.tbl_gravescomplete;

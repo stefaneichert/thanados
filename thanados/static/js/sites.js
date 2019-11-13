@@ -247,8 +247,8 @@ table.on('search.dt', function () {
         var data = this.data();
                 resultLenght.push(data.id);
                 heatmarkers.push([JSON.parse(data.lon) + ',' + JSON.parse(data.lat)]);
-        var marker = L.marker([((data.lon)), ((data.lat))], {title: data.name }).addTo(mymarkers).bindPopup('<a href="/entity/view/' + data.id + '" title="' + data.description + '"><b>' + data.name + '</b></a><br><br>' + data.type + '"');
-        var marker = L.marker([((data.lon)), ((data.lat))], {title: data.name }).addTo(clustermarkers).bindPopup('<a href="/entity/view/' + data.id + '" title="' + data.description + '"><b>' + data.name + '</b></a><br><br>' + data.type + '"');
+        var marker = L.marker([((data.lon)), ((data.lat))], {title: data.name }).addTo(mymarkers).bindPopup('<a href="/entity/view/' + data.id + '" title="' + data.description + '"><b>' + data.name + '</b></a><br><br>' + data.type);
+        var marker = L.marker([((data.lon)), ((data.lat))], {title: data.name }).addTo(clustermarkers).bindPopup('<a href="/entity/view/' + data.id + '" title="' + data.description + '"><b>' + data.name + '</b></a><br><br>' + data.type);
 
     });
     mymarkers.addTo(markergroup);
