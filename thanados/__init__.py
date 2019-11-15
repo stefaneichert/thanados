@@ -1,9 +1,9 @@
 import psycopg2.extras
 from flask import Flask, g, request
-from flask_wtf.csrf import CsrfProtect
+from flask_wtf.csrf import CSRFProtect
 
 app = Flask(__name__, instance_relative_config=True)
-csrf = CsrfProtect(app)  # Make sure all forms are CSRF protected
+csrf = CSRFProtect(app)  # Make sure all forms are CSRF protected
 csrf.init_app(app)
 
 app.config.from_object('config.default')  # Load config/INSTANCE_NAME.py

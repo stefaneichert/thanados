@@ -3,7 +3,7 @@
 from bcrypt import hashpw
 from flask import flash, render_template, request, url_for
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from werkzeug.utils import redirect
 from wtforms import BooleanField, PasswordField, StringField, SubmitField
 from wtforms.validators import InputRequired
@@ -21,7 +21,7 @@ def load_user(user_id):
     return UserMapper.get_by_id(user_id)
 
 
-class LoginForm(Form):
+class LoginForm(FlaskForm):
     username = StringField('Username', [InputRequired()], render_kw={'autofocus': True})
     password = PasswordField('Password', [InputRequired()])
     show_passwords = BooleanField('show password')
@@ -47,7 +47,7 @@ def login():
                 flash('error wrong password', 'error')
         else:
             flash('error username', 'error')
-    error_html=''
+    error_html = ''
     if form and hasattr(form, 'errors'):
         for fieldName, errorMessages in form.errors.items():
             error_html += fieldName + ' - ' + errorMessages[0] + '<br />'

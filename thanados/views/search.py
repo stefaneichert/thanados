@@ -1,11 +1,11 @@
 from flask import render_template, flash, g
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 
 from thanados import app
 
 
-class SearchForm(Form):
+class SearchForm(FlaskForm):
     term = StringField()
     search = SubmitField()
 

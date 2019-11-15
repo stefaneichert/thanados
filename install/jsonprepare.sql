@@ -410,7 +410,7 @@ WHERE path LIKE 'Dimensions >%'
 ORDER BY entity_id, path;
 
 --hack for setting burial orientation to grave orientation if grave does not have any. Comment/Uncomment if you do not wish/are willing to edit the original database
-INSERT INTO model.link (domain_id, range_id, property_code, description)
+/*INSERT INTO model.link (domain_id, range_id, property_code, description)
 
 SELECT domain,
        range,
@@ -439,6 +439,7 @@ WHERE DOMAIN || ':' || range NOT IN
              FROM thanados.burials
              GROUP BY parent_id) c
        WHERE c.count > 1);
+       */
 
 --types dimensions (redo because of updated links)
 DROP TABLE IF EXISTS thanados.dimensiontypes;

@@ -1,7 +1,7 @@
 DEBUG = False
 
 DATABASE_NAME = 'openatlas'
-DATABASE_USER = 'postgres'
+DATABASE_USER = 'openatlas'
 DATABASE_HOST = 'localhost'
 DATABASE_PORT = 5432
 DATABASE_PASS = 'CHANGE ME'
