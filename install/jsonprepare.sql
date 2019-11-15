@@ -4,10 +4,10 @@
 
 
 --hack to remove "Eastern Alps revisited" type.
-/*DELETE
+DELETE
 FROM model.entity
 WHERE id = 11821;
-*/
+
 --prepare one geojson file of all entities
 DROP SCHEMA IF EXISTS thanados CASCADE;
 
@@ -124,7 +124,7 @@ CREATE TABLE thanados.sites AS (
                    JOIN model.link l ON e.id = l.domain_id
           WHERE l.property_code = 'P2'
             AND e.system_type = 'place'
-            --AND e.id in (50505, 50497, 111285) -- Thunau, Pohansko and Stara Kourin.  uncomment and replace IDs with desired IDs
+            AND e.id in (50505, 50497, 111285) -- Thunau, Pohansko and Stara Kourin.  uncomment and replace IDs with desired IDs
             )
              AS s
              JOIN thanados.types_all t ON t.id = s.range_id
@@ -410,7 +410,7 @@ WHERE path LIKE 'Dimensions >%'
 ORDER BY entity_id, path;
 
 --hack for setting burial orientation to grave orientation if grave does not have any. Comment/Uncomment if you do not wish/are willing to edit the original database
-/*INSERT INTO model.link (domain_id, range_id, property_code, description)
+INSERT INTO model.link (domain_id, range_id, property_code, description)
 
 SELECT domain,
        range,
@@ -439,7 +439,7 @@ WHERE DOMAIN || ':' || range NOT IN
              FROM thanados.burials
              GROUP BY parent_id) c
        WHERE c.count > 1);
-       */
+       
 
 --types dimensions (redo because of updated links)
 DROP TABLE IF EXISTS thanados.dimensiontypes;
