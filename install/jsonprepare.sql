@@ -3,11 +3,6 @@
 -- noinspection SqlResolveForFile
 
 
---hack to remove "Eastern Alps revisited" type.
-/*DELETE
-FROM model.entity
-WHERE id = 11821;
-*/
 --prepare one geojson file of all entities
 DROP SCHEMA IF EXISTS thanados CASCADE;
 
@@ -15,11 +10,7 @@ DROP SCHEMA IF EXISTS thanados CASCADE;
 CREATE SCHEMA thanados;
 --create temp tables
 
--- fill timespan dates if NULL with from_values
-UPDATE model.entity SET begin_to = begin_from WHERE begin_from IS NOT NULL and begin_to IS NULL;
-UPDATE model.entity SET begin_from = begin_to WHERE begin_to IS NOT NULL and begin_from IS NULL;
-UPDATE model.entity SET end_to = end_from WHERE end_from IS NOT NULL and end_to IS NULL;
-UPDATE model.entity SET end_from = end_to WHERE end_to IS NOT NULL and end_from IS NULL;
+
 
 -- all types tree
 DROP TABLE IF EXISTS thanados.types_all;
@@ -124,7 +115,6 @@ CREATE TABLE thanados.sites AS (
                    JOIN model.link l ON e.id = l.domain_id
           WHERE l.property_code = 'P2'
             AND e.system_type = 'place'
-            --AND e.id in (50505, 50497, 111285) -- Thunau, Pohansko and Stara Kourin.  uncomment and replace IDs with desired IDs
             )
              AS s
              JOIN thanados.types_all t ON t.id = s.range_id
@@ -367,6 +357,11 @@ UPDATE thanados.entitiestmp
 SET description = (SELECT split_part(description, '##German', 1)); --remove German descriptions. Replace ##German with characters of string. This string and the following characters will be removed in the description
 UPDATE thanados.entitiestmp
 SET description = (SELECT split_part(description, '##Deutsch', 1)); --remove German descriptions. See above
+-- fill timespan dates if NULL with from_values
+UPDATE thanados.entitiestmp SET begin_to = begin_from WHERE begin_from IS NOT NULL and begin_to IS NULL;
+UPDATE thanados.entitiestmp SET begin_from = begin_to WHERE begin_to IS NOT NULL and begin_from IS NULL;
+UPDATE thanados.entitiestmp SET end_to = end_from WHERE end_from IS NOT NULL and end_to IS NULL;
+UPDATE thanados.entitiestmp SET end_from = end_to WHERE end_to IS NOT NULL and end_from IS NULL;
 
 
 --types
@@ -384,6 +379,7 @@ FROM thanados.types_all,
      model.link
 WHERE entitiestmp.child_id = link.domain_id
   AND link.range_id = types_all.id
+  AND thanados.entitiestmp.child_id != 0
 ORDER BY entity_id, types_all.name_path;
 
 UPDATE thanados.types_main
@@ -410,15 +406,16 @@ WHERE path LIKE 'Dimensions >%'
 ORDER BY entity_id, path;
 
 --hack for setting burial orientation to grave orientation if grave does not have any. Comment/Uncomment if you do not wish/are willing to edit the original database
-/*INSERT INTO model.link (domain_id, range_id, property_code, description)
-
-SELECT domain,
-       range,
-       'P2',
-       orientation::double precision
-FROM (SELECT l.domain,
+/*INSERT INTO thanados.dimensiontypes (id, parent_id, entity_id, name, description, value, path)
+SELECT id, 15678, domain, name, description, orientation::Text, path FROM
+(SELECT
+26192 AS id,
+	l.domain,
              l.range,
-             l.orientation
+             l.name,
+             '°' as description,
+             'Dimensions > Degrees' as path,
+             l.orientation:: double precision
       FROM (SELECT g.child_id AS DOMAIN,
                    d.value    AS orientation,
                    d.name,
@@ -441,13 +438,6 @@ WHERE DOMAIN || ':' || range NOT IN
        WHERE c.count > 1);
        */
 
---types dimensions (redo because of updated links)
-DROP TABLE IF EXISTS thanados.dimensiontypes;
-CREATE TABLE thanados.dimensiontypes AS
-SELECT *
-FROM thanados.types_main
-WHERE path LIKE 'Dimensions >%'
-ORDER BY entity_id, path;
 
 --types material
 DROP TABLE IF EXISTS thanados.materialtypes;
@@ -501,6 +491,7 @@ FROM thanados.entities,
      model.entity
 WHERE entities.child_id = link.range_id
   AND link.domain_id = entity.id
+  AND entities.child_id != 0
   AND entity.system_type ~~ 'file'::text
 ORDER BY entities.child_id;
 
@@ -545,6 +536,7 @@ FROM thanados.entities,
      model.entity
 WHERE entities.child_id = link.range_id
   AND link.domain_id = entity.id
+  AND entities.child_id != 0
   AND entity.system_type ~~ 'bibliography'::text
 ORDER BY entities.child_id;
 
@@ -572,6 +564,7 @@ FROM thanados.entities,
      model.entity
 WHERE entities.child_id = link.range_id
   AND link.domain_id = entity.id
+  AND entities.child_id != 0
   AND entity.system_type ~~ 'external reference'::text
 ORDER BY entities.child_id;
 
@@ -611,7 +604,7 @@ FROM thanados.entities e
                      'path', t.path)) AS types
       FROM thanados.types t
       GROUP BY entity_id) AS irgendwas
-     ON e.child_id = irgendwas.entity_id;
+     ON e.child_id = irgendwas.entity_id WHERE e.child_id != 0;
 
 
 -- insert file data
@@ -731,7 +724,7 @@ DROP TABLE IF EXISTS thanados.tmp;
 CREATE TABLE thanados.tmp AS
     (SELECT *
      FROM thanados.entities e
-              LEFT JOIN thanados.types_and_files t ON e.child_id = t.entity_id);
+              LEFT JOIN thanados.types_and_files t ON e.child_id = t.entity_id ORDER BY parent_id, child_name);
 
 UPDATE thanados.tmp
 SET timespan = NULL
@@ -746,6 +739,7 @@ UPDATE thanados.tmp
 SET end_comment = NULL
 WHERE end_comment = '';
 UPDATE thanados.tmp SET description = (SELECT split_part(description, '##German', 1)); --hack to remove German descriptions
+UPDATE thanados.tmp SET description = (SELECT split_part(description, '##Deutsch', 1)); --hack to remove German descriptions
 
 
 ---finds json
@@ -873,15 +867,17 @@ CREATE TABLE thanados.tbl_graves
 (
     id         integer,
     parent_id  integer,
+    name       text,
     geom       jsonb,
     properties jsonb,
     files      jsonb,
     burials    jsonb
 );
 
-INSERT INTO thanados.tbl_graves (id, parent_id, files, geom, properties, burials)
+INSERT INTO thanados.tbl_graves (id, parent_id, name, files, geom, properties, burials)
 SELECT f.child_id,
        f.parent_id,
+       f.child_name,
        f.files,
        f.geom::jsonb,
        jsonb_strip_nulls(jsonb_build_object(
@@ -925,12 +921,14 @@ CREATE TABLE thanados.tbl_gravescomplete
 (
     id        integer,
     parent_id integer,
+    name      text,
     grave     jsonb
 );
 
-INSERT INTO thanados.tbl_gravescomplete (id, parent_id, grave)
+INSERT INTO thanados.tbl_gravescomplete (id, parent_id, name, grave)
 SELECT id,
        parent_id,
+       name,
        jsonb_strip_nulls(jsonb_build_object(
                'type', 'Feature',
                'geometry', f.geom,
@@ -940,8 +938,8 @@ SELECT id,
                'files', f.files,
                'burials', f.burials
            )) AS graves
-FROM thanados.tbl_graves f;
---ORDER BY f.properties -> 'name' asc;
+FROM thanados.tbl_graves f
+ORDER BY f.parent_id, f.name;
 
 -- get data for sites
 DROP TABLE IF EXISTS thanados.tbl_sites;
@@ -1029,10 +1027,10 @@ SELECT s.id   AS id,
                'site_id', s.id,
                'name', s.name,
                'properties', s.properties,
-               'features', jsonb_strip_nulls(jsonb_agg(f.grave))
+               'features', jsonb_strip_nulls(jsonb_agg(f.grave ORDER BY f.name))
            )))
 FROM thanados.tbl_sitescomplete s
-         LEFT JOIN (SELECT * FROM thanados.tbl_gravescomplete ORDER BY parent_id, grave -> 'properties' ->> 'name') f
+         LEFT JOIN (SELECT * FROM thanados.tbl_gravescomplete ORDER BY parent_id, name) f
                    ON s.id = f.parent_id
 GROUP BY s.id, s.name, s.properties;
 
@@ -1411,29 +1409,3 @@ CREATE TABLE thanados.ageatdeath AS (
                       WHERE t.path LIKE '%> Age%'
                       ORDER BY sitename) AS a) age
           GROUP BY sitename) ar);
-
-
---create JSON list of sites for datatable
-DROP TABLE IF EXISTS thanados.sitelist;
-CREATE TABLE thanados.sitelist
-(
-    sitelist jsonb
-);
-INSERT INTO thanados.sitelist (sitelist)
-SELECT jsonb_agg(a)
-FROM (
-         SELECT child_name              AS name,
-                description 		AS description,
-                begin_from              AS begin,
-                end_to                  AS end,
-                child_id                AS id,
-                typename                AS type,
-                path,
-                lat,
-                lon
-
-         from thanados.entities s WHERE lat IS NOT NULL AND system_type = 'place') a;
-
-
-
-

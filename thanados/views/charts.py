@@ -1,18 +1,17 @@
 from flask import render_template, g
-from flask_login import login_required
 
 from thanados import app
 from thanados.models.entity import Data
 
 
 @app.route('/charts')
-#@login_required#
+# @login_required#
 def charts():
     depth = Data.get_depth()
-    constr = Data.get_typedata('grave', 'Grave Constr%')
-    gravetypes = Data.get_typedata('grave', 'Feature%')
-    graveshape = Data.get_typedata('grave', 'Grave Shape%')
-    burialtype = Data.get_typedata('burial', 'Stratigraphic Unit%')
+    constr = Data.get_type_data('grave', 'Grave Constr%')
+    gravetypes = Data.get_type_data('grave', 'Feature%')
+    graveshape = Data.get_type_data('grave', 'Grave Shape%')
+    burialtype = Data.get_type_data('burial', 'Stratigraphic Unit%')
     sex = Data.get_sex()
     orientation = Data.get_orientation()
     sql_thunau = """

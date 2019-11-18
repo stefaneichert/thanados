@@ -1,4 +1,7 @@
 from flask import g
+from thanados import app
+
+list_of_sites = app.config["SITE_LIST"]
 
 
 class Data:
@@ -11,8 +14,7 @@ class Data:
 
     @staticmethod
     def get_depth():
-        sql = 'SELECT depth FROM thanados.chart_data;'
-        g.cursor.execute(sql)
+        g.cursor.execute('SELECT depth FROM thanados.chart_data;')
         return g.cursor.fetchall()
 
     @staticmethod
@@ -32,6 +34,15 @@ class Data:
         sql = "SELECT system_type FROM model.entity WHERE id = %(object_id)s;"
         g.cursor.execute(sql, {"object_id": id_})
         return g.cursor.fetchone()[0]
+
+    @staticmethod
+    def get_sitelist():
+        if list_of_sites == 0:
+            sql = 'SELECT child_id FROM thanados.sites;'
+            g.cursor.execute(sql)
+            return g.cursor.fetchall()
+        else:
+            return list_of_sites
 
     @staticmethod
     def get_parent_place_id(id_):
@@ -68,7 +79,7 @@ class Data:
         return place_id
 
     @staticmethod
-    def get_typedata(level, searchterm):
+    def get_type_data(level, searchterm):
         if level == 'grave':
             sql = """
                 SELECT jsonb_agg(jsonb_build_object (
@@ -110,6 +121,5 @@ class Data:
             		        WHERE t.path LIKE %(term)s
             		        GROUP BY m.id, sitename, type
             		        ORDER BY 1) as t;"""
-        g.cursor.execute(sql, {"term": searchterm})
-        return g.cursor.fetchall()
-
+            g.cursor.execute(sql, {"term": searchterm})
+            return g.cursor.fetchall()
