@@ -1,4 +1,8 @@
+import glob
+import os
+
 from flask import g
+
 from thanados import app
 
 list_of_sites = app.config["SITE_LIST"]
@@ -7,10 +11,24 @@ list_of_sites = app.config["SITE_LIST"]
 class Data:
 
     @staticmethod
+    def get_file_path(id_: int):
+        path = glob.glob(os.path.join(app.config['UPLOAD_FOLDER_PATH'], str(id_) + '.*'))
+        if path:
+            filename, file_extension = os.path.splitext(path[0])
+            return app.config['WEB_FOLDER_PATH'] + '/' + str(id_) + file_extension
+        return ''
+
+    @staticmethod
     def get_data(place_id):
         sql = 'SELECT data FROM thanados.tbl_thanados_data WHERE id = %(place_id)s;'
         g.cursor.execute(sql, {'place_id': place_id})
-        return g.cursor.fetchall()
+        result = g.cursor.fetchall()
+        data = result[0].data
+
+        for feature in data['properties']['files']:
+            feature['file_name'] = Data.get_file_path(feature['id'])
+
+        return result
 
     @staticmethod
     def get_depth():
