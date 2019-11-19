@@ -196,7 +196,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myParentcontainer' + entId + '"></div>' +
         '</div>' +
         '<div id="myImagecontainer' + entId + '" class="col-md-auto" style="margin-top: 4em" ></div>' +
-        '<div id="myMapcontainer" title="Static map of site with entity higlighted. For interactive map please click the map button in the left top corner." class="col-md" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; margin-right: 1em"></div>' +
+        '<div id="myMapcontainer" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" title="Click to open detailed map" class="col-md" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; margin-right: 1em; cursor: pointer"></div>' +
         '</div>' +
         '<div id="myChildrencontainer' + entId + '"></div>' +
         '<div id="myMetadatacontainer' + entId + '"></div>' +
@@ -628,10 +628,6 @@ function getEntityData(parentName, parentId, currentfeature) {
             aimingRectOptions: rect1
         }).addTo(mymap);
 
-    L.easyButton('fas fa-map-marked-alt', function (btn, map) {
-        openInNewTab('/map/' + place_id);
-        'Open detailed map of site'
-    }).addTo(mymap);
     attributionChange();
 }
 
