@@ -150,7 +150,7 @@ function setmap(myjson) {
     baseLayers = {
         "Landscape": landscape,
         "Satellite": satellite,
-        //"BasemapCZ": basemap,
+        "BasemapCZ": basemap,
     };
 
     var overlays = {
