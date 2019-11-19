@@ -8,7 +8,7 @@ from thanados.models.entity import Data
 @app.route('/jsonprepare/')
 @login_required
 def jsonprepare():
-    
+
 
     sql_1 = """ DROP SCHEMA IF EXISTS thanados CASCADE;
 
