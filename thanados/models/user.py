@@ -24,7 +24,6 @@ class UserMapper:
         FROM web."user" u
         LEFT JOIN web.group r ON u.group_id = r.id """
 
-
     @staticmethod
     def get_by_id(user_id):
         g.cursor.execute(UserMapper.sql + ' WHERE u.id = %(id)s;', {'id': user_id})
