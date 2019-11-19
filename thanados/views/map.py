@@ -1,11 +1,11 @@
 from flask import render_template, g
-from flask_login import login_required
 
 from thanados import app
 from thanados.models.entity import Data
 
+
 @app.route('/map/<int:object_id>')
-#@login_required#
+# @login_required#
 def map(object_id: int, format_=None):
     myjson = Data.get_data(object_id)
     sql_types = """

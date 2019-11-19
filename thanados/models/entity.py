@@ -1,18 +1,48 @@
+import glob
+import os
+
 from flask import g
+
+from thanados import app
+
+list_of_sites = app.config["SITE_LIST"]
 
 
 class Data:
 
     @staticmethod
+    def get_site_ids():
+        list_of_sites = app.config["SITE_LIST"]
+        if list_of_sites == 0:
+            g.cursor.execute('SELECT child_id FROM thanados.sites')
+            result = g.cursor.fetchall()
+            mylist = []
+            for row in result:
+                mylist.append(row.child_id)
+            mylist = (tuple(mylist))
+            return (tuple(mylist))
+        else:
+            mylist = list_of_sites
+            return(mylist)
+
+
+    @staticmethod
+    def get_file_path(id_: int):
+        path = glob.glob(os.path.join(app.config['UPLOAD_FOLDER_PATH'], str(id_) + '.*'))
+        if path:
+            filename, file_extension = os.path.splitext(path[0])
+            return app.config['WEB_FOLDER_PATH'] + '/' + str(id_) + file_extension
+        return ''
+
+    @staticmethod
     def get_data(place_id):
-        sql = 'SELECT data FROM thanados.tbl_thanados_data WHERE id = %(place_id)s;'
-        g.cursor.execute(sql, {'place_id': place_id})
+        sql = 'SELECT data FROM thanados.tbl_thanados_data WHERE id = %(place_id)s AND id IN %(sites)s;'
+        g.cursor.execute(sql, {'place_id': place_id, 'sites': Data.get_site_ids()})
         return g.cursor.fetchall()
 
     @staticmethod
     def get_depth():
-        sql = 'SELECT depth FROM thanados.chart_data;'
-        g.cursor.execute(sql)
+        g.cursor.execute('SELECT depth FROM thanados.chart_data;')
         return g.cursor.fetchall()
 
     @staticmethod
@@ -32,6 +62,15 @@ class Data:
         sql = "SELECT system_type FROM model.entity WHERE id = %(object_id)s;"
         g.cursor.execute(sql, {"object_id": id_})
         return g.cursor.fetchone()[0]
+
+    @staticmethod
+    def get_sitelist():
+        if list_of_sites == 0:
+            sql = 'SELECT child_id FROM thanados.sites;'
+            g.cursor.execute(sql)
+            return g.cursor.fetchall()
+        else:
+            return list_of_sites
 
     @staticmethod
     def get_parent_place_id(id_):
@@ -68,11 +107,11 @@ class Data:
         return place_id
 
     @staticmethod
-    def get_typedata(level, searchterm):
+    def get_type_data(level, searchterm):
         if level == 'grave':
             sql = """
                 SELECT jsonb_agg(jsonb_build_object (
-	            'id', t.id,
+	            'site_id', t.id,
 	            'site', t.sitename,
 	            'type', t.type,
 	            'count', t.count
@@ -93,7 +132,7 @@ class Data:
         if level == 'burial':
             sql = """
                             SELECT jsonb_agg(jsonb_build_object (
-            	            'id', t.id,
+            	            'site_id', t.id,
             	            'site', t.sitename,
             	            'type', t.type,
             	            'count', t.count
@@ -110,6 +149,5 @@ class Data:
             		        WHERE t.path LIKE %(term)s
             		        GROUP BY m.id, sitename, type
             		        ORDER BY 1) as t;"""
-        g.cursor.execute(sql, {"term": searchterm})
-        return g.cursor.fetchall()
-
+            g.cursor.execute(sql, {"term": searchterm})
+            return g.cursor.fetchall()
