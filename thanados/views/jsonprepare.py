@@ -8,8 +8,7 @@ from thanados.models.entity import Data
 @app.route('/jsonprepare/')
 @login_required
 def jsonprepare():
-    render_template('jsonprepare/jsonprepare.html')
-
+    
 
     sql_1 = """ DROP SCHEMA IF EXISTS thanados CASCADE;
 
@@ -413,7 +412,7 @@ WHERE path LIKE 'Dimensions >%'
 ORDER BY entity_id, path;
 
 --hack for setting burial orientation to grave orientation if grave does not have any. Comment/Uncomment if you do not wish/are willing to edit the original database
-/*INSERT INTO thanados.dimensiontypes (id, parent_id, entity_id, name, description, value, path)
+INSERT INTO thanados.dimensiontypes (id, parent_id, entity_id, name, description, value, path)
 SELECT id, 15678, domain, name, description, orientation::Text, path FROM
 (SELECT
 26192 AS id,
@@ -443,7 +442,6 @@ WHERE DOMAIN || ':' || range NOT IN
              FROM thanados.burials
              GROUP BY parent_id) c
        WHERE c.count > 1);
-       */
 
 
 --types material
@@ -1407,22 +1405,27 @@ SET sex = (SELECT sex::JSONB FROM thanados.chart_sex);
 --age at death estimation for boxplot/violin plot
 DROP TABLE IF EXISTS thanados.ageatdeath;
 CREATE TABLE thanados.ageatdeath AS (
-    SELECT ar.sitename,
+        SELECT ar.sitename,
+           ar.site_id,
            jsonb_build_object(
                    'name', ar.sitename,
+                   'site_id', ar.site_id,
                    'min', ar.min,
                    'max', ar.max,
                    'avg', ar.avg) AS age
     FROM (SELECT sitename,
+		 site_id,
                  array_agg(agemin)  AS min,
                  array_agg(agemax)  AS max,
                  array_agg(average) AS avg
           FROM (SELECT a.sitename,
+          a.site_id,
                        (((a.age::jsonb) -> 0)::text)::double precision         AS agemin,
                        (((a.age::jsonb) -> 1)::text)::double precision         AS agemax,
                        (((((a.age::jsonb) -> 0)::text)::double precision) +
                         ((((a.age::jsonb) -> 1)::text)::double precision)) / 2 AS average
                 FROM (SELECT s.child_name  AS sitename,
+                             s.child_id AS site_id,
                              t.description AS age
                       FROM thanados.sites s
                                JOIN thanados.graves g ON s.child_id = g.parent_id
@@ -1430,7 +1433,7 @@ CREATE TABLE thanados.ageatdeath AS (
                                JOIN thanados.types t ON t.entity_id = b.child_id
                       WHERE t.path LIKE '%> Age%'
                       ORDER BY sitename) AS a) age
-          GROUP BY sitename) ar);
+          GROUP BY sitename, site_id) ar ORDER BY site_id);
     """
     g.cursor.execute(sql_4)
 

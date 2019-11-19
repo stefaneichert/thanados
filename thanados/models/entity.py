@@ -11,6 +11,22 @@ list_of_sites = app.config["SITE_LIST"]
 class Data:
 
     @staticmethod
+    def get_site_ids():
+        list_of_sites = app.config["SITE_LIST"]
+        if list_of_sites == 0:
+            g.cursor.execute('SELECT child_id FROM thanados.sites')
+            result = g.cursor.fetchall()
+            mylist = []
+            for row in result:
+                mylist.append(row.child_id)
+            mylist = (tuple(mylist))
+            return (tuple(mylist))
+        else:
+            mylist = list_of_sites
+            return(mylist)
+
+
+    @staticmethod
     def get_file_path(id_: int):
         path = glob.glob(os.path.join(app.config['UPLOAD_FOLDER_PATH'], str(id_) + '.*'))
         if path:
@@ -20,8 +36,8 @@ class Data:
 
     @staticmethod
     def get_data(place_id):
-        sql = 'SELECT data FROM thanados.tbl_thanados_data WHERE id = %(place_id)s;'
-        g.cursor.execute(sql, {'place_id': place_id})
+        sql = 'SELECT data FROM thanados.tbl_thanados_data WHERE id = %(place_id)s AND id IN %(sites)s;'
+        g.cursor.execute(sql, {'place_id': place_id, 'sites': Data.get_site_ids()})
         return g.cursor.fetchall()
 
     @staticmethod
@@ -95,7 +111,7 @@ class Data:
         if level == 'grave':
             sql = """
                 SELECT jsonb_agg(jsonb_build_object (
-	            'id', t.id,
+	            'site_id', t.id,
 	            'site', t.sitename,
 	            'type', t.type,
 	            'count', t.count
@@ -116,7 +132,7 @@ class Data:
         if level == 'burial':
             sql = """
                             SELECT jsonb_agg(jsonb_build_object (
-            	            'id', t.id,
+            	            'site_id', t.id,
             	            'site', t.sitename,
             	            'type', t.type,
             	            'count', t.count

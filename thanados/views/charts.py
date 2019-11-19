@@ -7,6 +7,8 @@ from thanados.models.entity import Data
 @app.route('/charts')
 # @login_required#
 def charts():
+
+    site_ids = Data.get_site_ids()
     depth = Data.get_depth()
     constr = Data.get_type_data('grave', 'Grave Constr%')
     gravetypes = Data.get_type_data('grave', 'Feature%')
@@ -14,47 +16,34 @@ def charts():
     burialtype = Data.get_type_data('burial', 'Stratigraphic Unit%')
     sex = Data.get_sex()
     orientation = Data.get_orientation()
-    sql_thunau = """
-                SELECT age FROM thanados.ageatdeath WHERE sitename = 'Gars Thunau Obere Holzwiese';
-                """
-    g.cursor.execute(sql_thunau)
-    thunau = g.cursor.fetchall()
-    sql_kourim = """
-                    SELECT age FROM thanados.ageatdeath WHERE sitename = 'Stará Kouřim';
-                    """
-    g.cursor.execute(sql_kourim)
-    kourim = g.cursor.fetchall()
-    sql_pohansko = """
-                        SELECT age FROM thanados.ageatdeath WHERE sitename = 'Břeslav Pohansko Herrenhof';
-                        """
-    g.cursor.execute(sql_pohansko)
-    pohansko = g.cursor.fetchall()
+    g.cursor.execute('select JSONB_agg(age) as age FROM thanados.ageatdeath as age;')
+    age = g.cursor.fetchall()
 
     sql_finds = """
                 SELECT mydata::jsonb FROM (
 
 SELECT '{"types": [' || string_agg (jsonstring, ', ') || ']}' AS mydata FROM
-(SELECT  '{"id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Weapon", "count": ' ||	
+(SELECT  '{"site_id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Weapon", "count": ' ||	
 		count(t.sitename) FILTER (WHERE t.path LIKE '%Weapons%') || '}, ' ||
-	 '{"id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Riding Equipment", "count": ' ||	
+	 '{"site_id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Riding Equipment", "count": ' ||	
 		count(t.sitename) FILTER (WHERE t.path LIKE '%Rider%') || '}, ' ||
-	 '{"id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Knife", "count": ' ||	
+	 '{"site_id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Knife", "count": ' ||	
 		count(t.sitename) FILTER (WHERE t.path LIKE '%Knife%') || '}, ' ||
-	 '{"id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Other Equipment", "count": ' ||	
+	 '{"site_id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Other Equipment", "count": ' ||	
 		count(t.sitename) FILTER (WHERE t.path LIKE '% Equipment %' AND t.path NOT LIKE '%Firem%' AND t.path NOT LIKE '%Knife%') || '}, ' ||
-	 '{"id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Other Finds", "count": ' ||	
+	 '{"site_id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Other Finds", "count": ' ||	
 		count(t.sitename) FILTER (WHERE t.path NOT LIKE '%Accessories%' AND t.path NOT LIKE '%Pottery%' AND t.path NOT LIKE '%Weapons%' AND t.path NOT LIKE '%Equipment%') || '}, ' ||
-	 '{"id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Firemaking Equ.", "count": ' ||	
+	 '{"site_id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Firemaking Equ.", "count": ' ||	
 		count(t.sitename) FILTER (WHERE t.path LIKE '%Firem%') || '}, ' ||
-	 '{"id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Belt Accessories", "count": ' ||	
+	 '{"site_id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Belt Accessories", "count": ' ||	
 		count(t.sitename) FILTER (WHERE t.path LIKE '%Belt Accessories%') || '}, ' ||
-	 '{"id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Other Accessories", "count": ' ||	
+	 '{"site_id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Other Accessories", "count": ' ||	
 		count(t.sitename) FILTER (WHERE t.path NOT LIKE '%Jewellery%' AND t.path NOT LIKE '%Belt Accessories%') || '}, ' ||
-	 '{"id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Pottery", "count": ' ||	
+	 '{"site_id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Pottery", "count": ' ||	
 		count(t.sitename) FILTER (WHERE t.path LIKE '%Pottery%') || '}, ' ||
-	 '{"id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Other Jewelry", "count": ' ||	
+	 '{"site_id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Other Jewelry", "count": ' ||	
 		count(t.sitename) FILTER (WHERE t.path LIKE '%Jewellery%' AND t.path NOT LIKE '%Earring%' ) || '}, ' ||
-	 '{"id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Temple Ring", "count": ' ||	
+	 '{"site_id": ' || t.id || ', "site": "' || t.sitename || '", "type": "Temple Ring", "count": ' ||	
 		count(t.sitename) FILTER (WHERE t.path LIKE '%Earring%') || '}' AS jsonstring
 	 FROM 
 (SELECT 
@@ -75,7 +64,6 @@ SELECT '{"types": [' || string_agg (jsonstring, ', ') || ']}' AS mydata FROM
     finds = g.cursor.fetchall()
 
 
-    return render_template('charts/charts.html', depth_data=depth[0].depth, thunau_age=thunau[0], kourim_age=kourim[0],
-                           pohansko_age=pohansko[0], gravetypes_json=gravetypes[0], construction=constr[0],
-                           burial_types=burialtype[0], find_types=finds[0].mydata,
-                           orientation_data=orientation[0].orientation, sex_data=sex[0].sex, grave_shape=graveshape[0],)
+    return render_template('charts/charts.html', depth_data=depth[0].depth, gravetypes_json=gravetypes[0], construction=constr[0],
+                           burial_types=burialtype[0], find_types=finds[0].mydata, age=age[0],
+                           orientation_data=orientation[0].orientation, sex_data=sex[0].sex, grave_shape=graveshape[0], site_ids=site_ids)

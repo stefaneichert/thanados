@@ -231,58 +231,66 @@ burialtypesconfig = {
 var ctx = document.getElementById('burialtypes-chart').getContext('2d');
 var burialtypeschart = new Chart(ctx, burialtypesconfig)
 
-//Violin chart /boxplot with age min-max-average data
-boxplotData = {
-    // define label tree
-    labels: ['Thunau', 'Kourim', 'Pohansko'],
-    datasets: [{
-        label: 'min',
-        backgroundColor: 'rgba(225,87,89,0.5)',
-        borderColor: 'red',
-        borderWidth: 1,
-        outlierColor: '#999999',
-        padding: 10,
-        itemRadius: 0,
-        outlierColor: '#999999',
-        data: [
-            thunau_age.age.min,
-            kourim_age.age.min,
-            pohansko_age.age.min]
-    },
-        {
-            label: 'avg',
-            backgroundColor: 'rgba(78,121,167,0.5)',
-            borderColor: 'blue',
+function setage(data) {
+    agelabels = [];
+    min_age = [];
+    avg_age = [];
+    max_age = [];
+    $.each(data.age, function (i, dataset) {
+
+        if (site_ids.includes(dataset.site_id)) {
+            //mynewdata.datasets.push(dataset);
+            console.log(dataset.site_id);
+            agelabels.push(dataset.name);
+            min_age.push(dataset.min);
+            avg_age.push(dataset.avg);
+            max_age.push(dataset.max);
+        }
+    })
+    boxplotData = {
+        // define label tree
+        labels: agelabels,
+        datasets: [{
+            label: 'min',
+            backgroundColor: 'rgba(225,87,89,0.5)',
+            borderColor: 'red',
             borderWidth: 1,
             outlierColor: '#999999',
             padding: 10,
             itemRadius: 0,
             outlierColor: '#999999',
-            data: [
-                thunau_age.age.avg,
-                kourim_age.age.avg,
-                pohansko_age.age.avg]
+            data: min_age
         },
-        {
-            label: 'max',
-            backgroundColor: 'rgba(242,142,43,0.5)',
-            borderColor: 'orange',
-            borderWidth: 1,
-            outlierColor: '#999999',
-            padding: 10,
-            itemRadius: 0,
-            outlierColor: '#999999',
-            data: [
-                thunau_age.age.max,
-                kourim_age.age.max,
-                pohansko_age.age.max
-            ]
-        }]
+            {
+                label: 'avg',
+                backgroundColor: 'rgba(78,121,167,0.5)',
+                borderColor: 'blue',
+                borderWidth: 1,
+                outlierColor: '#999999',
+                padding: 10,
+                itemRadius: 0,
+                outlierColor: '#999999',
+                data: avg_age
+            },
+            {
+                label: 'max',
+                backgroundColor: 'rgba(242,142,43,0.5)',
+                borderColor: 'orange',
+                borderWidth: 1,
+                outlierColor: '#999999',
+                padding: 10,
+                itemRadius: 0,
+                outlierColor: '#999999',
+                data: max_age
+            }]
+    };
+    return(boxplotData)
 };
+
 
 var ageconfig = {
     type: 'violin',
-    data: boxplotData,
+    data: setage(age_data),
     options: {
         responsive: true,
         legend: {
@@ -300,7 +308,7 @@ var ageconfig = {
     }
 };
 var ctx = document.getElementById('age-chart').getContext('2d');
-var agechart = new Chart (ctx, ageconfig);
+var agechart = new Chart(ctx, ageconfig);
 
 $("#violin").click(function () {
     change('violin', 'agechart', 'age-chart', ageconfig);
@@ -358,6 +366,22 @@ function removeZeros(data) {
     })
     data.labels = data.labels.slice(0, newvalueindex)
     return data;
+}
+
+function filtersites(data) {
+    mynewdata = {
+        "datasets": [],
+        "labels": []
+    };
+    mynewdata.labels = data.labels;
+    $.each(data.datasets, function (i, dataset) {
+
+        if (site_ids.includes(dataset.site_id)) {
+            mynewdata.datasets.push(dataset);
+        }
+    })
+
+    return mynewdata;
 }
 
 //switch axes of data
@@ -438,6 +462,7 @@ function prepareTypedata(mytypedata) {
     });
     $.each(mytypedata.types, function (i, type) {
         mysite = type.site;
+        mysiteid = type.site_id;
         mytype = type.type;
         mycount = type.count;
         $.each(typedata.labels, function (i, label) {
@@ -448,6 +473,7 @@ function prepareTypedata(mytypedata) {
                         $.each(dataset.data, function (e, data) {
                             if (e == myindex) {
                                 dataset.data[myindex] = mycount;
+                                dataset.site_id = mysiteid;
                             }
                         });
                     }
@@ -473,6 +499,7 @@ function updateChart(chart, data, percentageset) {
 function setChartData(originalData, axesswitch, percentageset, zeroslice, preparetypes) {
     dataToWorkWith = JSON.parse(JSON.stringify(originalData));
     if (preparetypes) dataToWorkWith = prepareTypedata(dataToWorkWith);
+    dataToWorkWith = filtersites(dataToWorkWith);
     if (zeroslice) dataToWorkWith = removeZeros(dataToWorkWith);
     if (percentageset) dataToWorkWith = getPercentage(dataToWorkWith);
     if (axesswitch) dataToWorkWith = switchaxes(dataToWorkWith);
