@@ -430,7 +430,7 @@ function getEntityData(parentName, parentId, currentfeature) {
             '<tr>' +
             '<th scope="row">' + (t + 1) + '</th>' +
             '<td>' + file.id + '</td>' +
-            '<td><a href="/static/images/entities/' + file.id + '.jpg">' + file.name + '</a></td>' +
+            '<td><a href="' + file.file_name + '">' + file.name + '</a></td>' +
             '<td>' + source + '</td>' +
             '<td>' + reference + '</td>' +
             '<td>' + license + '</td>' +
@@ -644,7 +644,7 @@ function setImages(entId, entfiles) {
             $('#myImagecontainer' + entId).empty();
             $.each(entfiles, function (f, files) {
                 $('#myImagecontainer' + entId).append(
-                    '<a href="/static/images/entities/' + files.id + '.jpg" data-featherlight><img src="/static/images/entities/' + files.id + '.jpg" class="modalimg" id="mymodalimg"></a>'
+                    '<a href="' + files.file_name + '" data-featherlight><img src="' + files.file_name + '" class="modalimg" id="mymodalimg"></a>'
                 )
             });
         }
@@ -653,8 +653,8 @@ function setImages(entId, entfiles) {
         //append more than one image with slides
         if (entfiles.length !== 1) {
             $('#myImagecontainer' + entId).empty();
-            firstimage = entfiles[0].id;
-            secondimage = entfiles[1].id;
+            firstimage = entfiles[0].file_name;
+            secondimage = entfiles[1].file_name;
             //create carousel and apppend first two images
             $('#myImagecontainer' + entId).append(
                 '<div id="carouselExampleIndicators' + entId + '" class="carousel slide" data-ride="carousel" data-interval="false">' +
@@ -664,10 +664,10 @@ function setImages(entId, entfiles) {
                 '</ol>' +
                 '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
                 '<div class="carousel-item active">' +
-                '<a href="/static/images/entities/' + firstimage + '.jpg" data-featherlight><img class="d-block modalimg" src="/static/images/entities/' + firstimage + '.jpg"></a>' +
+                '<a href="' + firstimage + '" data-featherlight><img class="d-block modalimg" src="' + firstimage + '"></a>' +
                 '</div>' +
                 '<div class="carousel-item">' +
-                '<a href="/static/images/entities/' + secondimage + '.jpg" data-featherlight><img class="d-block modalimg" src="/static/images/entities/' + secondimage + '.jpg"></a>' +
+                '<a href="' + secondimage + '" data-featherlight><img class="d-block modalimg" src="' + secondimage + '"></a>' +
                 '</div>' +
                 '</div>' +
                 '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
@@ -686,7 +686,7 @@ function setImages(entId, entfiles) {
                 if (f > 1) {
                     $('#mycarouselimages' + entId).append(
                         '<div class="carousel-item">' +
-                        '<a href="/static/images/entities/' + files.id + '.jpg" data-featherlight><img class="d-block modalimg" src="/static/images/entities/' + files.id + '.jpg"></a>' +
+                        '<a href="' + files.file_name + '" data-featherlight><img class="d-block modalimg" src="' + files.file_name + '"></a>' +
                         '</div>'
                     );
                     $('#mymodalimageindicators' + entId).append(

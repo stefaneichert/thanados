@@ -22,13 +22,7 @@ class Data:
     def get_data(place_id):
         sql = 'SELECT data FROM thanados.tbl_thanados_data WHERE id = %(place_id)s;'
         g.cursor.execute(sql, {'place_id': place_id})
-        result = g.cursor.fetchall()
-        data = result[0].data
-
-        for feature in data['properties']['files']:
-            feature['file_name'] = Data.get_file_path(feature['id'])
-
-        return result
+        return g.cursor.fetchall()
 
     @staticmethod
     def get_depth():
