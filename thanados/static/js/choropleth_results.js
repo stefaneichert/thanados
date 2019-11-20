@@ -4,7 +4,7 @@ function startvis() {
     $('#myvisform').empty();
     appendSearch(1);
     $("#visdialog").dialog({
-        width: 500,
+        width: mymodalwith,
         height: 450
     });
     visproperty = 'myprop';

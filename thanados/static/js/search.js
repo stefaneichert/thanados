@@ -6,7 +6,7 @@ function startsearch() {
     $('#mysearchform').empty();
     appendSearch(1);
     $("#dialog").dialog({
-        width: 500,
+        width: mymodalwith,
         height: 450
     });
 }
