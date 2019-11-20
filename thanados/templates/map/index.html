@@ -103,27 +103,15 @@
             </div>
         </div>
     </div>
-
 </div>
 
-
 <script>
-
-
-
-var myjson = {{ myjson|tojson }};
-var jsontypes = {{ typesjson|tojson }};
-
-
-
-
-
+    var myjson = {{ myjson|tojson }};
+    var jsontypes = {{ typesjson|tojson }};
 </script>
 <script src="/static/vendor/leafletplugins/leaflet-easyPrint-gh-pages/dist/bundle.js"></script>
 <script src="/static/js/map.js"></script>
 <script src="/static/js/search.js"></script>
 <script src="/static/js/choropleth_results.js"></script>
 
-
 {% endblock %}
-

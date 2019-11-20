@@ -8,15 +8,11 @@ from thanados.models.entity import Data
 @app.route('/jsonprepare/')
 @login_required
 def jsonprepare():
-
-
-    sql_1 = """ DROP SCHEMA IF EXISTS thanados CASCADE;
-
+    sql_1 = """ 
+DROP SCHEMA IF EXISTS thanados CASCADE;
 
 CREATE SCHEMA thanados;
---create temp tables
-
-
+-- create temp tables
 
 -- all types tree
 DROP TABLE IF EXISTS thanados.types_all;
@@ -200,21 +196,21 @@ ORDER BY child.system_type, parent.id, child.name;
 -- if no graves are available create an intermediate feature to be displayed on the map
 INSERT INTO thanados.graves (
 SELECT
-	child_id AS parent_id,
-	child_name,
-	'0' AS child_id,
-	description,
-	begin_from,
-	begin_to,
-	begin_comment,
-	end_from,
-	end_to,
-	end_comment,
-	'feature' AS system_type,
-	geom,
-	NULL as lon,
-	NULL as lat
-	 FROM thanados.sites WHERE child_id NOT IN (SELECT DISTINCT parent_id FROM thanados.graves));
+    child_id AS parent_id,
+    child_name,
+    '0' AS child_id,
+    description,
+    begin_from,
+    begin_to,
+    begin_comment,
+    end_from,
+    end_to,
+    end_comment,
+    'feature' AS system_type,
+    geom,
+    NULL as lon,
+    NULL as lat
+     FROM thanados.sites WHERE child_id NOT IN (SELECT DISTINCT parent_id FROM thanados.graves));
 
 UPDATE thanados.graves
 SET geom = poly.geom
@@ -240,8 +236,6 @@ WHERE child_id = point.id
 UPDATE thanados.graves g
 SET geom = a.geom
 FROM (SELECT s.child_id, s.geom FROM thanados.sites s JOIN thanados.graves g ON g.parent_id = s.child_id WHERE g.geom IS NULL) a WHERE a.child_id = g.parent_id AND g.geom IS NULL;
-
-
 
 --burials
 DROP TABLE IF EXISTS thanados.burials;
@@ -416,7 +410,7 @@ INSERT INTO thanados.dimensiontypes (id, parent_id, entity_id, name, description
 SELECT id, 15678, domain, name, description, orientation::Text, path FROM
 (SELECT
 26192 AS id,
-	l.domain,
+    l.domain,
              l.range,
              l.name,
              '°' as description,
@@ -504,7 +498,7 @@ ORDER BY entities.child_id;
 DROP TABLE IF EXISTS thanados.filestmp;
 CREATE TABLE thanados.filestmp AS
     (SELECT files.*,
-		NULL::TEXT AS filename,
+        NULL::TEXT AS filename,
             fe.description AS Source,
             fl.description AS Reference
      FROM (
@@ -537,8 +531,8 @@ CREATE TABLE thanados.files AS
     for row in result:
         file_name = (Data.get_file_path(row.id))
         row_id = (row.id)
-        g.cursor.execute("UPDATE thanados.files SET filename = %(file_name)s WHERE id = %(row_id)s", {'file_name': file_name, 'row_id': row_id})
-
+        g.cursor.execute("UPDATE thanados.files SET filename = %(file_name)s WHERE id = %(row_id)s",
+                         {'file_name': file_name, 'row_id': row_id})
 
     g.cursor.execute('DELETE FROM thanados.files WHERE filename = NULL')
 
@@ -1325,16 +1319,10 @@ CREATE TABLE thanados.orientation AS (
                       JOIN thanados.dimensiontypes d ON g.child_id = d.entity_id
              WHERE d.name = 'Degrees'
          ) v
-
     GROUP BY parent_id, site_name);
 
-
-
 DROP TABLE IF EXISTS thanados.chart_orientation;
-CREATE TABLE thanados.chart_orientation
-(
-    orientation TEXT
-);
+CREATE TABLE thanados.chart_orientation(orientation TEXT);
 INSERT INTO thanados.chart_orientation (orientation)
 SELECT jsonb_build_object(
                'labels', dl.labels,
@@ -1414,7 +1402,7 @@ CREATE TABLE thanados.ageatdeath AS (
                    'max', ar.max,
                    'avg', ar.avg) AS age
     FROM (SELECT sitename,
-		 site_id,
+         site_id,
                  array_agg(agemin)  AS min,
                  array_agg(agemax)  AS max,
                  array_agg(average) AS avg
