@@ -128,11 +128,11 @@ function setmap(myjson) {
     });
     if (markerset) {
         map.panTo(centerpoint);
-        map.setZoom(20);
+        map.setZoom(22);
     } else {
     map.fitBounds(graves.getBounds())};
     myzoom = (map.getZoom());
-    if (myzoom > 20) map.setZoom(20);
+    if (myzoom > 20) map.setZoom(22);
 
 
     //add emtpty Layergroup for search results
@@ -300,6 +300,7 @@ $('#sidebarclosed-menu').toggle();
 
 function animateSidebar() {
     sidebarSize = $("#sidebar").width();
+    if (sidebarSize > 0) sidebarSize = 350;
     switch (sidebarSize) {
         case 0:
             sidebarNewSize = 350
