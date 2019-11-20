@@ -356,6 +356,8 @@ $(window).resize(function () {
     containerheight = ($('#container').height());
     windowheight = ($(window).height());
     $('body').css('max-height', windowheight - 56 + 'px');
+    mymodalwith = ($(window).width());
+    if (mymodalwith > 500) mymodalwith = 500;
 });
 
 $(document).ready(function () {
@@ -369,6 +371,10 @@ $(document).ready(function () {
     $('body').css('max-height', windowheight - 56 + 'px');
     mapwidth = ($('#map').width());
     if (mapwidth < 600) animateSidebar();
+    mymodalwith = ($(window).width());
+    if (mymodalwith > 500) mymodalwith = 500;
+    $('.ui-dialog').css('max-width', mymodalwith + 'px');
+
 });
 
 //sidebar content
@@ -806,7 +812,7 @@ function modalset(id) {
     collapseAllOthers(id);
     //$('#myModal').modal();
     $("#myModal").dialog({
-        width: 500,
+        width: mymodalwith,
         height: (newListHeight - 188),
         title: globalentName,
         position: {my: 'right bottom', at: 'right bottom-19', of: window}
@@ -817,7 +823,7 @@ function modalset(id) {
 function modalsetsite() {
     getModalData(0, myjson);
     $("#myModal").dialog({
-        width: 500,
+        width: mymodalwith,
         height: (newListHeight - 188),
         title: myjson.name,
         position: {my: 'right bottom', at: 'right bottom-19', of: window}

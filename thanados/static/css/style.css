@@ -290,7 +290,7 @@ body {
 }
 
 .ui-dialog {
-    z-index: 899 !important;
+    z-index: 9999 !important;
 }
 
 a.ui-button:active,
@@ -440,6 +440,7 @@ a.ui-button:active,
 
 .footerimg {
     padding: 1em;
+    max-width: 100%;
 }
 
 .aboutimage {
