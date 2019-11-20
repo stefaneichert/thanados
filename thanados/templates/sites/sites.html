@@ -58,6 +58,30 @@
         </div>
 
     </div>
+    <div class="modal" id="siteModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Sites</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>
+            Here you can find a list of sites that are already prepared for online dissemination. You can select
+            detailed views and maps by clicking the names respectively the map markers. They are currently being
+            translated and edited and it is still work in progress. The number of online sites will be increased in the
+            course of the project. If you encounter any bugs or mistakes in the content as well as for any kind of
+            feedback please feel free to contact us under stefan.eichert@nhm-wien.ac.at.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
     <script>    sitelist = {{ sitelist|tojson }};    </script>
     <script src="/static/js/sites.js"></script>

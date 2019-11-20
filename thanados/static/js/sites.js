@@ -67,6 +67,7 @@ $(document).ready(function () {
     $('#map').css('height', (maximumHeight - 200) + 'px');
 
     mywindowtitle = 'THANADOS ';
+    $('#siteModal').modal('show');
 
 //define basemaps
     var landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=2245afa655044c5c8f5ef8c129c29cdb', {
