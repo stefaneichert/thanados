@@ -40,6 +40,10 @@ function setmap(myjson) {
         maxZoom: 30
     });
 
+    var basemap = L.tileLayer.wms('http://geoportal.cuzk.cz/WMS_ZM10_PUB/WMService.aspx', {
+        layers: 'GR_ZM10',
+        maxZoom: 30
+    });
 
     if (myjson.site_id == 111285) {
         var imageUrl = '/static/images/entities/112757.png';
