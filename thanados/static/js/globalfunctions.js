@@ -44,4 +44,17 @@ $(document).ready(function () {
     $("form").each(function () {
         $(this).validate();
     });
+    setlogo()
 })
+
+function setlogo() {
+    if (($(window).width()) > 767) {
+        $('#nav-logo').attr("src", "/static/images/icons/logo_big.png");
+        console.log('big')
+    } else {
+        $('#nav-logo').attr("src", "/static/images/icons/logo_small.png");
+        console.log('small');
+    }
+}
+
+$(window).resize(function () {setlogo()})

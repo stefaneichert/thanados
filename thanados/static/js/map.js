@@ -489,44 +489,6 @@ function collapseAllOthers(collapseDiv) {
     oldcollapsediv = collapseDiv;
 }
 
-//buttons to select between sites
-/*$(".thunaubutton").click(function () {
-    map.remove();
-    $("#accordion1").empty();
-    myjson = jsonthunau;
-    setmap(myjson);
-    console.log('Thunau')
-    console.log(myjson);
-    $("#sidebarTitle").text("Thunau Obere Holzwiese");
-    $("#mypanel").animate({scrollTop: 0});
-    $(".ui-dialog-content").dialog("close");
-});
-
-$(".pohanskobutton").click(function () {
-    map.remove();
-    $("#accordion1").empty();
-    myjson = jsonpohansko;
-    setmap(myjson);
-    console.log('Pohansko')
-    console.log(myjson);
-    $("#sidebarTitle").text("Pohansko Herrenhof");
-    $("#mypanel").animate({scrollTop: 0});
-    $(".ui-dialog-content").dialog("close");
-});
-
-$(".kourimbutton").click(function () {
-    map.remove();
-    $("#accordion1").empty();
-    myjson = jsonkourim;
-    setmap(myjson);
-    console.log('Kourim')
-    console.log(myjson);
-    $("#sidebarTitle").text("Stará Kouřim");
-    $("#mypanel").animate({scrollTop: 0});
-    $(".ui-dialog-content").dialog("close");
-});*/
-
-
 //Modal
 //get current entity data and appent to modal
 // noinspection JSDuplicatedDeclaration
