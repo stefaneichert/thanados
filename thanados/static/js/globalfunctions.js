@@ -47,7 +47,7 @@ $(document).ready(function () {
 
 function setlogo() {
     if (($(window).width()) > 767) {
-        $('#nav-logo').attr("src", "/static/images/icons/logo_big.png");
+        $('#nav-logo').attr("src", "/static/images/icons/logo.png");
     } else {
         $('#nav-logo').attr("src", "/static/images/icons/logo_small.png");
     }
