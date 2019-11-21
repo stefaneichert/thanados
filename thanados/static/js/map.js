@@ -4,7 +4,6 @@ $(document).ready(function () {
     markerset = false;
     setmap(myjson);
     console.log(myjson);
-
 });
 
 //set map and sidebar content//
@@ -41,10 +40,6 @@ function setmap(myjson) {
         maxZoom: 30
     });
 
-    var basemap = L.tileLayer.wms('http://geoportal.cuzk.cz/WMS_ZM10_PUB/WMService.aspx', {
-        layers: 'GR_ZM10',
-        maxZoom: 30
-    });
 
     if (myjson.site_id == 111285) {
         var imageUrl = '/static/images/entities/112757.png';
@@ -54,7 +49,7 @@ function setmap(myjson) {
 
 //define map
     map = L.map('map', {
-        zoom: 20,
+        zoom: 22,
         zoomControl: false,
         layers: [satellite, landscape]
     });
@@ -104,14 +99,14 @@ function setmap(myjson) {
                 });
                 graves.addData(rect);
                 markerset = false;
-            }
-            else {
+            } else {
                 var popupLine = '<a id="' + myjson.site_id + '" onclick="modalsetsite()" href="#"><p><b>' + feature.properties.name + ' </b><br>(' + myjson.properties.maintype.name + ')</p></a>';
                 var marker = L.marker(latlng).bindPopup(popupLine).addTo(map);
                 centerpoint = latlng;
                 markerset = true;
-            };
-            },
+            }
+            ;
+        },
     });
 
     //style the point geometry graves with a dashed line
@@ -130,7 +125,9 @@ function setmap(myjson) {
         map.panTo(centerpoint);
         map.setZoom(22);
     } else {
-    map.fitBounds(graves.getBounds())};
+        map.fitBounds(graves.getBounds())
+    }
+    ;
     myzoom = (map.getZoom());
     if (myzoom > 20) map.setZoom(22);
 
@@ -298,7 +295,7 @@ function isMarkerInsidePolygon(checkmarker, poly) {
 $('#sidebar-start').toggle();
 $('#sidebarclosed-menu').toggle();
 
-function animateSidebar() {
+function animateSidebar(withzoom) {
     sidebarSize = $("#sidebar").width();
     if (sidebarSize > 0) sidebarSize = 350;
     switch (sidebarSize) {
@@ -321,30 +318,42 @@ function animateSidebar() {
         width: sidebarNewSize + "px"
     }, 10, function () {
         map.invalidateSize();
+        if (withzoom) {
+            if (markerset) {
+                map.panTo(centerpoint);
+                map.setZoom(22);
+            } else {
+                map.fitBounds(graves.getBounds())
+                myzoom = (map.getZoom());
+                if (myzoom > 20) map.setZoom(20);
+            }
+        }
+        ;
     });
 }
 
 function animateSidebarMax() {
     $("#sidebar").animate({
-        width: "100%"
-    }, 10, function () {
-        map.invalidateSize();
-        $('#sidebar-max').attr("disabled", true);
-    });
+            width: "100%"
+        }, 0, function () {
+            map.invalidateSize();
+            $('#sidebar-max').attr("disabled", true);
+        }
+    );
 }
 
 $("#sidebar-start").click(function () {
-    animateSidebar();
+    animateSidebar(false);
     return false;
 });
 
 $("#sidebar-max").click(function () {
-    animateSidebarMax();
+    animateSidebarMax(false);
     return false;
 });
 
 $("#sidebar-smaller").click(function () {
-    animateSidebar();
+    animateSidebar(false);
     return false;
 });
 
@@ -359,6 +368,8 @@ $(window).resize(function () {
     $('body').css('max-height', windowheight - 56 + 'px');
     mymodalwith = ($(window).width());
     if (mymodalwith > 500) mymodalwith = 500;
+    $('.ui-dialog').css('max-width', mymodalwith + 'px');
+    $('#mytreeModal').css('max-width', ($(window).width()) + 'px');
 });
 
 $(document).ready(function () {
@@ -371,10 +382,11 @@ $(document).ready(function () {
     windowheight = ($(window).height());
     $('body').css('max-height', windowheight - 56 + 'px');
     mapwidth = ($('#map').width());
-    if (mapwidth < 600) animateSidebar();
+    if (mapwidth < 600) animateSidebar(true);
     mymodalwith = ($(window).width());
     if (mymodalwith > 500) mymodalwith = 500;
     $('.ui-dialog').css('max-width', mymodalwith + 'px');
+    $('#mytreeModal').css('max-width', ($(window).width()) + 'px');
 
 });
 
@@ -488,44 +500,6 @@ function collapseAllOthers(collapseDiv) {
     ;
     oldcollapsediv = collapseDiv;
 }
-
-//buttons to select between sites
-/*$(".thunaubutton").click(function () {
-    map.remove();
-    $("#accordion1").empty();
-    myjson = jsonthunau;
-    setmap(myjson);
-    console.log('Thunau')
-    console.log(myjson);
-    $("#sidebarTitle").text("Thunau Obere Holzwiese");
-    $("#mypanel").animate({scrollTop: 0});
-    $(".ui-dialog-content").dialog("close");
-});
-
-$(".pohanskobutton").click(function () {
-    map.remove();
-    $("#accordion1").empty();
-    myjson = jsonpohansko;
-    setmap(myjson);
-    console.log('Pohansko')
-    console.log(myjson);
-    $("#sidebarTitle").text("Pohansko Herrenhof");
-    $("#mypanel").animate({scrollTop: 0});
-    $(".ui-dialog-content").dialog("close");
-});
-
-$(".kourimbutton").click(function () {
-    map.remove();
-    $("#accordion1").empty();
-    myjson = jsonkourim;
-    setmap(myjson);
-    console.log('Kourim')
-    console.log(myjson);
-    $("#sidebarTitle").text("Stará Kouřim");
-    $("#mypanel").animate({scrollTop: 0});
-    $(".ui-dialog-content").dialog("close");
-});*/
-
 
 //Modal
 //get current entity data and appent to modal
@@ -663,7 +637,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         var classtype = types.path;
         var typevalue = types.value;
         var typeunit = types.description;
-        if (typeof(typevalue) !== 'undefined') var classification = (types.name + ': ' + typevalue + ' ' + typeunit);
+        if (typeof (typevalue) !== 'undefined') var classification = (types.name + ': ' + typevalue + ' ' + typeunit);
         $('#myModalTypescontainer' + entId).append(
             '<div class="modalrowitem" title="' + classtype + '">' + classification + '</div>');
     });
