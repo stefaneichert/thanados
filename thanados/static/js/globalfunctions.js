@@ -4,7 +4,6 @@ function exportToJsonFile(data) {
         properties: myjson.properties,
         site_id: myjson.site_id
     });
-    console.log(data);
     var mydata = JSON.stringify(data).replace('\u2028', '\\u2028').replace('\u2029', '\\u2029');
     var file = new Blob([mydata]);
     if (window.navigator.msSaveOrOpenBlob) // IE10+
@@ -32,7 +31,6 @@ function openInNewTab(url) {
 function attributionChange() {
     $(".leaflet-control-attribution").find(':first-child').remove();
 var val = $(".leaflet-control-attribution").html();
-console.log(val);
 $(".leaflet-control-attribution").html(val.substring(2, val.length));
 }
 
@@ -50,10 +48,8 @@ $(document).ready(function () {
 function setlogo() {
     if (($(window).width()) > 767) {
         $('#nav-logo').attr("src", "/static/images/icons/logo_big.png");
-        console.log('big')
     } else {
         $('#nav-logo').attr("src", "/static/images/icons/logo_small.png");
-        console.log('small');
     }
 }
 
