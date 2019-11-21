@@ -183,8 +183,6 @@ $(function () {
         " and " + $("#slider-range").slider("values", 1));
 });
 
-$("#min").onchange = function () {console.log("hallo welt")}
-
 $(function () {
     $("#slider-range2").slider({
         range: true,

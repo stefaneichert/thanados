@@ -240,7 +240,6 @@ function setage(data) {
 
         if (site_ids.includes(dataset.site_id)) {
             //mynewdata.datasets.push(dataset);
-            console.log(dataset.site_id);
             agelabels.push(dataset.name);
             min_age.push(dataset.min);
             avg_age.push(dataset.avg);
