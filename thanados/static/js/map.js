@@ -60,17 +60,17 @@ function setmap(myjson) {
 
 
 //style polygons
-    var myStyle = {
+    myStyle = {
         "color": "rgba(0,123,217,0.75)",
         "weight": 1.5,
         "fillOpacity": 0.5
         //"opacity": 0.4
     };
 
-    var myStyleSquare = {
+    myStyleSquare = {
         "color": "rgba(0,123,217,0.75)",
         "weight": 1.5,
-        "fillOpacity": 0.2,
+        "fillOpacity": 0.5,
         "dashArray": [4, 4]
     };
 
@@ -127,13 +127,13 @@ function setmap(myjson) {
     });
     if (markerset) {
         map.panTo(centerpoint);
-        map.setZoom(22);
+        map.setZoom(20);
     } else {
         map.fitBounds(graves.getBounds())
     }
     ;
     myzoom = (map.getZoom());
-    if (myzoom > 20) map.setZoom(22);
+    if (myzoom > 20) map.setZoom(20);
 
 
     //add emtpty Layergroup for search results
@@ -171,21 +171,106 @@ function setmap(myjson) {
     //initiate selection of clicked polygons
     polygonSelect();
 
-    L.easyPrint({
-        title: 'Export Map as Image',
-        position: 'topright',
-        sizeModes: ['Current', 'A4Portrait', 'A4Landscape'],
+    //todo: fix image export
+    printPlugin = L.easyPrint({
+        position: 'topleft',
+        sizeModes: ['Current'],
         filename: 'myMap',
         exportOnly: true,
+        hideClasses: ['leaflet-control-layers-toggle', 'mapbutton', 'mapbutton', 'dropdown-menu', 'dropdown-menu'],
         hideControlContainer: false,
-        customWindowTitle: "mywindowtitle"
+        hidden: true,
     }).addTo(map);
+
+
     map.on('baselayerchange', function (e) {
         attributionChange()
     });
     attributionChange();
+};
+
+function openStyleDialog() {
+    $("#styledialog").dialog({
+        width: mymodalwith,
+    });
+    setStyleValues();
 }
-;
+
+function setStyleValues() {
+    if (typeof (fillcolor) != "undefined") fillInput.value = fillcolor;
+    fillInput = document.getElementById("stylecolor");
+    fillcolor = fillInput.value;
+    fillInput.addEventListener("input", function () {
+        fillcolor = fillInput.value;
+    }, false);
+
+    if (typeof (MyStyleOpacityVar) != "undefined") {
+        $('#mystyleopacity').val(MyStyleOpacityVar);
+        $('#mystyleopacityvalue').val(MyStyleOpacityVar);
+    } else {
+        MyStyleOpacityVar = 10;
+        $('#mystyleopacity').val(MyStyleOpacityVar);
+        $('#mystyleopacityvalue').val(MyStyleOpacityVar);
+    }
+    $('#mystyleopacity').on('input change', function () {
+        MyStyleOpacityVar = $('#mystyleopacity').val();
+        $('#mystyleopacityvalue').val(MyStyleOpacityVar);
+    });
+    $('#mystyleopacityvalue').on('input change', function () {
+        MyStyleOpacityVar = $('#mystyleopacityvalue').val();
+        if (MyStyleOpacityVar > 100)
+            $('#mystyleopacityvalue').val(100);
+        if (MyStyleOpacityVar < 0)
+            $('#mystyleopacityvalue').val(0);
+        $('#mystyleopacity').val(MyStyleOpacityVar);
+    });
+    if (typeof (mystylebordercolor) != "undefined") {
+        stylebordercolorInput = document.getElementById("stylecolorborder");
+        stylebordercolor = stylebordercolorInput.value;
+    } else {
+        mystylebordercolor = "#000000";
+    }
+    stylebordercolorInput = document.getElementById("stylecolorborder");
+    stylebordercolor = stylebordercolorInput.value;
+    stylebordercolorInput.addEventListener("input", function () {
+        mystylebordercolor = stylebordercolorInput.value;
+    }, false);
+
+    if (typeof (mystyleborderwidth) == "undefined") mystyleborderwidth = 1;
+    $('#styleborderwidth').val(mystyleborderwidth);
+    $('#styleborderwidth').on('input change', function () {
+        mystyleborderwidth = $('#styleborderwidth').val();
+        if (mystyleborderwidth < 0)
+            $('#styleborderwidth').val(0);
+    });
+
+}
+
+function applyButton() {
+    applyStyle(fillcolor, (1 - MyStyleOpacityVar / 100), mystylebordercolor, mystyleborderwidth);
+    graves.eachLayer(function (layer) {
+        if (layer.feature.derivedPoly == 'true') {
+            layer.setStyle(myStyleSquare)
+        } else {
+            layer.setStyle(myStyle)
+        }
+    });
+}
+
+function applyStyle(fill, opacity, border, outline) {
+    myStyle.fillColor = fill;
+    myStyleSquare.fillColor = fill;
+    myStyle.fillOpacity = opacity;
+    myStyleSquare.fillOpacity = opacity;
+    myStyle.weight = outline;
+    myStyleSquare.weight = outline;
+    myStyle.color = border;
+    myStyleSquare.color = border;
+}
+
+function printme() {
+    printPlugin.printMap('CurrentSize');
+};
 
 
 //openpolygon for active sidebargrave
