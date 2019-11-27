@@ -6,18 +6,20 @@ from thanados.models.entity import Data
 sql_site_list = """
         SELECT jsonb_agg(a) as sitelist
         FROM (
-                 SELECT child_name     AS name,
-                        description    AS description,
-                        begin_from     AS begin,
-                        end_to         AS end,
-                        child_id       AS id,
-                        typename       AS type,
-                        path,
-                        lat,
-                        lon
+                 SELECT s.child_name     AS name,
+                        s.description    AS description,
+                        s.begin_from     AS begin,
+                        s.end_to         AS end,
+                        s.child_id       AS id,
+                        s.typename       AS type,
+                        s.path,
+                        s.lat,
+                        s.lon,
+                        COUNT(s.child_id) AS graves
 
-                 FROM thanados.entities s 
-                 WHERE system_type = 'place' AND s.child_id IN  %(sites)s AND lat IS NOT NULL ) a;
+                 FROM thanados.entities s LEFT JOIN thanados.graves g ON s.child_id = g.parent_id
+                 WHERE s.system_type = 'place' AND s.lat IS NOT NULL AND g.child_id != 0
+                 GROUP BY s.child_name, s.description, s.begin_from, s.end_to, s.child_id, s.typename, s.path, s.lat, s.lon) a;
         """
 
 
