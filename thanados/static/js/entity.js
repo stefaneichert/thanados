@@ -177,7 +177,7 @@ function getEntityData(parentName, parentId, currentfeature) {
     entmaterial = currentfeature.properties.material;
     $('#mycontent').append(
         '<div class="container-fluid">' +
-        '<div class="row">' +
+        '<div class="row mb-5">' +
         '<div id="myData_' + entId + '" class="col-md">' +
         '<div class="row">' +
         '<h4 style="margin-bottom: 1em; margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '" title="Name of entity">' + entName + '</h4>' +
@@ -199,7 +199,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myMapcontainer" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" title="Click to open detailed map" class="col-md" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; margin-right: 1em; cursor: pointer"></div>' +
         '</div>' +
         '<div id="myChildrencontainer' + entId + '"></div>' +
-        '<div id="myMetadatacontainer' + entId + '"></div>' +
+        '<div id="myMetadatacontainer' + entId + '" class="pt-5"></div>' +
         '</div>' +
         '</div>'
     );
@@ -221,7 +221,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         var classtype = types.path;
         var typevalue = types.value;
         var typeunit = types.description;
-        if (typeof(typevalue) !== 'undefined') var classification = (types.name + ': ' + typevalue + ' ' + typeunit);
+        if (typeof (typevalue) !== 'undefined') var classification = (types.name + ': ' + typevalue + ' ' + typeunit);
         $('#myTypescontainer' + entId).append(
             '<div class="modalrowitem" title="' + classtype + '">' + classification + '</div>');
     });
@@ -438,27 +438,74 @@ function getEntityData(parentName, parentId, currentfeature) {
     });
 
     if (children != '' && children[0].id !== 0) {
+        mychildrenlist = [];
         $.each(children, function (c, child) {
             if ($('#myChildrencontainer' + entId).is(':empty')) {
                 $('#myChildrencontainer' + entId).append(
                     '<p>' +
                     '<div class="d-inline">' +
-                    '<h6>' + children.length + ' Subunit(s)<a href="#" onclick="toggleSubunits()" title="show/hide"><i id="subbtn" class="collapsetitle1 collapsebutton1 fa fa-chevron-down"></i></a></h6>' +
+                    '<h6>' + children.length + ' Subunit(s)<a href="#" onclick="toggleSubunits()" class="ml-2 btn btn-sm btn-secondary" title="Switch between list or buttons"><i id="subbtn" class="fa fa-ellipsis-h"></i></a></h6>' +
                     '</div>' +
-                    '</p>');
+                    '</p>' +
+                    '<table id="childrenlist" class="display table table-striped table-bordered" width="100%">' +
+                    '<thead>' +
+                    '<tr>' +
+                    '<th>Name</th>' +
+                    '<th>Type</th>' +
+                    '<th>Begin</th>' +
+                    '<th>End</th>' +
+                    '</tr>' +
+                    '</thead>' +
+                    '</table>');
             }
             ;
 
             $('#myChildrencontainer' + entId).append(
                 '<a class="modalrowitem subunits" href="/entity/view/' + child.id + '" title="' + child.properties.maintype.name + '">' + child.properties.name + '</a>'
             );
+            myentity = [];
+            if (typeof (child.id) != 'undefined') myentity.id = child.id;
+            if (typeof (child.properties.description) != 'undefined') myentity.description = child.properties.description;
+            if (typeof (child.properties.name) != 'undefined') myentity.name = child.properties.name;
+            if (typeof (child.properties.maintype.name) != 'undefined') myentity.type = child.properties.maintype.name;
+            if (typeof (child.properties.maintype.path) != 'undefined') myentity.path = child.properties.maintype.path;
+            if (typeof (child.properties.timespan) != 'undefined') {
+                if (typeof (child.properties.timespan.begin_from) != 'undefined') myentity.begin = child.properties.timespan.begin_from;
+                if (typeof (child.properties.timespan.end_to) != 'undefined') myentity.end = child.properties.timespan.end_to;
+            } else {
+                myentity.begin = '';
+                myentity.end = '';
+            }
+            ;
+            mychildrenlist.push(myentity);
+
+        });
+        //set datatable
+        table = $('#childrenlist').DataTable({
+            data: mychildrenlist,
+            "pagingType": "numbers",
+            columns: [
+                {
+                    data: "name",
+                    "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                        $(nTd).html("<a href='/entity/view/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a> "); //create links in rows
+                    }
+                },
+                {
+                    data: 'type',
+                    "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                        $(nTd).html("<div title='" + oData.path + "'>" + oData.type + "</div> ");
+                    }
+                },
+                {data: 'begin'},
+                {data: 'end'}
+            ]
         });
     }
     ;
 
-    if (children.length > 200) {
-        toggleSubunits();
-    }
+    $('.subunits').hide()
+    $('#childrenlist_wrapper').show();
 
 
     if (currentfeature.type !== "FeatureCollection") {
@@ -584,10 +631,13 @@ function getEntityData(parentName, parentId, currentfeature) {
     }
     ;
 
-    if (children !== '') {if (children[0].id == 0) {
-        graves = L.marker([jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]]).addTo(mymap);
+    if (children !== '') {
+        if (children[0].id == 0) {
+            graves = L.marker([jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]]).addTo(mymap);
 
-    }};
+        }
+    }
+    ;
     L.control.scale({imperial: false}).addTo(mymap);
 
 
@@ -609,7 +659,7 @@ function getEntityData(parentName, parentId, currentfeature) {
     );
     var rect1 = {color: "#ff1100", weight: 15};
 
-    if (children != '' && children[0].id !== 0 || globalfeature.properties.maintype.systemtype !== 'find'|| globalfeature.properties.maintype.systemtype !== 'stratigraphic unit') {
+    if (children != '' && children[0].id !== 0 || globalfeature.properties.maintype.systemtype !== 'find' || globalfeature.properties.maintype.systemtype !== 'stratigraphic unit') {
         mapcenter = mymap.getCenter();
     } else {
         mapcenter = graves.getLatLng();
@@ -700,13 +750,15 @@ function setImages(entId, entfiles) {
 }
 
 function toggleSubunits() {
-    down = ($('#subbtn').hasClass("fa-chevron-down"));
+    down = ($('#subbtn').hasClass("fa-ellipsis-h"));
     if (down) {
-        $('#subbtn').removeClass('fa-chevron-down').addClass('fa-chevron-right');
+        $('#subbtn').removeClass('fa-ellipsis-h').addClass('fa-list');
     }
     if (down === false) {
-        $('#subbtn').removeClass('fa-chevron-right').addClass('fa-chevron-down');
+        $('#subbtn').removeClass('fa-list').addClass('fa-ellipsis-h');
+
     }
+    $('#childrenlist_wrapper').toggle();
     $('.subunits').toggle();
 }
 
