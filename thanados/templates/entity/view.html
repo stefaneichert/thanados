@@ -1,32 +1,33 @@
 {% extends "layout.html" %}
 {% block content %}
-<div id="containerPermalink">
-    <div id="mybreadcrumb"></div>
-    <div id="mycontent"></div>
-</div>
-<div class="modal fade" id="citeModal" tabindex="-1" role="dialog"
-     aria-labelledby="How to cite this" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="citeModalLabel">How to cite this:</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" id="mycitation">
+    <div id="containerPermalink">
+        <div id="mybreadcrumb"></div>
+        <div id="mycontent"></div>
+    </div>
+    <div class="modal fade" id="citeModal" tabindex="-1" role="dialog"
+         aria-labelledby="How to cite this" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="citeModalLabel">How to cite this:</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="mycitation">
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-
-
-<script>
-    place_id = {{ place_id }};
-    entity_id = {{ object_id }};
-    systemtype = "{{ system_type }}";
-    var jsonmysite = {{ mysitejson|tojson }};
-</script>
-<script src="/static/js/entity.js"></script>
+    <script>
+        place_id = {{ place_id }};
+        entity_id = {{ object_id }};
+        systemtype = "{{ system_type }}";
+        var jsonmysite = {{ mysitejson|tojson }};
+    </script>
+    <link href="/static/vendor/node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <script src="/static/vendor/node_modules/datatables.net/js/jquery.dataTables.js"></script>
+    <script src="/static/vendor/node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script src="/static/js/entity.js"></script>
 {% endblock %}

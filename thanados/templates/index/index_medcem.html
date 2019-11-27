@@ -1,37 +1,83 @@
 {% extends "layout.html" %}
 {% block content %}
     <div id="container1">
-        <h2 class="my-heading container"><img class="logo-heading" src="/static/images/logos/THANADOS_Logo_RGB.png">
-        </h2>
-        <h2 class="my-heading container">The Anthropological and Archaeological Database of Sepultures</h2>
+        <h2 class="my-heading container">Medieval Cemeteries at the Periphery of the Carolingian World</h2>
 
+        <div class="album py-5" style="background-color: #f2f2f2">
+            <div class="container">
+
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="card mb-4 box-shadow">
+                            <a href="/entity/view/50505">
+                                <div>
+                                    <img class="card-img-top" src="/static/images/home/Thunau.jpg"
+                                         title="Click to open site. Image: after Nowotny 2018">
+                                    <div class="overlay">
+                                        <p>Thunau Obere Holzwiese</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card mb-4 box-shadow">
+                            <a href="/entity/view/111285">
+                                <div>
+                                    <img class="card-img-top" src="/static/images/home/Kourim.jpg"
+                                         title="Click to open site. Image: after Šolle 1966">
+                                    <div class="overlay">
+                                        <p>Stará Kouřim</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card mb-4 box-shadow">
+                            <a href="/entity/view/50497">
+                                <div>
+                                    <img class="card-img-top" src="/static/images/home/Pohansko.jpg"
+                                         title="Click to open site. Plot: after Kalousek 1971">
+                                    <div class="overlay">
+                                        <p>Pohansko Herrenhof</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
 
         <div class="container with-margin">
             <p class="lead text-muted" style="margin-top: 2em; margin-bottom: 2em">
-                THANADOS is a Digital Humanities research project on archaeologically and anthropologically investigated
-                burials.
-                <br><br>
-                It aims at developing a web application for the digital dissemination of the respective data. With this
-                application you can:
+                This project (MEDCEM) deals with the digital collection and presentation of medieval cemeteries and it
+                is based at the
+                <a href="http://www.arup.cas.cz/" target="_blank">Archaeological Institute of the Czech Academy of
+                    Sciences
+                    in Prague</a>.<br>
+                Currently it comprises three cemeteries from the 8th to the 10th century: <a href="/entity/view/50505">Thunau
+                Obere Holzwiese</a> from Austria,
+                <a href="/entity/view/111285">Stará Kouřim</a> from Bohemia and <a href="/entity/view/50497">Pohansko
+                "Herrenhof"</a> from Moravia.<br>
+                All published information is provided online and can be explored via a digital catalogue and within an
+                interactive map. Cartographic visualisations as well as charts and plots are created dynamically based
+                on
+                real
+                archaeological research data.<br>
+                It aims at providing a best practice way on how to disseminate archaeological sources and research in
+                the
+                21st century against the background of digital humanities.<br>
+                It is part of the <a href="https://www.openatlas.eu/" target="_blank">OpenAtlas</a> project and entirely
+                build upon open source technology. If you want to learn more please take a look at the <a
+                    href="/manual">Help</a> section.
             </p>
-        </div>
-        <div style="background-color: #f2f2f2">
-            <ul class="list-group container with-margin p-3">
-                <li class="lead text-muted mylist"> explore the digital catalogs of cemeteries</li>
-                <li class="lead text-muted mylist"> navigate through interactive maps of the respective sites</li>
-                <li class="lead text-muted mylist"> query and search burial data from graves, human remains and finds
-                </li>
-                <li class="lead text-muted mylist"> visualise the results on maps</li>
-                <li class="lead text-muted mylist"> analyse interactive charts of the cemeteries' data</li>
-                <li class="lead text-muted mylist"> download the data for further analyses</li>
-            </ul>
-        </div>
-        <div class="container with-margin">
-            <p class="lead text-muted" style="margin-top: 2em; margin-bottom: 2em">
-                It is connected to the <a href="https://openatlas.eu">OpenAtlas</a> project and based on its data model.
-                If you want to learn more take a look at the <a href="/about">About</a> section.
-            </p>
-            <h7 class="text-muted">Screenshots:</h7>
+            <h7>Screenshots:</h7>
             <div id="carouselExampleIndicators" style="margin-bottom: 4em; border: 1px solid rgba(0, 0, 0, 0.125)"
                  class="carousel slide" data-ride="carousel">
                 <ol class="carousel-indicators">
@@ -61,15 +107,7 @@
             </div>
 
         </div>
-        <footer id="myfooter">
-            <div class="container"
-                 style="flex-wrap: wrap; display: flex; align-items: center; justify-content: space-between">
-                <a href="https://thanados.net/" target="_blank"><img class="footerimg"
-                                                                           src="/static/images/icons/logo_thanados.png"></a>
-                <a href="https://openatlas.eu/" target="_blank"><img class="footerimg"
-                                                                     src="/static/images/logos/openatlas_logo.png"></a>
-            </div>
-        </footer>
+
     </div>
     <script src="/static/js/index.js"></script>
 {% endblock %}

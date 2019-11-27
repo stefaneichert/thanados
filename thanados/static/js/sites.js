@@ -141,6 +141,7 @@ $(document).ready(function () {
 //set datatable
     table = $('#sitelist').DataTable({
         data: sitelist,
+        "pagingType": "numbers",
         columns: [
             {
                 data: "name",
@@ -161,7 +162,8 @@ $(document).ready(function () {
                 }
             },
             {data: 'begin'},
-            {data: 'end'}
+            {data: 'end'},
+            {data: 'graves'}
         ],
     });
 //add markers to map and zoom to content
