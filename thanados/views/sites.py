@@ -18,7 +18,7 @@ sql_site_list = """
                         COUNT(s.child_id) AS graves
 
                  FROM thanados.entities s LEFT JOIN thanados.graves g ON s.child_id = g.parent_id
-                 WHERE s.system_type = 'place' AND s.lat IS NOT NULL AND g.child_id != 0
+                 WHERE s.system_type = 'place' AND s.lat IS NOT NULL AND g.child_id != 0 AND s.child_id IN  %(sites)s 
                  GROUP BY s.child_name, s.description, s.begin_from, s.end_to, s.child_id, s.typename, s.path, s.lat, s.lon) a;
         """
 
