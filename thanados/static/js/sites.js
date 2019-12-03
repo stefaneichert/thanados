@@ -146,7 +146,7 @@ $(document).ready(function () {
             {
                 data: "name",
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                    $(nTd).html("<a href='/entity/view/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a> "); //create links in rows
+                    $(nTd).html("<a href='/entity/view/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" + "<a href='/map/" + oData.id + "' title='open map' class='btn-xs float-right'><i class=\"fas fa-map-marked-alt\"></i></a>"); //create links in rows
                 }
             },
             {
