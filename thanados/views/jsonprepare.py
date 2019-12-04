@@ -1419,7 +1419,7 @@ CREATE TABLE thanados.ageatdeath AS (
                                JOIN thanados.graves g ON s.child_id = g.parent_id
                                JOIN thanados.burials b ON b.parent_id = g.child_id
                                JOIN thanados.types t ON t.entity_id = b.child_id
-                      WHERE t.path LIKE '%> Age%'
+                      WHERE t.path LIKE '%> Age >%'
                       ORDER BY sitename) AS a) age
           GROUP BY sitename, site_id) ar ORDER BY site_id);
     """

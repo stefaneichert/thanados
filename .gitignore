@@ -18,5 +18,8 @@ thanados/templates/about/aboutthanados.html
 thanados/templates/index/indexmedcem.html
 thanados/templates/index/indexthanados.html
 
+# data cleanup for thanados
+install/data_cleanup.sql
+
 # ide
 .idea
