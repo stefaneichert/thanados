@@ -171,7 +171,7 @@ function setmap(myjson) {
     //initiate selection of clicked polygons
     polygonSelect();
 
-    //todo: fix image export
+    /*todo: fix image export
     printPlugin = L.easyPrint({
         position: 'topleft',
         sizeModes: ['Current'],
@@ -181,7 +181,7 @@ function setmap(myjson) {
         hideControlContainer: false,
         hidden: true,
     }).addTo(map);
-
+    */
 
     map.on('baselayerchange', function (e) {
         attributionChange()
@@ -268,9 +268,9 @@ function applyStyle(fill, opacity, border, outline) {
     myStyleSquare.color = border;
 }
 
-function printme() {
+/*function printme() {
     printPlugin.printMap('CurrentSize');
-};
+};*/
 
 
 //openpolygon for active sidebargrave
