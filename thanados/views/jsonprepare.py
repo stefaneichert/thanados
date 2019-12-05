@@ -8,7 +8,7 @@ from thanados.models.entity import Data
 
 @app.route('/jsonprepare/')
 @login_required
-def jsonprepare():
+def jsonprepare():  # pragma: no cover
     if current_user.group not in ['admin']:
         abort(403)
     return render_template('jsonprepare/index.html')
@@ -16,7 +16,7 @@ def jsonprepare():
 
 @app.route('/jsonprepare/execute/')
 @login_required
-def jsonprepare_execute():
+def jsonprepare_execute():  # pragma: no cover
     if current_user.group not in ['admin']:
         abort(403)
 
