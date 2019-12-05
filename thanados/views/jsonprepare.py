@@ -1,5 +1,6 @@
-from flask import render_template, g
-from flask_login import login_required
+from flask import render_template, g, url_for, abort
+from flask_login import login_required, current_user
+from werkzeug.utils import redirect
 
 from thanados import app
 from thanados.models.entity import Data
@@ -8,6 +9,17 @@ from thanados.models.entity import Data
 @app.route('/jsonprepare/')
 @login_required
 def jsonprepare():
+    if current_user.group not in ['admin']:
+        abort(403)
+    return render_template('jsonprepare/index.html')
+
+
+@app.route('/jsonprepare/execute/')
+@login_required
+def jsonprepare_execute():
+    if current_user.group not in ['admin']:
+        abort(403)
+
     sql_1 = """ 
 DROP SCHEMA IF EXISTS thanados CASCADE;
 
@@ -1424,5 +1436,4 @@ CREATE TABLE thanados.ageatdeath AS (
           GROUP BY sitename, site_id) ar ORDER BY site_id);
     """
     g.cursor.execute(sql_4)
-
-    return render_template('jsonprepare/jsonprepare_ready.html')
+    return redirect(url_for('jsonprepare'))

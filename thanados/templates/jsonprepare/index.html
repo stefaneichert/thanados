@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div id="mycontent">
+        <h2 class="my-heading container">Admin</h2>
+        <p class="lead-text-muted">Set/refresh data from database for frontend use</p>
+        <a href="{{ url_for('jsonprepare_execute') }}" class="btn-sm btn-secondary">Go</a>
+    </div>
+{% endblock %}
