@@ -3,7 +3,7 @@ sitename = jsonmysite.name;
 $('#mybreadcrumb').append(
     '<nav aria-label="breadcrumb">' +
     '<ol id="mybreadcrumbs" class="breadcrumb">' +
-    '<li class="breadcrumb-item"><a href="/entity/view/' + jsonmysite.site_id + '">' + sitename + '</a></li>' +
+    '<li class="breadcrumb-item"><a href="/entity/' + jsonmysite.site_id + '">' + sitename + '</a></li>' +
     '</ol>' +
     '</nav>');
 
@@ -22,7 +22,7 @@ if (systemtype == 'feature') {
             graveId = feature.id;
             graveGeom = feature.geometry;
             getEntityData(sitename, place_id, feature);
-            $('#mybreadcrumbs').append('<li class="breadcrumb-item"><a href="/entity/view/' + entId + '">' + entName + '</a></li>');
+            $('#mybreadcrumbs').append('<li class="breadcrumb-item"><a href="/entity/' + entId + '">' + entName + '</a></li>');
             mycitation = '"' + sitename + ': ' + entName + '".';
             myjson = {
                 "type": "FeatureCollection", //prepare geojson
@@ -49,8 +49,8 @@ if (systemtype == 'stratigraphic unit') {
                 graveGeom = featureGeom;
                 getEntityData(graveName, graveId, burial);
                 $('#mybreadcrumbs').append(
-                    '<li class="breadcrumb-item"><a href="/entity/view/' + graveId + '">' + graveName + '</a></li>' +
-                    '<li class="breadcrumb-item"><a href="/entity/view/' + entId + '">' + entName + '</a></li>'
+                    '<li class="breadcrumb-item"><a href="/entity/' + graveId + '">' + graveName + '</a></li>' +
+                    '<li class="breadcrumb-item"><a href="/entity/' + entId + '">' + entName + '</a></li>'
                 );
                 mycitation = '"' + sitename + ': ' + graveName + ': ' + entName + '".';
                 myjson = {
@@ -86,9 +86,9 @@ if (systemtype == 'find') {
                     burialId = stratID;
                     getEntityData(burialName, burialId, find);
                     $('#mybreadcrumbs').append(
-                        '<li class="breadcrumb-item"><a href="/entity/view/' + graveId + '">' + graveName + '</a></li>' +
-                        '<li class="breadcrumb-item"><a href="/entity/view/' + burialId + '">' + burialName + '</a></li>' +
-                        '<li class="breadcrumb-item"><a href="/entity/view/' + entId + '">' + entName + '</a></li>'
+                        '<li class="breadcrumb-item"><a href="/entity/' + graveId + '">' + graveName + '</a></li>' +
+                        '<li class="breadcrumb-item"><a href="/entity/' + burialId + '">' + burialName + '</a></li>' +
+                        '<li class="breadcrumb-item"><a href="/entity/' + entId + '">' + entName + '</a></li>'
                     );
                     mycitation = '"' + sitename + ': ' + graveName + ': ' + burialName + ': ' + entName + '".';
                     myjson = {
@@ -461,7 +461,7 @@ function getEntityData(parentName, parentId, currentfeature) {
             ;
 
             $('#myChildrencontainer' + entId).append(
-                '<a class="modalrowitem subunits" href="/entity/view/' + child.id + '" title="' + child.properties.maintype.name + '">' + child.properties.name + '</a>'
+                '<a class="modalrowitem subunits" href="/entity/' + child.id + '" title="' + child.properties.maintype.name + '">' + child.properties.name + '</a>'
             );
             myentity = [];
             if (typeof (child.id) != 'undefined') myentity.id = child.id;
@@ -488,7 +488,7 @@ function getEntityData(parentName, parentId, currentfeature) {
                 {
                     data: "name",
                     "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                        $(nTd).html("<a href='/entity/view/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a> "); //create links in rows
+                        $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a> "); //create links in rows
                     }
                 },
                 {
@@ -514,7 +514,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         }
         ;
         $('#myParentcontainer' + entId).append(
-            '<a class="modalrowitem" href="/entity/view/' + parentId + '">' + parentName + '</a>'
+            '<a class="modalrowitem" href="/entity/' + parentId + '">' + parentName + '</a>'
         );
     }
 

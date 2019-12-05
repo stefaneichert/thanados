@@ -10,7 +10,7 @@
 
                     <div class="col-md-4">
                         <div class="card mb-4 box-shadow">
-                            <a href="/entity/view/50505">
+                            <a href="{{ url_for('entity_view', object_id=50505) }}50505">
                                 <div>
                                     <img class="card-img-top" src="/static/images/home/Thunau.jpg"
                                          title="Click to open site. Image: after Nowotny 2018">
@@ -24,7 +24,7 @@
 
                     <div class="col-md-4">
                         <div class="card mb-4 box-shadow">
-                            <a href="/entity/view/111285">
+                            <a href="{{ url_for('entity_view', object_id=111285) }}111285">
                                 <div>
                                     <img class="card-img-top" src="/static/images/home/Kourim.jpg"
                                          title="Click to open site. Image: after Šolle 1966">
@@ -38,7 +38,7 @@
 
                     <div class="col-md-4">
                         <div class="card mb-4 box-shadow">
-                            <a href="/entity/view/50497">
+                            <a href="{{ url_for('entity_view', object_id=50497) }}50497">
                                 <div>
                                     <img class="card-img-top" src="/static/images/home/Pohansko.jpg"
                                          title="Click to open site. Plot: after Kalousek 1971">
@@ -61,9 +61,9 @@
                 <a href="http://www.arup.cas.cz/" target="_blank">Archaeological Institute of the Czech Academy of
                     Sciences
                     in Prague</a>.<br>
-                Currently it comprises three cemeteries from the 8th to the 10th century: <a href="/entity/view/50505">Thunau
+                Currently it comprises three cemeteries from the 8th to the 10th century: <a href="{{ url_for('entity_view', object_id=50505) }}50505">Thunau
                 Obere Holzwiese</a> from Austria,
-                <a href="/entity/view/111285">Stará Kouřim</a> from Bohemia and <a href="/entity/view/50497">Pohansko
+                <a href="{{ url_for('entity_view', object_id=111285) }}111285">Stará Kouřim</a> from Bohemia and <a href="{{ url_for('entity_view', object_id=50497) }}50497">Pohansko
                 "Herrenhof"</a> from Moravia.<br>
                 All published information is provided online and can be explored via a digital catalogue and within an
                 interactive map. Cartographic visualisations as well as charts and plots are created dynamically based

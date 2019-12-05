@@ -707,7 +707,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     );
 
     $('#myModalPermalink' + entId).append(
-        '<a href="../entity/view/' + entId + '"><h6>Permalink</h6></a>'
+        '<a href="../entity/' + entId + '"><h6>Permalink</h6></a>'
     );
 
     if (dateToInsert == '') {
