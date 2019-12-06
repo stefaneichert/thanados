@@ -28,4 +28,4 @@ class WebsiteTests(TestBaseCase):
             assert b'cite' in rv.data
             rv = self.app.get(url_for('entity_view', object_id=50505, format_='json'))
             assert b'site' in rv.data
-            self.app.get(url_for('jsonprepare'))
+            self.app.get(url_for('admin'))

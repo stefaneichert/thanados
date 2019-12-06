@@ -425,7 +425,8 @@ a.ui-button:active,
 }
 
 #mycontent {
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding-top: 1rem;
 }
 

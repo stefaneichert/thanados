@@ -55,8 +55,8 @@ Test Apache configuration and restart
 
 ### Database Adaptions
 
-enter "://your_server/jsonprepare" in your browser and log in with your OpenAtlas login credentials. A script is executed that prepares the data for the application.
-A new schema is created with all necessary data to be displayed. Change the parameters in the jsonprepare.py view if needed (See comments in the script).
+enter "://your_server/admin" in your browser and log in with your OpenAtlas login credentials. A script is executed that prepares the data for the application.
+A new schema is created with all necessary data to be displayed. Change the parameters in the admin.py view if needed (See comments in the script).
 
 ### Content and Layout Adaptions
 
