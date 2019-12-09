@@ -10,6 +10,7 @@ list_of_sites = app.config["SITE_LIST"]
 
 class Data:
 
+
     @staticmethod
     def get_site_ids():
         list_of_sites = app.config["SITE_LIST"]
@@ -23,8 +24,30 @@ class Data:
             return (tuple(mylist))
         else:
             mylist = list_of_sites
-            return(mylist)
+            return (mylist)
 
+    @staticmethod
+    def get_list():
+        sql_sites = """
+            SELECT jsonb_agg(a) as sitelist
+            FROM (
+                     SELECT s.child_name     AS name,
+                            s.description    AS description,
+                            s.begin_from     AS begin,
+                            s.end_to         AS end,
+                            s.child_id       AS id,
+                            s.typename       AS type,
+                            s.path,
+                            s.lat,
+                            s.lon,
+                            COUNT(s.child_id) AS graves
+
+                     FROM thanados.entities s LEFT JOIN thanados.graves g ON s.child_id = g.parent_id
+                     WHERE s.system_type = 'place' AND s.lat IS NOT NULL AND g.child_id != 0 AND s.child_id IN  %(sites)s 
+                     GROUP BY s.child_name, s.description, s.begin_from, s.end_to, s.child_id, s.typename, s.path, s.lat, s.lon
+                     ORDER BY s.child_name) a;"""
+        g.cursor.execute(sql_sites, {"sites": Data.get_site_ids()})
+        return g.cursor.fetchall()
 
     @staticmethod
     def get_file_path(id_: int):
