@@ -245,9 +245,9 @@ FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
 WHERE child_id = point.id
   AND thanados.graves.geom ISNULL;
 
-UPDATE thanados.graves g
-SET geom = a.geom
-FROM (SELECT s.child_id, s.geom FROM thanados.sites s JOIN thanados.graves g ON g.parent_id = s.child_id WHERE g.geom IS NULL) a WHERE a.child_id = g.parent_id AND g.geom IS NULL;
+--UPDATE thanados.graves g
+--SET geom = a.geom
+--FROM (SELECT s.child_id, s.geom FROM thanados.sites s JOIN thanados.graves g ON g.parent_id = s.child_id WHERE g.geom IS NULL) a WHERE a.child_id = g.parent_id AND g.geom IS NULL;
 
 --burials
 DROP TABLE IF EXISTS thanados.burials;
@@ -1455,6 +1455,7 @@ SELECT 	e.system_type,
 	e.child_name,
 	e.parent_id,
 	e.child_id,
+	e.geom AS jsongeom,
 	l.property_code,
 	l.range_id,
 	g.id,
@@ -1462,13 +1463,13 @@ SELECT 	e.system_type,
 	FROM thanados.entities e JOIN model.link l ON e.child_id = l.domain_id JOIN gis.point g ON l.range_id = g.entity_id WHERE l.property_code = 'P53');
 
 DELETE FROM gis.point g WHERE g.id in (
-SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.geom = g2.geom  AND g1.system_type = 'stratigraphic unit' ORDER BY g1.system_type, g1.child_id, g2.child_name);
+SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'stratigraphic unit' ORDER BY g1.system_type, g1.child_id, g2.child_name);
 
 DELETE FROM gis.point g WHERE g.id in (
-SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.geom = g2.geom  AND g1.system_type = 'feature' ORDER BY g1.system_type, g1.child_id, g2.child_name);
+SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'feature' ORDER BY g1.system_type, g1.child_id, g2.child_name);
 
 DELETE FROM gis.point g WHERE g.id in (
-SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.geom = g2.geom  AND g1.system_type = 'place' ORDER BY g1.system_type, g1.child_id, g2.child_name);
+SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'place' ORDER BY g1.system_type, g1.child_id, g2.child_name);
 
 DROP TABLE IF EXISTS thanados.giscleanup;
 

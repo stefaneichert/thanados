@@ -74,6 +74,7 @@ function setmap(myjson) {
         "dashArray": [4, 4]
     };
 
+
     //add graves with polygon geometry
     graves = L.geoJSON(myjson, {
         filter: polygonFilter,
@@ -129,7 +130,15 @@ function setmap(myjson) {
         map.panTo(centerpoint);
         map.setZoom(20);
     } else {
-        map.fitBounds(graves.getBounds())
+        if (setJson(myjson)) map.fitBounds(graves.getBounds());
+        else {
+            var popupLine = '<a id="' + myjson.site_id + '" onclick="modalsetsite()" href="#"><p><b>' + myjson.name + ' </b><br>(' + myjson.properties.maintype.name + ')</p></a>';
+            var latlng = [ myjson.properties.center.coordinates[1] , myjson.properties.center.coordinates[0] ];
+                var marker = L.marker(latlng).bindPopup(popupLine).addTo(map);
+                centerpoint = latlng;
+                map.panTo(centerpoint);
+        }
+
     }
     ;
     myzoom = (map.getZoom());
@@ -493,6 +502,7 @@ function setSidebarContent(myjson) {
         if (gravedescription == null) {
             gravedescription = 'no description available'
         }
+        if (typeof(features.geometry) == "undefined") gravename = (gravename + ' (location unknown)');
         ;
         $('#accordion1').append(
             '<div id="' + gravediv + '" style="max-height: 42px">' +

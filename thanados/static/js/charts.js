@@ -44,7 +44,7 @@ function changeArrows() {
 
 //set datatable
 table = $('#sitelist').DataTable({
-    data: sitelist,
+    data: filterList(sitelist),
     "pagingType": "numbers",
     'columnDefs': [
         {
@@ -694,3 +694,11 @@ $(document).ready(function () {
     var windowheight = ($(window).height());
     $('#mycontent').css('max-height', windowheight - 56 + 'px');
 });
+
+function filterList(data) {
+    filterData = [];
+    $.each(data, function (i, dataset) {
+      if (dataset.graves > 0) filterData.push(dataset)
+    });
+    return filterData
+}

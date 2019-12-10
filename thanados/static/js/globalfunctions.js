@@ -1,3 +1,14 @@
+function setJson(data) {
+        countGeom = 0
+        $.each(data.features, function (i, feature) {
+            if (typeof (feature.geometry) != 'undefined') {
+                countGeom += 1;
+            }
+        })
+        if (countGeom == 0) return false;
+        if (countGeom > 0) return true;
+    }
+
 /**
  * When searching a table with accented characters, it can be frustrating to have
  * an input such as _Zurich_ not match _Zürich_ in the table (`u !== ü`). This

@@ -611,8 +611,15 @@ function getEntityData(parentName, parentId, currentfeature) {
             site_id: jsonmysite.site_id
         });
 
-        mymap.fitBounds(graves.getBounds());
-        if ((mymap.getZoom()) > 20) mymap.setZoom(20);
+        if (setJson(jsonmysite)) {
+            mymap.fitBounds(graves.getBounds());
+            if ((mymap.getZoom()) > 20) mymap.setZoom(20);
+        } else {
+            var latlng = [jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]];
+            var marker = L.marker(latlng).addTo(mymap);
+            centerpoint = latlng;
+            mymap.panTo(centerpoint);
+        }
 
 
         if (currentfeature.type !== "FeatureCollection") {
@@ -768,6 +775,10 @@ mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
 yyyy = today.getFullYear();
 
 today = yyyy + '/' + mm + '/' + dd;
+if (typeof (mycitation2) == 'undefined') {
+    mycitation2 = '';
+    mycitation1 = mycitation1.substring(0, mycitation1.length - 8);
+};
 mysource = (mycitation + mycitation1 + mycitation2 + ' [Accessed: ' + today + ']');
 mysource = mysource.replace(/(\r\n|\n|\r)/gm, "");
 $('#mycitation').append('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');

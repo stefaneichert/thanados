@@ -29,8 +29,9 @@ class Data:
     @staticmethod
     def get_list():
         sql_sites = """
-            SELECT jsonb_agg(a) as sitelist
-            FROM (
+        DROP TABLE IF EXISTS thanados.tmpsites;
+            CREATE TABLE thanados.tmpsites AS (
+                
                      SELECT s.child_name     AS name,
                             s.description    AS description,
                             s.begin_from     AS begin,
@@ -40,13 +41,36 @@ class Data:
                             s.path,
                             s.lat,
                             s.lon,
-                            COUNT(s.child_id) AS graves
+                            COUNT(s.child_id)::TEXT AS graves
 
                      FROM thanados.entities s LEFT JOIN thanados.graves g ON s.child_id = g.parent_id
-                     WHERE s.system_type = 'place' AND s.lat IS NOT NULL AND g.child_id != 0 AND s.child_id IN  %(sites)s 
+                     WHERE s.system_type = 'place' AND s.lat IS NOT NULL AND s.child_id IN  %(sites)s 
                      GROUP BY s.child_name, s.description, s.begin_from, s.end_to, s.child_id, s.typename, s.path, s.lat, s.lon
-                     ORDER BY s.child_name) a;"""
+                     ORDER BY s.child_name);"""
+                     
+        sql_sites2 = """
+        UPDATE thanados.tmpsites SET (graves) = (SELECT graves FROM ( 
+            SELECT              
+		            s.name,
+                    s.description,
+                    s.begin,
+                    s.end,
+                    s.id,
+                    s.type,
+                    s.path,
+                    s.lat,
+                    s.lon,
+                    COUNT(mt.path) FILTER (WHERE mt.path LIKE '%> Grave%')::TEXT AS graves
+                            
+
+                     FROM thanados.tmpsites s LEFT JOIN thanados.graves g ON s.id = g.parent_id LEFT JOIN thanados.maintype mt ON g.child_id = mt.entity_id 
+                     GROUP BY s.name, s.description, s.begin, s.end, s.id, s.type, s.path, s.lat, s.lon) a WHERE id = thanados.tmpsites.id);
+                     UPDATE thanados.tmpsites SET graves = NULL WHERE graves = '0';     
+                     
+            SELECT jsonb_agg(a) as sitelist FROM thanados.tmpsites a;
+                     """
         g.cursor.execute(sql_sites, {"sites": Data.get_site_ids()})
+        g.cursor.execute(sql_sites2)
         return g.cursor.fetchall()
 
     @staticmethod
