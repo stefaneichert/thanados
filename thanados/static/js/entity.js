@@ -3,7 +3,7 @@ sitename = jsonmysite.name;
 $('#mybreadcrumb').append(
     '<nav aria-label="breadcrumb">' +
     '<ol id="mybreadcrumbs" class="breadcrumb">' +
-    '<li class="breadcrumb-item"><a href="/entity/view/' + jsonmysite.site_id + '">' + sitename + '</a></li>' +
+    '<li class="breadcrumb-item"><a href="/entity/' + jsonmysite.site_id + '">' + sitename + '</a></li>' +
     '</ol>' +
     '</nav>');
 
@@ -22,7 +22,7 @@ if (systemtype == 'feature') {
             graveId = feature.id;
             graveGeom = feature.geometry;
             getEntityData(sitename, place_id, feature);
-            $('#mybreadcrumbs').append('<li class="breadcrumb-item"><a href="/entity/view/' + entId + '">' + entName + '</a></li>');
+            $('#mybreadcrumbs').append('<li class="breadcrumb-item"><a href="/entity/' + entId + '">' + entName + '</a></li>');
             mycitation = '"' + sitename + ': ' + entName + '".';
             myjson = {
                 "type": "FeatureCollection", //prepare geojson
@@ -49,8 +49,8 @@ if (systemtype == 'stratigraphic unit') {
                 graveGeom = featureGeom;
                 getEntityData(graveName, graveId, burial);
                 $('#mybreadcrumbs').append(
-                    '<li class="breadcrumb-item"><a href="/entity/view/' + graveId + '">' + graveName + '</a></li>' +
-                    '<li class="breadcrumb-item"><a href="/entity/view/' + entId + '">' + entName + '</a></li>'
+                    '<li class="breadcrumb-item"><a href="/entity/' + graveId + '">' + graveName + '</a></li>' +
+                    '<li class="breadcrumb-item"><a href="/entity/' + entId + '">' + entName + '</a></li>'
                 );
                 mycitation = '"' + sitename + ': ' + graveName + ': ' + entName + '".';
                 myjson = {
@@ -86,9 +86,9 @@ if (systemtype == 'find') {
                     burialId = stratID;
                     getEntityData(burialName, burialId, find);
                     $('#mybreadcrumbs').append(
-                        '<li class="breadcrumb-item"><a href="/entity/view/' + graveId + '">' + graveName + '</a></li>' +
-                        '<li class="breadcrumb-item"><a href="/entity/view/' + burialId + '">' + burialName + '</a></li>' +
-                        '<li class="breadcrumb-item"><a href="/entity/view/' + entId + '">' + entName + '</a></li>'
+                        '<li class="breadcrumb-item"><a href="/entity/' + graveId + '">' + graveName + '</a></li>' +
+                        '<li class="breadcrumb-item"><a href="/entity/' + burialId + '">' + burialName + '</a></li>' +
+                        '<li class="breadcrumb-item"><a href="/entity/' + entId + '">' + entName + '</a></li>'
                     );
                     mycitation = '"' + sitename + ': ' + graveName + ': ' + burialName + ': ' + entName + '".';
                     myjson = {
@@ -454,6 +454,7 @@ function getEntityData(parentName, parentId, currentfeature) {
                     '<th>Type</th>' +
                     '<th>Begin</th>' +
                     '<th>End</th>' +
+                    '<th>Finds</th>' +
                     '</tr>' +
                     '</thead>' +
                     '</table>');
@@ -461,7 +462,7 @@ function getEntityData(parentName, parentId, currentfeature) {
             ;
 
             $('#myChildrencontainer' + entId).append(
-                '<a class="modalrowitem subunits" href="/entity/view/' + child.id + '" title="' + child.properties.maintype.name + '">' + child.properties.name + '</a>'
+                '<a class="modalrowitem subunits" href="/entity/' + child.id + '" title="' + child.properties.maintype.name + '">' + child.properties.name + '</a>'
             );
             myentity = [];
             if (typeof (child.id) != 'undefined') myentity.id = child.id;
@@ -477,6 +478,14 @@ function getEntityData(parentName, parentId, currentfeature) {
                 myentity.end = '';
             }
             ;
+            findCount = 0;
+            if (typeof (child.finds) != 'undefined') findCount += (child.finds.length);
+            if (typeof (child.burials) != 'undefined') {
+                $.each(child.burials, function (c, burial) {
+                    if (typeof (burial.finds) != 'undefined') findCount += (burial.finds.length);
+                })
+            }
+            myentity.findCount = findCount;
             mychildrenlist.push(myentity);
 
         });
@@ -488,7 +497,7 @@ function getEntityData(parentName, parentId, currentfeature) {
                 {
                     data: "name",
                     "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                        $(nTd).html("<a href='/entity/view/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a> "); //create links in rows
+                        $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a> "); //create links in rows
                     }
                 },
                 {
@@ -498,9 +507,12 @@ function getEntityData(parentName, parentId, currentfeature) {
                     }
                 },
                 {data: 'begin'},
-                {data: 'end'}
+                {data: 'end'},
+                {data: 'findCount'}
             ]
         });
+
+        if (systemtype == "stratigraphic unit") table.column(4).visible(false);
     }
     ;
 
@@ -514,7 +526,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         }
         ;
         $('#myParentcontainer' + entId).append(
-            '<a class="modalrowitem" href="/entity/view/' + parentId + '">' + parentName + '</a>'
+            '<a class="modalrowitem" href="/entity/' + parentId + '">' + parentName + '</a>'
         );
     }
 
@@ -611,8 +623,15 @@ function getEntityData(parentName, parentId, currentfeature) {
             site_id: jsonmysite.site_id
         });
 
-        mymap.fitBounds(graves.getBounds());
-        if ((mymap.getZoom()) > 20) mymap.setZoom(20);
+        if (setJson(jsonmysite)) {
+            mymap.fitBounds(graves.getBounds());
+            if ((mymap.getZoom()) > 20) mymap.setZoom(20);
+        } else {
+            var latlng = [jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]];
+            var marker = L.marker(latlng).addTo(mymap);
+            centerpoint = latlng;
+            mymap.panTo(centerpoint);
+        }
 
 
         if (currentfeature.type !== "FeatureCollection") {
@@ -768,6 +787,11 @@ mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
 yyyy = today.getFullYear();
 
 today = yyyy + '/' + mm + '/' + dd;
+if (typeof (mycitation2) == 'undefined') {
+    mycitation2 = '';
+    mycitation1 = mycitation1.substring(0, mycitation1.length - 8);
+}
+;
 mysource = (mycitation + mycitation1 + mycitation2 + ' [Accessed: ' + today + ']');
 mysource = mysource.replace(/(\r\n|\n|\r)/gm, "");
 $('#mycitation').append('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');

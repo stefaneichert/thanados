@@ -74,6 +74,7 @@ function setmap(myjson) {
         "dashArray": [4, 4]
     };
 
+
     //add graves with polygon geometry
     graves = L.geoJSON(myjson, {
         filter: polygonFilter,
@@ -129,7 +130,15 @@ function setmap(myjson) {
         map.panTo(centerpoint);
         map.setZoom(20);
     } else {
-        map.fitBounds(graves.getBounds())
+        if (setJson(myjson)) map.fitBounds(graves.getBounds());
+        else {
+            var popupLine = '<a id="' + myjson.site_id + '" onclick="modalsetsite()" href="#"><p><b>' + myjson.name + ' </b><br>(' + myjson.properties.maintype.name + ')</p></a>';
+            var latlng = [ myjson.properties.center.coordinates[1] , myjson.properties.center.coordinates[0] ];
+                var marker = L.marker(latlng).bindPopup(popupLine).addTo(map);
+                centerpoint = latlng;
+                map.panTo(centerpoint);
+        }
+
     }
     ;
     myzoom = (map.getZoom());
@@ -171,7 +180,7 @@ function setmap(myjson) {
     //initiate selection of clicked polygons
     polygonSelect();
 
-    //todo: fix image export
+    /*todo: fix image export
     printPlugin = L.easyPrint({
         position: 'topleft',
         sizeModes: ['Current'],
@@ -181,7 +190,7 @@ function setmap(myjson) {
         hideControlContainer: false,
         hidden: true,
     }).addTo(map);
-
+    */
 
     map.on('baselayerchange', function (e) {
         attributionChange()
@@ -268,9 +277,9 @@ function applyStyle(fill, opacity, border, outline) {
     myStyleSquare.color = border;
 }
 
-function printme() {
+/*function printme() {
     printPlugin.printMap('CurrentSize');
-};
+};*/
 
 
 //openpolygon for active sidebargrave
@@ -493,6 +502,7 @@ function setSidebarContent(myjson) {
         if (gravedescription == null) {
             gravedescription = 'no description available'
         }
+        if (typeof(features.geometry) == "undefined") gravename = (gravename + ' (location unknown)');
         ;
         $('#accordion1').append(
             '<div id="' + gravediv + '" style="max-height: 42px">' +
@@ -707,7 +717,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     );
 
     $('#myModalPermalink' + entId).append(
-        '<a href="../entity/view/' + entId + '"><h6>Permalink</h6></a>'
+        '<a href="../entity/' + entId + '"><h6>Permalink</h6></a>'
     );
 
     if (dateToInsert == '') {
