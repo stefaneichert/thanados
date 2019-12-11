@@ -1,32 +1,33 @@
 {% extends "layout.html" %}
 {% block content %}
-<div id="container1" style="margin-left: 2em; max-width: 600px; margin-right: 20%">
-    <form method="post">
-        {{ form.csrf_token }}
-        <div class="input-group mb-3 input-group-sm mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-text">Username: </span>
+    <h2 class="my-heading container">Login</h2>
+
+    <div id="container1" style="margin-left: 2em; max-width: 600px; width: 80%; margin-right: 20%">
+        <form method="post">
+            {{ form.csrf_token }}
+            <div class="input-group mb-3 input-group-sm mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Username: </span>
+                </div>
+                {{ form.username(class_='required, form-control') }}
             </div>
-            {{ form.username(class_='required, form-control') }}
-        </div>
-        <div class="input-group mb-3 input-group-sm mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-text">Password: </span>
+            <div class="input-group mb-3 input-group-sm mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Password: </span>
+                </div>
+                {{ form.password(class_='required, form-control') }}
+                <div class="input-group-append float-right">
+                    {{ form.save(class_='btn btn-secondary') }}
+                </div>
             </div>
-            {{ form.password(class_='required, form-control') }}
-        </div>
-        <div class="input-group mb-3 input-group-sm mb-3" style="width: 100%">
-            <div class="input-group-prepend">
-                <span class="input-group-text">show password</span>
-                {{ form.show_passwords(type_='radio')  }}
+            <div class="float-right">
+                <span><small class="text-muted mr-4">show password?</small></span>
+                {{ form.show_passwords(type_='radio', class='mr-2 align-middle') }}
             </div>
-            <div class="input-group-append float-right">
-                {{ form.save(class_='btn btn-secondary')  }}
-            </div>
-        </div>
-    </form>
-</div>
+        </form>
+    </div>
 
 
-{{ error_html|safe }}
+    {{ error_html|safe }}
+
 {% endblock %}

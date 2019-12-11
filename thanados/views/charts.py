@@ -14,6 +14,7 @@ def charts():
     graveshape = Data.get_type_data('grave', 'Grave Shape%')
     burialtype = Data.get_type_data('burial', 'Stratigraphic Unit%')
     sex = Data.get_sex()
+    site_list = Data.get_list()
     orientation = Data.get_orientation()
     g.cursor.execute('select JSONB_agg(age) as age FROM thanados.ageatdeath as age;')
     age = g.cursor.fetchall()
@@ -66,4 +67,4 @@ SELECT '{"types": [' || string_agg (jsonstring, ', ') || ']}' AS mydata FROM
                            gravetypes_json=gravetypes[0], construction=constr[0],
                            burial_types=burialtype[0], find_types=finds[0].mydata, age=age[0],
                            orientation_data=orientation[0].orientation, sex_data=sex[0].sex,
-                           grave_shape=graveshape[0], site_ids=site_ids)
+                           grave_shape=graveshape[0], site_ids=site_ids, sitelist=site_list[0].sitelist)
