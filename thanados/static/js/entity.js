@@ -454,6 +454,7 @@ function getEntityData(parentName, parentId, currentfeature) {
                     '<th>Type</th>' +
                     '<th>Begin</th>' +
                     '<th>End</th>' +
+                    '<th>Finds</th>' +
                     '</tr>' +
                     '</thead>' +
                     '</table>');
@@ -477,6 +478,14 @@ function getEntityData(parentName, parentId, currentfeature) {
                 myentity.end = '';
             }
             ;
+            findCount = 0;
+            if (typeof (child.finds) != 'undefined') findCount += (child.finds.length);
+            if (typeof (child.burials) != 'undefined') {
+                $.each(child.burials, function (c, burial) {
+                    if (typeof (burial.finds) != 'undefined') findCount += (burial.finds.length);
+                })
+            }
+            myentity.findCount = findCount;
             mychildrenlist.push(myentity);
 
         });
@@ -498,9 +507,12 @@ function getEntityData(parentName, parentId, currentfeature) {
                     }
                 },
                 {data: 'begin'},
-                {data: 'end'}
+                {data: 'end'},
+                {data: 'findCount'}
             ]
         });
+
+        if (systemtype == "stratigraphic unit") table.column(4).visible(false);
     }
     ;
 
@@ -778,7 +790,8 @@ today = yyyy + '/' + mm + '/' + dd;
 if (typeof (mycitation2) == 'undefined') {
     mycitation2 = '';
     mycitation1 = mycitation1.substring(0, mycitation1.length - 8);
-};
+}
+;
 mysource = (mycitation + mycitation1 + mycitation2 + ' [Accessed: ' + today + ']');
 mysource = mysource.replace(/(\r\n|\n|\r)/gm, "");
 $('#mycitation').append('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');
