@@ -23,3 +23,7 @@ install/data_cleanup.sql
 
 # ide
 .idea
+
+#tests
+tests/cover/*
+tests/.coverage
