@@ -14,6 +14,7 @@ class User(UserMixin):
         self.active = True if row.active == 1 else False
         self.username = row.username
         self.password = row.password
+        self.group = row.group_name
 
 
 class UserMapper:

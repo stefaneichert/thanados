@@ -5,60 +5,8 @@ $(window).resize(function () {
 
 });
 
-/**
- * When searching a table with accented characters, it can be frustrating to have
- * an input such as _Zurich_ not match _Zürich_ in the table (`u !== ü`). This
- * type based search plug-in replaces the built-in string formatter in
- * DataTables with a function that will replace the accented characters
- * with their unaccented counterparts for fast and easy filtering.
- *
- * Note that this plug-in uses the Javascript I18n API that was introduced in
- * ES6. For older browser's this plug-in will have no effect.
- *
- *  @summary Replace accented characters with unaccented counterparts
- *  @name Accent neutralise
- *  @author Allan Jardine
- *
- *  @example
- *    $(document).ready(function() {
- *        $('#example').dataTable();
- *    } );
- */
+AccRemove();
 
-(function () {
-
-    function removeAccents(data) {
-        if (data.normalize) {
-            // Use I18n API if avaiable to split characters and accents, then remove
-            // the accents wholesale. Note that we use the original data as well as
-            // the new to allow for searching of either form.
-            return data + ' ' + data
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '');
-        }
-
-        return data;
-    }
-
-    var searchType = jQuery.fn.DataTable.ext.type.search;
-
-    searchType.string = function (data) {
-        return !data ?
-            '' :
-            typeof data === 'string' ?
-                removeAccents(data) :
-                data;
-    };
-
-    searchType.html = function (data) {
-        return !data ?
-            '' :
-            typeof data === 'string' ?
-                removeAccents(data.replace(/<.*?>/g, '')) :
-                data;
-    };
-
-}());
 
 
 $(document).ready(function () {
@@ -146,7 +94,7 @@ $(document).ready(function () {
             {
                 data: "name",
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                    $(nTd).html("<a href='/entity/view/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a> "); //create links in rows
+                    $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" + "<a href='/map/" + oData.id + "' title='open map' class='btn-xs float-right'><i class=\"fas fa-map-marked-alt\"></i></a>"); //create links in rows
                 }
             },
             {
@@ -156,8 +104,8 @@ $(document).ready(function () {
                     //create markers
                     if (oData.lon != null) {
                         heatmarkers.push([JSON.parse(oData.lon) + ',' + JSON.parse(oData.lat)]);
-                        var marker = L.marker([((oData.lon)), ((oData.lat))], {title: oData.name}).addTo(mymarkers).bindPopup('<a href="/entity/view/' + oData.id + '" title="' + oData.description + '"><b>' + oData.name + '</b></a><br><br>' + oData.type);
-                        var marker = L.marker([((oData.lon)), ((oData.lat))], {title: oData.name}).addTo(clustermarkers).bindPopup('<a href="/entity/view/' + oData.id + '" title="' + oData.description + '"><b>' + oData.name + '</b></a><br><br>' + oData.type);
+                        var marker = L.marker([((oData.lon)), ((oData.lat))], {title: oData.name}).addTo(mymarkers).bindPopup('<a href="/entity/' + oData.id + '" title="' + oData.description + '"><b>' + oData.name + '</b></a><br><br>' + oData.type);
+                        var marker = L.marker([((oData.lon)), ((oData.lat))], {title: oData.name}).addTo(clustermarkers).bindPopup('<a href="/entity/' + oData.id + '" title="' + oData.description + '"><b>' + oData.name + '</b></a><br><br>' + oData.type);
                     }
                 }
             },
@@ -253,8 +201,8 @@ $(document).ready(function () {
             var data = this.data();
             resultLenght.push(data.id);
             heatmarkers.push([JSON.parse(data.lon) + ',' + JSON.parse(data.lat)]);
-            var marker = L.marker([((data.lon)), ((data.lat))], {title: data.name}).addTo(mymarkers).bindPopup('<a href="/entity/view/' + data.id + '" title="' + data.description + '"><b>' + data.name + '</b></a><br><br>' + data.type);
-            var marker = L.marker([((data.lon)), ((data.lat))], {title: data.name}).addTo(clustermarkers).bindPopup('<a href="/entity/view/' + data.id + '" title="' + data.description + '"><b>' + data.name + '</b></a><br><br>' + data.type);
+            var marker = L.marker([((data.lon)), ((data.lat))], {title: data.name}).addTo(mymarkers).bindPopup('<a href="/entity/' + data.id + '" title="' + data.description + '"><b>' + data.name + '</b></a><br><br>' + data.type);
+            var marker = L.marker([((data.lon)), ((data.lat))], {title: data.name}).addTo(clustermarkers).bindPopup('<a href="/entity/' + data.id + '" title="' + data.description + '"><b>' + data.name + '</b></a><br><br>' + data.type);
 
         });
         mymarkers.addTo(markergroup);

@@ -1,235 +1,444 @@
 //prepare charts/plots and data
+mysite_ids = site_ids;
+if (site_ids.length > 20) {
+    mysite_ids = [];
+    $.each(site_ids, function (i, dataset) {
+        if (i < 20) mysite_ids.push(site_ids[i]);
+    })
+}
+;
+
+setcharts();
+
+beginArray = [];
+$.each(sitelist, function (i, site, end) {
+    beginArray.push(site.begin);
+});
+beginArray = [];
+endArray = [];
+$.each(sitelist, function (i, site) {
+    beginArray.push(site.begin);
+    endArray.push(site.end);
+});
+minbegin = Math.min(...beginArray);
+maxbegin = Math.max(...beginArray);
+
+minend = Math.min(...endArray);
+maxend = Math.max(...endArray);
+
+
+$('#filterBtn').on('click', function (e) {
+    changeArrows();
+    console.log('click');
+});
+
+function changeArrows() {
+    var down = ($('#filterBtnArrow').hasClass("fa-chevron-down"));
+    if (down) {
+        $('#filterBtnArrow').removeClass('fa-chevron-down').addClass('fa-chevron-right');
+    } else {
+        $('#filterBtnArrow').removeClass('fa-chevron-right').addClass('fa-chevron-down');
+    }
+}
+
+
+//set datatable
+table = $('#sitelist').DataTable({
+    data: filterList(sitelist),
+    "pagingType": "numbers",
+    'columnDefs': [
+        {
+            'targets': 0,
+            'checkboxes': {
+                'selectRow': true
+            }
+        },
+        {
+            orderable: false,
+            targets: 0
+        }],
+    'select': {
+        'style': 'multi'
+    },
+    'order': [[1, 'asc']],
+    columns: [
+        {
+            data: "id"
+        },
+        {
+            data: "name",
+            "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                $(nTd).html("<div title='" + oData.description + "'>" + oData.name + "</div>");
+            }
+        },
+        {
+            data: 'type',
+            "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                $(nTd).html("<div title='" + oData.path + "'>" + oData.type + "</div> ");
+                //create markers
+            }
+        },
+        {data: 'begin'},
+        {data: 'end'},
+        {data: 'graves'}
+    ],
+});
+
+$(function () {
+    $("#slider-range").slider({
+        range: true,
+        min: minbegin,
+        max: maxbegin,
+        values: [minbegin, maxbegin],
+        slide: function (event, ui) {
+            var table = $('#sitelist').DataTable();
+            $("#amount").val(ui.values[0] + " and " + ui.values[1]);
+            $("#min").val(ui.values[0]);
+            $("#max").val(ui.values[1]);
+            table.draw();
+        }
+    });
+    $("#amount").val($("#slider-range").slider("values", 0) +
+        " and " + $("#slider-range").slider("values", 1));
+});
+
+$(function () {
+    $("#slider-range2").slider({
+        range: true,
+        min: minend,
+        max: maxend,
+        values: [minend, maxend],
+        slide: function (event, ui) {
+            var table = $('#sitelist').DataTable();
+            $("#amount2").val(ui.values[0] + " and " + ui.values[1]);
+            $("#min1").val(ui.values[0]);
+            $("#max1").val(ui.values[1]);
+            table.draw();
+        }
+    });
+    $("#amount2").val($("#slider-range2").slider("values", 0) +
+        " and " + $("#slider-range2").slider("values", 1));
+});
+
+/* Custom filtering function which will search data in column four between two values */
+$.fn.dataTable.ext.search.push(
+    function (settings, data, dataIndex) {
+        var min = parseInt($('#min').val(), 10);
+        var max = parseInt($('#max').val(), 10);
+        var age = parseFloat(data[3]) || 0; // use data for the age column
+
+        if ((isNaN(min) && isNaN(max)) ||
+            (isNaN(min) && age <= max) ||
+            (min <= age && isNaN(max)) ||
+            (min <= age && age <= max)) {
+            return true;
+        }
+        return false;
+    }
+);
+
+$.fn.dataTable.ext.search.push(
+    function (settings, data, dataIndex) {
+        var min = parseInt($('#min1').val(), 10);
+        var max = parseInt($('#max1').val(), 10);
+        var age = parseFloat(data[4]) || 0; // use data for the age column
+
+        if ((isNaN(min) && isNaN(max)) ||
+            (isNaN(min) && age <= max) ||
+            (min <= age && isNaN(max)) ||
+            (min <= age && age <= max)) {
+            return true;
+        }
+        return false;
+    }
+);
+
+$('#submitBtn').on('click', function (e) {
+    mysite_ids = [];
+    var rows_selected = table.column(0).checkboxes.selected();
+
+    // Iterate over all selected checkboxes
+    $.each(rows_selected, function (index, rowId) {
+        // Create a hidden element
+        mysite_ids.push(rowId);
+    });
+    $('#collapseFilter').collapse();
+    changeArrows();
+    setTimeout(setcharts, 200);
+});
+
+function setcharts() {
 
 //depth of graves: Data contains site and no of graves of a depth interval of 20cm
-mydepthdata = setChartData(depth_data, false, true, true);
-depthconfig = {
-    // The type of chart we want to create
-    type: 'bar',
-    // The data for our dataset
-    data: mydepthdata,
-    // Configuration options go here
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            xAxes: [{
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Depth in cm.'
+    mydepthdata = setChartData(depth_data, false, true, true);
+    depthconfig = {
+        // The type of chart we want to create
+        type: 'bar',
+        // The data for our dataset
+        data: mydepthdata,
+        // Configuration options go here
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Depth in cm.'
+                    }
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: '%'
+                    }
+                }]
+            },
+            plugins: {
+                colorschemes: {
+                    scheme: 'tableau.Tableau20'
                 }
-            }],
-            yAxes: [{
-                scaleLabel: {
-                    display: true,
-                    labelString: '%'
-                }
-            }]
-        },
-        plugins: {
-            colorschemes: {
-                scheme: 'tableau.Tableau20'
             }
         }
-    }
-};
-var ctx = document.getElementById('depth-chart').getContext('2d');
-var depthchart = new Chart(ctx, depthconfig);
+    };
+    var ctx = document.getElementById('depth-chart').getContext('2d');
+    if (typeof(depthchart) != 'undefined') depthchart.destroy();
+    depthchart = new Chart(ctx, depthconfig);
 
 // orientation of graves: Data contains site and no of graves of a orientation interval of 20°
-var myorientationdata = setChartData(orientation_data, false, true, false);
-var orientationconfig = {
-    // The type of chart we want to create
-    type: 'bar',
-    // The data for our dataset
-    data: myorientationdata,
-    // Configuration options go here
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            xAxes: [{
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Orientation in Degrees (360°)'
+    var myorientationdata = setChartData(orientation_data, false, true, false);
+    var orientationconfig = {
+        // The type of chart we want to create
+        type: 'bar',
+        // The data for our dataset
+        data: myorientationdata,
+        // Configuration options go here
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Orientation in Degrees (360°)'
+                    }
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: '%'
+                    }
+                }]
+            },
+            plugins: {
+                colorschemes: {
+                    scheme: 'tableau.Tableau10'
                 }
-            }],
-            yAxes: [{
-                scaleLabel: {
-                    display: true,
-                    labelString: '%'
-                }
-            }]
-        },
-        plugins: {
-            colorschemes: {
-                scheme: 'tableau.Tableau10'
             }
         }
-    }
-};
-var ctx = document.getElementById('orientation-chart').getContext('2d');
-var orientationchart = new Chart(ctx, orientationconfig)
+    };
+    var ctx = document.getElementById('orientation-chart').getContext('2d');
+    if (typeof(orientationchart) != 'undefined') orientationchart.destroy();
+    orientationchart = new Chart(ctx, orientationconfig)
 
 //sex of individuals: Data contains site and no of skeletons with male, female or undefined sex
-var mysexdata = setChartData(sex_data, true, true, false, false);
-var sexconfig = {
-    // The type of chart we want to create
-    type: 'bar',
-    // The data for our dataset
-    data: mysexdata,
-    // Configuration options go here
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            xAxes: [{
-                stacked: true
-            }],
-            yAxes: [{
-                stacked: true,
-                scaleLabel: {
-                    display: true,
-                    labelString: '%'
+    var mysexdata = setChartData(sex_data, true, true, false, false);
+    var sexconfig = {
+        // The type of chart we want to create
+        type: 'bar',
+        // The data for our dataset
+        data: mysexdata,
+        // Configuration options go here
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                xAxes: [{
+                    stacked: true
+                }],
+                yAxes: [{
+                    stacked: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: '%'
+                    }
+                }]
+            },
+            plugins: {
+                colorschemes: {
+                    scheme: 'tableau.Tableau10'
                 }
-            }]
-        },
-        plugins: {
-            colorschemes: {
-                scheme: 'tableau.Tableau10'
             }
         }
-    }
-};
-var ctx = document.getElementById('sex-chart').getContext('2d');
-var sexchart = new Chart(ctx, sexconfig)
+    };
+    var ctx = document.getElementById('sex-chart').getContext('2d');
+    if (typeof(sexchart) != 'undefined') sexchart.destroy();
+    sexchart = new Chart(ctx, sexconfig)
 
 //types of graves: Data contains site and no of graves of a certain type
-gravetypesconfig = {
-    // The type of chart we want to create
-    type: 'bar',
-    // The data for our dataset
-    data: setChartData(gravetypes, true, true, false, true),
-    // Configuration options go here
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            xAxes: [{
-                stacked: true
-            }],
-            yAxes: [{
-                stacked: true,
-                scaleLabel: {
-                    display: true,
-                    labelString: '%'
+    gravetypesconfig = {
+        // The type of chart we want to create
+        type: 'bar',
+        // The data for our dataset
+        data: setChartData(gravetypes, true, true, false, true),
+        // Configuration options go here
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                xAxes: [{
+                    stacked: true
+                }],
+                yAxes: [{
+                    stacked: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: '%'
+                    }
+                }]
+            },
+            plugins: {
+                colorschemes: {
+                    scheme: 'tableau.Tableau10'
                 }
-            }]
-        },
-        plugins: {
-            colorschemes: {
-                scheme: 'tableau.Tableau10'
             }
         }
-    }
-};
-var ctx = document.getElementById('gravetypes-chart').getContext('2d');
-var gravetypeschart = new Chart(ctx, gravetypesconfig)
+    };
+    var ctx = document.getElementById('gravetypes-chart').getContext('2d');
+    if (typeof(gravetypeschart) != 'undefined') gravetypeschart.destroy();
+    gravetypeschart = new Chart(ctx, gravetypesconfig)
 
 //construction of graves: Data contains site and no of graves of a certain construction
-graveconstrconfig = {
-    // The type of chart we want to create
-    type: 'bar',
-    // The data for our dataset
-    data: setChartData(graveconstr, true, true, false, true),
-    // Configuration options go here
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            xAxes: [{
-                stacked: true
-            }],
-            yAxes: [{
-                stacked: true,
-                scaleLabel: {
-                    display: true,
-                    labelString: '%'
+    graveconstrconfig = {
+        // The type of chart we want to create
+        type: 'bar',
+        // The data for our dataset
+        data: setChartData(graveconstr, true, true, false, true),
+        // Configuration options go here
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                xAxes: [{
+                    stacked: true
+                }],
+                yAxes: [{
+                    stacked: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: '%'
+                    }
+                }]
+            },
+            plugins: {
+                colorschemes: {
+                    scheme: 'tableau.Tableau10'
                 }
-            }]
-        },
-        plugins: {
-            colorschemes: {
-                scheme: 'tableau.Tableau10'
             }
         }
-    }
-};
-var ctx = document.getElementById('graveconstr-chart').getContext('2d');
-var graveconstrchart = new Chart(ctx, graveconstrconfig)
+    };
+    var ctx = document.getElementById('graveconstr-chart').getContext('2d');
+    if (typeof(graveconstrchart) != 'undefined') graveconstrchart.destroy();
+    graveconstrchart = new Chart(ctx, graveconstrconfig)
 
 //type of finds: Data contains site and no of finds of a certain type
-findtypeschartconfig = {
-    // The type of chart we want to create
-    type: 'bar',
-    // The data for our dataset
-    data: setChartData(finds_data, true, true, false, true),
-    // Configuration options go here
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            xAxes: [{
-                stacked: true
-            }],
-            yAxes: [{
-                stacked: true,
-                scaleLabel: {
-                    display: true,
-                    labelString: '%'
+    findtypeschartconfig = {
+        // The type of chart we want to create
+        type: 'bar',
+        // The data for our dataset
+        data: setChartData(finds_data, true, true, false, true),
+        // Configuration options go here
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                xAxes: [{
+                    stacked: true
+                }],
+                yAxes: [{
+                    stacked: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: '%'
+                    }
+                }]
+            },
+            plugins: {
+                colorschemes: {
+                    scheme: 'tableau.Tableau20'
                 }
-            }]
-        },
-        plugins: {
-            colorschemes: {
-                scheme: 'tableau.Tableau20'
             }
         }
-    }
-};
-var ctx = document.getElementById('findtypes-chart').getContext('2d');
-var findtypeschart = new Chart(ctx, findtypeschartconfig);
+    };
+    var ctx = document.getElementById('findtypes-chart').getContext('2d');
+    if (typeof(findtypeschart) != 'undefined') findtypeschart.destroy();
+    findtypeschart = new Chart(ctx, findtypeschartconfig);
 
 //construction of graves: Data contains site and no of graves of a certain construction
-burialtypesconfig = {
-    // The type of chart we want to create
-    type: 'bar',
-    // The data for our dataset
-    data: setChartData(burialtypes, true, true, false, true),
-    // Configuration options go here
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            xAxes: [{
-                stacked: true
-            }],
-            yAxes: [{
-                stacked: true,
-                scaleLabel: {
-                    display: true,
-                    labelString: '%'
+    burialtypesconfig = {
+        // The type of chart we want to create
+        type: 'bar',
+        // The data for our dataset
+        data: setChartData(burialtypes, true, true, false, true),
+        // Configuration options go here
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                xAxes: [{
+                    stacked: true
+                }],
+                yAxes: [{
+                    stacked: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: '%'
+                    }
+                }]
+            },
+            plugins: {
+                colorschemes: {
+                    scheme: 'tableau.Tableau10'
                 }
-            }]
-        },
-        plugins: {
-            colorschemes: {
-                scheme: 'tableau.Tableau10'
             }
         }
-    }
-};
-var ctx = document.getElementById('burialtypes-chart').getContext('2d');
-var burialtypeschart = new Chart(ctx, burialtypesconfig)
+    };
+    var ctx = document.getElementById('burialtypes-chart').getContext('2d');
+    if (typeof(burialtypeschart) != 'undefined') burialtypeschart.destroy();
+    burialtypeschart = new Chart(ctx, burialtypesconfig)
+
+    var ageconfig = {
+        type: 'violin',
+        data: setage(age_data),
+        options: {
+            responsive: true,
+            legend: {
+                position: 'top',
+            },
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'age'
+                    }
+                }]
+            },
+        }
+    };
+    var ctx = document.getElementById('age-chart').getContext('2d');
+    if (typeof(agechart) != 'undefined') agechart.destroy();
+    agechart = new Chart(ctx, ageconfig);
+
+    $("#violin").click(function () {
+        change('violin', 'agechart', 'age-chart', ageconfig);
+    });
+
+    $("#boxplot").click(function () {
+        change('boxplot', 'agechart', 'age-chart', ageconfig);
+    });
+
+}
 
 function setage(data) {
     agelabels = [];
@@ -238,7 +447,7 @@ function setage(data) {
     max_age = [];
     $.each(data.age, function (i, dataset) {
 
-        if (site_ids.includes(dataset.site_id)) {
+        if (mysite_ids.includes(dataset.site_id)) {
             //mynewdata.datasets.push(dataset);
             agelabels.push(dataset.name);
             min_age.push(dataset.min);
@@ -283,39 +492,9 @@ function setage(data) {
                 data: max_age
             }]
     };
-    return(boxplotData)
+    return (boxplotData)
 };
 
-
-var ageconfig = {
-    type: 'violin',
-    data: setage(age_data),
-    options: {
-        responsive: true,
-        legend: {
-            position: 'top',
-        },
-        maintainAspectRatio: false,
-        scales: {
-            yAxes: [{
-                scaleLabel: {
-                    display: true,
-                    labelString: 'age'
-                }
-            }]
-        },
-    }
-};
-var ctx = document.getElementById('age-chart').getContext('2d');
-var agechart = new Chart(ctx, ageconfig);
-
-$("#violin").click(function () {
-    change('violin', 'agechart', 'age-chart', ageconfig);
-});
-
-$("#boxplot").click(function () {
-    change('boxplot', 'agechart', 'age-chart', ageconfig);
-});
 
 //change('violin', 'agechart', 'age-chart', ageconfig);
 
@@ -375,7 +554,7 @@ function filtersites(data) {
     mynewdata.labels = data.labels;
     $.each(data.datasets, function (i, dataset) {
 
-        if (site_ids.includes(dataset.site_id)) {
+        if (mysite_ids.includes(dataset.site_id)) {
             mynewdata.datasets.push(dataset);
         }
     })
@@ -515,3 +694,11 @@ $(document).ready(function () {
     var windowheight = ($(window).height());
     $('#mycontent').css('max-height', windowheight - 56 + 'px');
 });
+
+function filterList(data) {
+    filterData = [];
+    $.each(data, function (i, dataset) {
+      if (dataset.graves > 0) filterData.push(dataset)
+    });
+    return filterData
+}

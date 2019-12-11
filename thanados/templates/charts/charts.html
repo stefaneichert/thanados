@@ -1,261 +1,339 @@
 {% extends "layout.html" %}
 {% block content %}
-<div id="mycontent" style="overflow-y: auto">
-    <div class="row" style="margin: 1em">
-        <div class="col col-lg-6 mymargin">
-            <div class="card">
-                <div class="card-header" id="headingOne">
-                    <h5 class="mb-0">
-                        <button class="btn btn-link" type="button" data-toggle="collapse"
-                                data-target="#collapseOne" aria-expanded="true"
-                                aria-controls="collapseOne">
-                            Depth of graves
-                        </button>
-                        <button id="depthchart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
-                                title="percentage" style="margin-left: 0.5em"
-                                onclick="updateChart(depthchart, setChartData(depth_data, false, true, true), true)">
-                            %
-                        </button>
-                        <button id="depthchart_absolute" class="btn btn-sm btn-secondary fa-pull-right" title="absolute"
-                                onclick="updateChart(depthchart, setChartData(depth_data, false, false, true), false)">
-                            &Sigma;
-                        </button>
-                    </h5>
-                </div>
-                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne">
-                    <div class="card-body">
-                        <div id="depth-chart-container">
-                            <canvas id="depth-chart" class="chartcontainer"></canvas>
+
+    <link href="/static/vendor/node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet">
+    <script src="/static/vendor/node_modules/datatables.net/js/jquery.dataTables.js"></script>
+    <script src="/static/vendor/node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <link href="/static/vendor/node_modules/jquery-datatables-checkboxes/css/dataTables.checkboxes.css"
+          rel="stylesheet">
+    <script src="/static/vendor/node_modules/jquery-datatables-checkboxes/js/dataTables.checkboxes.min.js"></script>
+    <link href="/static/css/style.css" rel="stylesheet">
+
+
+    <div id="mycontent" style="overflow-y: auto">
+        <h2 class="my-heading container">Charts</h2>
+
+        <div id="myFilter" class="card" style="margin: 2em">
+            <div class="card-header" id="headingFilter">
+                <h5 class="mb-0">
+                    <button id="filterBtn" class="btn btn-link collapsed" type="button" data-toggle="collapse"
+                            data-target="#collapseFilter" aria-expanded="true"
+                            aria-controls="collapseFilter">
+                        Filter/select sites to be visualised as charts<i id="filterBtnArrow" class="ml-3 fas fa-chevron-right"></i>
+                    </button>
+                </h5>
+            </div>
+            <div id="collapseFilter" class="collapse" aria-labelledby="headingFilter">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <table id="sitelist" class="display table table-striped table-bordered" width="100%">
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="amount">Begin between</label>
+                                        <input type="text" id="amount" readonly style="border:0;">
+                                        <div id="slider-range"></div>
+                                        </p>
+                                    </div>
+                                    <div class="col">
+                                        <label for="amount2">End between</label>
+                                        <input type="text" id="amount2" readonly style="border:0;">
+                                        <div id="slider-range2"></div>
+                                        </p>
+                                    </div>
+                                </div>
+                                <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Begin</th>
+                                    <th>End</th>
+                                    <th>Graves</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col">
+                            <div></div>
+                        </div>
+                        <div class="col">
+                            <div id="submitBtn" class="btn btn-sm btn-secondary float-right" data-toggle="collapse"
+                            data-target="#collapseFilter" aria-expanded="true"
+                            aria-controls="collapseFilter">Apply</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col col-lg-6 mymargin mymargin">
-            <div class="card">
-                <div class="card-header" id="headingTwo">
-                    <h5 class="mb-0">
-                        <button class="btn btn-link" type="button" data-toggle="collapse"
-                                data-target="#collapseTwo" aria-expanded="true"
-                                aria-controls="collapseTwo">
-                            Orientation of skeletons
-                        </button>
-                        <button id="orientationchart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
-                                title="percentage" style="margin-left: 0.5em"
-                                onclick="updateChart(orientationchart, setChartData(orientation_data, false, true, false), true)">
-                            %
-                        </button>
-                        <button id="orientationchart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
-                                title="absolute"
-                                onclick="updateChart(orientationchart, setChartData(orientation_data, false, false, false), false)">
-                            &Sigma;
-                        </button>
-                    </h5>
-                </div>
-                <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">
-                    <div class="card-body">
-                        <div id="orientation-chart-container">
-                            <canvas id="orientation-chart" class="chartcontainer"></canvas>
+
+        <div style="display: none">
+            <input type="text" id="min" name="min">
+            <input type="text" id="max" name="max">
+            <input type="text" id="min1" name="min">
+            <input type="text" id="max1" name="max">
+        </div>
+
+        <div class="row" style="margin: 1em">
+            <div class="col col-lg-6 mymargin">
+                <div class="card" id="card_depth-chart">
+                    <div class="card-header" id="headingOne">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                                    data-target="#collapseOne" aria-expanded="true"
+                                    aria-controls="collapseOne">
+                                Depth of graves
+                            </button>
+                            <button id="depthchart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="percentage" style="margin-left: 0.5em"
+                                    onclick="updateChart(depthchart, setChartData(depth_data, false, true, true), true)">
+                                %
+                            </button>
+                            <button id="depthchart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="absolute"
+                                    onclick="updateChart(depthchart, setChartData(depth_data, false, false, true), false)">
+                                &Sigma;
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne">
+                        <div class="card-body">
+                            <div id="depth-chart-container">
+                                <canvas id="depth-chart" class="chartcontainer"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="w-100"></div>
-        <div class="col col-lg-6 mymargin">
-            <div class="card">
-                <div class="card-header" id="headingThree">
-                    <h5 class="mb-0">
-                        <button class="btn btn-link" type="button" data-toggle="collapse"
-                                data-target="#collapseThree" aria-expanded="true"
-                                aria-controls="collapseThree">
-                            Sex of indiviuals
-                        </button>
-                        <button id="sexchart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
-                                title="percentage" style="margin-left: 0.5em"
-                                onclick="updateChart(sexchart, setChartData(sex_data, true, true, false), true)">
-                            %
-                        </button>
-                        <button id="sexchart_absolute" class="btn btn-sm btn-secondary fa-pull-right" title="absolute"
-                                onclick="updateChart(sexchart, setChartData(sex_data, true, false, false), false)">
-                            &Sigma;
-                        </button>
-                    </h5>
-                </div>
-                <div id="collapseThree" class="collapse show" aria-labelledby="headingThree">
-                    <div class="card-body">
-                        <div id="sex-chart-container">
-                            <canvas id="sex-chart" class="chartcontainer"></canvas>
+            <div class="col col-lg-6 mymargin mymargin">
+                <div class="card" id="card_orientationchart">
+                    <div class="card-header" id="headingTwo">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                                    data-target="#collapseTwo" aria-expanded="true"
+                                    aria-controls="collapseTwo">
+                                Orientation of skeletons
+                            </button>
+                            <button id="orientationchart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="percentage" style="margin-left: 0.5em"
+                                    onclick="updateChart(orientationchart, setChartData(orientation_data, false, true, false), true)">
+                                %
+                            </button>
+                            <button id="orientationchart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="absolute"
+                                    onclick="updateChart(orientationchart, setChartData(orientation_data, false, false, false), false)">
+                                &Sigma;
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">
+                        <div class="card-body">
+                            <div id="orientation-chart-container">
+                                <canvas id="orientation-chart" class="chartcontainer"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col col-lg-6 mymargin">
-            <div class="card">
-                <div class="card-header" id="headingFour">
-                    <h5 class="mb-0">
-                        <button class="btn btn-link" type="button" data-toggle="collapse"
-                                data-target="#collapseFour" aria-expanded="true"
-                                aria-controls="collapseFour">
-                            Age at death
-                        </button>
-                        <button id="boxplot" class="btn btn-sm btn-secondary fa-pull-right" title="Boxplot">
-                            Boxplot
-                        </button>
-                        <button id="violin" class="btn btn-sm btn-secondary fa-pull-right" title="Violin plot"
-                                style="margin-right: 0.5em">
-                            Violin
-                        </button>
-                    </h5>
-                </div>
-                <div id="collapseFour" class="collapse show" aria-labelledby="headingFour">
-                    <div class="card-body">
-                        <div id="age-chart-container">
-                            <canvas id="age-chart" class="chartcontainer"></canvas>
+            <div class="w-100"></div>
+            <div class="col col-lg-6 mymargin">
+                <div class="card" id="card_sexchart">
+                    <div class="card-header" id="headingThree">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                                    data-target="#collapseThree" aria-expanded="true"
+                                    aria-controls="collapseThree">
+                                Sex of indiviuals
+                            </button>
+                            <button id="sexchart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="percentage" style="margin-left: 0.5em"
+                                    onclick="updateChart(sexchart, setChartData(sex_data, true, true, false), true)">
+                                %
+                            </button>
+                            <button id="sexchart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="absolute"
+                                    onclick="updateChart(sexchart, setChartData(sex_data, true, false, false), false)">
+                                &Sigma;
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseThree" class="collapse show" aria-labelledby="headingThree">
+                        <div class="card-body">
+                            <div id="sex-chart-container">
+                                <canvas id="sex-chart" class="chartcontainer"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="w-100"></div>
-        <div class="col col-lg-6 mymargin">
-            <div class="card">
-                <div class="card-header" id="headingFive">
-                    <h5 class="mb-0">
-                        <button class="btn btn-link" type="button" data-toggle="collapse"
-                                data-target="#collapseFive" aria-expanded="true"
-                                aria-controls="collapseFive">
-                            Types of graves
-                        </button>
-                        <button id="gravetypes-chart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
-                                title="percentage" style="margin-left: 0.5em"
-                                onclick="updateChart(gravetypeschart, setChartData(gravetypes, true, true, false, true), true)">
-                            %
-                        </button>
-                        <button id="gravetypes-chart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
-                                title="absolute"
-                                onclick="updateChart(gravetypeschart, setChartData(gravetypes, true, false, false, true), false)">
-                            &Sigma;
-                        </button>
-                    </h5>
-                </div>
-                <div id="collapseFive" class="collapse show" aria-labelledby="headingFive">
-                    <div class="card-body">
-                        <div id="gravetypes-chart-container">
-                            <canvas id="gravetypes-chart" class="chartcontainer"></canvas>
+            <div class="col col-lg-6 mymargin">
+                <div class="card" id="card_age-chart">
+                    <div class="card-header" id="headingFour">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                                    data-target="#collapseFour" aria-expanded="true"
+                                    aria-controls="collapseFour">
+                                Age at death
+                            </button>
+                            <button id="boxplot" class="btn btn-sm btn-secondary fa-pull-right" title="Boxplot">
+                                Boxplot
+                            </button>
+                            <button id="violin" class="btn btn-sm btn-secondary fa-pull-right" title="Violin plot"
+                                    style="margin-right: 0.5em">
+                                Violin
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseFour" class="collapse show" aria-labelledby="headingFour">
+                        <div class="card-body">
+                            <div id="age-chart-container">
+                                <canvas id="age-chart" class="chartcontainer"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col col-lg-6 mymargin">
-            <div class="card">
-                <div class="card-header" id="headingSix">
-                    <h5 class="mb-0">
-                        <button class="btn btn-link" type="button" data-toggle="collapse"
-                                data-target="#collapseSix" aria-expanded="true"
-                                aria-controls="collapseSix">
-                            Grave Construction
-                        </button>
-                        <button id="graveconstr-chart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
-                                title="percentage" style="margin-left: 0.5em"
-                                onclick="updateChart(graveconstrchart, setChartData(graveconstr, true, true, false, true), true)">
-                            %
-                        </button>
-                        <button id="graveconstr-chart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
-                                title="absolute"
-                                onclick="updateChart(graveconstrchart, setChartData(graveconstr, true, false, false, true), false)">
-                            &Sigma;
-                        </button>
-                    </h5>
-                </div>
-                <div id="collapseSix" class="collapse show" aria-labelledby="headingSix">
-                    <div class="card-body">
-                        <div id="graveconstr-chart-container">
-                            <canvas id="graveconstr-chart" class="chartcontainer"></canvas>
+            <div class="w-100"></div>
+            <div class="col col-lg-6 mymargin">
+                <div class="card" id="card_gravetypes">
+                    <div class="card-header" id="headingFive">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                                    data-target="#collapseFive" aria-expanded="true"
+                                    aria-controls="collapseFive">
+                                Types of graves
+                            </button>
+                            <button id="gravetypes-chart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="percentage" style="margin-left: 0.5em"
+                                    onclick="updateChart(gravetypeschart, setChartData(gravetypes, true, true, false, true), true)">
+                                %
+                            </button>
+                            <button id="gravetypes-chart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="absolute"
+                                    onclick="updateChart(gravetypeschart, setChartData(gravetypes, true, false, false, true), false)">
+                                &Sigma;
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseFive" class="collapse show" aria-labelledby="headingFive">
+                        <div class="card-body">
+                            <div id="gravetypes-chart-container">
+                                <canvas id="gravetypes-chart" class="chartcontainer"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-<div class="w-100"></div>
-        <div class="col col-lg-6 mymargin">
-            <div class="card">
-                <div class="card-header" id="headingSeven">
-                    <h5 class="mb-0">
-                        <button class="btn btn-link" type="button" data-toggle="collapse"
-                                data-target="#collapseSeven" aria-expanded="true"
-                                aria-controls="collapseSeven">
-                            Types of finds
-                        </button>
-                        <button id="findtypeschart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
-                                title="percentage" style="margin-left: 0.5em"
-                                onclick="updateChart(findtypeschart, setChartData(finds_data, true, true, false, true), true)">
-                            %
-                        </button>
-                        <button id="findtypeschart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
-                                title="absolute"
-                                onclick="updateChart(findtypeschart, setChartData(finds_data, true, false, false, true), false)">
-                            &Sigma;
-                        </button>
-                    </h5>
-                </div>
-                <div id="collapseSeven" class="collapse show" aria-labelledby="headingSeven">
-                    <div class="card-body">
-                        <div id="findtypeschart-container">
-                            <canvas id="findtypes-chart" class="chartcontainer"></canvas>
+            <div class="col col-lg-6 mymargin">
+                <div class="card" id="card_graveconstr-chart">
+                    <div class="card-header" id="headingSix">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                                    data-target="#collapseSix" aria-expanded="true"
+                                    aria-controls="collapseSix">
+                                Grave Construction
+                            </button>
+                            <button id="graveconstr-chart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="percentage" style="margin-left: 0.5em"
+                                    onclick="updateChart(graveconstrchart, setChartData(graveconstr, true, true, false, true), true)">
+                                %
+                            </button>
+                            <button id="graveconstr-chart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="absolute"
+                                    onclick="updateChart(graveconstrchart, setChartData(graveconstr, true, false, false, true), false)">
+                                &Sigma;
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseSix" class="collapse show" aria-labelledby="headingSix">
+                        <div class="card-body">
+                            <div id="graveconstr-chart-container">
+                                <canvas id="graveconstr-chart" class="chartcontainer"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col col-lg-6 mymargin">
-            <div class="card">
-                <div class="card-header" id="headingEight">
-                    <h5 class="mb-0">
-                        <button class="btn btn-link" type="button" data-toggle="collapse"
-                                data-target="#collapseEight" aria-expanded="true"
-                                aria-controls="collapseEight">
-                            Burial types
-                        </button>
-                        <button id="burialtypes-chart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
-                                title="percentage" style="margin-left: 0.5em"
-                                onclick="updateChart(burialtypeschart, setChartData(burialtypes, true, true, false, true), true)">
-                            %
-                        </button>
-                        <button id="burialtypes-chart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
-                                title="absolute"
-                                onclick="updateChart(burialtypeschart, setChartData(burialtypes, true, false, false, true), false)">
-                            &Sigma;
-                        </button>
-                    </h5>
+            <div class="w-100"></div>
+            <div class="col col-lg-6 mymargin">
+                <div class="card" id="card_findtypeschart">
+                    <div class="card-header" id="headingSeven">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                                    data-target="#collapseSeven" aria-expanded="true"
+                                    aria-controls="collapseSeven">
+                                Types of finds
+                            </button>
+                            <button id="findtypeschart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="percentage" style="margin-left: 0.5em"
+                                    onclick="updateChart(findtypeschart, setChartData(finds_data, true, true, false, true), true)">
+                                %
+                            </button>
+                            <button id="findtypeschart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="absolute"
+                                    onclick="updateChart(findtypeschart, setChartData(finds_data, true, false, false, true), false)">
+                                &Sigma;
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseSeven" class="collapse show" aria-labelledby="headingSeven">
+                        <div class="card-body">
+                            <div id="findtypeschart-container">
+                                <canvas id="findtypes-chart" class="chartcontainer"></canvas>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div id="collapseEight" class="collapse show" aria-labelledby="headingEight">
-                    <div class="card-body">
-                        <div id="burialtypes-chart-container">
-                            <canvas id="burialtypes-chart" class="chartcontainer"></canvas>
+            </div>
+            <div class="col col-lg-6 mymargin">
+                <div class="card" id="card_burialtypes">
+                    <div class="card-header" id="headingEight">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                                    data-target="#collapseEight" aria-expanded="true"
+                                    aria-controls="collapseEight">
+                                Burial types
+                            </button>
+                            <button id="burialtypes-chart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="percentage" style="margin-left: 0.5em"
+                                    onclick="updateChart(burialtypeschart, setChartData(burialtypes, true, true, false, true), true)">
+                                %
+                            </button>
+                            <button id="burialtypes-chart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="absolute"
+                                    onclick="updateChart(burialtypeschart, setChartData(burialtypes, true, false, false, true), false)">
+                                &Sigma;
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseEight" class="collapse show" aria-labelledby="headingEight">
+                        <div class="card-body">
+                            <div id="burialtypes-chart-container">
+                                <canvas id="burialtypes-chart" class="chartcontainer"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<script>
-    depth_data = {{ depth_data|tojson }};
-    site_ids = {{ site_ids|tojson }};
-    sex_data = {{ sex_data|tojson }};
-    age_data = {{ age|tojson }};
-    orientation_data = {{ orientation_data|tojson }};
-    gravetypes = {{ gravetypes_json|tojson }};
-    graveconstr = {{ construction|tojson }};
-    graveshape = {{ grave_shape|tojson }};
-    finds_data = {{ find_types|tojson }};
-    burialtypes = {{ burial_types|tojson }};
-</script>
-<script src="/static/vendor/charts/chart.js/dist/Chart.bundle.min.js"></script>
-<script src="/static/vendor/charts/chartjs-chart-box-and-violin-plot/build/Chart.BoxPlot.min.js"></script>
-<script src="/static/vendor/charts/chartjs-plugin-colorschemes/dist/chartjs-plugin-colorschemes.min.js"></script>
-<script src="/static/js/charts.js"></script>
+    <script>
+        depth_data = {{ depth_data|tojson }};
+        site_ids = {{ site_ids|tojson }};
+        sex_data = {{ sex_data|tojson }};
+        age_data = {{ age|tojson }};
+        orientation_data = {{ orientation_data|tojson }};
+        gravetypes = {{ gravetypes_json|tojson }};
+        graveconstr = {{ construction|tojson }};
+        graveshape = {{ grave_shape|tojson }};
+        finds_data = {{ find_types|tojson }};
+        burialtypes = {{ burial_types|tojson }};
+        sitelist = {{ sitelist|tojson }};
+    </script>
+    <script src="/static/vendor/node_modules/chart.js/dist/Chart.bundle.min.js"></script>
+    <script src="/static/vendor/node_modules/chartjs-chart-box-and-violin-plot/build/Chart.BoxPlot.min.js"></script>
+    <script src="/static/vendor/node_modules/chartjs-plugin-colorschemes/dist/chartjs-plugin-colorschemes.min.js"></script>
+    <script src="/static/js/charts.js"></script>
 {% endblock %}
