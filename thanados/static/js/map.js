@@ -33,16 +33,16 @@ function setmap(myjson) {
     var landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=2245afa655044c5c8f5ef8c129c29cdb', {
         attribution: mywindowtitle + 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         apikey: '<2245afa655044c5c8f5ef8c129c29cdb>',
-        maxZoom: 30
+        maxZoom: 25
     });
     var satellite = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3'], attribution: mywindowtitle + 'Tiles: &copy; Google Maps ',
-        maxZoom: 30
+        maxZoom: 25
     });
 
     var basemap = L.tileLayer.wms('http://geoportal.cuzk.cz/WMS_ZM10_PUB/WMService.aspx', {
         layers: 'GR_ZM10',
-        maxZoom: 30
+        maxZoom: 25
     });
 
     if (myjson.site_id == 111285) {
