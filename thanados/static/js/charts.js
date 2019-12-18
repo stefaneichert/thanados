@@ -29,7 +29,6 @@ maxend = Math.max(...endArray);
 
 $('#filterBtn').on('click', function (e) {
     changeArrows();
-    console.log('click');
 });
 
 function changeArrows() {
@@ -240,6 +239,43 @@ function setcharts() {
     var ctx = document.getElementById('orientation-chart').getContext('2d');
     if (typeof(orientationchart) != 'undefined') orientationchart.destroy();
     orientationchart = new Chart(ctx, orientationconfig)
+
+
+// Azimuth of graves: Data contains site and no of graves of an Azimuth interval of 20°
+    var myazimuthdata = setChartData(azimuth_data, false, true, false);
+    var azimuthconfig = {
+        // The type of chart we want to create
+        type: 'bar',
+        // The data for our dataset
+        data: myazimuthdata,
+        // Configuration options go here
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Azimuth in Degrees (180°)'
+                    }
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: '%'
+                    }
+                }]
+            },
+            plugins: {
+                colorschemes: {
+                    scheme: 'tableau.Tableau10'
+                }
+            }
+        }
+    };
+    var ctx = document.getElementById('azimuth-chart').getContext('2d');
+    if (typeof(azimuthchart) != 'undefined') azimuthchart.destroy();
+    azimuthchart = new Chart(ctx, azimuthconfig)
 
 //sex of individuals: Data contains site and no of skeletons with male, female or undefined sex
     var mysexdata = setChartData(sex_data, true, true, false, false);

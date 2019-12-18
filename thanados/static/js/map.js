@@ -30,11 +30,11 @@ function setmap(myjson) {
     mywindowtitle = 'THANADOS: ' + myjson.name + '. ';
 
 //define basemaps
-    var landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=2245afa655044c5c8f5ef8c129c29cdb', {
+    var landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=b3c55fb5010a4038975fd0a0f4976e64', {
         attribution: mywindowtitle + 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        apikey: '<2245afa655044c5c8f5ef8c129c29cdb>',
         maxZoom: 25
     });
+
     var satellite = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3'], attribution: mywindowtitle + 'Tiles: &copy; Google Maps ',
         maxZoom: 25
@@ -133,10 +133,10 @@ function setmap(myjson) {
         if (setJson(myjson)) map.fitBounds(graves.getBounds());
         else {
             var popupLine = '<a id="' + myjson.site_id + '" onclick="modalsetsite()" href="#"><p><b>' + myjson.name + ' </b><br>(' + myjson.properties.maintype.name + ')</p></a>';
-            var latlng = [ myjson.properties.center.coordinates[1] , myjson.properties.center.coordinates[0] ];
-                var marker = L.marker(latlng).bindPopup(popupLine).addTo(map);
-                centerpoint = latlng;
-                map.panTo(centerpoint);
+            var latlng = [myjson.properties.center.coordinates[1], myjson.properties.center.coordinates[0]];
+            var marker = L.marker(latlng).bindPopup(popupLine).addTo(map);
+            centerpoint = latlng;
+            map.panTo(centerpoint);
         }
 
     }
@@ -502,7 +502,7 @@ function setSidebarContent(myjson) {
         if (gravedescription == null) {
             gravedescription = 'no description available'
         }
-        if (typeof(features.geometry) == "undefined") gravename = (gravename + ' (location unknown)');
+        if (typeof (features.geometry) == "undefined") gravename = (gravename + ' (location unknown)');
         ;
         $('#accordion1').append(
             '<div id="' + gravediv + '" style="max-height: 42px">' +
@@ -749,22 +749,11 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         ;
         var dimension = dimensions.name;
         var dimvalue = dimensions.value;
+        var dimunit = dimensions.unit;
 
-        if (dimension == 'Degrees') {
-            $('#myModalDimensionscontainer' + entId).append(
-                '<div class="modalrowitem">' + dimension + ': ' + dimvalue + '°</div>');
-        }
-        ;
-        if (dimension == 'Weight') {
-            $('#myModalDimensionscontainer' + entId).append(
-                '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' g</div>');
-        }
-        ;
-        if (dimension !== 'Degrees' && dimension !== 'Weight') {
-            $('#myModalDimensionscontainer' + entId).append(
-                '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' cm</div>');
-        }
-        ;
+        $('#myModalDimensionscontainer' + entId).append(
+                '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' ' + dimunit +'</div>');
+
     });
 
     $('#myModalMaterialcontainer' + entId).empty();

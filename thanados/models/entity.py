@@ -99,6 +99,12 @@ class Data:
         return g.cursor.fetchall()
 
     @staticmethod
+    def get_azimuth():
+        sql = 'SELECT azimuth FROM thanados.chart_data;'
+        g.cursor.execute(sql)
+        return g.cursor.fetchall()
+
+    @staticmethod
     def get_sex():
         sql = 'SELECT sex FROM thanados.chart_data;'
         g.cursor.execute(sql)

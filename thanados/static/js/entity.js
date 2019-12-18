@@ -234,24 +234,10 @@ function getEntityData(parentName, parentId, currentfeature) {
         ;
         var dimension = dimensions.name;
         var dimvalue = dimensions.value;
+        var dimunit = dimensions.unit;
 
-        if (dimension == 'Degrees') {
-            $('#myDimensionscontainer' + entId).append(
-                '<div class="modalrowitem">' + dimension + ': ' + dimvalue + '°</div>');
-        }
-        ;
-
-        if (dimension == 'Weight') {
-            $('#myDimensionscontainer' + entId).append(
-                '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' g</div>');
-        }
-        ;
-
-        if (dimension !== 'Degrees' && dimension !== 'Weight') {
-            $('#myDimensionscontainer' + entId).append(
-                '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' cm</div>');
-        }
-        ;
+        $('#myDimensionscontainer' + entId).append(
+                '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' ' + dimunit +'</div>');
 
     });
 
@@ -531,9 +517,8 @@ function getEntityData(parentName, parentId, currentfeature) {
     }
 
 
-    landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=2245afa655044c5c8f5ef8c129c29cdb', {
+    landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=b3c55fb5010a4038975fd0a0f4976e64', {
         attribution: 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        apikey: '<2245afa655044c5c8f5ef8c129c29cdb>',
         maxZoom: 22
     });
 
@@ -668,9 +653,8 @@ function getEntityData(parentName, parentId, currentfeature) {
         $('#mycontent').css('max-height', (maximumHeight - 17) + 'px');
     });
 
-    var osm2 = new L.TileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=2245afa655044c5c8f5ef8c129c29cdb',
+    var osm2 = new L.TileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=b3c55fb5010a4038975fd0a0f4976e64',
         {
-            apikey: '<2245afa655044c5c8f5ef8c129c29cdb>',
             minZoom: 0,
             maxZoom: 13,
             attribution: 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',

@@ -53,6 +53,7 @@ function appendvis(iter) { //append vis form to dialog
                 '<option value="Length">Length</option>' +
                 '<option value="Width">Width</option>' +
                 '<option value="Degrees">Orientation</option>' +
+                '<option value="Azimuth">Azimuth</option>' +
                 '</select>' +
                 '</div>'
             );
