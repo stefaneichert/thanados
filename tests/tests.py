@@ -10,6 +10,8 @@ class TestBaseCase(unittest.TestCase):
     def setUp(self):
         app.testing = True
         app.config['SERVER_NAME'] = 'local.host'
+        app.config['WTF_CSRF_ENABLED'] = False
+        app.config['WTF_CSRF_METHODS'] = []  # This is the magic to disable CSRF for tests
         self.app = app.test_client()
 
 
@@ -29,3 +31,7 @@ class WebsiteTests(TestBaseCase):
             rv = self.app.get(url_for('entity_view', object_id=50505, format_='json'))
             assert b'site' in rv.data
             self.app.get(url_for('admin'))
+            assert b'Username:' in self.app.get(url_for('login')).data
+            assert b'Username:' in self.app.get(url_for('logout'), follow_redirects=True).data
+            rv = self.app.post(url_for('login'), data={'username': 'seppl', 'password': 'ninx'}, follow_redirects=True)
+            assert b'error username' in rv.data
