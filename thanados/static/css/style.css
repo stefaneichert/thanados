@@ -430,6 +430,9 @@ a.ui-button:active,
     padding-top: 1rem;
 }
 
+#myModal {
+    max-width: 490px;
+}
 .chartcontainer {
     max-height: 1000px;
     min-height: 400px;

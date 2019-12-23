@@ -89,6 +89,7 @@ $(document).ready(function () {
     table = $('#sitelist').DataTable({
         data: sitelist,
         "pagingType": "numbers",
+        "scrollX": true,
         columns: [
             {
                 data: "name",

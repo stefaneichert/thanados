@@ -45,6 +45,7 @@ function changeArrows() {
 table = $('#sitelist').DataTable({
     data: filterList(sitelist),
     "pagingType": "numbers",
+    "scrollX": true,
     'columnDefs': [
         {
             'targets': 0,
