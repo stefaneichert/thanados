@@ -123,4 +123,3 @@ function setlogo() {
 }
 
 $(window).resize(function () {setlogo()})
-lazyload();

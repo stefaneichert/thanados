@@ -167,6 +167,26 @@ $('#submitBtn').on('click', function (e) {
     setTimeout(setcharts, 200);
 });
 
+$(document).on('change', "input[type|=\'checkbox\']", function () {
+    console.log('check');
+    var table = $('#sitelist').DataTable();
+    rows_selected = table.column(0).checkboxes.selected();
+    CurrentSelection = [];
+    CurrentSites = [];
+    $.each(rows_selected, function (index, rowId) {
+        CurrentSelection.push(rowId)
+    });
+    console.log(CurrentSelection);
+    $.each(sitelist, function (i, site) {
+        if ($.inArray(site.id, CurrentSelection) != -1) {
+            CurrentSites.push(site.name);
+        }
+    });
+    var textarea = document.getElementById("mySelectedSites");
+    textarea.value = CurrentSites.join(", ");
+    $('#NoOfSites').html(CurrentSites.length)
+});
+
 function setcharts() {
 
 //depth of graves: Data contains site and no of graves of a depth interval of 20cm
@@ -202,7 +222,7 @@ function setcharts() {
         }
     };
     var ctx = document.getElementById('depth-chart').getContext('2d');
-    if (typeof(depthchart) != 'undefined') depthchart.destroy();
+    if (typeof (depthchart) != 'undefined') depthchart.destroy();
     depthchart = new Chart(ctx, depthconfig);
 
 // orientation of graves: Data contains site and no of graves of a orientation interval of 20°
@@ -238,7 +258,7 @@ function setcharts() {
         }
     };
     var ctx = document.getElementById('orientation-chart').getContext('2d');
-    if (typeof(orientationchart) != 'undefined') orientationchart.destroy();
+    if (typeof (orientationchart) != 'undefined') orientationchart.destroy();
     orientationchart = new Chart(ctx, orientationconfig)
 
 
@@ -275,7 +295,7 @@ function setcharts() {
         }
     };
     var ctx = document.getElementById('azimuth-chart').getContext('2d');
-    if (typeof(azimuthchart) != 'undefined') azimuthchart.destroy();
+    if (typeof (azimuthchart) != 'undefined') azimuthchart.destroy();
     azimuthchart = new Chart(ctx, azimuthconfig)
 
 //sex of individuals: Data contains site and no of skeletons with male, female or undefined sex
@@ -309,7 +329,7 @@ function setcharts() {
         }
     };
     var ctx = document.getElementById('sex-chart').getContext('2d');
-    if (typeof(sexchart) != 'undefined') sexchart.destroy();
+    if (typeof (sexchart) != 'undefined') sexchart.destroy();
     sexchart = new Chart(ctx, sexconfig)
 
 //types of graves: Data contains site and no of graves of a certain type
@@ -342,7 +362,7 @@ function setcharts() {
         }
     };
     var ctx = document.getElementById('gravetypes-chart').getContext('2d');
-    if (typeof(gravetypeschart) != 'undefined') gravetypeschart.destroy();
+    if (typeof (gravetypeschart) != 'undefined') gravetypeschart.destroy();
     gravetypeschart = new Chart(ctx, gravetypesconfig)
 
 //construction of graves: Data contains site and no of graves of a certain construction
@@ -375,7 +395,7 @@ function setcharts() {
         }
     };
     var ctx = document.getElementById('graveconstr-chart').getContext('2d');
-    if (typeof(graveconstrchart) != 'undefined') graveconstrchart.destroy();
+    if (typeof (graveconstrchart) != 'undefined') graveconstrchart.destroy();
     graveconstrchart = new Chart(ctx, graveconstrconfig)
 
 //type of finds: Data contains site and no of finds of a certain type
@@ -408,7 +428,7 @@ function setcharts() {
         }
     };
     var ctx = document.getElementById('findtypes-chart').getContext('2d');
-    if (typeof(findtypeschart) != 'undefined') findtypeschart.destroy();
+    if (typeof (findtypeschart) != 'undefined') findtypeschart.destroy();
     findtypeschart = new Chart(ctx, findtypeschartconfig);
 
 //construction of graves: Data contains site and no of graves of a certain construction
@@ -441,7 +461,7 @@ function setcharts() {
         }
     };
     var ctx = document.getElementById('burialtypes-chart').getContext('2d');
-    if (typeof(burialtypeschart) != 'undefined') burialtypeschart.destroy();
+    if (typeof (burialtypeschart) != 'undefined') burialtypeschart.destroy();
     burialtypeschart = new Chart(ctx, burialtypesconfig)
 
     var ageconfig = {
@@ -464,7 +484,7 @@ function setcharts() {
         }
     };
     var ctx = document.getElementById('age-chart').getContext('2d');
-    if (typeof(agechart) != 'undefined') agechart.destroy();
+    if (typeof (agechart) != 'undefined') agechart.destroy();
     agechart = new Chart(ctx, ageconfig);
 
     $("#violin").click(function () {
@@ -735,12 +755,12 @@ $(document).ready(function () {
 function filterList(data) {
     filterData = [];
     $.each(data, function (i, dataset) {
-      if (dataset.graves > 0) filterData.push(dataset)
+        if (dataset.graves > 0) filterData.push(dataset)
     });
     return filterData
 }
 
 $('#collapseFilter').on('shown.bs.collapse', function () {
-  var table = $('#sitelist').DataTable();
-  table.draw();
+    var table = $('#sitelist').DataTable();
+    table.draw();
 })
