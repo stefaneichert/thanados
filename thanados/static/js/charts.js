@@ -739,3 +739,8 @@ function filterList(data) {
     });
     return filterData
 }
+
+$('#collapseFilter').on('shown.bs.collapse', function () {
+  var table = $('#sitelist').DataTable();
+  table.draw();
+})
