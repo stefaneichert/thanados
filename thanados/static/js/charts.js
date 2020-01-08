@@ -184,7 +184,7 @@ $(document).on('change', "input[type|=\'checkbox\']", function () {
     });
     var textarea = document.getElementById("mySelectedSites");
     textarea.value = CurrentSites.join(", ");
-    $('#NoOfSites').html(CurrentSites.length)
+    $('#submitBtn').html('Apply (' + CurrentSites.length + ')')
 });
 
 function setcharts() {
