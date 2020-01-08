@@ -417,8 +417,79 @@ FROM thanados.types_main
 WHERE path LIKE 'Dimensions >%'
 ORDER BY entity_id, path;
 
---hack for setting burial orientation to grave orientation if grave does not have any. Comment/Uncomment if you do not wish/are willing to edit the original database
-INSERT INTO thanados.dimensiontypes (id, parent_id, entity_id, name, description, value, path)
+-- HACK: set orientation of grave to burial because some did enter the orientation on the grave level and not at the burial level
+DROP TABLE IF EXISTS thanados.graveDeg;
+CREATE TABLE thanados.graveDeg AS
+SELECT 
+	d.*,
+	e.system_type,
+	b.child_id AS burial_id
+	FROM thanados.dimensiontypes d JOIN model.entity e ON d.entity_id = e.id JOIN thanados.burials b ON e.id = b.parent_id WHERE d.id = 26192 AND b.child_id NOT IN 
+		(SELECT 
+			d.entity_id
+			FROM thanados.dimensiontypes d JOIN model.entity e ON d.entity_id = e.id JOIN thanados.burials b ON e.id = b.child_id WHERE d.id = 26192);
+
+INSERT INTO thanados.dimensiontypes SELECT id, parent_id, burial_id, name, description, value, path FROM thanados.graveDeg;
+
+DROP EXTENSION IF EXISTS postgis_sfcgal;
+CREATE EXTENSION postgis_sfcgal;
+DROP TABLE IF EXISTS thanados.giscleanup2;
+CREATE TABLE thanados.giscleanup2 AS
+ (
+SELECT 	e.system_type,
+	e.child_name,
+	e.parent_id,
+	e.child_id,
+	l.property_code,
+	l.range_id,
+	g.id,
+	g.geom
+	FROM thanados.graves e JOIN model.link l ON e.child_id = l.domain_id JOIN gis.polygon g ON l.range_id = g.entity_id WHERE l.property_code = 'P53');
+
+
+
+-- Get azimuth of grave if a polygon is known and  
+DROP TABLE IF EXISTS thanados.derivedDeg;
+CREATE TABLE thanados.derivedDeg AS
+(SELECT 
+    ST_X(startP) AS onePoint,
+    ST_X(endP) AS otherPoint,
+	degrees(ST_Azimuth(startP, endP)) AS degA_B,
+	degrees(ST_Azimuth(endP, startP)) AS degB_A,
+	child_id FROM
+(SELECT 
+	ST_StartPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS startP,
+	ST_EndPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS endP,
+	ST_AsText(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom))), child_id FROM thanados.giscleanup2 g WHERE system_type = 'feature') p);
+
+-- get lower value of azimuth
+DROP TABLE IF EXISTS thanados.azimuth;
+CREATE TABLE thanados.azimuth AS (
+SELECT 
+	g.*,
+	g.degA_B::integer AS Azimuth
+	FROM thanados.derivedDeg g WHERE degA_B <= degB_A
+UNION ALL
+	SELECT 
+	g.*,
+	g.degB_A::integer AS Azimuth
+	FROM thanados.derivedDeg g WHERE degB_A <= degA_B);
+	
+--insert azimuth into dimensiontypes
+INSERT INTO thanados.dimensiontypes 
+    SELECT
+        118730,
+        15678,
+        child_id,
+        'Azimuth',
+        '°',
+        Azimuth::integer,
+        'Dimensions > Azimuth'
+        FROM thanados.azimuth;
+         
+
+--hack for setting burial orientation to grave orientation if grave does not have any. Comment/Uncomment depending on your preferences
+/*INSERT INTO thanados.dimensiontypes (id, parent_id, entity_id, name, description, value, path)
 SELECT id, 15678, domain, name, description, orientation::Text, path FROM
 (SELECT
 26192 AS id,
@@ -447,7 +518,40 @@ WHERE DOMAIN || ':' || range NOT IN
                     count(parent_id) as count
              FROM thanados.burials
              GROUP BY parent_id) c
-       WHERE c.count > 1);
+       WHERE c.count > 1);*/
+       
+       
+--hack for getting graves azimuth from polygon orientation. Comment/Uncomment depending on your preferences
+/*INSERT INTO thanados.dimensiontypes (id, parent_id, entity_id, name, description, value, path)
+SELECT id, 15678, domain, name, description, orientation::Text, path FROM
+(SELECT
+26192 AS id,
+    l.domain,
+             l.range,
+             l.name,
+             '°' as description,
+             'Dimensions > Degrees' as path,
+             l.orientation:: double precision
+      FROM (SELECT g.child_id AS DOMAIN,
+                   d.value    AS orientation,
+                   d.name,
+                   d.id       AS range
+            FROM thanados.graves g
+                     JOIN thanados.burials b ON g.child_id = b.parent_id
+                     JOIN thanados.dimensiontypes d ON b.child_id = d.entity_id
+            WHERE d.name = 'Degrees') AS l) AS d
+WHERE DOMAIN || ':' || range NOT IN
+      (SELECT domain_id || ':' || range_id
+       FROM model.link
+       WHERE property_code = 'P2'
+         AND range_id = 26192)
+  AND DOMAIN NOT IN
+      (SELECT parent_id
+       from (SELECT parent_id,
+                    count(parent_id) as count
+             FROM thanados.burials
+             GROUP BY parent_id) c
+       WHERE c.count > 1);*/
 
 
 --types material
@@ -705,6 +809,7 @@ FROM (
                               'id', t.id,
                               'name', t.name,
                               'value', t.value,
+                              'unit', t.description,
                               'path', t.path)) AS dimtypes
                FROM thanados.dimensiontypes t
                GROUP BY entity_id) AS irgendwas
@@ -1230,6 +1335,7 @@ CREATE TABLE thanados.chart_data
 (
     depth       JSONB,
     orientation JSONB,
+    azimuth     JSONB,
     sex         JSONB
 );
 
@@ -1351,6 +1457,99 @@ SET orientation = REPLACE(orientation, ']"', ']');
 
 UPDATE thanados.chart_data
 SET orientation = (SELECT orientation::JSONB FROM thanados.chart_orientation);
+
+DROP TABLE IF EXISTS thanados.azimuth_labels;
+CREATE TABLE thanados.azimuth_labels AS (
+-- get labels for azimuth of graves
+    SELECT jsonb_agg(js.json_object_keys)
+               AS labels
+    FROM (SELECT json_object_keys(row_to_json)
+          FROM (SELECT row_to_json(c.*)
+                FROM (
+                         SELECT count(*) FILTER (WHERE VALUE <= 10)                  AS "0-10",
+                                count(*) FILTER (WHERE VALUE > 10 AND VALUE <= 20)   AS "10-20",
+                                count(*) FILTER (WHERE VALUE > 20 AND VALUE <= 30)   AS "20-30",
+                                count(*) FILTER (WHERE VALUE > 30 AND VALUE <= 40)   AS "30-40",
+                                count(*) FILTER (WHERE VALUE > 40 AND VALUE <= 50)   AS "40-50",
+                                count(*) FILTER (WHERE VALUE > 50 AND VALUE <= 60)   AS "50-60",
+                                count(*) FILTER (WHERE VALUE > 60 AND VALUE <= 70)   AS "60-70",
+                                count(*) FILTER (WHERE VALUE > 70 AND VALUE <= 80)   AS "70-80",
+                                count(*) FILTER (WHERE VALUE > 80 AND VALUE <= 90)   AS "80-90",
+                                count(*) FILTER (WHERE VALUE > 90 AND VALUE <= 100)  AS "90-100",
+                                count(*) FILTER (WHERE VALUE > 100 AND VALUE <= 110) AS "100-110",
+                                count(*) FILTER (WHERE VALUE > 110 AND VALUE <= 120) AS "110-120",
+                                count(*) FILTER (WHERE VALUE > 120 AND VALUE <= 130) AS "120-130",
+                                count(*) FILTER (WHERE VALUE > 130 AND VALUE <= 140) AS "130-140",
+                                count(*) FILTER (WHERE VALUE > 140 AND VALUE <= 150) AS "140-150",
+                                count(*) FILTER (WHERE VALUE > 150 AND VALUE <= 160) AS "150-160",
+                                count(*) FILTER (WHERE VALUE > 160 AND VALUE <= 170) AS "160-170",                                
+                                count(*) FILTER (WHERE VALUE > 170 AND VALUE <= 180) AS "170-180"                                
+                         FROM (
+                                  SELECT g.parent_id,
+                                         s.name AS site_name,
+                                         d.value::double precision
+                                  FROM thanados.tbl_sites s
+                                           JOIN thanados.graves g ON g.parent_id = s.id
+                                           JOIN thanados.dimensiontypes d ON g.child_id = d.entity_id
+                                  WHERE d.name = 'Azimuth'
+                              ) v
+
+                         group BY parent_id, site_name
+                     ) c
+                LIMIT 1) AS ok) AS js);
+
+--get values
+DROP TABLE IF EXISTS thanados.azimuth;
+CREATE TABLE thanados.azimuth AS (
+    SELECT parent_id                                                   AS "site_id",
+           site_name                                                   AS "label",
+           '[' ||
+           count(*) FILTER (WHERE VALUE <= 10) || ',' ||
+           count(*) FILTER (WHERE VALUE > 20 AND VALUE <= 30) || ',' ||
+           count(*) FILTER (WHERE VALUE > 30 AND VALUE <= 40) || ',' ||
+           count(*) FILTER (WHERE VALUE > 40 AND VALUE <= 50) || ',' ||
+           count(*) FILTER (WHERE VALUE > 50 AND VALUE <= 60) || ',' ||
+           count(*) FILTER (WHERE VALUE > 60 AND VALUE <= 70) || ',' ||
+           count(*) FILTER (WHERE VALUE > 70 AND VALUE <= 80) || ',' ||
+           count(*) FILTER (WHERE VALUE > 80 AND VALUE <= 90) || ',' ||
+           count(*) FILTER (WHERE VALUE > 90 AND VALUE <= 100) || ',' ||
+           count(*) FILTER (WHERE VALUE > 100 AND VALUE <= 110) || ',' ||
+           count(*) FILTER (WHERE VALUE > 110 AND VALUE <= 120) || ',' ||
+           count(*) FILTER (WHERE VALUE > 120 AND VALUE <= 130) || ',' ||
+           count(*) FILTER (WHERE VALUE > 130 AND VALUE <= 140) || ',' ||
+           count(*) FILTER (WHERE VALUE > 140 AND VALUE <= 150) || ',' ||
+           count(*) FILTER (WHERE VALUE > 150 AND VALUE <= 160) || ',' ||
+           count(*) FILTER (WHERE VALUE > 160 AND VALUE <= 170) || ',' ||
+           count(*) FILTER (WHERE VALUE > 170 AND VALUE <= 180) || ']' AS data
+    FROM (
+             SELECT g.parent_id,
+                    s.name AS site_name,
+                    d.value::double precision
+             FROM thanados.tbl_sites s
+                      JOIN thanados.graves g ON g.parent_id = s.id
+                      JOIN thanados.dimensiontypes d ON g.child_id = d.entity_id
+             WHERE d.name = 'Azimuth'
+         ) v
+    GROUP BY parent_id, site_name);
+
+DROP TABLE IF EXISTS thanados.chart_azimuth;
+CREATE TABLE thanados.chart_azimuth(azimuth TEXT);
+INSERT INTO thanados.chart_azimuth (azimuth)
+SELECT jsonb_build_object(
+               'labels', dl.labels,
+               'datasets', jsonb_agg(d)
+           )
+FROM thanados.azimuth_labels dl,
+     thanados.azimuth d
+GROUP BY dl.labels;
+
+UPDATE thanados.chart_azimuth
+SET azimuth = REPLACE(azimuth, '"[', '[');
+UPDATE thanados.chart_azimuth
+SET azimuth = REPLACE(azimuth, ']"', ']');
+
+UPDATE thanados.chart_data
+SET azimuth = (SELECT azimuth::JSONB FROM thanados.chart_azimuth);
 
 DROP TABLE IF EXISTS thanados.sex;
 CREATE TABLE thanados.sex AS (
@@ -1490,7 +1689,6 @@ SELECT 	e.system_type,
 	FROM thanados.entities e JOIN model.link l ON e.child_id = l.domain_id JOIN gis.polygon g ON l.range_id = g.entity_id JOIN gis.point g2 ON g.entity_id = g2.entity_id WHERE l.property_code = 'P53');
 
 DELETE FROM gis.point WHERE id IN (SELECT point_id FROM thanados.giscleanup);
-DROP TABLE IF EXISTS thanados.giscleanup;
     """
 
     g.cursor.execute(sql_5)

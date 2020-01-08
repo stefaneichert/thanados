@@ -18,9 +18,8 @@ $(document).ready(function () {
     //$('#siteModal').modal('show');
 
 //define basemaps
-    var landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=2245afa655044c5c8f5ef8c129c29cdb', {
+    var landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=b3c55fb5010a4038975fd0a0f4976e64', {
         attribution: mywindowtitle + 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        apikey: '<2245afa655044c5c8f5ef8c129c29cdb>',
         maxZoom: 18
     });
     var satellite = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
@@ -90,6 +89,7 @@ $(document).ready(function () {
     table = $('#sitelist').DataTable({
         data: sitelist,
         "pagingType": "numbers",
+        "scrollX": true,
         columns: [
             {
                 data: "name",

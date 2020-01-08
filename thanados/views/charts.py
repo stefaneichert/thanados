@@ -16,6 +16,7 @@ def charts():
     sex = Data.get_sex()
     site_list = Data.get_list()
     orientation = Data.get_orientation()
+    azimuth = Data.get_azimuth()
     g.cursor.execute('select JSONB_agg(age) as age FROM thanados.ageatdeath as age;')
     age = g.cursor.fetchall()
 
@@ -63,7 +64,7 @@ SELECT '{"types": [' || string_agg (jsonstring, ', ') || ']}' AS mydata FROM
     g.cursor.execute(sql_finds)
     finds = g.cursor.fetchall()
 
-    return render_template('charts/charts.html', depth_data=depth[0].depth,
+    return render_template('charts/charts.html', depth_data=depth[0].depth, azimuth_data=azimuth[0].azimuth,
                            gravetypes_json=gravetypes[0], construction=constr[0],
                            burial_types=burialtype[0], find_types=finds[0].mydata, age=age[0],
                            orientation_data=orientation[0].orientation, sex_data=sex[0].sex,
