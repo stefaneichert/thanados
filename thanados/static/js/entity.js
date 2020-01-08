@@ -721,10 +721,6 @@ function setImages(entId, entfiles) {
                 $('#myImagecontainer' + entId).append(
                     '<a href="' + files.file_name + '" title="' + myImgSource + '"data-featherlight><img src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" id="mymodalimg"></a>'
                 );
-                var lazyLoadInstance = new LazyLoad({
-                    elements_selector: ".lazy"
-                });
-                lazyLoadInstance.update();
             });
         }
         ;
@@ -751,10 +747,10 @@ function setImages(entId, entfiles) {
                 '</ol>' +
                 '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
                 '<div class="carousel-item active">' +
-                '<a href="' + firstimage + '" data-featherlight title="' + myImgSource1 + '"><img class="d-block modalimg" src="/static/images/icons/loading.gif" data-src="' + firstimage + '"></a>' +
+                '<a href="' + firstimage + '" data-featherlight title="' + myImgSource1 + '"><img class="d-block modalimg lazy" src="/static/images/icons/loading.gif" data-src="' + firstimage + '"></a>' +
                 '</div>' +
                 '<div class="carousel-item">' +
-                '<a href="' + secondimage + '" data-featherlight title="' + myImgSource2 + '"><img class="d-block modalimg" src="/static/images/icons/loading.gif" data-src="' + secondimage + '"></a>' +
+                '<a href="' + secondimage + '" data-featherlight title="' + myImgSource2 + '"><img class="d-block modalimg lazy" src="/static/images/icons/loading.gif" data-src="' + secondimage + '"></a>' +
                 '</div>' +
                 '</div>' +
                 '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
@@ -768,6 +764,7 @@ function setImages(entId, entfiles) {
                 '</div>'
             );
 
+
             //append further images to carousel
             $.each(entfiles, function (f, files) {
                 if (f > 1) {
@@ -777,7 +774,7 @@ function setImages(entId, entfiles) {
                     if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
                     $('#mycarouselimages' + entId).append(
                         '<div class="carousel-item">' +
-                        '<a href="' + files.file_name + '" data-featherlight title="' + myImgSource + '"><img class="d-block modalimg" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '"></a>' +
+                        '<a href="' + files.file_name + '" data-featherlight title="' + myImgSource + '"><img class="d-block modalimg lazy" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '"></a>' +
                         '</div>'
                     );
                     $('#mymodalimageindicators' + entId).append(
@@ -792,6 +789,10 @@ function setImages(entId, entfiles) {
     } else {
         $('#myImagecontainer' + entId).remove()
     }
+    var lazyLoadInstance = new LazyLoad({
+                    elements_selector: ".lazy"
+                });
+                lazyLoadInstance.update();
 }
 
 function toggleSubunits() {
@@ -946,6 +947,7 @@ function setcatalog(currentchildren, parentDiv, iter) {
 
     });
 }
+
 catalogtrue = false;
 
 $('#nav-catalog-tab').click(function (e) {
