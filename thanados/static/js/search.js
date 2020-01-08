@@ -140,6 +140,7 @@ function appendCriteriaSearch(iter, criteria, appendLevel) { //append respective
             '<option value="26191">Diameter (cm)</option>' +
             '<option value="26190">Thickness (cm)</option>' +
             '<option value="26192">Orientation (°)</option>' +
+            '<option value="118730">Azimuth (°)</option>' +
             '<option value="15680">Weight (g)</option>' +
             '</select>' +
             '</div>'

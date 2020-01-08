@@ -19,7 +19,8 @@
                     <button id="filterBtn" class="btn btn-link collapsed" type="button" data-toggle="collapse"
                             data-target="#collapseFilter" aria-expanded="true"
                             aria-controls="collapseFilter">
-                        Filter/select sites to be visualised as charts<i id="filterBtnArrow" class="ml-3 fas fa-chevron-right"></i>
+                        Filter/select sites to be visualised as charts<i id="filterBtnArrow"
+                                                                         class="ml-3 fas fa-chevron-right"></i>
                     </button>
                 </h5>
             </div>
@@ -56,13 +57,16 @@
                         </div>
                     </div>
                     <div class="row mt-3">
-                        <div class="col">
-                            <div></div>
-                        </div>
-                        <div class="col">
-                            <div id="submitBtn" class="btn btn-sm btn-secondary float-right" data-toggle="collapse"
-                            data-target="#collapseFilter" aria-expanded="true"
-                            aria-controls="collapseFilter">Apply</div>
+                        <div class="col input-group">
+                            <textarea readonly id="mySelectedSites" class="form-control" aria-label="Selected sites" placeholder="Selected sites"></textarea>
+                            <div class="input-group-append">
+                                <button id="submitBtn" class="btn btn-sm btn-secondary float-right"
+                                        data-toggle="collapse"
+                                        data-target="#collapseFilter" aria-expanded="true"
+                                        aria-controls="collapseFilter">
+                                    (0) Apply
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -107,37 +111,6 @@
                     </div>
                 </div>
             </div>
-            <div class="col col-lg-6 mymargin mymargin">
-                <div class="card" id="card_orientationchart">
-                    <div class="card-header" id="headingTwo">
-                        <h5 class="mb-0">
-                            <button class="btn btn-link" type="button" data-toggle="collapse"
-                                    data-target="#collapseTwo" aria-expanded="true"
-                                    aria-controls="collapseTwo">
-                                Orientation of skeletons
-                            </button>
-                            <button id="orientationchart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
-                                    title="percentage" style="margin-left: 0.5em"
-                                    onclick="updateChart(orientationchart, setChartData(orientation_data, false, true, false), true)">
-                                %
-                            </button>
-                            <button id="orientationchart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
-                                    title="absolute"
-                                    onclick="updateChart(orientationchart, setChartData(orientation_data, false, false, false), false)">
-                                &Sigma;
-                            </button>
-                        </h5>
-                    </div>
-                    <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">
-                        <div class="card-body">
-                            <div id="orientation-chart-container">
-                                <canvas id="orientation-chart" class="chartcontainer"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="w-100"></div>
             <div class="col col-lg-6 mymargin">
                 <div class="card" id="card_sexchart">
                     <div class="card-header" id="headingThree">
@@ -168,6 +141,68 @@
                     </div>
                 </div>
             </div>
+            <div class="col col-lg-6 mymargin mymargin">
+                <div class="card" id="card_orientationchart">
+                    <div class="card-header" id="headingTwo">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                                    data-target="#collapseTwo" aria-expanded="true"
+                                    aria-controls="collapseTwo">
+                                Orientation of skeletons
+                            </button>
+                            <button id="orientationchart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="percentage" style="margin-left: 0.5em"
+                                    onclick="updateChart(orientationchart, setChartData(orientation_data, false, true, false), true)">
+                                %
+                            </button>
+                            <button id="orientationchart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="absolute"
+                                    onclick="updateChart(orientationchart, setChartData(orientation_data, false, false, false), false)">
+                                &Sigma;
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">
+                        <div class="card-body">
+                            <div id="orientation-chart-container">
+                                <canvas id="orientation-chart" class="chartcontainer"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col col-lg-6 mymargin mymargin">
+                <div class="card" id="card_azimuthchart">
+                    <div class="card-header" id="headingTwo">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                                    data-target="#collapseTwo" aria-expanded="true"
+                                    aria-controls="collapseTwo">
+                                Azimuth of gravepits
+                            </button>
+                            <button id="azimuthchart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="percentage" style="margin-left: 0.5em"
+                                    onclick="updateChart(azimuthchart, setChartData(azimuth_data, false, true, false), true)">
+                                %
+                            </button>
+                            <button id="azimuthchart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="absolute"
+                                    onclick="updateChart(azimuthchart, setChartData(azimuth_data, false, false, false), false)">
+                                &Sigma;
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">
+                        <div class="card-body">
+                            <div id="azimuth-chart-container">
+                                <canvas id="azimuth-chart" class="chartcontainer"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="col col-lg-6 mymargin">
                 <div class="card" id="card_age-chart">
                     <div class="card-header" id="headingFour">
@@ -195,7 +230,7 @@
                     </div>
                 </div>
             </div>
-            <div class="w-100"></div>
+
             <div class="col col-lg-6 mymargin">
                 <div class="card" id="card_gravetypes">
                     <div class="card-header" id="headingFive">
@@ -256,7 +291,7 @@
                     </div>
                 </div>
             </div>
-            <div class="w-100"></div>
+
             <div class="col col-lg-6 mymargin">
                 <div class="card" id="card_findtypeschart">
                     <div class="card-header" id="headingSeven">
@@ -325,6 +360,7 @@
         sex_data = {{ sex_data|tojson }};
         age_data = {{ age|tojson }};
         orientation_data = {{ orientation_data|tojson }};
+        azimuth_data = {{ azimuth_data|tojson }};
         gravetypes = {{ gravetypes_json|tojson }};
         graveconstr = {{ construction|tojson }};
         graveshape = {{ grave_shape|tojson }};
