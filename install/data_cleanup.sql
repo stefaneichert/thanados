@@ -77,4 +77,4 @@ SET
      name,
    'ohne Inv',
    'No Inv'
-   ) WHERE id IN (SELECT child_id FROM thanados.entities);git
+   ) WHERE id IN (SELECT child_id FROM thanados.entities);
