@@ -1,3 +1,5 @@
+-- various data cleanup queries
+
 UPDATE model.entity
 SET 
    name = REPLACE (
