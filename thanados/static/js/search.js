@@ -58,9 +58,8 @@ function addSearch() {
         addSearch();
     });
     $(".mySearchbutton").click(function f() {
-        console.log(this.value);
-        console.log('search');
         $("#Heading" + Iter).html($('#SQL' + Iter).val());
+        $('#term').val(returnQuerystring())
     });
     appendSearch();
 };
@@ -98,6 +97,7 @@ function appendSearch() {//append search form to dialog
             '<option value="timespan">Timespan</option>\n' +
             '<option value="dimension">Dimensions</option>\n' +
             '<option value="material">Material</option>\n' +
+            '<option value="text">Search in Text</option>\n' +
             '</select>\n' +
             '</div>'
         );
@@ -319,6 +319,21 @@ function returnQuerystring() {
         querystring = 'SELECT * FROM thanados.searchData WHERE system_type = \'' + system_type + '\' AND type_id IN (' + mytypes + ') AND min >= ' + mymin + ' AND max <= ' + mymax + ''
     }
     console.log(querystring);
+    return(querystring);
 }
+
+$('#ajax')
+
+function ajaxTest(param) {
+    $.ajax({
+        type: 'POST',
+        url: '/ajax/test',
+        data: 'param=' + param,
+        success: function (result) {
+            $('#ajaxresult').html(result);
+        }
+    });
+}
+
 
 

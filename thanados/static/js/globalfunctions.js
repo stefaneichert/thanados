@@ -327,3 +327,10 @@ function validateNumbers(val1, val2, criteria) { //validate numbers and continue
     return true;
 }
 
+$.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", test_csrf_token);
+            }
+        }
+    });

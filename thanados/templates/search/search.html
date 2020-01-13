@@ -7,28 +7,41 @@
         <div id="mySearchCards" class="m-4 sortable row">
         </div>
         <button id="AddSearch" class="btn btn-secondary float-right mr-4">New Search</button>
+        <button id="SubmitSearch" class="btn btn-secondary float-right mr-4" onclick="ajaxTest('555');">Ajax</button>
+        <div id="ajaxresult">Nothing</div>
+        <div class="m-5">
+            <form style="width: 100%" method="post">
+                {{ form.csrf_token }}
+                {{ form.term }}
+                {{ form.search }}
+            </form>
+            {{ search_result|safe }}
+        </div>
     </div>
     <div id="mytreeModal" title="Select category" class="d-none">
-            <div>
-                <div id="TreeMenu" class="input-group input-group-sm mb-3">
-                    <div class="input-group-prepend">
-                        <input id="jstree_q" class="form-control form-control-sm" type="text"
-                               placeholder="type to search...">
-                    </div>
-                    <div class="input-group-append">
-                        <button class="btn btn-secondary btn-sm" type="button"
-                                onclick="transferNode(GlobaltargetField, GlobalNodeSelected, GlobalSelectedNodeName, Globalcriteria, GlobalappendLevel, Globaliter, 'false')"
-                                id="confirmNodeBtn">Select
-                        </button>
-                    </div>
+        <div>
+            <div id="TreeMenu" class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                    <input id="jstree_q" class="form-control form-control-sm" type="text"
+                           placeholder="type to search...">
                 </div>
-                <div id="myTreeModalContent">
-                    <form id="jstree-div">
-                        <div id="jstree"></div>
-                    </form>
+                <div class="input-group-append">
+                    <button class="btn btn-secondary btn-sm" type="button"
+                            onclick="transferNode(GlobaltargetField, GlobalNodeSelected, GlobalSelectedNodeName, Globalcriteria, GlobalappendLevel, Globaliter, 'false')"
+                            id="confirmNodeBtn">Select
+                    </button>
                 </div>
             </div>
+            <div id="myTreeModalContent">
+                <form id="jstree-div">
+                    <div id="jstree"></div>
+                </form>
+            </div>
         </div>
+    </div>
+
+    <script> test_csrf_token = '{{ csrf_token() }}'; </script>
     <script src="/static/js/search.js"></script>
     <script> var jsontypes = {{ typesjson|tojson }} </script>
+
 {% endblock %}
