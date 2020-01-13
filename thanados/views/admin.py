@@ -1196,6 +1196,10 @@ SELECT DISTINCT 'strat' AS level, id::text, name AS text, parent_id::text AS par
 FROM thanados.types_all
 WHERE name_path LIKE 'Stratigraphic Unit%'
 UNION ALL
+SELECT DISTINCT 'burial_site' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
+FROM thanados.types_all
+WHERE name_path LIKE '%Burial Site%'
+UNION ALL
 SELECT DISTINCT 'feature' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
 FROM thanados.types_all
 WHERE name_path LIKE 'Feature%'
@@ -1205,6 +1209,9 @@ ORDER BY level, name_path;
 UPDATE thanados.typesforjson
 SET parent = '#'
 WHERE parent ISNULL; --necessary for jstree
+UPDATE thanados.typesforjson
+SET parent = '#'
+WHERE parent = '73'; --necessary for jstree
 INSERT INTO thanados.typesforjson (level, id, text, parent, path, name_path)
 VALUES ('find', '13368', 'Find', '#', '13368', 'Find');
 --hack because find has no parent
@@ -1633,6 +1640,12 @@ CREATE TABLE thanados.ageatdeath AS (
                       WHERE t.path LIKE '%> Age >%'
                       ORDER BY sitename) AS a) age
           GROUP BY sitename, site_id) ar ORDER BY site_id);
+          
+    DROP TABLE IF EXISTS thanados.searchData;
+    CREATE TABLE thanados.searchData AS
+    SELECT e.child_id, e.child_name, 'timespan' AS type, NULL AS path, 0 AS type_id, e.begin_from AS min, e.end_to AS max, e.system_type FROM thanados.entities e WHERE e.child_id != 0
+    UNION ALL
+    SELECT e.child_id, e.child_name, t.name AS type, t.path AS path, t.id AS type_id, t.value::double precision AS min, t.value::double precision AS max, e.system_type FROM thanados.entities e LEFT JOIN thanados.types_main t ON e.child_id = t.entity_id WHERE e.child_id != 0 ORDER BY child_id;
     """
     g.cursor.execute(sql_4)
     return redirect(url_for('admin'))

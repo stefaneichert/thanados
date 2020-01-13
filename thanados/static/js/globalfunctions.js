@@ -123,3 +123,207 @@ function setlogo() {
 }
 
 $(window).resize(function () {setlogo()})
+
+//build jstree after criteria and level for search in Map and Global search
+
+function iniateTree(Iter, appendLevel, criteria, targetField) {
+    $('#mytreeModal').removeClass('d-none');
+    UnsetGlobalVars(); //reset vars
+    //define search criteria
+    treecriteria = criteria;
+    if (criteria == 'maintype') treecriteria = appendLevel;
+
+    //build tree after selected criteria
+    selectedtypes = [];
+    $.each(jsontypes, function (j, entry) {
+        if (entry.level == treecriteria) {
+            selectedtypes.push(entry);
+        }
+    });
+
+    $(function () {
+        $('#jstree').jstree({
+                'core': {
+                    "data": selectedtypes,
+                    "themes": {
+                        "icons": false,
+                        "dots": false
+                    }
+                },
+                "search": {
+                    "show_only_matches": true, //filtering
+                    "show_only_matches_children": true
+
+                },
+                "plugins": ["search"]
+            }
+        )
+
+        //add search functionality
+        to = false;
+        $('#jstree_q').keyup(function () {
+            if (to) {
+                clearTimeout(to);
+            }
+            to = setTimeout(function () {
+                v = $('#jstree_q').val();
+                $('#jstree').jstree(true).search(v);
+            }, 250);
+        });
+    });
+
+    //retrieve values of selected node
+    $('#jstree').on("changed.jstree", function (e, data) {
+        NodeSelected = parseInt(data.selected);
+        node = $('#jstree').jstree().get_node(NodeSelected);
+        SelectedNodeName = node.text;
+        //make variables global
+        GlobaltargetField = targetField;
+        GlobalNodeSelected = NodeSelected;
+        GlobalSelectedNodeName = SelectedNodeName;
+        Globalcriteria = criteria;
+        GlobalappendLevel = appendLevel;
+        Globaliter = Iter;
+        $('#jstree_q').val(GlobalSelectedNodeName);
+    });
+
+//show tree in modal
+    $("#mytreeModal").dialog({
+        modal: true,
+        classes: {
+            "ui-dialog": "custom-tree"
+        }
+    });
+
+    windowheight = ($(window).height());
+    $('.custom-tree').css('max-height', windowheight - 100 + 'px');
+    $('#jstree').css('max-height', windowheight - 250 + 'px')
+
+    $(window).resize(function () {
+        windowheight = ($(window).height());
+        $('.custom-tree').css('max-height', windowheight - 100 + 'px');
+        $('#jstree').css('max-height', windowheight - 250 + 'px')
+    });
+
+//refresh tree if new search
+    if ((typeof ($('#jstree').jstree(true).settings)) !== 'undefined') {
+        $('#jstree').jstree(true).settings.core.data = selectedtypes;
+        $('#jstree').jstree(true).refresh();
+
+    }
+    ;
+}
+
+function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, appendLevel, Iter, val1, val2) {
+    if (GlobalNodeSelected !== '' && Globalcriteria !== 'material') {
+
+        $(function () {
+            $('#' + targetField).val(SelectedNodeName);
+            $('#' + targetField).prop('disabled', true);
+        });
+
+        setNodes(NodeSelected);
+        if (typeof (val1) == 'undefined')
+            val1 = '';
+        if (typeof (val2) == 'undefined')
+            val2 = '';
+        if (local) {
+            jsonquery(nodeIds, appendLevel, criteria, val1, val2);
+            $('#' + targetField + '_Result').val(uniqueSearchResult.length + ' matches in ' + searchResult.length + ' graves');
+            $('#mytreeModal').dialog("close");
+            appendPlus(Iter);
+        } else {
+            $('#SQL' + Iter).val($('#SQL' + Iter).val() + ' is "' + GlobalSelectedNodeName + '"');
+            $("#Heading" + Iter).html($('#SQL' + Iter).val());
+            $('#type' + Iter).val(nodeIds);
+            $('#mytreeModal').dialog("close");
+        }
+    }
+    if (GlobalNodeSelected == '')
+        alert('select property first');
+    if (Globalcriteria == 'material' && GlobalNodeSelected !== '') {
+        $('#SQL' + Iter).val($('#SQL' + Iter).val() + ' is "' + GlobalSelectedNodeName + '"');
+        $("#Heading" + Iter).html($('#SQL' + Iter).val());
+        $('#' + targetField).text(SelectedNodeName);
+        $('#' + targetField).prop('disabled', true);
+        setNodes(NodeSelected);
+        $('#type' + Iter).val(nodeIds);
+        $('#mytreeModal').dialog("close");
+        appendMaterial(Iter);
+    }
+}
+;
+
+function setNodes(state) {
+    nodes = [];
+    nodeIds = [];
+    traverse(state);
+    getNodeIds(nodes);
+}
+
+function traverse(state) {
+
+    // Get the actual node
+    node = $('#jstree').jstree().get_node(state);
+
+    // Add it to the results
+    nodes.push(node);
+
+    // Attempt to traverse if the node has children
+    if ($('#jstree').jstree().is_parent(node)) {
+        $.each(node.children, function (index, child) {
+            traverse(child);
+        });
+    }
+    ;
+}
+
+function getNodeIds(nodes) {
+    $.each(nodes, function (i, mynode) {
+        nodeIds.push(parseInt(mynode.id))
+    });
+}
+
+function UnsetGlobalVars() { //global vars needed for appended buttons in search
+    // unset global variables
+    GlobaltargetField = '';
+    GlobalNodeSelected = '';
+    GlobalSelectedNodeName = '';
+    Globalcriteria = '';
+    GlobalappendLevel = '';
+    Globaliter = '';
+    Globalval = '';
+    Globalval2 = '';
+}
+
+function validateNumbers(val1, val2, criteria) { //validate numbers and continue of valid or resume with alert if invalid
+    if (criteria == 'timespan' && val1 == '' ) {
+        alert('Please enter valid timerange');
+        return false;
+    };
+
+    if (criteria == 'timespan' && val2 == '' ) {
+        alert('Please enter valid timerange');
+        return false;
+    }
+
+    if (isNaN(val1) || isNaN(val2)) {
+        alert('Please enter valid numbers');
+        return false;
+    }
+    ;
+    if (val1 > val2 && val2 !== '') {
+        alert('First value must be lower than second value');
+        return false;
+    }
+    ;
+    if (criteria == 'material') {
+        if (val1 < 0 || val2 < 0 || val1 > 100 || val2 > 100) {
+            alert('Values must be between 0 and 100 (%)')
+            return false;
+        }
+    }
+    ;
+    return true;
+}
+

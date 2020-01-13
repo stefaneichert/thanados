@@ -10,8 +10,8 @@ class SearchForm(FlaskForm):
     search = SubmitField()
 
 
-@app.route('/search/index', methods=["GET", "POST"])
-def search_index():
+@app.route('/search/', methods=["GET", "POST"])
+def search():
     form = SearchForm()
     search_result = ''
     if form.validate_on_submit():
@@ -22,4 +22,6 @@ def search_index():
         g.cursor.execute(sql, {"term": '%' + form.term.data + '%'})
         for row in g.cursor.fetchall():
             search_result += row.name + '<br>'
-    return render_template('search/index.html', form=form, search_result=search_result)
+    g.cursor.execute('SELECT * FROM thanados.typesjson;')
+    types = g.cursor.fetchall()
+    return render_template('search/search.html', form=form, search_result=search_result, typesjson=types[0].types)

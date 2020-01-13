@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+    <div id="mycontent" class="pb-4">
+        <h2 class="my-heading container">Search</h2>
+        <div id="mySearchCards" class="m-4 sortable row">
+        </div>
+        <button id="AddSearch" class="btn btn-secondary float-right mr-4">New Search</button>
+    </div>
+    <div id="mytreeModal" title="Select category" class="d-none">
+            <div>
+                <div id="TreeMenu" class="input-group input-group-sm mb-3">
+                    <div class="input-group-prepend">
+                        <input id="jstree_q" class="form-control form-control-sm" type="text"
+                               placeholder="type to search...">
+                    </div>
+                    <div class="input-group-append">
+                        <button class="btn btn-secondary btn-sm" type="button"
+                                onclick="transferNode(GlobaltargetField, GlobalNodeSelected, GlobalSelectedNodeName, Globalcriteria, GlobalappendLevel, Globaliter, 'false')"
+                                id="confirmNodeBtn">Select
+                        </button>
+                    </div>
+                </div>
+                <div id="myTreeModalContent">
+                    <form id="jstree-div">
+                        <div id="jstree"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    <script src="/static/js/search.js"></script>
+    <script> var jsontypes = {{ typesjson|tojson }} </script>
+{% endblock %}
