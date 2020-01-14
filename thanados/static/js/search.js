@@ -7,7 +7,7 @@ $(document).ready(function () {
     addSearch();
 });
 
-$('#AddSearch').click(function() {
+$('#AddSearch').click(function () {
     Iter += 1;
     addSearch()
 });
@@ -39,7 +39,7 @@ function addSearch() {
         '                            <textarea readonly id="SQL' + Iter + '" class="form-control" aria-label="Selected sites" placeholder="Query statement"></textarea>\n' +
         '</div>\n' +
         '<div class="float-right mb-3">\n' +
-        '<button class="btn btn-link mySearchbutton" type="button" value="' + Iter + '" class="card-link">search</button>\n' +
+        '<button class="btn btn-link mySearchbutton" type="button" value="' + Iter + '" class="card-link" onclick="returnQuerystring()">search</button>\n' +
         '<button class="btn btn-link myResetbutton" type="button" value="' + Iter + '" class="card-link">reset</button>\n' +
         '</div>\n' +
         '<div id="variables" class="row">' +
@@ -49,6 +49,11 @@ function addSearch() {
         '<input class="col" type=text id="min' + Iter + '">' +
         '<input class="col" type=text id="max' + Iter + '">' +
         '</div>' +
+        '<div class="row">'+
+        '<div class="col-12">'+
+        '<textarea id="ajaxresult' + Iter + '" style="width: 100%"></textarea>' +
+        '</div>'+
+        '</div>'+
         '</div>\n' +
         '</div>\n' +
         '</div>');
@@ -270,7 +275,8 @@ function searchDimMat(criteria, appendLevel, iter, val1, val2) {
         if (criteria == 'material') {
             var SQLString = (' between ' + val1 + '% and ' + val2 + '%')
             dimId = nodeIds;
-        };
+        }
+        ;
         if (criteria == 'dimension') dimId = $('#DimensionSelect_' + iter + ' option:selected').val().toLowerCase();
         $('#type' + iter).val(dimId);
         $('#SQL' + iter).val($('#SQL' + iter).val() + SQLString);
@@ -304,33 +310,24 @@ function returnQuerystring() {
     var mymin = $('#min' + Iter).val();
     var mymax = $('#max' + Iter).val();
     var mytypes = $('#type' + Iter).val();
-    console.log (mylevel + ', ' + mycriteria + ', ' + mymin + ', ' + mymax + ', ' + mytypes);
-    system_type = mylevel;
-    if (mylevel == 'burial_site') system_type = 'place';
-    if (mylevel == 'strat') system_type = 'stratigraphic unit';
+    console.log(mylevel + ', ' + mycriteria + ', ' + mymin + ', ' + mymax + ', ' + mytypes);
+    var system_type = mylevel;
+    if (mylevel == 'burial_site') var system_type = 'place';
+    if (mylevel == 'strat') var system_type = 'stratigraphic unit';
 
-    if (mycriteria == 'maintype' || mycriteria == 'type') {
-        querystring = 'SELECT * FROM thanados.searchData WHERE system_type = \'' + system_type + '\' AND type_id IN (' + mytypes + ')'
-    }
-    if (mycriteria == 'timespan') {
-        querystring = 'SELECT * FROM thanados.searchData WHERE system_type = \'' + system_type + '\' AND type_id = 0 AND min >= ' + mymin + ' AND max <= ' + mymax + ''
-    }
-    if (mycriteria == 'dimension' || mycriteria == 'material') {
-        querystring = 'SELECT * FROM thanados.searchData WHERE system_type = \'' + system_type + '\' AND type_id IN (' + mytypes + ') AND min >= ' + mymin + ' AND max <= ' + mymax + ''
-    }
-    console.log(querystring);
-    return(querystring);
-}
-
-$('#ajax')
-
-function ajaxTest(param) {
     $.ajax({
         type: 'POST',
         url: '/ajax/test',
-        data: 'param=' + param,
+        data: {
+            'system_type': system_type,
+            'types': mytypes,
+            'criteria': mycriteria,
+            'min': mymin,
+            'max': mymax
+        },
         success: function (result) {
-            $('#ajaxresult').html(result);
+            $('#ajaxresult' + Iter).html(JSON.stringify(result));
+            console.log(result);
         }
     });
 }
