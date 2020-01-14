@@ -1646,6 +1646,88 @@ CREATE TABLE thanados.ageatdeath AS (
     SELECT e.child_id, e.child_name, 'timespan' AS type, NULL AS path, 0 AS type_id, e.begin_from AS min, e.end_to AS max, e.system_type FROM thanados.entities e WHERE e.child_id != 0
     UNION ALL
     SELECT e.child_id, e.child_name, t.name AS type, t.path AS path, t.id AS type_id, t.value::double precision AS min, t.value::double precision AS max, e.system_type FROM thanados.entities e LEFT JOIN thanados.types_main t ON e.child_id = t.entity_id WHERE e.child_id != 0 ORDER BY child_id;
+
+
+DROP TABLE IF EXISTS thanados.searchData_tmp;
+    CREATE TABLE thanados.searchData_tmp AS (
+
+SELECT 
+	se.*,
+	mt.path AS maintype,
+	f.parent_id AS burial_id,
+	b.parent_id AS grave_id,
+	g.parent_id AS site_id,
+	s.lon,
+	s.lat,
+	s.child_name || ' > ' || g.child_name || ' > ' || b.child_name || ' > ' || se.child_name AS context
+
+	FROM thanados.searchData se
+		JOIN thanados.maintype mt ON se.child_id = mt.entity_id
+		JOIN thanados.finds f ON se.child_id = f.child_id 
+		JOIN thanados.burials b ON f.parent_id = b.child_id 
+		JOIN thanados.graves g ON b.parent_id = g.child_id 
+		JOIN thanados.sites s ON g.parent_id = s.child_id 
+		WHERE se.system_type = 'find' AND s.lon != ''
+
+UNION ALL		
+
+SELECT 
+	se.*,
+	mt.path AS maintype,
+	se.child_id AS burial_id,
+	b.parent_id AS grave_id,
+	g.parent_id AS site_id,
+	s.lon,
+	s.lat,
+	s.child_name || ' > ' || g.child_name || ' > ' || b.child_name AS context
+	
+	FROM thanados.searchData se
+		JOIN thanados.maintype mt ON se.child_id = mt.entity_id
+		JOIN thanados.burials b ON se.child_id = b.child_id 
+		JOIN thanados.graves g ON b.parent_id = g.child_id 
+		JOIN thanados.sites s ON g.parent_id = s.child_id 
+		WHERE se.system_type = 'stratigraphic unit' AND s.lon != ''
+
+UNION ALL		
+
+SELECT 
+	se.*,
+	mt.path AS maintype,
+	NULL AS burial_id,
+	se.child_id AS grave_id,
+	g.parent_id AS site_id,
+	s.lon,
+	s.lat,
+	s.child_name || ' > ' || g.child_name AS context
+
+	FROM thanados.searchData se
+		JOIN thanados.maintype mt ON se.child_id = mt.entity_id
+		JOIN thanados.graves g ON se.child_id = g.child_id 
+		JOIN thanados.sites s ON g.parent_id = s.child_id 
+		WHERE se.system_type = 'feature' AND s.lon != ''
+
+UNION ALL		
+
+SELECT 
+	se.*,
+	mt.path AS maintype,
+	NULL AS burial_id,
+	NULL AS grave_id,
+	se.child_id site_id,
+	s.lon,
+	s.lat,
+	s.child_name AS context
+
+	FROM thanados.searchData se
+		JOIN thanados.maintype mt ON se.child_id = mt.entity_id
+		JOIN thanados.sites s ON se.child_id = s.child_id 
+		WHERE se.system_type = 'place' AND s.lon != ''); 
+
+DROP TABLE IF EXISTS thanados.searchData;
+    CREATE TABLE thanados.searchData AS SELECT * FROM thanados.searchData_tmp;
+DROP TABLE IF EXISTS thanados.searchData_tmp;
+
+DELETE FROM thanados.searchData WHERE type_id = 0 AND min ISNULL AND max ISNULL;
     """
     g.cursor.execute(sql_4)
     return redirect(url_for('admin'))

@@ -21,9 +21,16 @@ def ajax_test() -> str:
     'type', d.type,
     'type_id', d.type_id,
     'path', d.path,
+    'maintype', d.maintype,
     'min', d.min,
     'max', d.max,
-    'system_type', d.system_type
+    'lon', d.lon,
+    'lat', d.lat,
+    'system_type', d.system_type,
+    'burial_id', d.burial_id,
+    'grave_id', d.grave_id,
+    'site_id', d.site_id,
+    'context', d.context
     )) AS result FROM 
            (SELECT * FROM thanados.searchData WHERE system_type = %(system_type)s AND type_id IN %(type_ids)s) d
            """
@@ -36,9 +43,16 @@ def ajax_test() -> str:
     'type', d.type,
     'type_id', d.type_id,
     'path', d.path,
+    'maintype', d.maintype,
     'min', d.min,
     'max', d.max,
-    'system_type', d.system_type
+    'lon', d.lon,
+    'lat', d.lat,
+    'system_type', d.system_type,
+    'burial_id', d.burial_id,
+    'grave_id', d.grave_id,
+    'site_id', d.site_id,
+    'context', d.context
     )) AS result FROM 
            (SELECT * FROM thanados.searchData WHERE system_type = %(system_type)s AND type_id = 0 AND min >= %(min)s AND max <= %(max)s) d
            """
@@ -51,9 +65,16 @@ def ajax_test() -> str:
     'type', d.type,
     'type_id', d.type_id,
     'path', d.path,
+    'maintype', d.maintype,
     'min', d.min,
     'max', d.max,
-    'system_type', d.system_type
+    'lon', d.lon,
+    'lat', d.lat,
+    'system_type', d.system_type,
+    'burial_id', d.burial_id,
+    'grave_id', d.grave_id,
+    'site_id', d.site_id,
+    'context', d.context
     )) AS result FROM 
            (SELECT * FROM thanados.searchData WHERE system_type = %(system_type)s AND type_id IN %(type_ids)s AND min >= %(min)s AND max <= %(max)s) d
            """
