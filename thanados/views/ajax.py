@@ -16,67 +16,67 @@ def ajax_test() -> str:
     if (criteria == 'maintype') or (criteria == 'type'):
         sql = """
            SELECT jsonb_agg(jsonb_build_object(
-    'id', d.child_id,
-    'name', d.child_name,
-    'type', d.type,
-    'type_id', d.type_id,
-    'path', d.path,
-    'maintype', d.maintype,
-    'min', d.min,
-    'max', d.max,
-    'lon', d.lon,
-    'lat', d.lat,
-    'system_type', d.system_type,
-    'burial_id', d.burial_id,
-    'grave_id', d.grave_id,
-    'site_id', d.site_id,
-    'context', d.context
-    )) AS result FROM 
+           'id', d.child_id,
+           'name', d.child_name,
+           'type', d.type,
+           'type_id', d.type_id,
+           'path', d.path,
+           'maintype', d.maintype,
+           'min', d.min,
+           'max', d.max,
+           'lon', d.lon,
+           'lat', d.lat,
+           'system_type', d.system_type,
+           'burial_id', d.burial_id,
+           'grave_id', d.grave_id,
+           'site_id', d.site_id,
+           'context', d.context
+           )) AS result FROM 
            (SELECT * FROM thanados.searchData WHERE system_type = %(system_type)s AND type_id IN %(type_ids)s) d
            """
 
     if (criteria == 'timespan'):
         sql = """
            SELECT jsonb_agg(jsonb_build_object(
-    'id', d.child_id,
-    'name', d.child_name,
-    'type', d.type,
-    'type_id', d.type_id,
-    'path', d.path,
-    'maintype', d.maintype,
-    'min', d.min,
-    'max', d.max,
-    'lon', d.lon,
-    'lat', d.lat,
-    'system_type', d.system_type,
-    'burial_id', d.burial_id,
-    'grave_id', d.grave_id,
-    'site_id', d.site_id,
-    'context', d.context
-    )) AS result FROM 
+           'id', d.child_id,
+           'name', d.child_name,
+           'type', d.type,
+           'type_id', d.type_id,
+           'path', d.path,
+           'maintype', d.maintype,
+           'min', d.min,
+           'max', d.max,
+           'lon', d.lon,
+           'lat', d.lat,
+           'system_type', d.system_type,
+           'burial_id', d.burial_id,
+           'grave_id', d.grave_id,
+           'site_id', d.site_id,
+           'context', d.context
+           )) AS result FROM 
            (SELECT * FROM thanados.searchData WHERE system_type = %(system_type)s AND type_id = 0 AND min >= %(min)s AND max <= %(max)s) d
            """
 
     if (criteria == 'dimension') or (criteria == 'material'):
         sql = """
            SELECT jsonb_agg(jsonb_build_object(
-    'id', d.child_id,
-    'name', d.child_name,
-    'type', d.type,
-    'type_id', d.type_id,
-    'path', d.path,
-    'maintype', d.maintype,
-    'min', d.min,
-    'max', d.max,
-    'lon', d.lon,
-    'lat', d.lat,
-    'system_type', d.system_type,
-    'burial_id', d.burial_id,
-    'grave_id', d.grave_id,
-    'site_id', d.site_id,
-    'context', d.context
-    )) AS result FROM 
-           (SELECT * FROM thanados.searchData WHERE system_type = %(system_type)s AND type_id IN %(type_ids)s AND min >= %(min)s AND max <= %(max)s) d
+               'id', d.child_id,
+               'name', d.child_name,
+               'type', d.type,
+               'type_id', d.type_id,
+               'path', d.path,
+               'maintype', d.maintype,
+               'min', d.min,
+               'max', d.max,
+               'lon', d.lon,
+               'lat', d.lat,
+               'system_type', d.system_type,
+               'burial_id', d.burial_id,
+               'grave_id', d.grave_id,
+               'site_id', d.site_id,
+               'context', d.context
+               )) AS result FROM 
+               (SELECT * FROM thanados.searchData WHERE system_type = %(system_type)s AND type_id IN %(type_ids)s AND min >= %(min)s AND max <= %(max)s) d
            """
 
     g.cursor.execute(sql, {'system_type': system_type,

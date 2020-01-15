@@ -3,6 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 
 from thanados import app
+from thanados.models.entity import Data
 
 
 class SearchForm(FlaskForm):
@@ -12,6 +13,7 @@ class SearchForm(FlaskForm):
 
 @app.route('/search/', methods=["GET", "POST"])
 def search():
+    site_list = Data.get_list()
     form = SearchForm()
     search_result = ''
     if form.validate_on_submit():
@@ -20,4 +22,4 @@ def search():
             search_result += row.child_name + '<br>'
     g.cursor.execute('SELECT * FROM thanados.typesjson;')
     types = g.cursor.fetchall()
-    return render_template('search/search.html', form=form, search_result=search_result, typesjson=types[0].types)
+    return render_template('search/search.html', form=form, search_result=search_result, typesjson=types[0].types, sitelist=site_list[0].sitelist)

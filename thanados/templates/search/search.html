@@ -43,6 +43,7 @@
 
     <script> test_csrf_token = '{{ csrf_token() }}'; </script>
     <script src="/static/js/search.js"></script>
-    <script> var jsontypes = {{ typesjson|tojson }} </script>
+    <script>    jsontypes = {{ typesjson|tojson }} </script>
+    <script>    sitelist = {{ sitelist|tojson }}    </script>
 
 {% endblock %}

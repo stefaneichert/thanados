@@ -1,6 +1,6 @@
 $(document).ready(function () {
-    $(".sortable").sortable();
-    $(".sortable").disableSelection();
+    //$(".sortable").sortable();
+    //$(".sortable").disableSelection();
     maximumHeight = ($(window).height() - $('#mynavbar').height())
     $('#mycontent').css('max-height', (maximumHeight - 15) + 'px');
     local = false;
@@ -33,17 +33,17 @@ function addSearch() {
         '                </h5>\n' +
         '            </div>\n' +
         '<div id="collapseQuery' + Iter + '" class="collapse show" aria-labelledby="heading' + Iter + '">\n' +
-        '    <div class="card-body">\n' +
+        '    <div class="card-body  mb-4">\n' +
         '        <div id="Form' + Iter + '"></div>\n' +
         '        <div class="input-group mb-3 d-none">\n' +
         '                            <textarea readonly id="SQL' + Iter + '" class="form-control" aria-label="Selected sites" placeholder="Query statement"></textarea>\n' +
         '        </div>\n' +
-        '    <div class="float-right mb-3">\n' +
+        '    <div class="float-right">\n' +
         '        <button class="btn btn-link mySearchbutton" type="button" value="' + Iter + '" class="card-link" onclick="returnQuerystring()">search</button>\n' +
         '        <button class="btn btn-link myResetbutton" type="button" value="' + Iter + '" class="card-link">reset</button>\n' +
         '    </div>\n' +
         '    </div>' +
-        '    <div class="card-header mt-4" style="border-top: 1px solid rgba(0, 0, 0, 0.125); display: none" id="headingb' + Iter + '">' +
+        '    <div class="card-header" style="border-top: 1px solid rgba(0, 0, 0, 0.125); display: none" id="headingb' + Iter + '">' +
         '        <h5 class="mb-0">\n' +
         '            <button id="Resultlist' + Iter + '" class="btn btn-link" type="button" data-toggle="collapse"\n' +
         '                            data-target="#collapseList' + Iter + '" aria-expanded="true"\n' +
@@ -53,33 +53,24 @@ function addSearch() {
         '        </h5>\n' +
         '    </div>' +
         '    <div id="collapseList' + Iter + '" style="display: none" class="collapse show" aria-labelledby="headingb' + Iter + '">\n' +
-        '        <div class="card-body">' +
+        '        <div class="card-body row">' +
+        '          <div class="col-lg">' +
         '            <table id="myResultlist' + Iter + '" class="display table table-striped table-bordered" width="100%">' +
         '                    <thead>\n' +
         '                    <tr>\n' +
         '                        <th>Name</th>\n' +
         '                        <th>Type</th>\n' +
-        '                        <th>Min</th>\n' +
-        '                        <th>Max</th>\n' +
+        '                        <th id="Min_' + Iter +'">Begin</th>\n' +
+        '                        <th>End</th>\n' +
         '                        <th>Context</th>\n' +
         '                    </tr>\n' +
         '                    </thead>' +
         '            </table>' +
+        '          </div>' +
+        '        <div class="col-lg">' +
+        '            <div class="m-1 map" id="map' + Iter + '" style="height: 100%; min-height: 500px; min-width: 300px"></div>' +
         '        </div>' +
-        '    </div>' +
-           '    <div class="card-header mt-4" style="border-top: 1px solid rgba(0, 0, 0, 0.125); display: none" id="headingc' + Iter + '">' +
-        '        <h5 class="mb-0">\n' +
-        '            <button id="MapHeading' + Iter + '" class="btn btn-link" type="button" data-toggle="collapse"\n' +
-        '                            data-target="#collapseMap' + Iter + '" aria-expanded="true"\n' +
-        '                            aria-controls="collapseMap' + Iter + '">\n' +
-        '                        Map' +
-        '            </button>\n' +
-        '        </h5>\n' +
-        '    </div>' +
-        '    <div id="collapseMap' + Iter + '" style="display: none" class="collapse show" aria-labelledby="headingc' + Iter + '">\n' +
-        '        <div class="card-body">' +
-        '            <div id="map' + Iter + '" style="min-width: 300px"></div>' +
-        '        </div>' +
+        '      </div>' +
         '    </div>' +
         '<div style="display: none">' +
         '<div id="variables" class="row">' +
@@ -89,12 +80,12 @@ function addSearch() {
         '<input class="col" type=text id="min' + Iter + '">' +
         '<input class="col" type=text id="max' + Iter + '">' +
         '</div>' +
-        '<div class="row">'+
-        '<div class="col-12">'+
+        '<div class="row">' +
+        '<div class="col-lg">' +
         '<textarea id="ajaxresult' + Iter + '" style="width: 100%"></textarea>' +
-        '</div>'+
-        '</div>'+
-        '</div>'+
+        '</div>' +
+        '</div>' +
+        '</div>' +
         '</div>\n' +
         '</div>\n' +
         '</div>');
@@ -355,7 +346,8 @@ function returnQuerystring() {
     var system_type = mylevel;
     if (mylevel == 'burial_site') var system_type = 'place';
     if (mylevel == 'strat') var system_type = 'stratigraphic unit';
-
+    $('#headingb' + Iter).toggle();
+    $('#Resultlist' + Iter).html('<span class="spinner-border spinner-border-sm mr-3" role="status" aria-hidden="true"></span>...Search in progress');
     $.ajax({
         type: 'POST',
         url: '/ajax/test',
@@ -368,19 +360,21 @@ function returnQuerystring() {
         },
         success: function (result) {
             //$('#ajaxresult' + Iter).html(JSON.stringify(result));
-            $('#headingb' + Iter).toggle();
             if (result == null) {
                 $('#Resultlist' + Iter).html('No results for this search');
                 return
             } else {
-                $('#headingc' + Iter).toggle();
                 $('#Resultlist' + Iter).html('Results (' + result.length + ')')
                 eval('result_' + Iter + '= result;');
                 console.log(eval('result_' + Iter));
                 setdatatable(result, mycriteria);
                 $('#collapseList' + Iter).toggle();
-                $('#collapseMap' + Iter).toggle();
-            };
+                eval('map' + Iter).invalidateSize()
+                eval('map' + Iter + '.fitBounds(markers' + Iter + '.getBounds());')
+                eval('table' + Iter).draw();
+
+            }
+            ;
         }
     });
 
@@ -388,12 +382,14 @@ function returnQuerystring() {
 
 function setdatatable(data) {
     var mymarkers = new L.featureGroup([]);
-    table = $('#myResultlist' + Iter).DataTable({
+    var heatmarkers = [];
+    var table = $('#myResultlist' + Iter).DataTable({
         data: data,
         "pagingType": "numbers",
         "scrollX": true,
         columns: [
-            {data: "name",
+            {
+                data: "name",
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                     $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.maintype + " 'target='_blank'>" + oData.name + "</a>"); //create links in rows
                 }
@@ -402,8 +398,18 @@ function setdatatable(data) {
                 data: 'type',
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                     $(nTd).html("<div title='" + oData.path + "'>" + oData.type + "</div> ");
+                    if (mycriteria == 'type' || mycriteria == 'maintype') var myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_blank"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + oData.type + '</i>'
+                    if (mycriteria == 'timespan') var myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_blank"><b>' + oData.context + '</b></a><br><br><i>Timespan: ' + oData.min + ' to ' + oData.max +'</i>'
+                    if (mycriteria == 'dimension') var myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_blank"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + oData.type + ': ' + oData.min + '</i>'
+                    if (mycriteria == 'material') {
+                        var matString = oData.type;
+                        if (oData.min > 0) var matString = oData.type + ': ' + oData.min + '%';
+                        var myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_blank"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + matString + '</i>'
+                    }
                     //create markers
-                    var marker = L.marker([((oData.lon)), ((oData.lat))], {title: oData.name}).addTo(mymarkers);
+                    var marker = L.marker([((oData.lon)), ((oData.lat))], {title: (oData.context)}).addTo(mymarkers).bindPopup(myPopupLine);
+                    ;
+                    heatmarkers.push([JSON.parse(oData.lon) + ',' + JSON.parse(oData.lat)]);
                 }
             },
             {data: 'min'},
@@ -411,17 +417,23 @@ function setdatatable(data) {
             {data: 'context'}
         ],
     });
-    console.log(mycriteria);
-    if (mycriteria == 'type' || criteria == 'maintype') table.columns([2,3]).visible(false);
+    eval('table' + Iter + '= table');
+    if (mycriteria == 'type' || criteria == 'maintype') table.columns([2, 3]).visible(false);
+    if (mycriteria == 'material' || mycriteria == 'dimension')
+    {
+        table.columns([3]).visible(false);
+        $('#Min_' + Iter).html('Value');
+    }
     $('#collapseList' + Iter).on('shown.bs.collapse', function () {
-    table.draw();
-});
-    table.draw();
-    setmymap(mymarkers);
+        //table.draw();
+    });
+    //table.draw();
+    setmymap(mymarkers, heatmarkers);
 }
 
-function setmymap(markers) {
+function setmymap(markers, heatmarkers) {
 //define basemaps
+
     var landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=b3c55fb5010a4038975fd0a0f4976e64', {
         attribution: 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         maxZoom: 18
@@ -431,41 +443,118 @@ function setmymap(markers) {
         maxZoom: 18
     });
 
-    var map = L.map('map' + Iter, {
-        fullscreenControl: true,
-        zoom: 18,
-        zoomControl: false,
-        layers: [satellite, landscape]
-    }).setView([51.505, -0.09], 13);
+    //initiate markers
+    var clustermarkers = L.markerClusterGroup({
+        singleMarkerMode: true,
+        maxClusterRadius: 0,
+
+    });
+
+
+    markers.addTo(clustermarkers);
+    eval('markers' + Iter + '= markers;')
+
+
+    eval('map' + Iter + ' = L.map(\'map\' + Iter, {fullscreenControl: true, zoomControl: false, layers: [satellite, landscape]}).fitBounds(markers.getBounds());')
+
+
+    clustermarkers.addTo((eval('map' + Iter)));
+
 
     var baseLayers = {
         "Landscape": landscape,
         "Satellite": satellite,
     };
 
-    //initiate markers
-    var markergroup = new L.layerGroup();
-        markergroup.addTo(map)
-    markers.addTo(markergroup)
+
+    (eval('map' + Iter)).fitBounds(markers.getBounds());
 
     //initiate markers
-    heatmarkers = []
-    clustermarkers = L.markerClusterGroup();
-    heat = L.heatLayer(heatmarkers, {radius: 25, minOpacity: 0.5, blur: 30});
+    var heatmarkersNew = JSON.parse(JSON.stringify(heatmarkers).replace(/"/g, ''));
+    console.log(heatmarkersNew)
+    heat = L.heatLayer(heatmarkersNew, {radius: 25, minOpacity: 0.5, blur: 30});
+
+
+    //eval('var myGeoJSON = (createResult(result_' + Iter + ', ' + Iter + '))');
+
+    /*L.geoJSON(myGeoJSON, {
+        pointToLayer: function (feature, latlng) {
+                return L.circleMarker(latlng,
+                    {
+				radius: 8,
+				fillColor: "#ff0014",
+				color: "#000",
+				weight: 1,
+				opacity: 1,
+				fillOpacity: 0.8
+			});
+            }
+    }).addTo((eval('map' + Iter)));*/
 
     var overlays = {
-        "Sites": markergroup,
-        "Cluster": clustermarkers,
+        "Sites": clustermarkers,
         "Density": heat
     };
 
     //add layer control
-    baseControl = L.control.layers(baseLayers, overlays).addTo(map);
+    baseControl = L.control.layers(baseLayers, overlays).addTo((eval('map' + Iter)));
 
 //hack for right order of basemaps
-    map.removeLayer(satellite);
+    (eval('map' + Iter)).removeLayer(satellite);
 
-    L.control.scale({imperial: false}).addTo(map);//scale on map
+    L.control.scale({imperial: false}).addTo((eval('map' + Iter)));//scale on map
+    (eval('map' + Iter)).invalidateSize();
 
 }
 
+function createResult(data, iter) { //finish query and show results on map
+
+    var jsonresult = {
+        "type": "FeatureCollection", //prepare geojson
+        "features": [],
+        "query": $('#Heading' + iter).html(),
+    };
+    var uniqueSiteIds = [];
+    $.each(data, function (i, dataset) {
+        uniqueSiteIds.push(dataset.site_id);
+    });
+
+    var distinctResultIds = Array.from(new Set(uniqueSiteIds));
+    $.each(distinctResultIds, function (i, dataset) {
+        jsonresult.features.push({id: dataset});
+    });
+
+    $.each(sitelist, function (i, dataset) {
+        $.each(jsonresult.features, function (i, feature) {
+            if (feature.id == dataset.id) {
+                feature.properties = {
+                    name: dataset.name,
+                    description: dataset.description,
+                    type: dataset.type,
+                    path: dataset.path,
+                    begin: dataset.begin,
+                    end: dataset.end
+                }
+                feature.geometry = {
+                    "type": "Point",
+                    "coordinates": [dataset.lat, dataset.lon]
+                }
+                feature.type = "Feature"
+                feature.search = []
+            }
+        })
+    });
+
+    $.each(jsonresult.features, function (i, feature) {
+        $.each(data, function (i, dataset) {
+            if (feature.id == dataset.site_id) {
+                feature.search.push(dataset)
+            }
+        })
+        feature.results = feature.search.length
+    })
+
+    return (jsonresult);
+
+
+}
