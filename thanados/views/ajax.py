@@ -57,7 +57,7 @@ def ajax_test() -> str:
            (SELECT * FROM thanados.searchData WHERE system_type = %(system_type)s AND type_id = 0 AND min >= %(min)s AND max <= %(max)s) d
            """
 
-    if (criteria == 'dimension') or (criteria == 'material'):
+    if (criteria == 'dimension') or (criteria == 'material') or (criteria == 'value'):
         sql = """
            SELECT jsonb_agg(jsonb_build_object(
                'id', d.child_id,

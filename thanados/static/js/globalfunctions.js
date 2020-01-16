@@ -215,7 +215,7 @@ function iniateTree(Iter, appendLevel, criteria, targetField) {
 }
 
 function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, appendLevel, Iter, val1, val2) {
-    if (GlobalNodeSelected !== '' && Globalcriteria !== 'material') {
+    if (GlobalNodeSelected !== '' && Globalcriteria !== 'material' && Globalcriteria !== 'value') {
 
         $(function () {
             $('#' + targetField).val(SelectedNodeName);
@@ -237,11 +237,12 @@ function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, app
             $("#Heading" + Iter).html($('#SQL' + Iter).val());
             $('#type' + Iter).val(nodeIds);
             $('#mytreeModal').dialog("close");
+            $('#SearchBtn' + Iter).removeClass('d-none');
         }
     }
     if (GlobalNodeSelected == '')
         alert('select property first');
-    if (Globalcriteria == 'material' && GlobalNodeSelected !== '') {
+    if (Globalcriteria == 'material' && GlobalNodeSelected !== '' || Globalcriteria == 'value' && GlobalNodeSelected !== '') {
         $('#SQL' + Iter).val($('#SQL' + Iter).val() + ' is "' + GlobalSelectedNodeName + '"');
         $("#Heading" + Iter).html($('#SQL' + Iter).val());
         $('#' + targetField).text(SelectedNodeName);
@@ -249,6 +250,7 @@ function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, app
         setNodes(NodeSelected);
         $('#type' + Iter).val(nodeIds);
         $('#mytreeModal').dialog("close");
+        console.log(Iter);
         appendMaterial(Iter);
     }
 }
@@ -307,6 +309,11 @@ function validateNumbers(val1, val2, criteria) { //validate numbers and continue
         return false;
     }
 
+    if (criteria == 'value' && val1 == '' && val2 == '') {
+        alert('Please enter valid range');
+        return false;
+    };
+
     if (isNaN(val1) || isNaN(val2)) {
         alert('Please enter valid numbers');
         return false;
@@ -324,6 +331,7 @@ function validateNumbers(val1, val2, criteria) { //validate numbers and continue
         }
     }
     ;
+    if (typeof(Iter) != 'undefined') $('#SearchBtn' + Iter).removeClass('d-none');
     return true;
 }
 
@@ -334,3 +342,73 @@ $.ajaxSetup({
             }
         }
     });
+
+function openStyleDialog() {
+    $("#styledialog").dialog({
+        width: mymodalwith,
+    });
+    $("#styledialog").removeClass('d-none');
+    setStyleValues();
+}
+
+function setStyleValues() {
+    if (typeof (fillcolor) != "undefined") fillInput.value = fillcolor;
+    fillInput = document.getElementById("stylecolor");
+    fillcolor = fillInput.value;
+    fillInput.addEventListener("input", function () {
+        fillcolor = fillInput.value;
+    }, false);
+
+    if (typeof (MyStyleOpacityVar) != "undefined") {
+        $('#mystyleopacity').val(MyStyleOpacityVar);
+        $('#mystyleopacityvalue').val(MyStyleOpacityVar);
+    } else {
+        MyStyleOpacityVar = 10;
+        $('#mystyleopacity').val(MyStyleOpacityVar);
+        $('#mystyleopacityvalue').val(MyStyleOpacityVar);
+    }
+    $('#mystyleopacity').on('input change', function () {
+        MyStyleOpacityVar = $('#mystyleopacity').val();
+        $('#mystyleopacityvalue').val(MyStyleOpacityVar);
+    });
+    $('#mystyleopacityvalue').on('input change', function () {
+        MyStyleOpacityVar = $('#mystyleopacityvalue').val();
+        if (MyStyleOpacityVar > 100)
+            $('#mystyleopacityvalue').val(100);
+        if (MyStyleOpacityVar < 0)
+            $('#mystyleopacityvalue').val(0);
+        $('#mystyleopacity').val(MyStyleOpacityVar);
+    });
+    if (typeof (mystylebordercolor) != "undefined") {
+        stylebordercolorInput = document.getElementById("stylecolorborder");
+        stylebordercolor = stylebordercolorInput.value;
+    } else {
+        mystylebordercolor = "#000000";
+    }
+    stylebordercolorInput = document.getElementById("stylecolorborder");
+    stylebordercolor = stylebordercolorInput.value;
+    stylebordercolorInput.addEventListener("input", function () {
+        mystylebordercolor = stylebordercolorInput.value;
+    }, false);
+
+    if (typeof (mystyleborderwidth) == "undefined") mystyleborderwidth = 1;
+    $('#styleborderwidth').val(mystyleborderwidth);
+    $('#styleborderwidth').on('input change', function () {
+        mystyleborderwidth = $('#styleborderwidth').val();
+        if (mystyleborderwidth < 0)
+            $('#styleborderwidth').val(0);
+    });
+
+}
+
+
+function applyStyle(fill, opacity, border, outline) {
+    myStyle.fillColor = fill;
+    myStyleSquare.fillColor = fill;
+    myStyle.fillOpacity = opacity;
+    myStyleSquare.fillOpacity = opacity;
+    myStyle.weight = outline;
+    myStyleSquare.weight = outline;
+    myStyle.color = border;
+    myStyleSquare.color = border;
+}

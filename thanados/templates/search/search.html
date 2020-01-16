@@ -11,13 +11,15 @@
     <script src="/static/vendor/node_modules/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
     <script src="/static/vendor/node_modules/leaflet.heat/dist/leaflet-heat.js"></script>
     <script src="/static/vendor/node_modules/leaflet.fullscreen/Control.FullScreen.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
     <link href="/static/css/style.css" rel="stylesheet">
 
     <div id="mycontent" class="pb-4">
         <h2 class="my-heading container">Search</h2>
         <div id="mySearchCards" class="m-4 sortable row">
         </div>
-        <button id="AddSearch" class="btn btn-secondary float-right mr-4">New Search</button>
+        <button id="AddSearch" class="btn btn-secondary float-right mr-4 d-none">New Search</button>
     </div>
     <div id="mytreeModal" title="Select category" class="d-none">
         <div>
@@ -40,6 +42,31 @@
             </div>
         </div>
     </div>
+    <div id="styledialog" class="d-none" title="Styling Options for graves">
+            <form id="mystyleform">
+                <div class="mystyleoptions input-group input-group-sm mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="stylecolor">Fill color: </label>
+                    </div>
+                    <input class="form-control" id="stylecolor" style="max-width: 70px" type="color" value="#000dff">
+                    <span class="input-group-text input-group-middle">Opacity (%): </span>
+                    <input class="form-control" id="mystyleopacity" type="range" value="10" min="0" max="100">
+                    <input class="form-control" id="mystyleopacityvalue" type="number" value="10" min="0" max="100"
+                           style="max-width: 60px">
+                </div>
+                <div class="mystyleoptions input-group input-group-sm mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="stylebordercolor">Border color: </label>
+                    </div>
+                    <input class="form-control" id="stylecolorborder" style="max-width: 70px" type="color" value="#000000">
+                    <span class="input-group-text input-group-middle">Border width: </span>
+                    <input class="form-control" id="styleborderwidth" type="number" value="0" min="0">
+                </div>
+                <button class="btn btn-sm btn-secondary btn-sm float-right" type="button" id="applyStyle"
+                        onclick="applyButton()" title="Apply">Apply
+                </button>
+            </form>
+        </div>
 
     <script> test_csrf_token = '{{ csrf_token() }}'; </script>
     <script src="/static/js/search.js"></script>

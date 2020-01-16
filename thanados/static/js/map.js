@@ -198,63 +198,6 @@ function setmap(myjson) {
     attributionChange();
 };
 
-function openStyleDialog() {
-    $("#styledialog").dialog({
-        width: mymodalwith,
-    });
-    setStyleValues();
-}
-
-function setStyleValues() {
-    if (typeof (fillcolor) != "undefined") fillInput.value = fillcolor;
-    fillInput = document.getElementById("stylecolor");
-    fillcolor = fillInput.value;
-    fillInput.addEventListener("input", function () {
-        fillcolor = fillInput.value;
-    }, false);
-
-    if (typeof (MyStyleOpacityVar) != "undefined") {
-        $('#mystyleopacity').val(MyStyleOpacityVar);
-        $('#mystyleopacityvalue').val(MyStyleOpacityVar);
-    } else {
-        MyStyleOpacityVar = 10;
-        $('#mystyleopacity').val(MyStyleOpacityVar);
-        $('#mystyleopacityvalue').val(MyStyleOpacityVar);
-    }
-    $('#mystyleopacity').on('input change', function () {
-        MyStyleOpacityVar = $('#mystyleopacity').val();
-        $('#mystyleopacityvalue').val(MyStyleOpacityVar);
-    });
-    $('#mystyleopacityvalue').on('input change', function () {
-        MyStyleOpacityVar = $('#mystyleopacityvalue').val();
-        if (MyStyleOpacityVar > 100)
-            $('#mystyleopacityvalue').val(100);
-        if (MyStyleOpacityVar < 0)
-            $('#mystyleopacityvalue').val(0);
-        $('#mystyleopacity').val(MyStyleOpacityVar);
-    });
-    if (typeof (mystylebordercolor) != "undefined") {
-        stylebordercolorInput = document.getElementById("stylecolorborder");
-        stylebordercolor = stylebordercolorInput.value;
-    } else {
-        mystylebordercolor = "#000000";
-    }
-    stylebordercolorInput = document.getElementById("stylecolorborder");
-    stylebordercolor = stylebordercolorInput.value;
-    stylebordercolorInput.addEventListener("input", function () {
-        mystylebordercolor = stylebordercolorInput.value;
-    }, false);
-
-    if (typeof (mystyleborderwidth) == "undefined") mystyleborderwidth = 1;
-    $('#styleborderwidth').val(mystyleborderwidth);
-    $('#styleborderwidth').on('input change', function () {
-        mystyleborderwidth = $('#styleborderwidth').val();
-        if (mystyleborderwidth < 0)
-            $('#styleborderwidth').val(0);
-    });
-
-}
-
 function applyButton() {
     applyStyle(fillcolor, (1 - MyStyleOpacityVar / 100), mystylebordercolor, mystyleborderwidth);
     graves.eachLayer(function (layer) {
@@ -264,17 +207,6 @@ function applyButton() {
             layer.setStyle(myStyle)
         }
     });
-}
-
-function applyStyle(fill, opacity, border, outline) {
-    myStyle.fillColor = fill;
-    myStyleSquare.fillColor = fill;
-    myStyle.fillOpacity = opacity;
-    myStyleSquare.fillOpacity = opacity;
-    myStyle.weight = outline;
-    myStyleSquare.weight = outline;
-    myStyle.color = border;
-    myStyleSquare.color = border;
 }
 
 /*function printme() {

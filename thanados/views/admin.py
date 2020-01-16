@@ -1188,6 +1188,12 @@ SELECT DISTINCT 'material' AS level, id::text, name AS text, parent_id::text AS 
 FROM thanados.types_all
 WHERE name_path LIKE 'Material%'
 UNION ALL
+SELECT DISTINCT 'value' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
+FROM thanados.types_all
+WHERE name_path LIKE 'Body Height%' OR
+name_path LIKE 'Isotopic Analyses%' OR
+name_path LIKE 'Absolute Age%'
+UNION ALL
 SELECT DISTINCT 'find' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
 FROM thanados.types_all
 WHERE name_path LIKE 'Find >%'

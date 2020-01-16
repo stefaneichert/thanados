@@ -75,6 +75,7 @@ function appendSearch(Iter) {//append search form to dialog
             '<option value="timespan">Timespan</option>' +
             '<option value="dimension">Dimensions</option>' +
             '<option value="material">Material</option>' +
+            '<option value="value">Value Properties</option>' +
             '</select>' +
             '</div>'
         );
@@ -167,7 +168,7 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
     }
     ;
 
-    if (criteria == 'material') { //if material append form with tree select
+    if (criteria == 'material' || criteria == 'value') { //if material or value append form with tree select
         $('#mysearchform').append(
             '<div id="MaterialSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">' +
             '<div class="input-group-prepend">' +
@@ -183,10 +184,10 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
 
 function appendMaterial(Iter) { //append value input after material is chosen
     $('#MaterialSelect_' + Iter + '_parent').append(
-        '<span class="input-group-text input-group-middle">% min: </span>' +
+        '<span class="input-group-text input-group-middle">min: </span>' +
         '<input id="valMin_' + Iter + '" class="form-control value-input" type="text">' +
         '<div class="input-group-append">' +
-        '<span class="input-group-text input-group-middle">% max: </span>' +
+        '<span class="input-group-text input-group-middle">max: </span>' +
         '</div>' +
         '<input id="valMax_' + Iter + '" class="form-control value-input" type="text">' +
         '<div class="input-group-append">' +
@@ -195,12 +196,14 @@ function appendMaterial(Iter) { //append value input after material is chosen
         '</button>' +
         '</div>'
     );
+    console.log(Iter);
 }
 
 //search functions depending on criteria
 function searchDimMat(criteria, appendLevel, Iter, val1, val2) {
-    val1 = $('#valMin_' + Iter).val();
-    val2 = $('#valMax_' + Iter).val();
+    console.log('prop ' + Iter);
+    var val1 = $('#valMin_' + Iter).val();
+    var val2 = $('#valMax_' + Iter).val();
     goOn = validateNumbers(val1, val2, criteria);
     if (goOn) {
         $('#dimMatButton_' + Iter).prop('disabled', true);
@@ -212,8 +215,12 @@ function searchDimMat(criteria, appendLevel, Iter, val1, val2) {
         $('#valMin_' + Iter).prop('disabled', true);
         $('#valMax_' + Iter).prop('disabled', true);
         dimId = $('#DimensionSelect_' + Iter + ' option:selected').val(); //set criteria variable
-        if (criteria == 'material')
+        if (criteria != 'dimension')
             dimId = nodeIds;
+            console.log(dimId);
+            console.log(appendLevel);
+            console.log(criteria);
+            console.log(val1 + ' - ' + val2);
         if (criteria == 'dimension')
             dimId = $('#DimensionSelect_' + Iter + ' option:selected').val().toLowerCase();
         jsonquery(dimId, appendLevel, criteria, val1, val2);
@@ -590,6 +597,17 @@ function levelQuery(feature, entity, id, prop, val1, val2) {
             }
         });
     }
+    if (prop == 'value' && (typeof (entity.properties.types)) !== 'undefined') {
+        $.each(entity.properties.types, function (m, mat) {
+            tempMatValue = mat.value;
+            if (id.includes(mat.id) && tempMatValue >= val1 && tempMatValue <= val2) {
+                searchResult.push(feature.id);
+                if (finalSearchResultIds.includes(entity.id))
+                    searchResultIds.push(entity.id);
+            }
+        });
+    }
+
 }
 
 

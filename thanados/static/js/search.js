@@ -4,11 +4,24 @@ $(document).ready(function () {
     maximumHeight = ($(window).height() - $('#mynavbar').height())
     $('#mycontent').css('max-height', (maximumHeight - 15) + 'px');
     local = false;
+    mymodalwith = ($(window).width());
+    if (mymodalwith > 500) mymodalwith = 500;
     addSearch();
+});
+
+$(window).resize(function () {
+    //$(".sortable").sortable();
+    //$(".sortable").disableSelection();
+    maximumHeight = ($(window).height() - $('#mynavbar').height())
+    $('#mycontent').css('max-height', (maximumHeight - 15) + 'px');
+    local = false;
+    mymodalwith = ($(window).width());
+    if (mymodalwith > 500) mymodalwith = 500;
 });
 
 $('#AddSearch').click(function () {
     Iter += 1;
+    $('#AddSearch').addClass('d-none');
     addSearch()
 });
 
@@ -39,8 +52,9 @@ function addSearch() {
         '                            <textarea readonly id="SQL' + Iter + '" class="form-control" aria-label="Selected sites" placeholder="Query statement"></textarea>\n' +
         '        </div>\n' +
         '    <div class="float-right">\n' +
-        '        <button class="btn btn-link mySearchbutton" type="button" value="' + Iter + '" class="card-link" onclick="returnQuerystring()">search</button>\n' +
-        '        <button class="btn btn-link myResetbutton" type="button" value="' + Iter + '" class="card-link">reset</button>\n' +
+        '        <button id="SearchBtn' + Iter + '" class="btn btn-link mySearchbutton d-none" type="button" value="' + Iter + '" class="card-link" onclick="returnQuerystring()">Search</button>\n' +
+        '        <button id="ResetBtn' + Iter + '" class="btn btn-link myResetbutton d-none" type="button" value="' + Iter + '" class="card-link">Cancel</button>\n' +
+        '        <button id="RemoveBtn' + Iter + '" class="btn btn-link myRemovebutton d-none" type="button" value="' + Iter + '" class="card-link">Cancel</button>\n' +
         '    </div>\n' +
         '    </div>' +
         '    <div class="card-header" style="border-top: 1px solid rgba(0, 0, 0, 0.125); display: none" id="headingb' + Iter + '">' +
@@ -60,7 +74,7 @@ function addSearch() {
         '                    <tr>\n' +
         '                        <th>Name</th>\n' +
         '                        <th>Type</th>\n' +
-        '                        <th id="Min_' + Iter +'">Begin</th>\n' +
+        '                        <th id="Min_' + Iter + '">Begin</th>\n' +
         '                        <th>End</th>\n' +
         '                        <th>Context</th>\n' +
         '                    </tr>\n' +
@@ -90,11 +104,14 @@ function addSearch() {
         '</div>\n' +
         '</div>');
     $(".myResetbutton").click(function f() {
-        console.log(this.value);
         $("#Query" + this.value).remove();
-        Iter += 1;
-        addSearch();
+        $("#AddSearch").removeClass('d-none');
     });
+
+    $(".myRemovebutton").click(function f() {
+        $("#Query" + this.value).remove();
+    });
+
     $(".mySearchbutton").click(function f() {
         $("#Heading" + Iter).html($('#SQL' + Iter).val());
     });
@@ -106,7 +123,7 @@ function appendSearch() {//append search form to dialog
         //selection for search level: grave, burial or find
         '<div id="LevelSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">\n' +
         '<div class="input-group-prepend">\n' +
-        '<label class="input-group-text" for="LevelSelect_' + Iter + '">' + Iter + '. </label>\n' +
+        '<label class="input-group-text" for="LevelSelect_' + Iter + '">1. </label>\n' +
         '</div>\n' +
         '<select class="custom-select empty" id="LevelSelect_' + Iter + '">\n' +
         '<option selected disabled>Select search level...</option>\n' +
@@ -118,6 +135,7 @@ function appendSearch() {//append search form to dialog
         '</div>');
     //after main level is selected:
     $('#LevelSelect_' + Iter).on('change', function () {
+        $('#ResetBtn' + Iter).removeClass('d-none');
         appendLevel = $('#LevelSelect_' + Iter + ' option:selected').val(); //set level as variable
         Querystring = 'Search for "' + $('#LevelSelect_' + Iter + ' option:selected').text() + '"';
         $('#SQL' + Iter).val(Querystring);
@@ -134,7 +152,7 @@ function appendSearch() {//append search form to dialog
             '<option value="timespan">Timespan</option>\n' +
             '<option value="dimension">Dimensions</option>\n' +
             '<option value="material">Material</option>\n' +
-            '<option value="text">Search in Text</option>\n' +
+            '<option value="value">Value property</option>\n' +
             '</select>\n' +
             '</div>'
         );
@@ -243,7 +261,7 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
     }
     ;
 
-    if (criteria == 'material') { //if material append form with tree select
+    if (criteria == 'material' || criteria == 'value') { //if material append form with tree select
         $('#Form' + Iter).append(
             '<div id="MaterialSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">\n' +
             '<div class="input-group-prepend">\n' +
@@ -259,10 +277,10 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
 
 function appendMaterial(Iter) { //append value input after material is chosen
     $('#MaterialSelect_' + Iter + '_parent').append(
-        '<span class="input-group-text input-group-middle">% min: </span>\n' +
+        '<span class="input-group-text input-group-middle">min: </span>\n' +
         '<input id="valMin_' + Iter + '" class="form-control value-input" type="text">\n' +
         '<div class="input-group-append">\n' +
-        '<span class="input-group-text input-group-middle">% max: </span>\n' +
+        '<span class="input-group-text input-group-middle">max: </span>\n' +
         '</div>\n' +
         '<input id="valMax_' + Iter + '" class="form-control value-input" type="text">\n' +
         '<div class="input-group-append">\n' +
@@ -309,6 +327,11 @@ function searchDimMat(criteria, appendLevel, iter, val1, val2) {
             dimId = nodeIds;
         }
         ;
+        if (criteria == 'value') {
+            var SQLString = (' between ' + val1 + ' and ' + val2)
+            dimId = nodeIds;
+        }
+        ;
         if (criteria == 'dimension') dimId = $('#DimensionSelect_' + iter + ' option:selected').val().toLowerCase();
         $('#type' + iter).val(dimId);
         $('#SQL' + iter).val($('#SQL' + iter).val() + SQLString);
@@ -337,12 +360,15 @@ function searchTime(criteria, appendLevel, iter, val1, val2) {
 }
 
 function returnQuerystring() {
+    $('#SearchBtn' + Iter).addClass('disabled');
+    $('#ResetBtn' + Iter).addClass('d-none');
+    $('#RemoveBtn' + Iter).removeClass('d-none');
+    $('#AddSearch').removeClass('d-none');
     var mylevel = $('#level' + Iter).val();
     mycriteria = $('#criteria' + Iter).val();
     var mymin = $('#min' + Iter).val();
     var mymax = $('#max' + Iter).val();
     var mytypes = $('#type' + Iter).val();
-    console.log(mylevel + ', ' + mycriteria + ', ' + mymin + ', ' + mymax + ', ' + mytypes);
     var system_type = mylevel;
     if (mylevel == 'burial_site') var system_type = 'place';
     if (mylevel == 'strat') var system_type = 'stratigraphic unit';
@@ -366,7 +392,6 @@ function returnQuerystring() {
             } else {
                 $('#Resultlist' + Iter).html('Results (' + result.length + ')')
                 eval('result_' + Iter + '= result;');
-                console.log(eval('result_' + Iter));
                 setdatatable(result, mycriteria);
                 $('#collapseList' + Iter).toggle();
                 eval('map' + Iter).invalidateSize()
@@ -399,13 +424,15 @@ function setdatatable(data) {
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                     $(nTd).html("<div title='" + oData.path + "'>" + oData.type + "</div> ");
                     if (mycriteria == 'type' || mycriteria == 'maintype') var myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_blank"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + oData.type + '</i>'
-                    if (mycriteria == 'timespan') var myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_blank"><b>' + oData.context + '</b></a><br><br><i>Timespan: ' + oData.min + ' to ' + oData.max +'</i>'
+                    if (mycriteria == 'timespan') var myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_blank"><b>' + oData.context + '</b></a><br><br><i>Timespan: ' + oData.min + ' to ' + oData.max + '</i>'
                     if (mycriteria == 'dimension') var myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_blank"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + oData.type + ': ' + oData.min + '</i>'
                     if (mycriteria == 'material') {
                         var matString = oData.type;
                         if (oData.min > 0) var matString = oData.type + ': ' + oData.min + '%';
                         var myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_blank"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + matString + '</i>'
                     }
+                    if (mycriteria == 'value') var myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_blank"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + oData.type + ': ' + oData.min + '</i>'
+
                     //create markers
                     var marker = L.marker([((oData.lon)), ((oData.lat))], {title: (oData.context)}).addTo(mymarkers).bindPopup(myPopupLine);
                     ;
@@ -419,8 +446,7 @@ function setdatatable(data) {
     });
     eval('table' + Iter + '= table');
     if (mycriteria == 'type' || criteria == 'maintype') table.columns([2, 3]).visible(false);
-    if (mycriteria == 'material' || mycriteria == 'dimension')
-    {
+    if (mycriteria == 'material' || mycriteria == 'dimension') {
         table.columns([3]).visible(false);
         $('#Min_' + Iter).html('Value');
     }
@@ -471,25 +497,7 @@ function setmymap(markers, heatmarkers) {
 
     //initiate markers
     var heatmarkersNew = JSON.parse(JSON.stringify(heatmarkers).replace(/"/g, ''));
-    console.log(heatmarkersNew)
     heat = L.heatLayer(heatmarkersNew, {radius: 25, minOpacity: 0.5, blur: 30});
-
-
-    //eval('var myGeoJSON = (createResult(result_' + Iter + ', ' + Iter + '))');
-
-    /*L.geoJSON(myGeoJSON, {
-        pointToLayer: function (feature, latlng) {
-                return L.circleMarker(latlng,
-                    {
-				radius: 8,
-				fillColor: "#ff0014",
-				color: "#000",
-				weight: 1,
-				opacity: 1,
-				fillOpacity: 0.8
-			});
-            }
-    }).addTo((eval('map' + Iter)));*/
 
     var overlays = {
         "Sites": clustermarkers,
@@ -504,6 +512,23 @@ function setmymap(markers, heatmarkers) {
 
     L.control.scale({imperial: false}).addTo((eval('map' + Iter)));//scale on map
     (eval('map' + Iter)).invalidateSize();
+
+    L.easyButton({
+        id: '' + Iter + '',  // an id for the generated button
+        position: 'topleft',      // inherited from L.Control -- the corner it goes in
+        type: 'replace',          // set to animate when you're comfy with css
+        leafletClasses: true,     // use leaflet classes to style the button?
+        states: [{                 // specify different icons and responses for your button
+            stateName: 'get-center',
+            onClick: function (button, map) {
+                currentID = button.options.id;
+                openStyleDialog();
+            },
+            title: 'style result',
+            icon: 'fa-crosshairs'
+        }]
+    }).addTo(eval('map' + Iter));
+
 
 }
 
@@ -554,7 +579,35 @@ function createResult(data, iter) { //finish query and show results on map
         feature.results = feature.search.length
     })
 
-    return (jsonresult);
-
+    eval('myGeoJSON' + Iter + '  = JSON.parse(JSON.stringify(jsonresult))');
+    resultrange = [];
+    eval('customResult' + Iter + ' = L.geoJSON(jsonresult, {' +
+        'pointToLayer: function (feature, latlng) {' +
+        'return L.circleMarker(latlng, myStyle)' +
+        '},' +
+        'onEachFeature: function (feature, layer) {' +
+        'var myPopup = \'<a href="/entity/\' + feature.id + \'" title="\' + feature.properties.path + \'" target="_blank"><b>\' + feature.properties.name + \'</b></a><br><br><i>Search results here: \' + feature.results + \'</i>\';' +
+        'layer.bindPopup(myPopup);' +
+        '}' +
+        '}).addTo(map' + Iter + ');')
 
 }
+
+function applyButton() {
+    applyStyle(fillcolor, (1 - MyStyleOpacityVar / 100), mystylebordercolor, mystyleborderwidth);
+    eval('if (typeof(customResult' + currentID + ') != "undefined") map' + currentID + '.removeLayer(customResult' + currentID +');')
+    eval('createResult(result_' + currentID +', ' + currentID +')');
+    $('#styledialog').dialog('close');
+
+}
+
+
+myStyle = {
+    "color": "rgba(0,123,217,0.75)",
+    "weight": 1.5,
+    "fillOpacity": 0.5,
+    "radius": 10
+    //"opacity": 0.4
+};
+
+myStyleSquare = {};
