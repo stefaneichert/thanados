@@ -1,13 +1,13 @@
 function setJson(data) {
-        countGeom = 0
-        $.each(data.features, function (i, feature) {
-            if (typeof (feature.geometry) != 'undefined') {
-                countGeom += 1;
-            }
-        })
-        if (countGeom == 0) return false;
-        if (countGeom > 0) return true;
-    }
+    countGeom = 0
+    $.each(data.features, function (i, feature) {
+        if (typeof (feature.geometry) != 'undefined') {
+            countGeom += 1;
+        }
+    })
+    if (countGeom === 0) return false;
+    if (countGeom > 0) return true;
+}
 
 /**
  * When searching a table with accented characters, it can be frustrating to have
@@ -68,11 +68,14 @@ function AccRemove() {
 }
 
 function exportToJsonFile(data) {
-    L.extend(data, {
-        name: myjson.name,
-        properties: myjson.properties,
-        site_id: myjson.site_id
-    });
+    if (typeof (myjson) != 'undefined') {
+        L.extend(data, {
+            name: myjson.name,
+            properties: myjson.properties,
+            site_id: myjson.site_id
+        });
+    }
+
     var mydata = JSON.stringify(data).replace('\u2028', '\\u2028').replace('\u2029', '\\u2029');
     var file = new Blob([mydata]);
     if (window.navigator.msSaveOrOpenBlob) // IE10+
@@ -92,15 +95,15 @@ function exportToJsonFile(data) {
 }
 
 function openInNewTab(url) {
-  var win = window.open(url, '_self'); //change to _blank for new tabs.
-  win.focus();
+    var win = window.open(url, '_self'); //change to _blank for new tabs.
+    win.focus();
 }
 
 
 function attributionChange() {
     $(".leaflet-control-attribution").find(':first-child').remove();
-var val = $(".leaflet-control-attribution").html();
-$(".leaflet-control-attribution").html(val.substring(2, val.length));
+    var val = $(".leaflet-control-attribution").html();
+    $(".leaflet-control-attribution").html(val.substring(2, val.length));
 }
 
 $(document).ready(function () {
@@ -122,7 +125,9 @@ function setlogo() {
     }
 }
 
-$(window).resize(function () {setlogo()})
+$(window).resize(function () {
+    setlogo()
+})
 
 //build jstree after criteria and level for search in Map and Global search
 
@@ -131,12 +136,12 @@ function iniateTree(Iter, appendLevel, criteria, targetField) {
     UnsetGlobalVars(); //reset vars
     //define search criteria
     treecriteria = criteria;
-    if (criteria == 'maintype') treecriteria = appendLevel;
+    if (criteria === 'maintype') treecriteria = appendLevel;
 
     //build tree after selected criteria
     selectedtypes = [];
     $.each(jsontypes, function (j, entry) {
-        if (entry.level == treecriteria) {
+        if (entry.level === treecriteria) {
             selectedtypes.push(entry);
         }
     });
@@ -190,6 +195,10 @@ function iniateTree(Iter, appendLevel, criteria, targetField) {
 //show tree in modal
     $("#mytreeModal").dialog({
         modal: true,
+        closeOnEscape: false,
+        open: function (event, ui) {
+            if (local === false) $(".ui-dialog-titlebar-close").hide();
+        },
         classes: {
             "ui-dialog": "custom-tree"
         }
@@ -211,7 +220,6 @@ function iniateTree(Iter, appendLevel, criteria, targetField) {
         $('#jstree').jstree(true).refresh();
 
     }
-    ;
 }
 
 function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, appendLevel, Iter, val1, val2) {
@@ -237,12 +245,12 @@ function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, app
             $("#Heading" + Iter).html($('#SQL' + Iter).val());
             $('#type' + Iter).val(nodeIds);
             $('#mytreeModal').dialog("close");
-            $('#SearchBtn' + Iter).removeClass('d-none');
+            if (criteria === 'type' || criteria === 'maintype') returnQuerystring();
         }
     }
-    if (GlobalNodeSelected == '')
+    if (GlobalNodeSelected === '')
         alert('select property first');
-    if (Globalcriteria == 'material' && GlobalNodeSelected !== '' || Globalcriteria == 'value' && GlobalNodeSelected !== '') {
+    if (Globalcriteria === 'material' && GlobalNodeSelected !== '' || Globalcriteria === 'value' && GlobalNodeSelected !== '') {
         $('#SQL' + Iter).val($('#SQL' + Iter).val() + ' is "' + GlobalSelectedNodeName + '"');
         $("#Heading" + Iter).html($('#SQL' + Iter).val());
         $('#' + targetField).text(SelectedNodeName);
@@ -250,11 +258,10 @@ function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, app
         setNodes(NodeSelected);
         $('#type' + Iter).val(nodeIds);
         $('#mytreeModal').dialog("close");
-        console.log(Iter);
+        //debug // console.log(Iter);
         appendMaterial(Iter);
     }
 }
-;
 
 function setNodes(state) {
     nodes = [];
@@ -277,7 +284,6 @@ function traverse(state) {
             traverse(child);
         });
     }
-    ;
 }
 
 function getNodeIds(nodes) {
@@ -299,49 +305,53 @@ function UnsetGlobalVars() { //global vars needed for appended buttons in search
 }
 
 function validateNumbers(val1, val2, criteria) { //validate numbers and continue of valid or resume with alert if invalid
-    if (criteria == 'timespan' && val1 == '' ) {
-        alert('Please enter valid timerange');
-        return false;
-    };
+    //debug // console.log(criteria + '- 1: ' + val1 + ' - 2: ' + val2);
 
-    if (criteria == 'timespan' && val2 == '' ) {
+    if (criteria === 'timespan' && val1 === '') {
         alert('Please enter valid timerange');
         return false;
     }
 
-    if (criteria == 'value' && val1 == '' && val2 == '') {
-        alert('Please enter valid range');
+    if (criteria === 'timespan' && val2 === '') {
+        alert('Please enter valid timerange');
         return false;
-    };
+    }
+
+    if (criteria === 'value') {
+        if (val1 === '' || val2 === '') {
+            alert('Please enter valid range');
+            return false;
+        }
+    }
 
     if (isNaN(val1) || isNaN(val2)) {
         alert('Please enter valid numbers');
         return false;
     }
-    ;
+
     if (val1 > val2 && val2 !== '') {
+        //debug //     console.log('1: ' + val1 + ' - 2: ' + val2);
         alert('First value must be lower than second value');
         return false;
     }
-    ;
-    if (criteria == 'material') {
+
+    if (criteria === 'material') {
         if (val1 < 0 || val2 < 0 || val1 > 100 || val2 > 100) {
             alert('Values must be between 0 and 100 (%)')
             return false;
         }
     }
-    ;
-    if (typeof(Iter) != 'undefined') $('#SearchBtn' + Iter).removeClass('d-none');
+
     return true;
 }
 
 $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", test_csrf_token);
-            }
+    beforeSend: function (xhr, settings) {
+        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", test_csrf_token);
         }
-    });
+    }
+});
 
 function openStyleDialog() {
     $("#styledialog").dialog({
