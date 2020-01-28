@@ -196,6 +196,8 @@ function setmap(myjson) {
         attributionChange()
     });
     attributionChange();
+
+    printMapbutton('map', 'topright');
 };
 
 function applyButton() {
@@ -684,7 +686,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         var dimunit = dimensions.unit;
 
         $('#myModalDimensionscontainer' + entId).append(
-                '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' ' + dimunit +'</div>');
+            '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' ' + dimunit + '</div>');
 
     });
 

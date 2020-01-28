@@ -422,3 +422,18 @@ function applyStyle(fill, opacity, border, outline) {
     myStyle.color = border;
     myStyleSquare.color = border;
 }
+
+
+function printMapbutton(id, position) {
+
+    currentID = id;
+    console.log(currentID);
+    //eval('printPlugin_' + currentID + ' = L.easyPrint({position: "topleft", hidden: true, sizeModes: ["A4Landscape"], filename: "ThanadosMap"}).addTo(' + currentID + ');');
+    //console.log('filePlugin_' + currentID + ' = L.easyPrint({position: "topleft", hidden: true, sizeModes: ["A4Landscape"], exportOnly: true, filename: "ThanadosMap"}).addTo(' + currentID + ');');
+    //eval('filePlugin_' + currentID + ' = L.easyPrint({position: "topleft", hidden: true, sizeModes: ["A4Landscape"], exportOnly: true, filename: "ThanadosMap"}).addTo(' + currentID + ');');
+    eval('L.easyPrint({position: "' + position + '", title: "Export map as image file", sizeModes: ["A4Landscape", "A4Portrait"], exportOnly: true, filename: "ThanadosMap"}).addTo(' + currentID + ');');
+    //eval('printPlugin_' + currentID + '.printMap("A4Portrait", "MyFileName");');
+    $('#leafletEasyPrint').html('<span class="fas fa-image"></span>');
+    $('#leafletEasyPrint').removeClass('leaflet-control-easyPrint-button-export');
+    $('#leafletEasyPrint').css({'background-image': '', 'background-size': '16px 16px', 'cursor': 'pointer'});
+}

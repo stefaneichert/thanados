@@ -693,7 +693,7 @@ function setmymap(markers, heatmarkers) {
         }]
     }).addTo(eval('map' + Iter));
 
-
+    printMapbutton(('map' + Iter), 'topleft');
 }
 
 function createResult(data, iter) { //finish query and show results on map
@@ -770,7 +770,7 @@ function applyButton() {
 
 
 myStyle = {
-    "color": "rgba(0,123,217,0.75)",
+    "color": "rgba(0,96,180,0.88)",
     "weight": 1.5,
     "fillOpacity": 0.5,
     "radius": 10
