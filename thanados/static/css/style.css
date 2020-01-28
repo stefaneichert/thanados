@@ -530,3 +530,11 @@ table.dataTable thead .sorting_desc_disabled:after {
   outline: 0;
   box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.25);
 }
+
+.ui-widget-overlay
+{
+  opacity: .50 !important; /* Make sure to change both of these, as IE only sees the second one */
+  filter: Alpha(Opacity=50) !important;
+
+  background: rgb(50, 50, 50) !important; /* This will make it darker */
+}

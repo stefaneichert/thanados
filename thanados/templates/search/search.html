@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <link href="/static/vendor/node_modules/leaflet.markercluster/dist/MarkerCluster.css" rel="stylesheet">
+    <link href="/static/vendor/node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css"
+          rel="stylesheet">
+    <link href="/static/vendor/node_modules/leaflet.fullscreen/Control.FullScreen.css" rel="stylesheet">
+    <link href="/static/vendor/node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet">
+    <script src="/static/vendor/node_modules/datatables.net/js/jquery.dataTables.js"></script>
+    <script src="/static/vendor/node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script src="/static/vendor/node_modules/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+    <script src="/static/vendor/node_modules/leaflet.heat/dist/leaflet-heat.js"></script>
+    <script src="/static/vendor/node_modules/leaflet.fullscreen/Control.FullScreen.js"></script>
+    <link rel="stylesheet"
+          href="/static/vendor/node_modules/leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.css">
+    <script src="/static/vendor/node_modules/leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.js"></script>
+    <link href="/static/css/style.css" rel="stylesheet">
+
+
+
+
+    <div id="mycontent" class="pb-4">
+        <h2 class="my-heading container">Search</h2>
+        <div id="mySearchCards" class="m-4 sortable row">
+        </div>
+        <button id="AddSearch" class="btn btn-secondary float-right mr-4 d-none">New Search</button>
+    </div>
+    <div id="mytreeModal" title="Select category" class="d-none">
+        <div>
+            <div id="TreeMenu" class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                    <label for="jstree_q"></label><input id="jstree_q" class="form-control form-control-sm" type="text"
+                                                         placeholder="type to search...">
+                </div>
+                <div class="input-group-append">
+                    <button class="btn btn-secondary btn-sm" type="button"
+                            onclick="transferNode(GlobaltargetField, GlobalNodeSelected, GlobalSelectedNodeName, Globalcriteria, GlobalappendLevel, Globaliter, 'false')"
+                            id="confirmNodeBtn">Select
+                    </button>
+                </div>
+            </div>
+            <div id="myTreeModalContent">
+                <form id="jstree-div">
+                    <div id="jstree"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="styledialog" class="d-none" title="Styling Options for graves">
+        <form id="mystyleform">
+            <div class="mystyleoptions input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="stylecolor">Fill color: </label>
+                </div>
+                <input class="form-control" id="stylecolor" style="max-width: 70px" type="color" value="#000dff">
+                <span class="input-group-text input-group-middle">Opacity (%): </span>
+                <label for="mystyleopacity"></label><input class="form-control" id="mystyleopacity" type="range"
+                                                           value="10" min="0" max="100">
+                <label for="mystyleopacityvalue"></label><input class="form-control" id="mystyleopacityvalue"
+                                                                type="number" value="10" min="0" max="100"
+                                                                style="max-width: 60px">
+            </div>
+            <div class="mystyleoptions input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="stylebordercolor">Border color: </label>
+                </div>
+                <label for="stylecolorborder"></label><input class="form-control" id="stylecolorborder"
+                                                             style="max-width: 70px" type="color" value="#000000">
+                <span class="input-group-text input-group-middle">Border width: </span>
+                <label for="styleborderwidth"></label><input class="form-control" id="styleborderwidth" type="number"
+                                                             value="0" min="0">
+            </div>
+            <button class="btn btn-sm btn-secondary btn-sm float-right" type="button" id="applyStyle"
+                    onclick="applyButton()" title="Apply">Apply
+            </button>
+        </form>
+    </div>
+
+    <script> test_csrf_token = '{{ csrf_token() }}'; </script>
+    <script src="/static/js/search.js"></script>
+    <script>    jsontypes =
+    {{ typesjson|tojson }} </script>
+    <script>    sitelist =
+    {{ sitelist|tojson }}    </script>
+
+{% endblock %}

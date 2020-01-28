@@ -27,6 +27,12 @@
     <script src="/static/vendor/node_modules/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="/static/vendor/node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js"></script>
     <script src="/static/vendor/node_modules/vanilla-lazyload/dist/lazyload.min.js"></script>
+    <script src="/static/vendor/node_modules/dom-to-image/dist/dom-to-image.min.js"></script>
+    <script src="/static/vendor/node_modules/file-saver/dist/FileSaver.min.js"></script>
+    <script src="/static/vendor/node_modules/leaflet-easyprint/dist/bundle.js"></script>
+        <link rel="stylesheet" href="/static/vendor/node_modules/leaflet-easybutton/src/easy-button.css">
+    <script src="/static/vendor/node_modules/leaflet-easybutton/src/easy-button.js"></script>
+
     <script src="/static/js/globalfunctions.js"></script>
 
 
@@ -53,6 +59,9 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('charts') }}">Charts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('search') }}">Search</a>
                 </li>
                 <li class="nav-item" style="margin-right: 2em">
                     <a class="nav-link" href="{{ url_for('about') }}">About</a>

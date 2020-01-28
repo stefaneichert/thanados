@@ -80,7 +80,7 @@
             <input type="text" id="max1" name="max">
         </div>
 
-        <div class="row" style="margin: 1em">
+        <div class="row sortable" style="margin: 1em">
             <div class="col col-lg-6 mymargin">
                 <div class="card" id="card_depth-chart">
                     <div class="card-header" id="headingOne">
@@ -171,14 +171,13 @@
                     </div>
                 </div>
             </div>
-
             <div class="col col-lg-6 mymargin mymargin">
                 <div class="card" id="card_azimuthchart">
                     <div class="card-header" id="headingTwo">
                         <h5 class="mb-0">
                             <button class="btn btn-link" type="button" data-toggle="collapse"
-                                    data-target="#collapseTwo" aria-expanded="true"
-                                    aria-controls="collapseTwo">
+                                    data-target="#collapseAzi" aria-expanded="true"
+                                    aria-controls="collapseAzi">
                                 Azimuth of gravepits
                             </button>
                             <button id="azimuthchart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
@@ -193,7 +192,7 @@
                             </button>
                         </h5>
                     </div>
-                    <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">
+                    <div id="collapseAzi" class="collapse show" aria-labelledby="headingTwo">
                         <div class="card-body">
                             <div id="azimuth-chart-container">
                                 <canvas id="azimuth-chart" class="chartcontainer"></canvas>
