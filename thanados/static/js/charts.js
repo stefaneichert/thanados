@@ -1,3 +1,8 @@
+$(document).ready(function () {
+    $(".sortable").sortable();
+    $(".sortable").disableSelection();
+});
+
 //prepare charts/plots and data
 mysite_ids = site_ids;
 if (site_ids.length > 20) {
