@@ -3,6 +3,7 @@ import ast
 from flask import jsonify, request, g
 
 from thanados import app
+from thanados.models.entity import Data
 
 
 @app.route('/ajax/test', methods=['POST'])
@@ -32,7 +33,7 @@ def ajax_test() -> str:
            'site_id', d.site_id,
            'context', d.context
            )) AS result FROM 
-           (SELECT * FROM thanados.searchData WHERE system_type = %(system_type)s AND type_id IN %(type_ids)s) d
+           (SELECT * FROM thanados.searchData WHERE site_id IN %(site_ids)s AND system_type = %(system_type)s AND type_id IN %(type_ids)s) d
            """
 
     if (criteria == 'timespan'):
@@ -54,7 +55,7 @@ def ajax_test() -> str:
            'site_id', d.site_id,
            'context', d.context
            )) AS result FROM 
-           (SELECT * FROM thanados.searchData WHERE system_type = %(system_type)s AND type_id = 0 AND min >= %(min)s AND max <= %(max)s) d
+           (SELECT * FROM thanados.searchData WHERE site_id IN %(site_ids)s AND system_type = %(system_type)s AND type_id = 0 AND min >= %(min)s AND max <= %(max)s) d
            """
 
     if (criteria == 'dimension') or (criteria == 'material') or (criteria == 'value'):
@@ -76,11 +77,12 @@ def ajax_test() -> str:
                'site_id', d.site_id,
                'context', d.context
                )) AS result FROM 
-               (SELECT * FROM thanados.searchData WHERE system_type = %(system_type)s AND type_id IN %(type_ids)s AND min >= %(min)s AND max <= %(max)s) d
+               (SELECT * FROM thanados.searchData WHERE site_id IN %(site_ids)s AND  system_type = %(system_type)s AND type_id IN %(type_ids)s AND min >= %(min)s AND max <= %(max)s) d
            """
 
-    g.cursor.execute(sql, {'system_type': system_type,
-                           'type_ids': tuple(ast.literal_eval('[' + request.form['types'] + ']')),
+    g.cursor.execute(sql, {'site_ids': Data.get_site_ids(),
+                           'system_type': system_type,
+                           'type_ids': type_ids,
                            'min': min,
                            'max': max})
     # print(jsonify(g.cursor.fetchall()['result']))
