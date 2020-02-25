@@ -1,4 +1,4 @@
-$(".visbutton").click(startvis);
+
 
 function startvis() {
     $('#myvisform').empty();
@@ -294,12 +294,8 @@ function toggleOpt() {
 }
 
 function finishvis() {
-    if (document.getElementById('showlegend').checked) {
-        mylegend = true;
-    } else {
-        mylegend = false;
-    }
-    ;
+    mylegend = !!document.getElementById('showlegend').checked;
+
 
     myfinalopacity = (100 - myopacity) / 100;
     if (visappendLevel !== 'sex') getChoroplethJson(visproperty, visappendLevel, mylegendtitle, mysteps, mymode, [colorstart, colorend], mybordercolor, myborderwidth, myfinalopacity, mylegend);
@@ -326,7 +322,7 @@ function getChoroplethJson(visproperty, visappendLevel, title, mysteps, mymode, 
             }
         })
     }
-    ;
+
 
     if (visappendLevel == 'age') {
         $.each(mypolyjson.features, function (i, feature) {
@@ -357,7 +353,7 @@ function getChoroplethJson(visproperty, visappendLevel, title, mysteps, mymode, 
             }
         })
     }
-    ;
+
 
     if (visappendLevel == 'findcount') {
         $.each(mypolyjson.features, function (i, feature) {
@@ -380,7 +376,7 @@ function getChoroplethJson(visproperty, visappendLevel, title, mysteps, mymode, 
             }
         })
     }
-    ;
+
 
     if (visappendLevel == 'sex') {
         $.each(mypolyjson.features, function (i, feature) {
@@ -414,12 +410,12 @@ function getChoroplethJson(visproperty, visappendLevel, title, mysteps, mymode, 
                             }
                         })
                     }
-                    ;
+
                 });
             }
         })
     }
-    ;
+
 
     if (visappendLevel == 'burialdim') {
         $.each(mypolyjson.features, function (i, feature) {
@@ -438,7 +434,7 @@ function getChoroplethJson(visproperty, visappendLevel, title, mysteps, mymode, 
             }
         })
     }
-    ;
+
 
     if (visappendLevel !== 'sex') setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth, myfinalopacity, mylegend);
     if (visappendLevel == 'sex') setSexJson(title, colorstart, colorend, myborder, myborderwidth, myfinalopacity, mylegend);

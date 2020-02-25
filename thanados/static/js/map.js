@@ -2,6 +2,7 @@
 $(document).ready(function () {
     $("#sidebarTitle").text(myjson.name);
     markerset = false;
+    getBasemaps();
     setmap(myjson);
     console.log(myjson);
 });
@@ -11,13 +12,13 @@ $(document).ready(function () {
 
 //filter to get polygons from the geojson
 function polygonFilter(feature) {
-    if (feature.geometry.type == "Polygon")
+    if (feature.geometry.type === "Polygon")
         return true
 }
 
 //filter to get points from the geojson
 function pointFilter(feature) {
-    if (feature.geometry.type == "Point")
+    if (feature.geometry.type === "Point")
         return true
 }
 
@@ -26,37 +27,17 @@ function setmap(myjson) {
 //set sidebar to current json
     if (myjson.features[0].id !== 0) setSidebarContent(myjson);
 
-    //set attribution title
-    mywindowtitle = 'THANADOS: ' + myjson.name + '. ';
 
-//define basemaps
-    var landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=b3c55fb5010a4038975fd0a0f4976e64', {
-        attribution: mywindowtitle + 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        maxZoom: 25
-    });
-
-    var satellite = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'], attribution: mywindowtitle + 'Tiles: &copy; Google Maps ',
-        maxZoom: 25
-    });
-
-    var basemap = L.tileLayer.wms('http://geoportal.cuzk.cz/WMS_ZM10_PUB/WMService.aspx', {
-        layers: 'GR_ZM10',
-        maxZoom: 25
-    });
-
-    if (myjson.site_id == 111285) {
-        var imageUrl = '/static/images/entities/112757.png';
-        var imageBounds = [[49.99800, 14.99246], [49.99747, 14.99328]];
-        plot = L.imageOverlay(imageUrl, imageBounds);
-    }
 
 //define map
     map = L.map('map', {
         zoom: 22,
         zoomControl: false,
-        layers: [satellite, landscape]
+        layers: [landscape, satellite, streets]
     });
+
+    //hack to show landscape first
+    map.removeLayer(streets)
 
 
 //style polygons
@@ -110,13 +91,12 @@ function setmap(myjson) {
                 centerpoint = latlng;
                 markerset = true;
             }
-            ;
         },
     });
 
     //style the point geometry graves with a dashed line
     graves.eachLayer(function (layer) {
-        if (layer.feature.derivedPoly == 'true') {
+        if (layer.feature.derivedPoly === 'true') {
             layer.setStyle(myStyleSquare)
         }
     });
@@ -140,7 +120,7 @@ function setmap(myjson) {
         }
 
     }
-    ;
+
     myzoom = (map.getZoom());
     if (myzoom > 20) map.setZoom(20);
 
@@ -157,11 +137,7 @@ function setmap(myjson) {
 
 
 //define map control
-    baseLayers = {
-        "Landscape": landscape,
-        "Satellite": satellite,
-        //"BasemapCZ": basemap,
-    };
+
 
     var overlays = {
         "Graves": graves,
@@ -169,41 +145,66 @@ function setmap(myjson) {
         "Search result markers": resultpoints
     };
 
-//add layer control
+    //add option button and exportbutton for map as image
+    printMapbutton('map', 'topleft');
+
+    L.easyButton({
+        id: 'stylebutton',  // an id for the generated button
+        position: 'topleft',      // inherited from L.Control -- the corner it goes in
+        type: 'replace',          // set to animate when you're comfy with css
+        leafletClasses: true,     // use leaflet classes to style the button?
+        states: [{                 // specify different icons and responses for your button
+            stateName: 'get-center',
+            onClick: function (button, map) {
+                openStyleDialog();
+            },
+            title: 'style options for graves',
+            icon: 'fas fa-palette'
+        }]
+    }).addTo(map);
+
+    L.easyButton({
+        id: 'SidebarButton',  // an id for the generated button
+        position: 'topleft',      // inherited from L.Control -- the corner it goes in
+        type: 'replace',          // set to animate when you're comfy with css
+        leafletClasses: true,     // use leaflet classes to style the button?
+        states: [{                 // specify different icons and responses for your button
+            stateName: 'sidebar',
+            onClick: function (button, map) {
+                animateSidebar();
+            },
+            title: 'toggle sidebar',
+            icon: 'fas fa-exchange-alt'
+        }]
+    }).addTo(map);
+
+    addFilterSearch();
+
+    //add layer control
     baseControl = L.control.layers(baseLayers, overlays).addTo(map);
 
+
 //hack for right order of basemaps
-    map.removeLayer(satellite);
+    map.removeLayer(Esri_WorldImagery);
 
     L.control.scale({imperial: false}).addTo(map);
 
     //initiate selection of clicked polygons
     polygonSelect();
 
-    /*todo: fix image export
-    printPlugin = L.easyPrint({
-        position: 'topleft',
-        sizeModes: ['Current'],
-        filename: 'myMap',
-        exportOnly: true,
-        hideClasses: ['leaflet-control-layers-toggle', 'mapbutton', 'mapbutton', 'dropdown-menu', 'dropdown-menu'],
-        hideControlContainer: false,
-        hidden: true,
-    }).addTo(map);
-    */
-
     map.on('baselayerchange', function (e) {
         attributionChange()
     });
     attributionChange();
 
-    printMapbutton('map', 'topright');
-};
+    $('.leaflet-control-layers-toggle').css({'background-image': ''});
+
+}
 
 function applyButton() {
     applyStyle(fillcolor, (1 - MyStyleOpacityVar / 100), mystylebordercolor, mystyleborderwidth);
     graves.eachLayer(function (layer) {
-        if (layer.feature.derivedPoly == 'true') {
+        if (layer.feature.derivedPoly === 'true') {
             layer.setStyle(myStyleSquare)
         } else {
             layer.setStyle(myStyle)
@@ -211,17 +212,12 @@ function applyButton() {
     });
 }
 
-/*function printme() {
-    printPlugin.printMap('CurrentSize');
-};*/
-
-
 //openpolygon for active sidebargrave
 function showpolygon(id) {
     var polys = L.geoJSON(mypolyjson, {
             onEachFeature: function (feature, layer) {
-                if (feature.id == id) {
-                    if (feature.properties.maintype.systemtype == 'feature') {
+                if (feature.id === id) {
+                    if (feature.properties.maintype.systemtype === 'feature') {
                         selectedpolys.clearLayers();
                         var polyPoints = layer.getLatLngs()
                         var selectedpoly = L.polygon(polyPoints, {color: 'red'});
@@ -232,14 +228,14 @@ function showpolygon(id) {
                     if (typeof (newMarker) !== 'undefined') {
                         map.removeLayer(newMarker);
                     }
-                    ;
+
                 }
-                ;
+
             }
         }
     );
 }
-;
+
 
 //**select overlapping polygons on click**//
 ///////////////////////////////////////////////
@@ -260,7 +256,7 @@ function polygonSelect() {
         if (typeof (newMarker) !== 'undefined') {
             map.removeLayer(newMarker);
         }
-        ;
+
         popupContent = '';
         newMarker = new L.marker(e.latlng, {icon: invisIcon}); //global to have it for further use
 
@@ -285,16 +281,16 @@ function polygonSelect() {
                 if (down)
                     $('#btn' + oldcollapsediv).removeClass('fa-chevron-down').addClass('fa-chevron-right');
             }
-            ;
+
         }
-        ;
+
     });
 }
 
 
 //check if marker is inside polygon and return values
 function isMarkerInsidePolygon(checkmarker, poly) {
-    if (poly.feature.geometry.type == "Polygon") {
+    if (poly.feature.geometry.type === "Polygon") {
         var inside = false;
         var x = checkmarker.getLatLng().lat, y = checkmarker.getLatLng().lng; //uses the global
         for (var ii = 0; ii < poly.getLatLngs().length; ii++) {
@@ -316,16 +312,14 @@ function isMarkerInsidePolygon(checkmarker, poly) {
             var selectedpoly = L.polygon(polyPoints, {color: 'red'});
             selectedpolys.addLayer(selectedpoly);
         }
-        ;
+
         return inside;
     }
 }
-;
+
 
 //UI Elements
 //min mid max sidebar
-$('#sidebar-start').toggle();
-$('#sidebarclosed-menu').toggle();
 
 function animateSidebar(withzoom) {
     sidebarSize = $("#sidebar").width();
@@ -333,19 +327,14 @@ function animateSidebar(withzoom) {
     switch (sidebarSize) {
         case 0:
             sidebarNewSize = 350
-            $('#sidebar-start').toggle();
-            $('#sidebarclosed-menu').toggle();
             break;
         case 350:
             sidebarNewSize = 0
-            $('#sidebar-start').toggle();
-            $('#sidebarclosed-menu').toggle();
             break;
         default:
             sidebarNewSize = 350
-            $('#sidebar-max').attr("disabled", false);
     }
-    ;
+
     $("#sidebar").animate({
         width: sidebarNewSize + "px"
     }, 10, function () {
@@ -360,7 +349,7 @@ function animateSidebar(withzoom) {
                 if (myzoom > 20) map.setZoom(20);
             }
         }
-        ;
+
     });
 }
 
@@ -369,7 +358,6 @@ function animateSidebarMax() {
             width: "100%"
         }, 0, function () {
             map.invalidateSize();
-            $('#sidebar-max').attr("disabled", true);
         }
     );
 }
@@ -431,13 +419,13 @@ function setSidebarContent(myjson) {
         if (gravename == null) {
             gravename = 'unnamed'
         }
-        ;
+
         var gravedescription = features.properties.description
         if (gravedescription == null) {
             gravedescription = 'no description available'
         }
-        if (typeof (features.geometry) == "undefined") gravename = (gravename + ' (location unknown)');
-        ;
+        if (typeof (features.geometry) == "undefined") gravename = (gravename + ' <i class="far fa-eye-slash" title="location unknown"></i>');
+
         $('#accordion1').append(
             '<div id="' + gravediv + '" style="max-height: 42px">' +
             '<a grave="' + features.id + '" onclick="collapseAllOthers(' + features.id + '); toggleButtons(' + features.id + ', true)" for="collapse' + gravediv + '" class="entity sidebarheading" ' +
@@ -460,12 +448,12 @@ function setSidebarContent(myjson) {
             if (burialname == null) {
                 burialname = 'unnamed'
             }
-            ;
+
             burialdescription = burials.properties.description;
             if (burialdescription == null) {
                 burialdescription = 'no description available'
             }
-            ;
+
             $('#desc_' + gravediv).append(
                 '<div id="' + burialdiv + '">' +
                 '<a onclick="toggleButtons(' + burials.id + ')" for="collapse' + burialdiv + '" class="entity subheading" data-toggle="collapse" aria-expanded="true" aria-controls="#collapse' + burialdiv + '" data-parent="#' + burialdiv + '" href="#collapse' + burialdiv + '">' +
@@ -483,12 +471,12 @@ function setSidebarContent(myjson) {
                 if (findname == null) {
                     findname = 'unnamed'
                 }
-                ;
+
                 finddescription = finds.properties.description;
                 if (finddescription == null) {
                     finddescription = 'no description available'
                 }
-                ;
+
                 $('#desc_' + burialdiv).append(
                     '<div id="' + finddiv + '">' +
                     '<a onclick="toggleButtons(' + finds.id + ')" for="collapse' + finddiv + '" class="entity entity subheading" data-toggle="collapse" aria-expanded="true" aria-controls="#collapse' + finddiv + '" data-parent="#' + finddiv + '" href="#collapse' + finddiv + '">' +
@@ -518,7 +506,7 @@ function toggleButtons(id, grave) {
         showpolygon(id);
     }
 }
-;
+
 
 //collapse not selected graves in sidebar
 function collapseAllOthers(collapseDiv) {
@@ -530,7 +518,7 @@ function collapseAllOthers(collapseDiv) {
                 $('#btn' + oldcollapsediv).removeClass('fa-chevron-down').addClass('fa-chevron-right');
         }
     }
-    ;
+
     oldcollapsediv = collapseDiv;
 }
 
@@ -548,7 +536,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         if (typeof entDesc == 'undefined') {
             var entDesc = '';
         }
-        ;
+
         var entType = currentfeature.properties.maintype.name;
         var typepath = currentfeature.properties.maintype.path;
         if (typeof (currentfeature.properties.timespan) !== 'undefined' && typeof (currentfeature.properties.timespan.begin_from) !== 'undefined')
@@ -560,7 +548,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         if (typeof tsbegin == 'undefined') {
             var dateToInsert = '';
         }
-        ;
+
         var parentDiv = 'myModalContent';
         $('#myModalContent').empty();
         $(parentDiv).empty();
@@ -573,7 +561,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         if (typeof entDesc == 'undefined') {
             var entDesc = '';
         }
-        ;
+
         var entType = currentfeature.properties.maintype.name;
 
         var typepath = currentfeature.properties.maintype.path;
@@ -586,11 +574,11 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         if (typeof tsbegin == 'undefined') {
             var dateToInsert = '';
         }
-        ;
+
         if (timespan == parenttimespan) {
             var dateToInsert = '';
         }
-        ;
+
 
         if (currentfeature.properties.maintype.systemtype == 'feature') {
             var children = currentfeature.burials;
@@ -603,17 +591,17 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
             $(parentDiv).empty();
             globalentName = entName;
         }
-        ;
+
 
         if (currentfeature.properties.maintype.systemtype == 'stratigraphic unit') {
             var children = currentfeature.finds;
             var iconpath = '/static/images/icons/burial.png';
         }
-        ;
+
         if (currentfeature.properties.maintype.systemtype == 'find') {
             var iconpath = '/static/images/icons/find.png';
         }
-        ;
+
     }
 
     var enttypes = currentfeature.properties.types;
@@ -628,7 +616,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     $('#' + parentDiv).append(
         '<div class="modal-header">' +
         '<h5 class="modal-title">' +
-        '<img src="' + iconpath + '" width="30" height="30" class="modaltitleicon">' + entName + '</h5>' +
+        '<img src="' + iconpath + '" width="30" height="30" class="modaltitleicon" alt="my image">' + entName + '</h5>' +
         closebutton +
         '</div>' +
         '<div class="modal-body">' +
@@ -657,7 +645,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     if (dateToInsert == '') {
         $('#myModaltimespan' + entId).attr("class", "");
     }
-    ;
+
 
     setImages(entId, entfiles);
     $('#myModalTypescontainer' + entId).empty();
@@ -665,7 +653,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         if ($('#myModalTypescontainer' + entId).is(':empty')) {
             $('#myModalTypescontainer' + entId).append('<p><h6>Properties</h6></p>');
         }
-        ;
+
         var classification = types.name;
         var classtype = types.path;
         var typevalue = types.value;
@@ -680,7 +668,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         if ($('#myModalDimensionscontainer' + entId).is(':empty')) {
             $('#myModalDimensionscontainer' + entId).append('<p><h6>Dimensions</h6></p>');
         }
-        ;
+
         var dimension = dimensions.name;
         var dimvalue = dimensions.value;
         var dimunit = dimensions.unit;
@@ -695,7 +683,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         if ($('#myModalMaterialcontainer' + entId).is(':empty')) {
             $('#myModalMaterialcontainer' + entId).append('<p><h6>Material</h6></p>');
         }
-        ;
+
         var materialname = material.name;
         var matvalue = material.value;
         var matpath = material.path;
@@ -703,21 +691,21 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
             $('#myModalMaterialcontainer' + entId).append(
                 '<div class="modalrowitem" title="' + matpath + '">' + materialname + ': ' + matvalue + '%</div>');
         }
-        ;
+
         if (matvalue == 0) {
             $('#myModalMaterialcontainer' + entId).append(
                 '<div class="modalrowitem" title="' + matpath + '">' + materialname + '</div>');
         }
-        ;
+
     });
 
-    var parentDiv = (parentDiv + '_' + entId);
+    parentDiv = (parentDiv + '_' + entId);
     if (currentfeature.type !== "FeatureCollection") {
         $.each(children, function (c, child) {
             getModalData(parentDiv, child, timespan)
         })
     }
-    ; //loop throuh subunits until finds
+    //loop throuh subunits until finds
 }
 
 //set images in modal
@@ -731,11 +719,11 @@ function setImages(entId, entfiles) {
             $('#myModalImagecontainer' + entId).empty();
             $.each(entfiles, function (f, files) {
                 $('#myModalImagecontainer' + entId).append(
-                    '<a href="' + files.file_name + '" data-featherlight><img src="' + files.file_name + '" class="modalimg" id="mymodalimg"></a>'
+                    '<a href="' + files.file_name + '" data-featherlight><img src="' + files.file_name + '" class="modalimg" id="mymodalimg" alt="image"></a>'
                 )
             });
         }
-        ;
+
 
         //append more than one image with slides
         if (entfiles.length !== 1) {
@@ -753,10 +741,10 @@ function setImages(entId, entfiles) {
                 '</ol>' +
                 '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
                 '<div class="carousel-item active">' +
-                '<a href="' + firstimage + '" data-featherlight><img class="d-block modalimg" src="' + firstimage + '"></a>' +
+                '<a href="' + firstimage + '" data-featherlight><img class="d-block modalimg" src="' + firstimage + '" alt="image"></a>' +
                 '</div>' +
                 '<div class="carousel-item">' +
-                '<a href="' + secondimage + '" data-featherlight><img class="d-block modalimg" src="' + secondimage + '"></a>' +
+                '<a href="' + secondimage + '" data-featherlight><img class="d-block modalimg" src="' + secondimage + '" alt="image"></a>' +
                 '</div>' +
                 '</div>' +
                 '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
@@ -775,19 +763,19 @@ function setImages(entId, entfiles) {
                 if (f > 1) {
                     $('#mycarouselimages' + entId).append(
                         '<div class="carousel-item">' +
-                        '<a href="' + files.file_name + '" data-featherlight><img class="d-block modalimg" src="' + files.file_name + '"></a>' +
+                        '<a href="' + files.file_name + '" data-featherlight><img class="d-block modalimg" src="' + files.file_name + '" alt="image"></a>' +
                         '</div>'
                     );
                     $('#mymodalimageindicators' + entId).append(
                         '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="' + f + '"></li>'
                     );
                 }
-                ;
+
             });
         }
-        ;
+
     }
-    ;
+
 
     //remove image column
     if (entfiles == undefined) {
@@ -795,7 +783,7 @@ function setImages(entId, entfiles) {
         $('#myModalImagecontainer' + entId).empty();
         $('#myModalData_' + entId).attr("class", "modalwithoutimage");
     }
-    ;
+
 }
 
 //initiate modal
@@ -828,3 +816,23 @@ function modalsetsite() {
     $("#myModal").scrollTop("0");
 }
 
+function addFilterSearch() {
+    LeafletDropdownButton = L.control({position: 'topleft'});
+    LeafletDropdownButton.onAdd = function (map) {
+        var div = L.DomUtil.create('div');
+        div.innerHTML = '<div class="dropdown" id="sidebarclosed-menu">\n' +
+            '                <button class="btn btn-secondary btn-sm mapbutton" type="button" onclick="this.blur()"\n' +
+            '                        id="dropdownMenuButtonMap" data-toggle="dropdown" title="Filter/Search/Visualise"\n' +
+            '                        aria-haspopup="true"\n' +
+            '                        aria-expanded="false">\n' +
+            '                    <i class="fas fa-search"></i>\n' +
+            '                </button>\n' +
+            '                <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonMap">\n' +
+            '                    <a class="dropdown-item searchbutton" onclick="startsearch()" href="#">Filter/Search</a>\n' +
+            '                    <a class="dropdown-item visbutton" onclick="startvis()" href="#">Visualisations</a>\n' +
+            '                </div>\n' +
+            '            </div>';
+        return div;
+    };
+    LeafletDropdownButton.addTo(map)
+}

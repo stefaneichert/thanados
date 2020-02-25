@@ -698,6 +698,21 @@ WHERE entities.child_id = link.range_id
   AND entity.system_type ~~ 'external reference'::text
 ORDER BY entities.child_id;
 
+INSERT INTO thanados.extrefs 
+SELECT entities.child_id  AS parent_id,
+       'https://www.geonames.org/' || entity.name  as url,
+       link.description   AS name,
+       entity.description AS description,
+       entity.id
+FROM thanados.entities,
+     model.link,
+     model.entity
+WHERE entities.child_id = link.range_id
+  AND link.domain_id = entity.id
+  AND entities.child_id != 0
+  AND entity.system_type ~~ 'external reference geonames'::text
+ORDER BY entities.child_id;
+
 
 UPDATE thanados.extrefs
 SET description = NULL

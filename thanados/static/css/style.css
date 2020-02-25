@@ -71,7 +71,6 @@ body {
 .panel-body {
     width: 100%;
     border-top: 2px solid rgba(0, 0, 0, 0.325);
-    border-bottom: 2px solid rgba(0, 0, 0, 0.325);
 }
 
 #mypanel {
@@ -91,6 +90,10 @@ body {
     position: relative;
 }
 
+.btn-secondary {
+    background-color: #696969;
+}
+
 .btn-xs {
     padding: 1px 5px;
     font-size: 14px !important;
@@ -103,6 +106,7 @@ body {
     margin-right: 4px;
     float: right;
 }
+
 
 .buttonleftout {
     padding-left: 4px;
@@ -117,21 +121,100 @@ body {
     z-index: 900;
 }
 
-#sidebarclosed-menu {
-    position: absolute;
-    top: 7px;
-    left: 3px;
-    z-index: 900;
+.sidebarenlage {
+    color: #fff !important;
+    background-color: rgba(108, 117, 125, 0.50) !important;
+    border: 1px solid #4e4e4eba !important;
+    border-radius: 4px !important;
 }
 
 .mapbutton {
-    background-color: #6c757d66 !important;
+    box-shadow: none !important;
+    color: #fff !important;
+    background-color: #696969 !important;
+    border: 4px solid rgba(214, 214, 214, 0.9) !important;
+    border-radius: 8px !important;
+    width: 35px !important;
+    height: 35px !important;
+}
+
+.leaflet-top {
+    top: 5px;
+}
+
+.leaflet-top .leaflet-control {
+    margin-top: 2px;
+}
+
+.leaflet-control-layers {
+    color: #fff !important;
+    background-color: #696969 !important;
+    box-shadow: none !important;
+    border: 4px solid rgba(214, 214, 214, 0.9) !important;
+    border-radius: 8px !important;
+}
+
+.leaflet-control-layers-expanded {
+    color: #fff !important;
+    background-color: #696969 !important;
+    box-shadow: none !important;
+}
+
+.leaflet-control-layers-toggle {
+    background-image: url(../images/icons/layers.png);
+    width: 36px;
+    height: 36px;
+}
+
+.leaflet-retina .leaflet-control-layers-toggle {
+    background-image: url(../images/icons/layers-2x.png);
+    background-size: 26px 26px;
+}
+
+.leaflet-bar {
+    box-shadow: none !important;
+}
+
+.fullscreen-icon {
+    background-image: url(../images/icons/icon-fullscreen.png);
+}
+
+.leaflet-retina .fullscreen-icon {
+    background-image: url(../images/icons/icon-fullscreen-2x.png);
+    background-size: 26px 26px;
+}
+
+.easyPrintHolder {
+    margin-top: -35px !important;
+    margin-left: 35px !important;
+}
+
+.leaflet-bar a, .easy-button-button {
+    color: #fff !important;
+    background-color: #696969 !important;
+    border: 4px solid rgba(214, 214, 214, 0.9) !important;
+    border-radius: 8px !important;
+    width: 35px !important;
+    height: 35px !important;
+    line-height: 29px !important;
+}
+
+.leaflet-bar a:hover, .easy-button-button:hover, .mapbutton:hover {
+    background-color: rgba(108, 117, 125, 0.90) !important;
+    box-shadow: none !important;
+    width: 35px;
+    height: 35px;
+}
+
+.btn-secondary:hover {
+    background-color: rgba(108, 117, 125, 0.90) !important;
 }
 
 .sidebarheading {
     display: block;
     font-weight: 500;
     border-top: 2px solid rgba(0, 0, 0, 0.325);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.325);
     width: 100%;
     height: 100%;
     background-color: #f8f9fa;
@@ -162,7 +245,7 @@ body {
 
 .gravebutton {
     position: relative;
-    top: -33px;
+    top: -36px;
     float: right;
     margin-right: 0.5em;
 }
@@ -366,7 +449,7 @@ a.ui-button:active,
 }
 
 .input-group-middle {
-    border-radius: 0!important;
+    border-radius: 0 !important;
     margin-left: -1px;
     margin-right: -1px;
 }
@@ -433,6 +516,7 @@ a.ui-button:active,
 #myModal {
     max-width: 490px;
 }
+
 .chartcontainer {
     max-height: 1000px;
     min-height: 400px;
@@ -493,10 +577,10 @@ table.dataTable thead .sorting_asc_disabled:before,
 table.dataTable thead .sorting_asc_disabled:after,
 table.dataTable thead .sorting_desc_disabled:before,
 table.dataTable thead .sorting_desc_disabled:after {
-  position: absolute;
-  bottom: 0.5em;
-  display: block;
-  opacity: 0.3;
+    position: absolute;
+    bottom: 0.5em;
+    display: block;
+    opacity: 0.3;
 }
 
 .page-item.active .page-link {
@@ -518,23 +602,22 @@ table.dataTable thead .sorting_desc_disabled:after {
 }
 
 .page-link:hover {
-  z-index: 2;
-  color: rgba(0, 0, 0, 0.68);
-  text-decoration: none;
-  background-color: #e9ecef;
-  border-color: #dee2e6;
+    z-index: 2;
+    color: rgba(0, 0, 0, 0.68);
+    text-decoration: none;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
 }
 
 .page-link:focus {
-  z-index: 3;
-  outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.25);
+    z-index: 3;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.25);
 }
 
-.ui-widget-overlay
-{
-  opacity: .50 !important; /* Make sure to change both of these, as IE only sees the second one */
-  filter: Alpha(Opacity=50) !important;
+.ui-widget-overlay {
+    opacity: .50 !important; /* Make sure to change both of these, as IE only sees the second one */
+    filter: Alpha(Opacity=50) !important;
 
-  background: rgb(50, 50, 50) !important; /* This will make it darker */
+    background: rgb(50, 50, 50) !important; /* This will make it darker */
 }

@@ -1,3 +1,4 @@
+getBasemaps();
 sitename = jsonmysite.name;
 
 $('#mybreadcrumb').append(
@@ -540,11 +541,6 @@ function getEntityData(parentName, parentId, currentfeature) {
     }
 
 
-    landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=b3c55fb5010a4038975fd0a0f4976e64', {
-        attribution: 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        maxZoom: 22
-    });
-
     myStyle = {
         "color": "rgba(0,123,217,0.75)",
         "weight": 1.5,
@@ -676,13 +672,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         $('#mycontent').css('max-height', (maximumHeight - 17) + 'px');
     });
 
-    var osm2 = new L.TileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=b3c55fb5010a4038975fd0a0f4976e64',
-        {
-            minZoom: 0,
-            maxZoom: 13,
-            attribution: 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        }
-    );
+    var osm2 = miniBaseMap;
     var rect1 = {color: "#ff1100", weight: 15};
 
     if (children != '' && children[0].id !== 0 || globalfeature.properties.maintype.systemtype !== 'find' || globalfeature.properties.maintype.systemtype !== 'stratigraphic unit') {
@@ -960,3 +950,4 @@ $('#nav-catalog-tab').click(function (e) {
     catalogtrue = true;
 })
 
+$('#myattr').toggle();

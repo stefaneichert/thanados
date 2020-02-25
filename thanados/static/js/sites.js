@@ -8,36 +8,26 @@ $(window).resize(function () {
 AccRemove();
 
 
-
 $(document).ready(function () {
     maximumHeight = ($(window).height() - $('#mynavbar').height())
     $('#mycontent').css('max-height', (maximumHeight - 10) + 'px');
     $('#map').css('height', (maximumHeight - 200) + 'px');
-
-    mywindowtitle = 'THANADOS ';
+    getBasemaps();
     //$('#siteModal').modal('show');
 
 //define basemaps
-    var landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=b3c55fb5010a4038975fd0a0f4976e64', {
-        attribution: mywindowtitle + 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        maxZoom: 18
-    });
-    var satellite = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'], attribution: mywindowtitle + 'Tiles: &copy; Google Maps ',
-        maxZoom: 18
-    });
-
     map = L.map('map', {
         fullscreenControl: true,
         zoom: 18,
         zoomControl: false,
-        layers: [satellite, landscape]
+        layers: [landscape]
     }).setView([51.505, -0.09], 13);
 
-    baseLayers = {
-        "Landscape": landscape,
-        "Satellite": satellite,
-    };
+    //hack for right order of basemaps
+    map.on('baselayerchange', function (e) {
+        attributionChange()
+    });
+    attributionChange();
 
     //initiate markers
     heatmarkers = []
@@ -60,9 +50,6 @@ $(document).ready(function () {
 
     //add layer control
     baseControl = L.control.layers(baseLayers, overlays).addTo(map);
-
-//hack for right order of basemaps
-    map.removeLayer(satellite);
 
     L.control.scale({imperial: false}).addTo(map);//scale on map
 
@@ -163,13 +150,11 @@ $(document).ready(function () {
             var max = parseInt($('#max').val(), 10);
             var age = parseFloat(data[2]) || 0; // use data for the age column
 
-            if ((isNaN(min) && isNaN(max)) ||
+            return (isNaN(min) && isNaN(max)) ||
                 (isNaN(min) && age <= max) ||
                 (min <= age && isNaN(max)) ||
-                (min <= age && age <= max)) {
-                return true;
-            }
-            return false;
+                (min <= age && age <= max);
+
         }
     );
 
@@ -179,13 +164,11 @@ $(document).ready(function () {
             var max = parseInt($('#max1').val(), 10);
             var age = parseFloat(data[3]) || 0; // use data for the age column
 
-            if ((isNaN(min) && isNaN(max)) ||
+            return (isNaN(min) && isNaN(max)) ||
                 (isNaN(min) && age <= max) ||
                 (min <= age && isNaN(max)) ||
-                (min <= age && age <= max)) {
-                return true;
-            }
-            return false;
+                (min <= age && age <= max);
+
         }
     );
 
