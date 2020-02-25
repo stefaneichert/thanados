@@ -33,7 +33,7 @@ if (systemtype == 'feature') {
                 "name": jsonmysite.name
             };
         }
-        ;
+
     });
 }
 
@@ -63,7 +63,7 @@ if (systemtype == 'stratigraphic unit') {
                 };
 
             }
-            ;
+
         });
     });
 }
@@ -100,7 +100,7 @@ if (systemtype == 'find') {
                         "name": jsonmysite.name
                     };
                 }
-                ;
+
             });
         });
     });
@@ -123,7 +123,7 @@ function getEntityData(parentName, parentId, currentfeature) {
     if (typeof entDesc == 'undefined') {
         entDesc = '';
     }
-    ;
+
     entType = currentfeature.properties.maintype.name;
     typepath = currentfeature.properties.maintype.path;
     var tsbegin;
@@ -133,18 +133,18 @@ function getEntityData(parentName, parentId, currentfeature) {
         if (typeof (currentfeature.properties.timespan) !== 'undefined' && typeof (currentfeature.properties.timespan.end_to) !== 'undefined')
             tsend = parseInt((currentfeature.properties.timespan.end_to), 10)
     }
-    ;
+
     if (typeof (tsbegin !== 'undefined')) timespan = tsbegin + ' to ' + tsend;
     if (typeof tsbegin == 'undefined') {
         timespan = '';
     }
-    ;
+
     dateToInsert = timespan;
 
     if (currentfeature.properties.maintype.systemtype == 'place') {
         children = currentfeature.features;
     }
-    ;
+
 
     if (currentfeature.properties.maintype.systemtype == 'feature') {
         if (typeof (currentfeature.burials) !== 'undefined') {
@@ -153,7 +153,7 @@ function getEntityData(parentName, parentId, currentfeature) {
             children = '';
         }
     }
-    ;
+
 
     if (currentfeature.properties.maintype.systemtype == 'stratigraphic unit') {
         if (typeof (currentfeature.finds) !== 'undefined') {
@@ -166,7 +166,7 @@ function getEntityData(parentName, parentId, currentfeature) {
     if (currentfeature.properties.maintype.systemtype == 'find') {
         children = '';
     }
-    ;
+
 
     enttypes = currentfeature.properties.types;
     if (currentfeature.type == "FeatureCollection") {
@@ -182,7 +182,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myData_' + entId + '" class="col-md">' +
         '<div class="row">' +
         '<h4 style="margin-bottom: 1em; margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '" title="Name of entity">' + entName + '</h4>' +
-        '<div style="margin-top: 0.8em; margin-bottom: 0.8em; margin-right: 0.8em; margin-left: auto">' +
+        '<div style="margin: 0.8em 0.8em 0.8em auto;">' +
         '<button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-secondary" title="Download data as GeoJSON"><i class="fas fa-download"></i></button>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" class="btn btn-sm btn-secondary" title="Open detailed map of this site">Map</button>' +
@@ -197,7 +197,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myParentcontainer' + entId + '"></div>' +
         '</div>' +
         '<div id="myImagecontainer' + entId + '" class="col-md-auto" style="margin-top: 4em" ></div>' +
-        '<div id="myMapcontainer" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" title="Click to open detailed map" class="col-md" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; margin-right: 1em; cursor: pointer"></div>' +
+        '<div id="myMapcontainer" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" title="Click to open detailed map" class="col-md" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; cursor: pointer"></div>' +
         '</div>' +
         '<div id="myChildrencontainer' + entId + '">' +
         '<nav>' +
@@ -222,7 +222,7 @@ function getEntityData(parentName, parentId, currentfeature) {
     if (dateToInsert == '') {
         $('#mytimespan' + entId).attr("class", "");
     }
-    ;
+
 
     setImages(entId, entfiles);
 
@@ -231,7 +231,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         if ($('#myTypescontainer' + entId).is(':empty')) {
             $('#myTypescontainer' + entId).append('<p><h6>Properties</h6></p>');
         }
-        ;
+
         var classification = types.name;
         var classtype = types.path;
         var typevalue = types.value;
@@ -246,7 +246,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         if ($('#myDimensionscontainer' + entId).is(':empty')) {
             $('#myDimensionscontainer' + entId).append('<p><h6>Dimensions</h6></p>');
         }
-        ;
+
         var dimension = dimensions.name;
         var dimvalue = dimensions.value;
         var dimunit = dimensions.unit;
@@ -261,7 +261,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         if ($('#myMaterialcontainer' + entId).is(':empty')) {
             $('#myMaterialcontainer' + entId).append('<p><h6>Material</h6></p>');
         }
-        ;
+
         var materialname = material.name;
         var matvalue = material.value;
         var matpath = material.path;
@@ -269,12 +269,12 @@ function getEntityData(parentName, parentId, currentfeature) {
             $('#myMaterialcontainer' + entId).append(
                 '<div class="modalrowitem" title="' + matpath + '">' + materialname + ': ' + matvalue + '%</div>');
         }
-        ;
+
         if (matvalue == 0) {
             $('#myMaterialcontainer' + entId).append(
                 '<div class="modalrowitem" title="' + matpath + '">' + materialname + '</div>');
         }
-        ;
+
     });
 
 
@@ -318,7 +318,7 @@ function getEntityData(parentName, parentId, currentfeature) {
             } else {
                 mycitation2 += '. ' + citeme
             }
-            ;
+
         });
     } else {
         $.each(jsonmysite.properties.references, function (t, ref) {
@@ -346,10 +346,10 @@ function getEntityData(parentName, parentId, currentfeature) {
             } else {
                 mycitation2 += '. ' + citeme
             }
-            ;
+
         });
     }
-    ;
+
 
     if (typeof (currentfeature.properties.externalreference) !== 'undefined') {
         $('#myMetadatacontainer' + entId).append(
@@ -394,7 +394,7 @@ function getEntityData(parentName, parentId, currentfeature) {
     } else {
         files = currentfeature.files
     }
-    ;
+
     if (typeof (files) !== 'undefined') {
         $('#myMetadatacontainer' + entId).append(
             '<p><h6>Files</h6></p>' +
@@ -449,7 +449,7 @@ function getEntityData(parentName, parentId, currentfeature) {
                     '</div>' +
                     '</p>');
             }
-            ;
+
 
             $('#nav-pills' + entId).append(
                 '<a class="modalrowitem subunits" href="/entity/' + child.id + '" title="' + child.properties.maintype.name + '">' + child.properties.name + '</a>'
@@ -469,7 +469,7 @@ function getEntityData(parentName, parentId, currentfeature) {
                     '</thead>' +
                     '</table>');
             }
-            ;
+
 
             myentity = [];
             if (typeof (child.id) != 'undefined') myentity.id = child.id;
@@ -484,7 +484,7 @@ function getEntityData(parentName, parentId, currentfeature) {
                 myentity.begin = '';
                 myentity.end = '';
             }
-            ;
+
             findCount = 0;
             if (typeof (child.finds) != 'undefined') findCount += (child.finds.length);
             if (typeof (child.burials) != 'undefined') {
@@ -524,7 +524,7 @@ function getEntityData(parentName, parentId, currentfeature) {
     } else {
         $('#nav-tab').toggle();
     }
-    ;
+
 
     //$('.subunits').hide()
     $('#childrenlist_wrapper').show();
@@ -534,7 +534,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         if ($('#myParentcontainer' + entId).is(':empty')) {
             $('#myParentcontainer' + entId).append('<p><h6>Parent</h6></p>');
         }
-        ;
+
         $('#myParentcontainer' + entId).append(
             '<a class="modalrowitem" href="/entity/' + parentId + '">' + parentName + '</a>'
         );
@@ -646,13 +646,13 @@ function getEntityData(parentName, parentId, currentfeature) {
                         selectedpoly = L.polygon(polyPoints, {color: 'red'}).addTo(mymap);
                         boundscenter = (selectedpoly.getBounds()).getCenter();
                     }
-                    ;
+
                 }
             })
         }
-        ;
+
     }
-    ;
+
 
     if (children !== '') {
         if (children[0].id == 0) {
@@ -660,7 +660,7 @@ function getEntityData(parentName, parentId, currentfeature) {
 
         }
     }
-    ;
+
     L.control.scale({imperial: false}).addTo(mymap);
 
 
@@ -682,7 +682,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         mymap.panTo(mapcenter);
         if ((mymap.getZoom()) > 20) mymap.setZoom(20);
     }
-    ;
+
 
     var miniMap = new L.Control.MiniMap(osm2,
         {
@@ -709,11 +709,11 @@ function setImages(entId, entfiles) {
                 if (typeof (files.source) != 'undefined') myImgSource = files.source;
                 if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
                 $('#myImagecontainer' + entId).append(
-                    '<a href="' + files.file_name + '" title="' + myImgSource + '"data-featherlight><img src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" id="mymodalimg"></a>'
+                    '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" id="mymodalimg" alt=""></a>'
                 );
             });
         }
-        ;
+
 
         //append more than one image with slides
         if (entfiles.length !== 1) {
@@ -737,10 +737,10 @@ function setImages(entId, entfiles) {
                 '</ol>' +
                 '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
                 '<div class="carousel-item active">' +
-                '<a href="' + firstimage + '" data-featherlight title="' + myImgSource1 + '"><img class="d-block modalimg lazy" src="/static/images/icons/loading.gif" data-src="' + firstimage + '"></a>' +
+                '<a href="' + firstimage + '" data-featherlight title="' + myImgSource1 + '"><img class="d-block modalimg lazy" src="/static/images/icons/loading.gif" data-src="' + firstimage + '" alt="" alt="" alt=""></a>' +
                 '</div>' +
                 '<div class="carousel-item">' +
-                '<a href="' + secondimage + '" data-featherlight title="' + myImgSource2 + '"><img class="d-block modalimg lazy" src="/static/images/icons/loading.gif" data-src="' + secondimage + '"></a>' +
+                '<a href="' + secondimage + '" data-featherlight title="' + myImgSource2 + '"><img class="d-block modalimg lazy" src="/static/images/icons/loading.gif" data-src="' + secondimage + '" alt="" alt="" alt=""></a>' +
                 '</div>' +
                 '</div>' +
                 '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
@@ -764,17 +764,15 @@ function setImages(entId, entfiles) {
                     if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
                     $('#mycarouselimages' + entId).append(
                         '<div class="carousel-item">' +
-                        '<a href="' + files.file_name + '" data-featherlight title="' + myImgSource + '"><img class="d-block modalimg lazy" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '"></a>' +
+                        '<a href="' + files.file_name + '" data-featherlight title="' + myImgSource + '"><img class="d-block modalimg lazy" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" alt=""></a>' +
                         '</div>'
                     );
                     $('#mymodalimageindicators' + entId).append(
                         '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="' + f + '"></li>'
                     );
                 }
-                ;
             });
         }
-        ;
 
     } else {
         $('#myImagecontainer' + entId).remove()
@@ -808,7 +806,7 @@ if (typeof (mycitation2) == 'undefined') {
     mycitation2 = '';
     mycitation1 = mycitation1.substring(0, mycitation1.length - 8);
 }
-;
+
 mysource = (mycitation + mycitation1 + mycitation2 + ' [Accessed: ' + today + ']');
 mysource = mysource.replace(/(\r\n|\n|\r)/gm, "");
 $('#mycitation').append('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');
@@ -830,7 +828,7 @@ function setcatalog(currentchildren, parentDiv, iter) {
         if (typeof entDesc == 'undefined') {
             var entDesc = '';
         }
-        ;
+
         var entType = currentfeature.properties.maintype.name;
 
         var typepath = currentfeature.properties.maintype.path;
@@ -843,7 +841,7 @@ function setcatalog(currentchildren, parentDiv, iter) {
         if (typeof tsbegin == 'undefined') {
             var dateToInsert = '';
         }
-        ;
+
 
 
         if (currentfeature.type == 'Feature' && i > 0) $('#' + parentDiv).append('<h4 class="border-top pt-4 mt-4">' + entName + '</h4>');
@@ -873,7 +871,7 @@ function setcatalog(currentchildren, parentDiv, iter) {
             if ($('#myModalTypescontainer' + entId).is(':empty')) {
                 $('#myModalTypescontainer' + entId).append('<p><h6>Properties</h6></p>');
             }
-            ;
+
             var classification = types.name;
             var classtype = types.path;
             var typevalue = types.value;
@@ -888,7 +886,7 @@ function setcatalog(currentchildren, parentDiv, iter) {
             if ($('#myModalDimensionscontainer' + entId).is(':empty')) {
                 $('#myModalDimensionscontainer' + entId).append('<p><h6>Dimensions</h6></p>');
             }
-            ;
+
             var dimension = dimensions.name;
             var dimvalue = dimensions.value;
             var dimunit = dimensions.unit;
@@ -903,7 +901,7 @@ function setcatalog(currentchildren, parentDiv, iter) {
             if ($('#myModalMaterialcontainer' + entId).is(':empty')) {
                 $('#myModalMaterialcontainer' + entId).append('<p><h6>Material</h6></p>');
             }
-            ;
+
             var materialname = material.name;
             var matvalue = material.value;
             var matpath = material.path;
@@ -911,29 +909,29 @@ function setcatalog(currentchildren, parentDiv, iter) {
                 $('#myModalMaterialcontainer' + entId).append(
                     '<div class="modalrowitem" title="' + matpath + '">' + materialname + ': ' + matvalue + '%</div>');
             }
-            ;
+
             if (matvalue == 0) {
                 $('#myModalMaterialcontainer' + entId).append(
                     '<div class="modalrowitem" title="' + matpath + '">' + materialname + '</div>');
             }
-            ;
+
         });
         $.each(currentfeature.files, function (f, file) {
             var myImgSource = '';
             if (typeof (file.source) != 'undefined') myImgSource = file.source;
             if ((typeof (file.source) != 'undefined') && (typeof (file.reference) != 'undefined')) myImgSource = file.source + ' ' + file.reference;
-            $('#myModalImagecontainer' + entId).append('<div class="col-lg-4"><a href="' + file.file_name + '" data-featherlight><img class="img-fluid border mt-2" src="/static/images/icons/loading.gif" data-src="' + file.file_name + '" title="' + myImgSource + '"></a></div>');
+            $('#myModalImagecontainer' + entId).append('<div class="col-lg-4"><a href="' + file.file_name + '" data-featherlight><img class="img-fluid border mt-2" src="/static/images/icons/loading.gif" data-src="' + file.file_name + '" title="' + myImgSource + '" alt=""></a></div>');
         });
 
         if (typeof (currentfeature.burials) != 'undefined') {
             setcatalog(currentfeature.burials, parentDiv + '_' + entId, iter);
         }
-        ;
+
 
         if (typeof (currentfeature.finds) != 'undefined') {
             setcatalog(currentfeature.finds, parentDiv + '_' + entId, iter);
         }
-        ;
+
 
     });
 }

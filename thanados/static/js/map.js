@@ -48,6 +48,15 @@ function setmap(myjson) {
         //"opacity": 0.4
     };
 
+    HoverStyle = {
+        "fillColor": "rgb(217,0,2)",
+        "color": "rgb(0,0,0)",
+        "weight": 3,
+        "fillOpacity": 0,
+
+        //"opacity": 0.4
+    };
+
     myStyleSquare = {
         "color": "rgba(0,123,217,0.75)",
         "weight": 1.5,
@@ -244,6 +253,9 @@ function polygonSelect() {
     selectedpolys = new L.LayerGroup();
     selectedpolys.addTo(map);
 
+    hoverPolys = new L.LayerGroup();
+    hoverPolys.addTo(map);
+
 //define invisible marker
     invisIcon = L.icon({
         iconUrl: '/static/images/icons/burial.png',
@@ -307,7 +319,7 @@ function isMarkerInsidePolygon(checkmarker, poly) {
         if (inside) {
             var mypopupLine = JSON.parse('{"id":"' + poly.feature.id + '", "name":"' + poly.feature.properties.name + '", "type":"' + poly.feature.properties.maintype.name + '"}');
             selectedIDs.push(mypopupLine);
-            var popupLine = '<a id="' + poly.feature.id + '" onclick="modalset(this.id)" href="#"><p><b>' + poly.feature.properties.name + ' </b>(' + poly.feature.properties.maintype.name + ')</p></a>';
+            var popupLine = '<a id="' + poly.feature.id + '" onclick="modalset(this.id)" onmouseout="hoverPolys.clearLayers()" onmouseover="HoverId = this.id; hoverPoly()" href="#"><p><b>' + poly.feature.properties.name + ' </b>(' + poly.feature.properties.maintype.name + ')</p></a>';
             popupContent += popupLine;
             var selectedpoly = L.polygon(polyPoints, {color: 'red'});
             selectedpolys.addLayer(selectedpoly);
@@ -317,6 +329,21 @@ function isMarkerInsidePolygon(checkmarker, poly) {
     }
 }
 
+function hoverPoly() {
+        hoverPolys.clearLayers();
+        hoverGraves = L.geoJSON(mypolyjson, {
+        filter: hoverFilter,
+        style: HoverStyle
+    });
+        hoverPolys.addLayer(hoverGraves);
+}
+
+
+function hoverFilter(feature) {
+    if (feature.id == HoverId) {
+        return true
+    }
+}
 
 //UI Elements
 //min mid max sidebar
