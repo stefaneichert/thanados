@@ -604,7 +604,6 @@ function setmymap(markers, heatmarkers) {
     eval('satellite' + Iter + ' = jQuery.extend(true, {}, satellite);');
 
 
-
     markers.addTo(clustermarkers);
     eval('markers' + Iter + '= markers;')
 
@@ -614,16 +613,15 @@ function setmymap(markers, heatmarkers) {
     clustermarkers.addTo((eval('map' + Iter)));
 
 
-
     var myMap = eval('map' + Iter);
     var mydiv = '#map' + Iter;
-    eval ('var attrib' + Iter + ' = landscape' + Iter + '.options.attribution;')
+    eval('var attrib' + Iter + ' = landscape' + Iter + '.options.attribution;')
     MultAttributionChange(myMap, mydiv, eval('attrib' + Iter));
 
     (eval('map' + Iter)).on('baselayerchange', function (layer) {
         var attrib = layer.layer.options.attribution
         MultAttributionChange(myMap, mydiv, attrib);
-        });
+    });
 
     (eval('map' + Iter)).fitBounds(markers.getBounds());
 
@@ -655,10 +653,9 @@ function setmymap(markers, heatmarkers) {
     eval('MyBaseLayers' + Iter + ' = {"Landscape": landscape' + Iter + ', "Satellite": satellite' + Iter + ', "Streets": streets' + Iter + '};');
 
 
-
     // Use the custom grouped layer control, not "L.control.layers"
     eval('layerControl' + Iter + ' = L.control.groupedLayers(MyBaseLayers' + Iter + ', groupedOverlays, options)');
-    eval('map' + Iter + '.addControl(layerControl' + Iter +')');
+    eval('map' + Iter + '.addControl(layerControl' + Iter + ')');
 
     L.control.scale({imperial: false}).addTo((eval('map' + Iter)));//scale on map
     (eval('map' + Iter)).invalidateSize();
@@ -692,6 +689,22 @@ function setmymap(markers, heatmarkers) {
             },
             title: 'Download search result as GeoJSON file',
             icon: 'fas fa-download'
+        }]
+    }).addTo(eval('map' + Iter));
+
+    L.easyButton({
+        id: '' + Iter + '',  // an id for the generated button
+        position: 'topleft',      // inherited from L.Control -- the corner it goes in
+        type: 'replace',          // set to animate when you're comfy with css
+        leafletClasses: true,     // use leaflet classes to style the button?
+        states: [{                 // specify different icons and responses for your button
+            stateName: 'get-center',
+            onClick: function (button, map) {
+                currentID = button.options.id;
+                createCSV(eval('myGeoJSON' + currentID));
+            },
+            title: 'Download search result as CSV file',
+            icon: 'fas fa-file-csv'
         }]
     }).addTo(eval('map' + Iter));
 
@@ -761,6 +774,45 @@ function createResult(data, iter) { //finish query and show results on map
     eval('resultpoints' + iter + '.addLayer(customResult' + iter + ');');
 
 }
+
+function createCSV(data) {
+    var tmpArrayOrd = [];
+    //console.log(data);
+    $.each(data.features, function (i, feature) {
+        $.each(feature.search, function (i, dataset) {
+            var newDataset = [];
+            newDataset.id = dataset.id;
+            newDataset.name = dataset.name.replace(/"/g, '\'');
+            newDataset.type = dataset.type.replace(/"/g, '\'');
+            newDataset.type_id = dataset.type_id;
+            newDataset.min = dataset.min;
+            newDataset.max = dataset.max;
+            newDataset.path = dataset.path.replace(/"/g, '\'');
+            newDataset.maintype = dataset.maintype.replace(/"/g, '\'');
+            newDataset.system_type = dataset.system_type;
+            newDataset.context = dataset.context.replace(/"/g, '\'');
+            newDataset.burial_id = dataset.burial_id;
+            newDataset.grave_id = dataset.grave_id;
+            newDataset.site_id = dataset.site_id;
+            newDataset.lat = dataset.lat;
+            newDataset.lon = dataset.lon;
+        tmpArrayOrd.push(newDataset)
+            })
+    })
+    var csv = toCSV(tmpArrayOrd);
+    exportToCSV(csv)
+}
+
+function toCSV(json) {
+    var csv = "";
+    var keys = (json[0] && Object.keys(json[0])) || [];
+    csv += '"' + keys.join('\",\"') + '"\n';
+    for (var line of json) {
+        csv += '"' + (keys.map(key => line[key]).join('\",\"') + '"\n');
+    }
+    return csv;
+}
+
 
 function applyButton() {
     applyStyle(fillcolor, (1 - MyStyleOpacityVar / 100), mystylebordercolor, mystyleborderwidth);
