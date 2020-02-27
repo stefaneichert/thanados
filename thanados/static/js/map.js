@@ -28,7 +28,6 @@ function setmap(myjson) {
     if (myjson.features[0].id !== 0) setSidebarContent(myjson);
 
 
-
 //define map
     map = L.map('map', {
         zoom: 22,
@@ -154,6 +153,21 @@ function setmap(myjson) {
         "Search result markers": resultpoints
     };
 
+    L.easyButton({
+        id: 'SidebarButton',  // an id for the generated button
+        position: 'topleft',      // inherited from L.Control -- the corner it goes in
+        type: 'replace',          // set to animate when you're comfy with css
+        leafletClasses: true,     // use leaflet classes to style the button?
+        states: [{                 // specify different icons and responses for your button
+            stateName: 'sidebar',
+            onClick: function (button, map) {
+                animateSidebar();
+            },
+            title: 'toggle sidebar',
+            icon: 'fas fa-exchange-alt'
+        }]
+    }).addTo(map);
+
     //add option button and exportbutton for map as image
     printMapbutton('map', 'topleft');
 
@@ -172,20 +186,6 @@ function setmap(myjson) {
         }]
     }).addTo(map);
 
-    L.easyButton({
-        id: 'SidebarButton',  // an id for the generated button
-        position: 'topleft',      // inherited from L.Control -- the corner it goes in
-        type: 'replace',          // set to animate when you're comfy with css
-        leafletClasses: true,     // use leaflet classes to style the button?
-        states: [{                 // specify different icons and responses for your button
-            stateName: 'sidebar',
-            onClick: function (button, map) {
-                animateSidebar();
-            },
-            title: 'toggle sidebar',
-            icon: 'fas fa-exchange-alt'
-        }]
-    }).addTo(map);
 
     addFilterSearch();
 
@@ -330,12 +330,12 @@ function isMarkerInsidePolygon(checkmarker, poly) {
 }
 
 function hoverPoly() {
-        hoverPolys.clearLayers();
-        hoverGraves = L.geoJSON(mypolyjson, {
+    hoverPolys.clearLayers();
+    hoverGraves = L.geoJSON(mypolyjson, {
         filter: hoverFilter,
         style: HoverStyle
     });
-        hoverPolys.addLayer(hoverGraves);
+    hoverPolys.addLayer(hoverGraves);
 }
 
 

@@ -676,39 +676,43 @@ function setmymap(markers, heatmarkers) {
         }]
     }).addTo(eval('map' + Iter));
 
-    L.easyButton({
-        id: '' + Iter + '',  // an id for the generated button
-        position: 'topleft',      // inherited from L.Control -- the corner it goes in
-        type: 'replace',          // set to animate when you're comfy with css
-        leafletClasses: true,     // use leaflet classes to style the button?
-        states: [{                 // specify different icons and responses for your button
-            stateName: 'get-center',
-            onClick: function (button, map) {
-                currentID = button.options.id;
-                exportToJsonFile(eval('myGeoJSON' + currentID));
-            },
-            title: 'Download search result as GeoJSON file',
-            icon: 'fas fa-download'
-        }]
-    }).addTo(eval('map' + Iter));
+   L.Control.Batn = L.Control.extend({
+        onAdd: function (map) {
+            var div = L.DomUtil.create('div', 'leaflet-bar easy-button-container');
+            div.innerHTML = '<div onmouseover="$(this).children(\'ul\').css(\'display\', \'block\')" onmouseout="$(this).children(\'ul\').css(\'display\', \'none\')">' +
+                '<a title="Download Data" style="background-size: 16px 16px; cursor: pointer; border-top-right-radius: 2px; border-bottom-right-radius: 2px;">' +
+                '<span class="fas fa-download"></span>' +
+                '</a>' +
+                '<ul class="easyBtnHolder">' +
+                '<li class="d-inline-block"><a class="csvDownload" title="Download search result as CSV file" data-iter="' + Iter + '"><i class="fas fa-list-alt"></i></a></li>' +
+                '<li class="d-inline-block"><a class="jsonDownload" title="Download search result as GeoJSON file" data-iter="' + Iter + '"><i class="fas fa-map-marker-alt"></i></a></li>' +
+                '</ul>' +
+                '</div>';
 
-    L.easyButton({
-        id: '' + Iter + '',  // an id for the generated button
-        position: 'topleft',      // inherited from L.Control -- the corner it goes in
-        type: 'replace',          // set to animate when you're comfy with css
-        leafletClasses: true,     // use leaflet classes to style the button?
-        states: [{                 // specify different icons and responses for your button
-            stateName: 'get-center',
-            onClick: function (button, map) {
-                currentID = button.options.id;
-                createCSV(eval('myGeoJSON' + currentID));
-            },
-            title: 'Download search result as CSV file',
-            icon: 'fas fa-file-csv'
-        }]
-    }).addTo(eval('map' + Iter));
+            return div;
+        },
+        onRemove: function (map) {
+            // Nothing to do here
+        }
+    });
+    L.control.batn = function (opts) {
+        return new L.Control.Batn(opts);
+    }
+
+    L.control.batn({position: 'topleft'}).addTo(eval('map' + Iter));
+
 
     printMapbutton(('map' + Iter), 'topleft');
+    
+    $('.jsonDownload').click(function f() {
+        var currentId = $(this).data('iter');
+        exportToJsonFile(eval('myGeoJSON' + currentId));
+    })
+
+    $('.csvDownload').click(function f() {
+        var currentId = $(this).data('iter');
+        createCSV(eval('myGeoJSON' + currentId));
+    })
 }
 
 function createResult(data, iter) { //finish query and show results on map
@@ -794,8 +798,8 @@ function createCSV(data) {
             newDataset.burial_id = dataset.burial_id;
             newDataset.grave_id = dataset.grave_id;
             newDataset.site_id = dataset.site_id;
-            newDataset.lat = dataset.lat;
-            newDataset.lon = dataset.lon;
+            newDataset.easting = dataset.lat;
+            newDataset.northing = dataset.lon;
         tmpArrayOrd.push(newDataset)
             })
     })

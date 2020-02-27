@@ -189,6 +189,15 @@ body {
     margin-left: 35px !important;
 }
 
+.easyBtnHolder {
+    margin-top: -35px;
+    margin-bottom: 0;
+    margin-left: 35px;
+    padding-left: 0;
+    display: none;
+    cursor: pointer;
+}
+
 .leaflet-bar a, .easy-button-button {
     color: #fff !important;
     background-color: #696969 !important;
