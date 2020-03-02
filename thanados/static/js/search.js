@@ -644,9 +644,6 @@ function setmymap(markers, heatmarkers) {
     };
 
     var options = {
-        // Make the "Landmarks" group exclusive (use radio inputs)
-        //exclusiveGroups: ["Search Results"],
-        // Show a checkbox next to non-exclusive group labels for toggling all
         groupCheckboxes: false
     };
 
@@ -776,7 +773,6 @@ function createResult(data, iter) { //finish query and show results on map
 
     eval('resultpoints' + iter + '.clearLayers();');
     eval('resultpoints' + iter + '.addLayer(customResult' + iter + ');');
-
 }
 
 function createCSV(data) {
@@ -806,17 +802,6 @@ function createCSV(data) {
     var csv = toCSV(tmpArrayOrd);
     exportToCSV(csv)
 }
-
-function toCSV(json) {
-    var csv = "";
-    var keys = (json[0] && Object.keys(json[0])) || [];
-    csv += '"' + keys.join('\",\"') + '"\n';
-    for (var line of json) {
-        csv += '"' + (keys.map(key => line[key]).join('\",\"') + '"\n');
-    }
-    return csv;
-}
-
 
 function applyButton() {
     applyStyle(fillcolor, (1 - MyStyleOpacityVar / 100), mystylebordercolor, mystyleborderwidth);

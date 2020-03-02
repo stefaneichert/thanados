@@ -1,7 +1,7 @@
 //function to query json for types, values etc. recursively
 
 $(document).ready(function () {
-local = true;
+    local = true;
 })
 
 
@@ -195,12 +195,10 @@ function appendMaterial(Iter) { //append value input after material is chosen
         '</button>' +
         '</div>'
     );
-    console.log(Iter);
 }
 
 //search functions depending on criteria
 function searchDimMat(criteria, appendLevel, Iter, val1, val2) {
-    console.log('prop ' + Iter);
     var val1 = $('#valMin_' + Iter).val();
     var val2 = $('#valMax_' + Iter).val();
     goOn = validateNumbers(val1, val2, criteria);
@@ -216,12 +214,10 @@ function searchDimMat(criteria, appendLevel, Iter, val1, val2) {
         dimId = $('#DimensionSelect_' + Iter + ' option:selected').val(); //set criteria variable
         if (criteria != 'dimension')
             dimId = nodeIds;
-            console.log(dimId);
-            console.log(appendLevel);
-            console.log(criteria);
-            console.log(val1 + ' - ' + val2);
         if (criteria == 'dimension')
             dimId = $('#DimensionSelect_' + Iter + ' option:selected').val().toLowerCase();
+        dimText = $('#DimensionSelect_' + Iter + ' option:selected').html();
+        console.log(dimText);
         jsonquery(dimId, appendLevel, criteria, val1, val2);
         $('#dimMatResult_' + Iter).val(uniqueSearchResult.length + ' matches in ' + searchResult.length + ' graves');
         appendPlus(Iter);
@@ -302,12 +298,13 @@ function appendPlus(Iter) {
             '</div>' +
             '</div>' +
             '<div class="dropdown">' +
-            '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Export search result as GEOJson" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+            '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
             '<i class="far fa-save"></i>' +
             '</button>' +
             '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
             '<a class="dropdown-item" onclick="finishQuery(true); exportToJsonFile(jsonresult)" title="Show combined result on map and download as GEOJson polygons" href="#">Polygons</a>' +
             '<a class="dropdown-item" onclick="finishQuery(false); exportToJsonFile(jsonresultPoints)" title="Show combined result on map and download as GEOJson points" href="#">Points</a>' +
+            '<a class="dropdown-item" onclick="finishQuery(true); exportToCSV(CSVresult)" title="Show combined result on map and download as CSV file" href="#">CSV</a>' +
             '</div>' +
             '</div>' +
             '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="AdvSearchOptBtn" onclick="toggleSearchOpt()" title="Styling Options">' +
@@ -417,6 +414,7 @@ function finishQuery(mygeometry) { //finish query and show results on map
         });
         resultpoints.addLayer(resultpoint);
     }
+    CSVresult = toCSV(CSVresult);
 
 }
 
@@ -437,6 +435,7 @@ function jsonquery(id, level, prop, val1, val2) {
     //prepare searchresult array
     searchResult = [];
     searchResultIds = [];
+    CSVresult = [];
 
     //convert values to valid integers
     //set values to catch whole range if undefined
@@ -518,13 +517,69 @@ function jsonquery(id, level, prop, val1, val2) {
     finalSearchResultIds = intermedIds;
 }
 
+function prepareCSV(result, path, value, unit, feature, level, entity) {
+    var tmpValue = {};
+    tmpValue.site = myjson.name.replace(/"/g, '\'');
+    tmpValue.siteID = myjson.site_id;
+    tmpValue.ObjectName = entity.properties.name.replace(/"/g, '\'');
+    tmpValue.ObjectType = entity.properties.maintype.name.replace(/"/g, '\'');
+    tmpValue.ObjectClass = entity.properties.maintype.systemtype;
+    tmpValue.Search = level;
+    tmpValue.searchResult = result.replace(/"/g, '\'');
+    tmpValue.path = path.replace(/"/g, '\'');
+    tmpValue.value = value;
+    tmpValue.unit = unit.replace(/"/g, '\'');
+    tmpValue.earliestBegin = null;
+    tmpValue.latestBegin = null;
+    tmpValue.earliestEnd = null;
+    tmpValue.latestEnd = null;
+    tmpValue.grave = feature.properties.name.replace(/"/g, '\'');
+    tmpValue.gravetype = feature.properties.maintype.name.replace(/"/g, '\'');
+    tmpValue.graveID = feature.id;
+    tmpValue.WGS84_Geometry = null;
+    tmpValue.easting = null;
+    tmpValue.northing = null;
+
+    if (typeof (feature.geometry) != 'undefined') {
+        var wkt = new Wkt.Wkt();
+        var currentGeom = feature.geometry;
+        wkt.fromObject(currentGeom);
+        var wktGeom = (wkt.write());
+
+        if (feature.geometry.type === "Polygon") {
+            var arr = JSON.parse(JSON.stringify(feature.geometry.coordinates).slice(1, -1));
+            mycenter = getCenter(arr);
+            tmpValue.easting = mycenter[0];
+            tmpValue.northing = mycenter[1];
+        }
+        if (feature.geometry.type === "Point") {
+            var arr = JSON.parse(JSON.stringify(feature.geometry.coordinates).slice(1, -1));
+            mycenter = getCenter(arr);
+            tmpValue.easting = mycenter[0];
+            tmpValue.northing = mycenter[1];
+        }
+        tmpValue.WGS84_Geometry = wktGeom.replace(/"/g, '\'');
+    }
+    if (typeof (entity.properties.timespan) != 'undefined') {
+        if (typeof (entity.properties.timespan.begin_from) != 'undefined') tmpValue.earliestBegin = entity.properties.timespan.begin_from;
+        if (typeof (entity.properties.timespan.begin_to) != 'undefined') tmpValue.latestBegin = entity.properties.timespan.begin_to;
+        if (typeof (entity.properties.timespan.end_from) != 'undefined') tmpValue.earliestEnd = entity.properties.timespan.end_from;
+        if (typeof (entity.properties.timespan.end_to) != 'undefined') tmpValue.latestEnd = entity.properties.timespan.end_to;
+    }
+    CSVresult.push(tmpValue);
+}
+
+
 //query entitites based on level
 function levelQuery(feature, entity, id, prop, val1, val2) {
+
 // if search is for maintype push result to layer
     if (prop == 'maintype' && id.includes(entity.properties.maintype.id)) {
         searchResult.push(feature.id);
-        if (finalSearchResultIds.includes(entity.id))
+        if (finalSearchResultIds.includes(entity.id)) {
             searchResultIds.push(entity.id);
+            prepareCSV(entity.properties.maintype.name, entity.properties.maintype.path, "", "", feature, "maintype is: " + GlobalSelectedNodeName, entity);
+        }
     }
 
 
@@ -540,22 +595,28 @@ function levelQuery(feature, entity, id, prop, val1, val2) {
         //if begin and end are availale set a between timespan as result
         if (typeof (begin) !== 'undefined' && typeof (end) !== 'undefined' && begin >= val1 && end <= val2) {
             searchResult.push(feature.id);
-            if (finalSearchResultIds.includes(entity.id))
+            if (finalSearchResultIds.includes(entity.id)) {
                 searchResultIds.push(entity.id);
+                prepareCSV('Search for timespan between: ' + val1 + ' and ' + val2, "", "", "", feature, "timespan", entity);
+            }
         }
 
         //if only begin is available get all entities that start with or after begin
         if (typeof (begin) !== 'undefined' && end == '' && begin >= val1) {
             searchResult.push(feature.id);
-            if (finalSearchResultIds.includes(entity.id))
+            if (finalSearchResultIds.includes(entity.id)) {
                 searchResultIds.push(entity.id);
+                prepareCSV('Search for timespan begins after: ' + (val1), "", "", "", feature, "timespan", entity);
+            }
         }
 
         //if only end is available get all entities that end with or before begin
         if (typeof (end) !== 'undefined' && begin == '' && end <= val2) {
             searchResult.push(feature.id);
-            if (finalSearchResultIds.includes(entity.id))
+            if (finalSearchResultIds.includes(entity.id)) {
                 searchResultIds.push(entity.id);
+                prepareCSV('Search for timespan ends before: ' + (val2), "", "", "", feature, "timespan", entity);
+            }
         }
     }
 
@@ -564,8 +625,10 @@ function levelQuery(feature, entity, id, prop, val1, val2) {
         $.each(entity.properties.types, function (t, type) {
             if (id.includes(type.id)) {
                 searchResult.push(feature.id);
-                if (finalSearchResultIds.includes(entity.id))
+                if (finalSearchResultIds.includes(entity.id)) {
                     searchResultIds.push(entity.id);
+                    prepareCSV(type.name, type.path, "", "", feature, "property is: " + GlobalSelectedNodeName, entity);
+                }
             }
         });
     }
@@ -575,8 +638,10 @@ function levelQuery(feature, entity, id, prop, val1, val2) {
         $.each(entity.properties.dimensions, function (d, dim) {
             if (typeof (dim.value) !== 'undefined' && id.includes(dim.id) && dim.value >= val1 && dim.value <= val2) {
                 searchResult.push(feature.id);
-                if (finalSearchResultIds.includes(entity.id))
+                if (finalSearchResultIds.includes(entity.id)) {
                     searchResultIds.push(entity.id);
+                    prepareCSV(dim.name, dim.path, dim.value, dim.unit, feature, "dimension is: " + dimText + " between " + val1 + " and " + val2, entity);
+                }
             }
         });
     }
@@ -585,12 +650,24 @@ function levelQuery(feature, entity, id, prop, val1, val2) {
     if (prop == 'material' && (typeof (entity.properties.material)) !== 'undefined') {
         $.each(entity.properties.material, function (m, mat) {
             tempMatValue = mat.value;
-            if (mat.value == '0' || mat.value == '')
+            if (mat.value == '0' || mat.value == '' || mat.value == 0)
                 tempMatValue = 100;
             if (id.includes(mat.id) && tempMatValue >= val1 && tempMatValue <= val2) {
                 searchResult.push(feature.id);
-                if (finalSearchResultIds.includes(entity.id))
+                if (finalSearchResultIds.includes(entity.id)) {
                     searchResultIds.push(entity.id);
+                    if (val1 < 0) {
+                        var tmpVal1 = 0
+                    } else {
+                        tmpVal1 = val1
+                    }
+                    if (val2 > 100) {
+                        var tmpVal2 = 100
+                    } else {
+                        tmpVal2 = val2
+                    }
+                    prepareCSV(mat.name, mat.path, tempMatValue, "weight percentage", feature, "material is: " + GlobalSelectedNodeName + " between " + tmpVal1 + "% and " + tmpVal2 + "%", entity);
+                }
             }
         });
     }
@@ -599,8 +676,10 @@ function levelQuery(feature, entity, id, prop, val1, val2) {
             tempMatValue = mat.value;
             if (id.includes(mat.id) && tempMatValue >= val1 && tempMatValue <= val2) {
                 searchResult.push(feature.id);
-                if (finalSearchResultIds.includes(entity.id))
+                if (finalSearchResultIds.includes(entity.id)) {
                     searchResultIds.push(entity.id);
+                    prepareCSV(mat.name, mat.path, tempMatValue, mat.description, feature, "value is: " + GlobalSelectedNodeName + " between " + val1 + " and " + val2 + " (" + mat.description + ")", entity);
+                }
             }
         });
     }
