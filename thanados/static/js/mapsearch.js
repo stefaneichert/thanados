@@ -553,10 +553,8 @@ function prepareCSV(result, path, value, unit, feature, level, entity) {
             tmpValue.northing = mycenter[1];
         }
         if (feature.geometry.type === "Point") {
-            var arr = JSON.parse(JSON.stringify(feature.geometry.coordinates).slice(1, -1));
-            mycenter = getCenter(arr);
-            tmpValue.easting = mycenter[0];
-            tmpValue.northing = mycenter[1];
+            tmpValue.easting = feature.geometry.coordinates[0];
+            tmpValue.northing = feature.geometry.coordinates[1];
         }
         tmpValue.WGS84_Geometry = wktGeom.replace(/"/g, '\'');
     }
