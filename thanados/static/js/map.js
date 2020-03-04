@@ -643,7 +643,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     $('#' + parentDiv).append(
         '<div class="modal-header">' +
         '<h5 class="modal-title">' +
-        '<img src="' + iconpath + '" width="30" height="30" class="modaltitleicon" alt="my image">' + entName + '</h5>' +
+        '<img src="' + iconpath + '" width="30" height="30" class="modaltitleicon" alt="my image">' + entName + '<div class="float-right" style="margin-top: 0.2em;" id="myModalPermalink' + entId + '"></div></h5>' +
         closebutton +
         '</div>' +
         '<div class="modal-body">' +
@@ -660,13 +660,12 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         '<div id="myModalImagecontainer' + entId + '"></div>' +
         '</div>' +
         '</div>' +
-        '<div class="float-right" style="margin-right: 4em; margin-bottom: -2em; margin-top: 1em;" id="myModalPermalink' + entId + '"></div>' +
         '</div>' +
         '<div id="' + parentDiv + '_' + entId + '"></div>'
     );
 
     $('#myModalPermalink' + entId).append(
-        '<a href="../entity/' + entId + '"><h6>Permalink</h6></a>'
+        '<a href="../entity/' + entId + '" title="Permalink"><h6><i class="fas fa-link"></i></h6></a>'
     );
 
     if (dateToInsert == '') {
@@ -822,12 +821,24 @@ function modalset(id) {
     });
     showpolygon(id);
     collapseAllOthers(id);
-    //$('#myModal').modal();
     $("#myModal").dialog({
         width: mymodalwith,
         height: (newListHeight - 188),
         title: globalentName,
-        position: {my: 'right bottom', at: 'right bottom-19', of: window}
+        position: {my: 'right bottom', at: 'right bottom-19', of: window},
+        open: function () {
+            // Destroy Close Button (for subsequent opens)
+            $('#myModal-close').remove();
+            // Create the Close Button (this can be a link, an image etc.)
+            var link = '<btn id="myModal-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
+            // Create Close Button
+            $(".ui-dialog-title").css({'width': ''});
+            $(this).parent().find(".ui-dialog-titlebar").append(link);
+            // Add close event handler to link
+            $('#myModal-close').on('click', function () {
+                $("#myModal").dialog('close');
+            });
+        }
     });
     $("#myModal").scrollTop("0");
 }
@@ -838,7 +849,20 @@ function modalsetsite() {
         width: mymodalwith,
         height: (newListHeight - 188),
         title: myjson.name,
-        position: {my: 'right bottom', at: 'right bottom-19', of: window}
+        position: {my: 'right bottom', at: 'right bottom-19', of: window},
+        open: function () {
+            // Destroy Close Button (for subsequent opens)
+            $('#myModal-close').remove();
+            // Create the Close Button (this can be a link, an image etc.)
+            var link = '<btn id="myModal-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
+            // Create Close Button
+            $(".ui-dialog-title").css({'width': ''});
+            $(this).parent().find(".ui-dialog-titlebar").append(link);
+            // Add close event handler to link
+            $('#myModal-close').on('click', function () {
+                $("#myModal").dialog('close');
+            });
+        }
     });
     $("#myModal").scrollTop("0");
 }

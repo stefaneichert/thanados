@@ -524,6 +524,38 @@ a.ui-button:active,
 
 #myModal {
     max-width: 490px;
+    margin-top: 5px;
+}
+
+.ui-dialog-titlebar-close {
+    display: none
+}
+
+.ui-dialog {
+    padding: 0;
+}
+
+.ui-widget-header {
+    border: 0;
+    background: 0;
+    background-color: #f2f2f2;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    font-size: 1.25rem;
+    font-weight: normal;
+}
+
+.ui-widget.ui-widget-content {
+    border: 1px solid #c5c5c5;
+    border-radius: 3px;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+    padding: .4em .4em .4em .7em;
+}
+
+.modal-title {
+    width: 100%;
 }
 
 .chartcontainer {
@@ -629,4 +661,12 @@ table.dataTable thead .sorting_desc_disabled:after {
     filter: Alpha(Opacity=50) !important;
 
     background: rgb(50, 50, 50) !important; /* This will make it darker */
+}
+
+.ui-widget-content a {
+    color: #6c757d;
+}
+
+.ui-widget-content a:hover {
+    color: #0060b4;
 }

@@ -152,7 +152,7 @@ $(window).resize(function () {
 
 //build jstree after criteria and level for search in Map and Global search
 
-function iniateTree(Iter, appendLevel, criteria, targetField) {
+function initiateTree(Iter, appendLevel, criteria, targetField) {
     $('#mytreeModal').removeClass('d-none');
     UnsetGlobalVars(); //reset vars
     //define search criteria
@@ -244,6 +244,11 @@ function iniateTree(Iter, appendLevel, criteria, targetField) {
 }
 
 function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, appendLevel, Iter, val1, val2) {
+    if (GlobalNodeSelected =='' || isNaN(GlobalNodeSelected)) {
+        alert('select property first');
+        return;
+    }
+
     if (GlobalNodeSelected !== '' && Globalcriteria !== 'material' && Globalcriteria !== 'value') {
 
         $(function () {
@@ -269,18 +274,18 @@ function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, app
             if (criteria === 'type' || criteria === 'maintype') returnQuerystring();
         }
     }
-    if (GlobalNodeSelected === '')
-        alert('select property first');
-    if (Globalcriteria === 'material' && GlobalNodeSelected !== '' || Globalcriteria === 'value' && GlobalNodeSelected !== '') {
-        $('#SQL' + Iter).val($('#SQL' + Iter).val() + ' is "' + GlobalSelectedNodeName + '"');
-        $("#Heading" + Iter).html($('#SQL' + Iter).val());
-        $('#' + targetField).text(SelectedNodeName);
-        $('#' + targetField).prop('disabled', true);
-        setNodes(NodeSelected);
-        $('#type' + Iter).val(nodeIds);
-        $('#mytreeModal').dialog("close");
-        //debug // console.log(Iter);
-        appendMaterial(Iter);
+
+    if (GlobalNodeSelected) {
+        if (Globalcriteria === 'material' && GlobalNodeSelected !== '' || Globalcriteria === 'value' && GlobalNodeSelected !== '') {
+            $('#SQL' + Iter).val($('#SQL' + Iter).val() + ' is "' + GlobalSelectedNodeName + '"');
+            $("#Heading" + Iter).html($('#SQL' + Iter).val());
+            $('#' + targetField).text(SelectedNodeName);
+            $('#' + targetField).prop('disabled', true);
+            setNodes(NodeSelected);
+            $('#type' + Iter).val(nodeIds);
+            $('#mytreeModal').dialog("close");
+            appendMaterial(Iter);
+        }
     }
 }
 
@@ -377,6 +382,19 @@ $.ajaxSetup({
 function openStyleDialog() {
     $("#styledialog").dialog({
         width: mymodalwith,
+        open: function () {
+            // Destroy Close Button (for subsequent opens)
+            $('#styledialog-close').remove();
+            // Create the Close Button (this can be a link, an image etc.)
+            var link = '<btn id="styledialog-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
+            // Create Close Button
+            $(".ui-dialog-title").css({'width': ''});
+            $(this).parent().find(".ui-dialog-titlebar").append(link);
+            // Add close event handler to link
+            $('#styledialog-close').on('click', function () {
+                $("#styledialog").dialog('close');
+            });
+        }
     });
     $("#styledialog").removeClass('d-none');
     setStyleValues();

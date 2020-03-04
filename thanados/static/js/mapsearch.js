@@ -11,7 +11,20 @@ function startsearch() {
     appendSearch(1);
     $("#dialog").dialog({
         width: mymodalwith,
-        height: 450
+        height: 450,
+        open: function () {
+            // Destroy Close Button (for subsequent opens)
+            $('#dialog-close').remove();
+            // Create the Close Button (this can be a link, an image etc.)
+            var link = '<btn id="dialog-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
+            // Create Close Button
+            $(".ui-dialog-title").css({'width': ''});
+            $(this).parent().find(".ui-dialog-titlebar").append(link);
+            // Add close event handler to link
+            $('#dialog-close').on('click', function () {
+                $("#dialog").dialog('close');
+            });
+        }
     });
 }
 
@@ -103,7 +116,7 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
             '</div>'
         );
         targetField = 'MaintypeSelect_' + Iter;
-        iniateTree(Iter, appendLevel, criteria, targetField); //open tree to select value and add variable to form after
+        initiateTree(Iter, appendLevel, criteria, targetField); //open tree to select value and add variable to form after
     }
 
     if (criteria == 'timespan') { //if timespan append form with value fields
@@ -176,7 +189,7 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
             '</div>'
         );
         targetField = 'MaterialSelect_' + Iter;
-        iniateTree(Iter, appendLevel, criteria, targetField);
+        initiateTree(Iter, appendLevel, criteria, targetField);
     }
 
 }

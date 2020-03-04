@@ -216,7 +216,7 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
             '</div>'
         );
         targetField = 'MaintypeSelect_' + Iter;
-        iniateTree(Iter, appendLevel, criteria, targetField); //open tree to select value and add variable to form after
+        initiateTree(Iter, appendLevel, criteria, targetField); //open tree to select value and add variable to form after
     }
 
     if (criteria === 'timespan') { //if timespan append form with value fields
@@ -291,7 +291,7 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
             '</div>'
         );
         targetField = 'MaterialSelect_' + Iter;
-        iniateTree(Iter, appendLevel, criteria, targetField);
+        initiateTree(Iter, appendLevel, criteria, targetField);
     }
 }
 

@@ -5,7 +5,20 @@ function startvis() {
     appendSearch(1);
     $("#visdialog").dialog({
         width: mymodalwith,
-        height: 450
+        height: 450,
+        open: function () {
+            // Destroy Close Button (for subsequent opens)
+            $('#visdialog-close').remove();
+            // Create the Close Button (this can be a link, an image etc.)
+            var link = '<btn id="visdialog-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
+            // Create Close Button
+            $(".ui-dialog-title").css({'width': ''});
+            $(this).parent().find(".ui-dialog-titlebar").append(link);
+            // Add close event handler to link
+            $('#visdialog-close').on('click', function () {
+                $("#visdialog").dialog('close');
+            });
+        }
     });
     visproperty = 'myprop';
     colorstart = "#ffffff";

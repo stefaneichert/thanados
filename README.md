@@ -1,6 +1,7 @@
 # About
 
 THANADOS is an open source, web application for the presentation of archaeological data especially for burial studies.
+It started within the [MEDCEM](https://github.com/ARUP-CAS/aiscr-medcem) project and actively carries on the development of this application.    
 
 See examples at [THANADOS](https://thanados.net) or [MEDCEM](https://medcem.aiscr.cz)
 
