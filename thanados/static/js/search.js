@@ -425,7 +425,7 @@ function returnQuerystring() {
                     eval('result_' + Iter + '= JSON.parse(JSON.stringify(result));');
                 }
                 $('#Resultlist' + Iter).html('Results (' + eval('result_' + Iter + '.length') + ')');
-                eval('setdatatable(result_' + Iter + ', mycriteria);');
+                eval('setdatatable(result_' + Iter + ', ' + Iter + ');');
                 $('#collapseList' + Iter).toggle();
                 eval('map' + Iter).invalidateSize()
                 eval('map' + Iter + '.fitBounds(markers' + Iter + '.getBounds());')
@@ -528,20 +528,37 @@ function CombinedSearch(oldresult, oldLevel, newresult, newLevel) {
 
 }
 
-function setdatatable(data) {
+function setdatatable(data, tablePosition) {
     var mymarkers = new L.featureGroup([]);
     var heatmarkers = [];
     var table = $('#myResultlist' + Iter).DataTable({
         data: data,
+        drawCallback: function () {
+            $('a[rel=popover]').popover({
+                html: true,
+                trigger: 'hover',
+                placement: 'right',
+                container: '#myResultlist' + tablePosition + '_wrapper',
+                content: function () {
+                    return '<img class="popover-img" src="' + $(this).data('img') + '" alt=""/>';
+                }
+            });
+        },
         "pagingType": "numbers",
         "lengthMenu": [10],
         "bLengthChange": false,
         "scrollX": true,
+        columnDefs: [{
+            targets: 4,
+            render: $.fn.dataTable.render.ellipsis(29, true)
+        }],
         columns: [
             {
                 data: "name",
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                    $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.maintype + " ' target='_blank'>" + oData.name + "</a>"); //create links in rows
+                    if(oData.file === null) $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.maintype + " ' target='_blank'>" + oData.name + "</a>");
+                    if(oData.file !== null) $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.maintype + " ' target='_blank'>" + oData.name + "</a>" +
+                        "<a class='btn-xs float-right' rel='popover' data-img='" + oData.file + "'><i class='fas fa-image'></i></a>"); //create links in rows
                 }
             },
             {
@@ -673,7 +690,7 @@ function setmymap(markers, heatmarkers) {
         }]
     }).addTo(eval('map' + Iter));
 
-   L.Control.Batn = L.Control.extend({
+    L.Control.Batn = L.Control.extend({
         onAdd: function (map) {
             var div = L.DomUtil.create('div', 'leaflet-bar easy-button-container');
             div.innerHTML = '<div onmouseover="$(this).children(\'ul\').css(\'display\', \'block\')" onmouseout="$(this).children(\'ul\').css(\'display\', \'none\')">' +
@@ -700,7 +717,7 @@ function setmymap(markers, heatmarkers) {
 
 
     printMapbutton(('map' + Iter), 'topleft');
-    
+
     $('.jsonDownload').click(function f() {
         var currentId = $(this).data('iter');
         exportToJsonFile(eval('myGeoJSON' + currentId));
@@ -796,8 +813,8 @@ function createCSV(data) {
             newDataset.site_id = dataset.site_id;
             newDataset.easting = dataset.lat;
             newDataset.northing = dataset.lon;
-        tmpArrayOrd.push(newDataset)
-            })
+            tmpArrayOrd.push(newDataset)
+        })
     })
     var csv = toCSV(tmpArrayOrd);
     exportToCSV(csv)

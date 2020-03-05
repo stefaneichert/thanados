@@ -1,13 +1,13 @@
 {% extends "layout.html" %}
 {% block content %}
-
     <div id="container">
         <div id="sidebar" class="hidden-xs hidden-sm">
             <div class="sidebar-wrapper">
                 <div class="panel panel-default" id="pnlSidebar">
                     <div id="mysidebarheading" class="panel-heading">
                         <div class="float-right mt-3">
-                            <button type="button" class="mr-2 btn btn-secondary btn-sm fa-pull-right"
+                            <button type="button"
+                                    class="mr-2 btn btn-secondary btn-sm fa-pull-right"
                                     onclick="this.blur(); modalsetsite()" title="show details">
                                 <i class="fa fa-info"></i>
                             </button>
@@ -26,7 +26,8 @@
                     </div>
                     <div class="panel-body" id="mypanel">
                         <div class="panel-group" id="accordion1"
-                             style="overflow-y: hidden"> <!--content to be created by js function--> </div>
+                             style="overflow-y: hidden">
+                            <!--content to be created by js function--> </div>
                     </div>
                 </div>
             </div>
@@ -37,28 +38,77 @@
             <form id="mysearchform"></form>
         </div>
 
+        <div class="modal fade" id="CSVmodal" tabindex="-1" role="dialog"
+             aria-labelledby="CSVmodalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header costum-header-bg">
+                        <h5 class="modal-title" id="CSVmodalLabel">Search result for: </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table id="CSVmodalContent"
+                               class="display table table-striped table-bordered" width="100%">
+                            <thead>
+                            <tr>
+                                <th>Object Name</th>
+                                <th>Object Type</th>
+                                <th>Search Result</th>
+                                <th>Value</th>
+                                <th>Unit</th>
+                                <th>Begin</th>
+                                <th>End</th>
+                                <th>Context</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="modal-footer costum-header-bg">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="exportToCSV(CSVresultExport)" title="Download result as spreadsheet data (CSV - Comma separated Values)">Export CSV</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="styledialog" title="Styling Options for graves">
             <form id="mystyleform">
                 <div class="mystyleoptions input-group input-group-sm mb-3">
                     <div class="input-group-prepend">
                         <label class="input-group-text" for="stylecolor">Fill color: </label>
                     </div>
-                    <input class="form-control" id="stylecolor" style="max-width: 70px" type="color" value="#000dff">
+                    <input class="form-control" id="stylecolor" style="max-width: 70px" type="color"
+                           value="#000dff">
                     <span class="input-group-text input-group-middle">Opacity (%): </span>
-                    <label for="mystyleopacity"></label><input class="form-control" id="mystyleopacity" type="range" value="10" min="0" max="100">
-                    <label for="mystyleopacityvalue"></label><input class="form-control" id="mystyleopacityvalue" type="number" value="10" min="0" max="100"
+                    <label for="mystyleopacity"></label><input class="form-control"
+                                                               id="mystyleopacity" type="range"
+                                                               value="10" min="0" max="100">
+                    <label for="mystyleopacityvalue"></label><input class="form-control"
+                                                                    id="mystyleopacityvalue"
+                                                                    type="number" value="10" min="0"
+                                                                    max="100"
                                                                     style="max-width: 60px">
                 </div>
                 <div class="mystyleoptions input-group input-group-sm mb-3">
                     <div class="input-group-prepend">
-                        <label class="input-group-text" for="stylebordercolor">Border color: </label>
+                        <label class="input-group-text" for="stylebordercolor">Border
+                            color: </label>
                     </div>
-                    <label for="stylecolorborder"></label><input class="form-control" id="stylecolorborder" style="max-width: 70px" type="color"
+                    <label for="stylecolorborder"></label><input class="form-control"
+                                                                 id="stylecolorborder"
+                                                                 style="max-width: 70px"
+                                                                 type="color"
                                                                  value="#000000">
                     <span class="input-group-text input-group-middle">Border width: </span>
-                    <label for="styleborderwidth"></label><input class="form-control" id="styleborderwidth" type="number" value="0" min="0">
+                    <label for="styleborderwidth"></label><input class="form-control"
+                                                                 id="styleborderwidth" type="number"
+                                                                 value="0" min="0">
                 </div>
-                <button class="btn btn-sm btn-secondary btn-sm float-right" type="button" id="applyStyle"
+                <button class="btn btn-sm btn-secondary btn-sm float-right" type="button"
+                        id="applyStyle"
                         onclick="applyButton()" title="Apply">Apply
                 </button>
             </form>
@@ -76,7 +126,9 @@
             <div>
                 <div id="TreeMenu" class="input-group input-group-sm mb-3">
                     <div class="input-group-prepend">
-                        <label for="jstree_q"></label><input id="jstree_q" class="form-control form-control-sm" type="text"
+                        <label for="jstree_q"></label><input id="jstree_q"
+                                                             class="form-control form-control-sm"
+                                                             type="text"
                                                              placeholder="type to search...">
                     </div>
                     <div class="input-group-append">

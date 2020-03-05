@@ -31,7 +31,8 @@ def ajax_test() -> str:
            'burial_id', d.burial_id,
            'grave_id', d.grave_id,
            'site_id', d.site_id,
-           'context', d.context
+           'context', d.context,
+           'file', d.filename
            )) AS result FROM 
            (SELECT * FROM thanados.searchData WHERE site_id IN %(site_ids)s AND system_type = %(system_type)s AND type_id IN %(type_ids)s) d
            """
@@ -53,7 +54,8 @@ def ajax_test() -> str:
            'burial_id', d.burial_id,
            'grave_id', d.grave_id,
            'site_id', d.site_id,
-           'context', d.context
+           'context', d.context,
+           'file', d.filename
            )) AS result FROM 
            (SELECT * FROM thanados.searchData WHERE site_id IN %(site_ids)s AND system_type = %(system_type)s AND type_id = 0 AND min >= %(min)s AND max <= %(max)s) d
            """
@@ -75,7 +77,8 @@ def ajax_test() -> str:
                'burial_id', d.burial_id,
                'grave_id', d.grave_id,
                'site_id', d.site_id,
-               'context', d.context
+               'context', d.context,
+               'file', d.filename
                )) AS result FROM 
                (SELECT * FROM thanados.searchData WHERE site_id IN %(site_ids)s AND  system_type = %(system_type)s AND type_id IN %(type_ids)s AND min >= %(min)s AND max <= %(max)s) d
            """

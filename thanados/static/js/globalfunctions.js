@@ -581,5 +581,3 @@ function MultAttributionChange(myMap, mydiv, attribution) {
     attr.addTo(myMap)
     eval('$("' + mydiv + ' .togglebtn").next().toggle()');
 }
-
-

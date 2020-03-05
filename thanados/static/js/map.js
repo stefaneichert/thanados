@@ -5,6 +5,9 @@ $(document).ready(function () {
     getBasemaps();
     setmap(myjson);
     console.log(myjson);
+    $('#CSVmodal').on('shown.bs.modal', function (e) {
+        table.draw();
+    })
 });
 
 //set map and sidebar content//

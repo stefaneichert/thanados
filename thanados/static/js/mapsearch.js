@@ -2,8 +2,8 @@
 
 $(document).ready(function () {
     local = true;
-})
 
+})
 
 function startsearch() {
     initateQuery();
@@ -72,7 +72,7 @@ function appendSearch(Iter) {//append search form to dialog
         if (Iter == 1)
             $('#LevelSelect_' + Iter + '_parent').append(//add reset button on first iteration
                 '<div class="input-group-append">' +
-                '<button class="btn btn-secondary btn-sm" type="button" id="resetsearchbutton" onclick="startsearch()" title="Reset search">' +
+                '<button class="btn btn-secondary btn-sm" type="button" id="resetsearchbutton" onclick="delete Globaliter; startsearch()" title="Reset search">' +
                 '<i class="fas fa-sync-alt"></i>' +
                 '</button>' +
                 '</div>'
@@ -230,7 +230,6 @@ function searchDimMat(criteria, appendLevel, Iter, val1, val2) {
         if (criteria == 'dimension')
             dimId = $('#DimensionSelect_' + Iter + ' option:selected').val().toLowerCase();
         dimText = $('#DimensionSelect_' + Iter + ' option:selected').html();
-        console.log(dimText);
         jsonquery(dimId, appendLevel, criteria, val1, val2);
         $('#dimMatResult_' + Iter).val(uniqueSearchResult.length + ' matches in ' + searchResult.length + ' graves');
         appendPlus(Iter);
@@ -271,7 +270,7 @@ function appendPlus(Iter) {
 
         $('#mysearchform').append(
             '<div class="input-group input-group-sm mb-3">' +
-            '<input id="finalresult_' + Iter + '" class="form-control combiresult" onclick="this.blur()" title="' + resultlength + '" type="text" placeholder="' + resultlength.length + ' combined matches" readonly disabled>' +
+            '<input id="finalresult_' + Iter + '" class="form-control combiresult" onclick="this.blur()" title="' + resultlength + '" type="text" placeholder="' + CSVresult.length + ' combined matches in ' + resultlength.length + ' graves" readonly disabled>' +
             '</div>'
         );
     }
@@ -306,8 +305,8 @@ function appendPlus(Iter) {
             '<i class="fas fa-map-marked-alt"></i>' +
             '</button>' +
             '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
-            '<a class="dropdown-item" onclick="finishQuery(true)" title="Show combined result on map as polygons" href="#">Polygons</a>' +
-            '<a class="dropdown-item" onclick="finishQuery(false)" title="Show combined result on map as points" href="#">Points</a>' +
+            '<a class="dropdown-item" onclick="finishQuery(true, true, false)" title="Show combined result on map as polygons" href="#">Polygons</a>' +
+            '<a class="dropdown-item" onclick="finishQuery(false, true, false)" title="Show combined result on map as points" href="#">Points</a>' +
             '</div>' +
             '</div>' +
             '<div class="dropdown">' +
@@ -315,11 +314,13 @@ function appendPlus(Iter) {
             '<i class="far fa-save"></i>' +
             '</button>' +
             '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
-            '<a class="dropdown-item" onclick="finishQuery(true); exportToJsonFile(jsonresult)" title="Show combined result on map and download as GEOJson polygons" href="#">Polygons</a>' +
-            '<a class="dropdown-item" onclick="finishQuery(false); exportToJsonFile(jsonresultPoints)" title="Show combined result on map and download as GEOJson points" href="#">Points</a>' +
-            '<a class="dropdown-item" onclick="finishQuery(true); exportToCSV(CSVresult)" title="Show combined result on map and download as CSV file" href="#">CSV</a>' +
+            '<a class="dropdown-item" onclick="finishQuery(true, false, false); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" href="#">Polygons</a>' +
+            '<a class="dropdown-item" onclick="finishQuery(false, false, false); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
             '</div>' +
             '</div>' +
+            '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, true)" type="button" id="ShowListButton" title="Show result list" data-toggle="modal" data-target="#CSVmodal">' +
+            '<i class="fas fa-list"></i>' +
+            '</button>' +
             '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="AdvSearchOptBtn" onclick="toggleSearchOpt()" title="Styling Options">' +
             '<i class="fas fa-palette"></i>' +
             '</button>'
@@ -368,13 +369,21 @@ function appendPlus(Iter) {
     }
 
     $('#mysearchform').append(
-        '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="resetSearchEndBtn" onclick="startsearch()" title="Reset search">' +
+        '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="resetSearchEndBtn" onclick="delete Globaliter; startsearch()" title="Reset search">' +
         '<i class="fas fa-sync-alt"></i>' +
         '</button>'
     );
+
+    $('#resetSearchEndBtn')[0].scrollIntoView(
+        {
+            behavior: "smooth", // or "auto" or "instant"
+            block: "end"
+        }
+    );
 }
 
-function finishQuery(mygeometry) { //finish query and show results on map
+
+function finishQuery(mygeometry, show, table) { //finish query and show results on map
 
     jsonresult = {
         "type": "FeatureCollection", //prepare geojson
@@ -414,21 +423,87 @@ function finishQuery(mygeometry) { //finish query and show results on map
         fillOpacity: 1 - mysearchopacity / 100
     };
 
-    if (mygeometry) {
-        resultpolys.clearLayers();
-        resultpoly = L.geoJSON(jsonresult, {style: mysearchresultstyle});
-        resultpolys.addLayer(resultpoly);
-    } else {
-        resultpoints.clearLayers();
-        resultpoint = L.geoJSON(jsonresultPoints, {
-            pointToLayer: function (feature, latlng) {
-                return L.circleMarker(latlng, geojsonMarkerOptions);
-            }
-        });
-        resultpoints.addLayer(resultpoint);
+    if (show) {
+        if (mygeometry) {
+            resultpolys.clearLayers();
+            resultpoly = L.geoJSON(jsonresult, {style: mysearchresultstyle});
+            resultpolys.addLayer(resultpoly);
+        } else {
+            resultpoints.clearLayers();
+            resultpoint = L.geoJSON(jsonresultPoints, {
+                pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, geojsonMarkerOptions);
+                }
+            });
+            resultpoints.addLayer(resultpoint);
+        }
     }
-    CSVresult = toCSV(CSVresult);
+    if (table) {
+        CSVresultJSON = jQuery.extend(true, [], CSVresult);
+        var tmpCSV = JSON.parse(JSON.stringify(CSVresult));
+        $.each(tmpCSV, function (i, dataset) {
+            delete dataset.image
+        });
+        CSVresultExport = toCSV(tmpCSV);
+        CSVtable();
+    }
+}
 
+function CSVtable() {
+    var level = CSVresultJSON[0].ObjectClass;
+    var search = CSVresultJSON[0].Search;
+    if (search === 'timespan') search = (JSON.stringify(CSVresultJSON[0].searchResult)).slice(12);
+    if (typeof (tableIter) !== 'undefined') {
+        if (tableIter >= Globaliter) delete tableIter
+    }
+
+
+    table = $('#CSVmodalContent').DataTable({
+        destroy: true,
+        data: CSVresultJSON,
+        "pagingType": "numbers",
+        "scrollX": true,
+        drawCallback: function () {
+            $('a[rel=popover]').popover({
+                html: true,
+                trigger: 'hover',
+                placement: 'right',
+                container: '.modal-body',
+                content: function () {
+                    return '<img class="popover-img" src="' + $(this).data('img') + '" alt=""/>';
+                }
+            });
+        },
+        columns: [
+            {
+                data: "ObjectName",
+                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                    if (oData.image === null) $(nTd).html("<a href='/entity/" + oData.ObjectId + "' target='_blank' title='open in new tab'>" + oData.ObjectName + "</a>");
+                    if (oData.image !== null) $(nTd).html("<a href='/entity/" + oData.ObjectId + "' target='_blank' title='open in new tab'>" + oData.ObjectName + "</a>" +
+                        "<a class='btn-xs float-right' rel='popover' data-img='" + oData.image + "'><i class='fas fa-image'></i></a>"); //create links in rows
+                }
+            },
+            {data: 'ObjectType'},
+            {data: 'searchResult'},
+            {data: 'value'},
+            {data: 'unit'},
+            {data: 'earliestBegin'},
+            {data: 'latestEnd'},
+            {data: 'grave'}
+        ],
+    });
+
+    if ((search.includes('dimension') || search.includes('Material') || search.includes('value')) === false) table.columns([3, 4]).visible(false);
+
+
+    if (typeof (tableIter) === 'undefined') {
+        oldQuery = search;
+    }
+    if (typeof (tableIter) !== 'undefined' && tableIter < Globaliter) {
+        oldQuery += '" and "' + search;
+    }
+    $('#CSVmodalLabel').html('Search for: "' + level + '" where "' + oldQuery + '"');
+    tableIter = Globaliter;
 }
 
 function getCenter(arr) {
@@ -534,6 +609,7 @@ function prepareCSV(result, path, value, unit, feature, level, entity) {
     var tmpValue = {};
     tmpValue.site = myjson.name.replace(/"/g, '\'');
     tmpValue.siteID = myjson.site_id;
+    tmpValue.ObjectId = entity.id;
     tmpValue.ObjectName = entity.properties.name.replace(/"/g, '\'');
     tmpValue.ObjectType = entity.properties.maintype.name.replace(/"/g, '\'');
     tmpValue.ObjectClass = entity.properties.maintype.systemtype;
@@ -552,6 +628,7 @@ function prepareCSV(result, path, value, unit, feature, level, entity) {
     tmpValue.WGS84_Geometry = null;
     tmpValue.easting = null;
     tmpValue.northing = null;
+    tmpValue.image = null;
 
     if (typeof (feature.geometry) != 'undefined') {
         var wkt = new Wkt.Wkt();
@@ -577,6 +654,9 @@ function prepareCSV(result, path, value, unit, feature, level, entity) {
         if (typeof (entity.properties.timespan.end_from) != 'undefined') tmpValue.earliestEnd = entity.properties.timespan.end_from;
         if (typeof (entity.properties.timespan.end_to) != 'undefined') tmpValue.latestEnd = entity.properties.timespan.end_to;
     }
+
+    if (typeof (entity.files) != 'undefined') tmpValue.image = entity.files[0].file_name;
+
     CSVresult.push(tmpValue);
 }
 

@@ -1749,6 +1749,24 @@ DROP TABLE IF EXISTS thanados.searchData;
 DROP TABLE IF EXISTS thanados.searchData_tmp;
 
 DELETE FROM thanados.searchData WHERE type_id = 0 AND min ISNULL AND max ISNULL;
+
+DROP TABLE IF EXISTS thanados.searchData_tmp;
+CREATE TABLE thanados.searchData_tmp AS (
+
+SELECT
+d.*,
+fi.filename
+	FROM
+
+(select distinct on (f.parent_id)
+    f.parent_id, f.filename
+from thanados.files f WHERE filename != ''   
+order by f.parent_id) fi RIGHT JOIN thanados.searchData d ON d.child_id = fi.parent_id ORDER BY child_id, type);
+
+DROP TABLE thanados.searchData;
+CREATE TABLE thanados.searchData AS (
+SELECT * FROM thanados.searchData_tmp);
+DROP TABLE thanados.searchData_tmp;
     """
     g.cursor.execute(sql_4)
     return redirect(url_for('admin'))
