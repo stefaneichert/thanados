@@ -30,30 +30,6 @@ function setmap(myjson) {
 //set sidebar to current json
     if (myjson.features[0].id !== 0) setSidebarContent(myjson);
 
-    //set attribution title
-    mywindowtitle = 'MEDCEM: ' + myjson.name + '. ';
-
-//define basemaps
-    var landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=b3c55fb5010a4038975fd0a0f4976e64', {
-        attribution: mywindowtitle + 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        maxZoom: 25
-    });
-
-    var satellite = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'], attribution: mywindowtitle + 'Tiles: &copy; Google Maps ',
-        maxZoom: 25
-    });
-
-    var basemap = L.tileLayer.wms('http://geoportal.cuzk.cz/WMS_ZM10_PUB/WMService.aspx', {
-        layers: 'GR_ZM10',
-        maxZoom: 25
-    });
-
-    if (myjson.site_id == 111285) {
-        var imageUrl = '/static/images/entities/112757.png';
-        var imageBounds = [[49.99800, 14.99246], [49.99747, 14.99328]];
-        plot = L.imageOverlay(imageUrl, imageBounds);
-    }
 
 //define map
     map = L.map('map', {
@@ -126,7 +102,6 @@ function setmap(myjson) {
                 centerpoint = latlng;
                 markerset = true;
             }
-            ;
         },
     });
 
@@ -229,18 +204,6 @@ function setmap(myjson) {
     //initiate selection of clicked polygons
     polygonSelect();
 
-    /*todo: fix image export
-    printPlugin = L.easyPrint({
-        position: 'topleft',
-        sizeModes: ['Current'],
-        filename: 'myMap',
-        exportOnly: true,
-        hideClasses: ['leaflet-control-layers-toggle', 'mapbutton', 'mapbutton', 'dropdown-menu', 'dropdown-menu'],
-        hideControlContainer: false,
-        hidden: true,
-    }).addTo(map);
-    */
-
     map.on('baselayerchange', function (e) {
         attributionChange()
     });
@@ -260,11 +223,6 @@ function applyButton() {
         }
     });
 }
-
-/*function printme() {
-    printPlugin.printMap('CurrentSize');
-};*/
-
 
 //openpolygon for active sidebargrave
 function showpolygon(id) {
@@ -392,8 +350,6 @@ function hoverFilter(feature) {
 
 //UI Elements
 //min mid max sidebar
-$('#sidebar-start').toggle();
-$('#sidebarclosed-menu').toggle();
 
 function animateSidebar(withzoom) {
     sidebarSize = $("#sidebar").width();
@@ -401,17 +357,12 @@ function animateSidebar(withzoom) {
     switch (sidebarSize) {
         case 0:
             sidebarNewSize = 350
-            $('#sidebar-start').toggle();
-            $('#sidebarclosed-menu').toggle();
             break;
         case 350:
             sidebarNewSize = 0
-            $('#sidebar-start').toggle();
-            $('#sidebarclosed-menu').toggle();
             break;
         default:
             sidebarNewSize = 350
-            $('#sidebar-max').attr("disabled", false);
     }
 
     $("#sidebar").animate({
@@ -437,7 +388,6 @@ function animateSidebarMax() {
             width: "100%"
         }, 0, function () {
             map.invalidateSize();
-            $('#sidebar-max').attr("disabled", true);
         }
     );
 }
@@ -713,19 +663,18 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         '<div id="myModalImagecontainer' + entId + '"></div>' +
         '</div>' +
         '</div>' +
-        '<div class="float-right" style="margin-right: 4em; margin-bottom: -2em; margin-top: 1em;" id="myModalPermalink' + entId + '"></div>' +
         '</div>' +
         '<div id="' + parentDiv + '_' + entId + '"></div>'
     );
 
     $('#myModalPermalink' + entId).append(
-        '<a href="../entity/' + entId + '"><h6>Permalink</h6></a>'
+        '<a href="../entity/' + entId + '" title="Permalink to this entity"><h6><i class="fas fa-link"></i></h6></a>'
     );
 
     if (dateToInsert == '') {
         $('#myModaltimespan' + entId).attr("class", "");
     }
-    ;
+
 
     setImages(entId, entfiles);
     $('#myModalTypescontainer' + entId).empty();
@@ -733,7 +682,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         if ($('#myModalTypescontainer' + entId).is(':empty')) {
             $('#myModalTypescontainer' + entId).append('<p><h6>Properties</h6></p>');
         }
-        ;
+
         var classification = types.name;
         var classtype = types.path;
         var typevalue = types.value;
@@ -875,7 +824,6 @@ function modalset(id) {
     });
     showpolygon(id);
     collapseAllOthers(id);
-    //$('#myModal').modal();
     $("#myModal").dialog({
         width: mymodalwith,
         height: (newListHeight - 188),
