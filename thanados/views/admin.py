@@ -698,6 +698,21 @@ WHERE entities.child_id = link.range_id
   AND entity.system_type ~~ 'external reference'::text
 ORDER BY entities.child_id;
 
+INSERT INTO thanados.extrefs 
+SELECT entities.child_id  AS parent_id,
+       'https://www.geonames.org/' || entity.name  as url,
+       link.description   AS name,
+       entity.description AS description,
+       entity.id
+FROM thanados.entities,
+     model.link,
+     model.entity
+WHERE entities.child_id = link.range_id
+  AND link.domain_id = entity.id
+  AND entities.child_id != 0
+  AND entity.system_type ~~ 'external reference geonames'::text
+ORDER BY entities.child_id;
+
 
 UPDATE thanados.extrefs
 SET description = NULL
@@ -1734,6 +1749,24 @@ DROP TABLE IF EXISTS thanados.searchData;
 DROP TABLE IF EXISTS thanados.searchData_tmp;
 
 DELETE FROM thanados.searchData WHERE type_id = 0 AND min ISNULL AND max ISNULL;
+
+DROP TABLE IF EXISTS thanados.searchData_tmp;
+CREATE TABLE thanados.searchData_tmp AS (
+
+SELECT
+d.*,
+fi.filename
+	FROM
+
+(select distinct on (f.parent_id)
+    f.parent_id, f.filename
+from thanados.files f WHERE filename != ''   
+order by f.parent_id) fi RIGHT JOIN thanados.searchData d ON d.child_id = fi.parent_id ORDER BY child_id, type);
+
+DROP TABLE thanados.searchData;
+CREATE TABLE thanados.searchData AS (
+SELECT * FROM thanados.searchData_tmp);
+DROP TABLE thanados.searchData_tmp;
     """
     g.cursor.execute(sql_4)
     return redirect(url_for('admin'))

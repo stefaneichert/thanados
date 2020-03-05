@@ -94,16 +94,37 @@ function exportToJsonFile(data) {
     }
 }
 
+function toCSV(json) {
+    var csv = "";
+    var keys = (json[0] && Object.keys(json[0])) || [];
+    csv += '"' + keys.join('\",\"') + '"\n';
+    for (var line of json) {
+        csv += '"' + (keys.map(key => line[key]).join('\",\"') + '"\n');
+    }
+    return csv;
+}
+
+function exportToCSV(data) {
+    var file = new Blob([data]);
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        var a = document.createElement("a"),
+            url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = 'export.csv';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
+    }
+}
+
 function openInNewTab(url) {
     var win = window.open(url, '_self'); //change to _blank for new tabs.
     win.focus();
-}
-
-
-function attributionChange() {
-    $(".leaflet-control-attribution").find(':first-child').remove();
-    var val = $(".leaflet-control-attribution").html();
-    $(".leaflet-control-attribution").html(val.substring(2, val.length));
 }
 
 $(document).ready(function () {
@@ -131,7 +152,7 @@ $(window).resize(function () {
 
 //build jstree after criteria and level for search in Map and Global search
 
-function iniateTree(Iter, appendLevel, criteria, targetField) {
+function initiateTree(Iter, appendLevel, criteria, targetField) {
     $('#mytreeModal').removeClass('d-none');
     UnsetGlobalVars(); //reset vars
     //define search criteria
@@ -223,6 +244,11 @@ function iniateTree(Iter, appendLevel, criteria, targetField) {
 }
 
 function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, appendLevel, Iter, val1, val2) {
+    if (GlobalNodeSelected =='' || isNaN(GlobalNodeSelected)) {
+        alert('select property first');
+        return;
+    }
+
     if (GlobalNodeSelected !== '' && Globalcriteria !== 'material' && Globalcriteria !== 'value') {
 
         $(function () {
@@ -248,18 +274,18 @@ function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, app
             if (criteria === 'type' || criteria === 'maintype') returnQuerystring();
         }
     }
-    if (GlobalNodeSelected === '')
-        alert('select property first');
-    if (Globalcriteria === 'material' && GlobalNodeSelected !== '' || Globalcriteria === 'value' && GlobalNodeSelected !== '') {
-        $('#SQL' + Iter).val($('#SQL' + Iter).val() + ' is "' + GlobalSelectedNodeName + '"');
-        $("#Heading" + Iter).html($('#SQL' + Iter).val());
-        $('#' + targetField).text(SelectedNodeName);
-        $('#' + targetField).prop('disabled', true);
-        setNodes(NodeSelected);
-        $('#type' + Iter).val(nodeIds);
-        $('#mytreeModal').dialog("close");
-        //debug // console.log(Iter);
-        appendMaterial(Iter);
+
+    if (GlobalNodeSelected) {
+        if (Globalcriteria === 'material' && GlobalNodeSelected !== '' || Globalcriteria === 'value' && GlobalNodeSelected !== '') {
+            $('#SQL' + Iter).val($('#SQL' + Iter).val() + ' is "' + GlobalSelectedNodeName + '"');
+            $("#Heading" + Iter).html($('#SQL' + Iter).val());
+            $('#' + targetField).text(SelectedNodeName);
+            $('#' + targetField).prop('disabled', true);
+            setNodes(NodeSelected);
+            $('#type' + Iter).val(nodeIds);
+            $('#mytreeModal').dialog("close");
+            appendMaterial(Iter);
+        }
     }
 }
 
@@ -356,6 +382,19 @@ $.ajaxSetup({
 function openStyleDialog() {
     $("#styledialog").dialog({
         width: mymodalwith,
+        open: function () {
+            // Destroy Close Button (for subsequent opens)
+            $('#styledialog-close').remove();
+            // Create the Close Button (this can be a link, an image etc.)
+            var link = '<btn id="styledialog-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
+            // Create Close Button
+            $(".ui-dialog-title").css({'width': ''});
+            $(this).parent().find(".ui-dialog-titlebar").append(link);
+            // Add close event handler to link
+            $('#styledialog-close').on('click', function () {
+                $("#styledialog").dialog('close');
+            });
+        }
     });
     $("#styledialog").removeClass('d-none');
     setStyleValues();
@@ -427,13 +466,118 @@ function applyStyle(fill, opacity, border, outline) {
 function printMapbutton(id, position) {
 
     currentID = id;
-    console.log(currentID);
     //eval('printPlugin_' + currentID + ' = L.easyPrint({position: "topleft", hidden: true, sizeModes: ["A4Landscape"], filename: "ThanadosMap"}).addTo(' + currentID + ');');
     //console.log('filePlugin_' + currentID + ' = L.easyPrint({position: "topleft", hidden: true, sizeModes: ["A4Landscape"], exportOnly: true, filename: "ThanadosMap"}).addTo(' + currentID + ');');
     //eval('filePlugin_' + currentID + ' = L.easyPrint({position: "topleft", hidden: true, sizeModes: ["A4Landscape"], exportOnly: true, filename: "ThanadosMap"}).addTo(' + currentID + ');');
     eval('L.easyPrint({position: "' + position + '", title: "Export map as image file", sizeModes: ["A4Landscape", "A4Portrait"], exportOnly: true, filename: "ThanadosMap"}).addTo(' + currentID + ');');
     //eval('printPlugin_' + currentID + '.printMap("A4Portrait", "MyFileName");');
-    $('#leafletEasyPrint').html('<span class="fas fa-image"></span>');
-    $('#leafletEasyPrint').removeClass('leaflet-control-easyPrint-button-export');
-    $('#leafletEasyPrint').css({'background-image': '', 'background-size': '16px 16px', 'cursor': 'pointer'});
+    $('.leaflet-control-easyPrint-button-export').html('<span class="fas fa-image"></span>');
+    $('.leaflet-control-easyPrint-button-export').removeClass('leaflet-control-easyPrint-button-export');
+    $('#leafletEasyPrint').css({
+        'background-image': '',
+        'background-size': '16px 16px',
+        'cursor': 'pointer'
+    });
+    $('a.A4Landscape.page').css({'background-image': 'url(data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTguMS4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDQ0NC44MzMgNDQ0LjgzMyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDQ0LjgzMyA0NDQuODMzOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgd2lkdGg9IjUxMnB4IiBoZWlnaHQ9IjUxMnB4Ij4KPGc+Cgk8Zz4KCQk8cGF0aCBkPSJNNTUuMjUsNDQ0LjgzM2gzMzQuMzMzYzkuMzUsMCwxNy03LjY1LDE3LTE3VjEzOS4xMTdjMC00LjgxNy0xLjk4My05LjM1LTUuMzgzLTEyLjQ2N0wyNjkuNzMzLDQuNTMzICAgIEMyNjYuNjE3LDEuNywyNjIuMzY3LDAsMjU4LjExNywwSDU1LjI1Yy05LjM1LDAtMTcsNy42NS0xNywxN3Y0MTAuODMzQzM4LjI1LDQzNy4xODMsNDUuOSw0NDQuODMzLDU1LjI1LDQ0NC44MzN6ICAgICBNMzcyLjU4MywxNDYuNDgzdjAuODVIMjU2LjQxN3YtMTA4LjhMMzcyLjU4MywxNDYuNDgzeiBNNzIuMjUsMzRoMTUwLjE2N3YxMzAuMzMzYzAsOS4zNSw3LjY1LDE3LDE3LDE3aDEzMy4xNjd2MjI5LjVINzIuMjVWMzR6ICAgICIgZmlsbD0iI0ZGRkZGRiIvPgoJPC9nPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+Cjwvc3ZnPg==)'});
+    $('a.A4Portrait.page').css({'background-image': 'url(data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTguMS4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDQ0NC44MzMgNDQ0LjgzMyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDQ0LjgzMyA0NDQuODMzOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgd2lkdGg9IjUxMnB4IiBoZWlnaHQ9IjUxMnB4Ij4KPGc+Cgk8Zz4KCQk8cGF0aCBkPSJNNTUuMjUsNDQ0LjgzM2gzMzQuMzMzYzkuMzUsMCwxNy03LjY1LDE3LTE3VjEzOS4xMTdjMC00LjgxNy0xLjk4My05LjM1LTUuMzgzLTEyLjQ2N0wyNjkuNzMzLDQuNTMzICAgIEMyNjYuNjE3LDEuNywyNjIuMzY3LDAsMjU4LjExNywwSDU1LjI1Yy05LjM1LDAtMTcsNy42NS0xNywxN3Y0MTAuODMzQzM4LjI1LDQzNy4xODMsNDUuOSw0NDQuODMzLDU1LjI1LDQ0NC44MzN6ICAgICBNMzcyLjU4MywxNDYuNDgzdjAuODVIMjU2LjQxN3YtMTA4LjhMMzcyLjU4MywxNDYuNDgzeiBNNzIuMjUsMzRoMTUwLjE2N3YxMzAuMzMzYzAsOS4zNSw3LjY1LDE3LDE3LDE3aDEzMy4xNjd2MjI5LjVINzIuMjVWMzR6ICAgICIgZmlsbD0iI0ZGRkZGRiIvPgoJPC9nPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+Cjwvc3ZnPg==)'});
+}
+
+function testbutton() {
+    L.easyButton({
+        id: 'OptionsButton',
+        'data-toggle': 'dropdown',
+        position: 'topleft',      // inherited from L.Control -- the corner it goes in
+        states: [{                 // specify different icons and responses for your button
+            stateName: 'get-center',
+            onClick: function () {
+                console.log('hallo')
+            },
+            title: 'test me',
+            icon: 'fas fa-bars'
+        }]
+    }).addTo(map);
+    $('.Easy').css({'background-image': ''});
+
+}
+
+
+//basemaps
+//set attribution title
+function getBasemaps() {
+    mywindowtitle = 'THANADOS: ';
+    if (typeof (myjson) != "undefined") mywindowtitle = 'THANADOS: ' + myjson.name + '. ';
+    if (typeof (jsonmysite) != "undefined") mywindowtitle = 'THANADOS: ' + jsonmysite.name + '. ';
+
+
+    OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+            '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</div>'
+    });
+
+    Stamen_Terrain = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}', {
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        subdomains: 'abcd',
+        minZoom: 0,
+        maxZoom: 14,
+        ext: 'png'
+    });
+
+    Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution:
+            '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+            '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community</div>',
+        maxZoom: 25,
+    });
+
+    thunderforestlandscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=b3c55fb5010a4038975fd0a0f4976e64', {
+        attribution:
+            '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+            '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a></div>',
+        maxZoom: 25
+    });
+
+//czech basemap
+    basemap_cz = L.tileLayer.wms('http://geoportal.cuzk.cz/WMS_ZM10_PUB/WMService.aspx', {
+        layers: 'GR_ZM10',
+        maxZoom: 25
+    })
+
+    satellite = Esri_WorldImagery; //define aerial image layer
+    landscape = thunderforestlandscape; // define topography layer
+    streets = OpenStreetMap_Mapnik // define streets Layer
+
+    baseLayers = {
+        "Landscape": landscape,
+        "Satellite": satellite,
+        "Streets": streets
+    };
+
+    //define basemap for Minimap
+    miniBaseMap = new L.TileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=b3c55fb5010a4038975fd0a0f4976e64',
+        {
+            minZoom: 0,
+            maxZoom: 20,
+            attribution: 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }
+    );
+}
+
+function attributionChange() {
+    //$(".leaflet-control-attribution").find(':first-child').remove();
+    var val = $(".leaflet-control-attribution").html();
+    $(".leaflet-control-attribution").html(val.substring(87, val.length));
+    $('#myattr').toggle();
+}
+
+function MultAttributionChange(myMap, mydiv, attribution) {
+    eval('$("' + mydiv + ' .leaflet-control-attribution").remove()');
+    attr = L.control({position: 'bottomright'})
+    attr.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'leaflet-control-attribution')
+        div.innerHTML = attribution
+        return div
+    }
+    attr.addTo(myMap)
+    eval('$("' + mydiv + ' .togglebtn").next().toggle()');
 }
