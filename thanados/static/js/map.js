@@ -668,7 +668,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     );
 
     $('#myModalPermalink' + entId).append(
-        '<a href="../entity/' + entId + '" title="Permalink"><h6><i class="fas fa-link"></i></h6></a>'
+        '<a href="../entity/' + entId + '" title="Permalink to this entity"><h6><i class="fas fa-link"></i></h6></a>'
     );
 
     if (dateToInsert == '') {
