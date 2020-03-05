@@ -548,10 +548,12 @@ function setdatatable(data, tablePosition) {
         "lengthMenu": [10],
         "bLengthChange": false,
         "scrollX": true,
-        columnDefs: [{
+
+        /*columnDefs: [{
             targets: 4,
             render: $.fn.dataTable.render.ellipsis(29, true)
-        }],
+        }],*/
+
         columns: [
             {
                 data: "name",

@@ -35,6 +35,7 @@ $(document).ready(function () {
     markergroup = new L.layerGroup();
     clustermarkers = L.markerClusterGroup();
     heat = L.heatLayer(heatmarkers, {radius: 25, minOpacity: 0.5, blur: 30});
+    //var ciLayer = L.canvasIconLayer({}).addTo(map);
 
     if ((sitelist).length > 100) {
         clustermarkers.addTo(map)
@@ -47,6 +48,12 @@ $(document).ready(function () {
         "Cluster": clustermarkers,
         "Density": heat
     };
+
+    /*icon = L.icon({
+      iconUrl: '/static/images/icons/marker-icon.png',
+      iconSize: [20, 18],
+      iconAnchor: [10, 9]
+    });*/
 
     //add layer control
     baseControl = L.control.layers(baseLayers, overlays).addTo(map);
@@ -92,6 +99,8 @@ $(document).ready(function () {
                     if (oData.lon != null) {
                         heatmarkers.push([JSON.parse(oData.lon) + ',' + JSON.parse(oData.lat)]);
                         var marker = L.marker([((oData.lon)), ((oData.lat))], {title: oData.name}).addTo(mymarkers).bindPopup('<a href="/entity/' + oData.id + '" title="' + oData.description + '"><b>' + oData.name + '</b></a><br><br>' + oData.type);
+                        //var marker = L.marker([((oData.lon)), ((oData.lat))], {icon: icon}, {title: oData.name}).bindPopup('<a href="/entity/' + oData.id + '" title="' + oData.description + '"><b>' + oData.name + '</b></a><br><br>' + oData.type);
+                        //ciLayer.addMarker(marker);
                         var marker = L.marker([((oData.lon)), ((oData.lat))], {title: oData.name}).addTo(clustermarkers).bindPopup('<a href="/entity/' + oData.id + '" title="' + oData.description + '"><b>' + oData.name + '</b></a><br><br>' + oData.type);
                     }
                 }
