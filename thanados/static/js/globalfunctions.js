@@ -469,7 +469,7 @@ function printMapbutton(id, position) {
     //eval('printPlugin_' + currentID + ' = L.easyPrint({position: "topleft", hidden: true, sizeModes: ["A4Landscape"], filename: "ThanadosMap"}).addTo(' + currentID + ');');
     //console.log('filePlugin_' + currentID + ' = L.easyPrint({position: "topleft", hidden: true, sizeModes: ["A4Landscape"], exportOnly: true, filename: "ThanadosMap"}).addTo(' + currentID + ');');
     //eval('filePlugin_' + currentID + ' = L.easyPrint({position: "topleft", hidden: true, sizeModes: ["A4Landscape"], exportOnly: true, filename: "ThanadosMap"}).addTo(' + currentID + ');');
-    eval('L.easyPrint({position: "' + position + '", title: "Export map as image file", sizeModes: ["A4Landscape", "A4Portrait"], exportOnly: true, filename: "ThanadosMap"}).addTo(' + currentID + ');');
+    eval('L.easyPrint({position: "' + position + '", title: "Export map as image file", sizeModes: ["A4Landscape", "A4Portrait"], exportOnly: true, filename: "MEDCEMMap"}).addTo(' + currentID + ');');
     //eval('printPlugin_' + currentID + '.printMap("A4Portrait", "MyFileName");');
     $('.leaflet-control-easyPrint-button-export').html('<span class="fas fa-image"></span>');
     $('.leaflet-control-easyPrint-button-export').removeClass('leaflet-control-easyPrint-button-export');
@@ -504,9 +504,9 @@ function testbutton() {
 //basemaps
 //set attribution title
 function getBasemaps() {
-    mywindowtitle = 'THANADOS: ';
-    if (typeof (myjson) != "undefined") mywindowtitle = 'THANADOS: ' + myjson.name + '. ';
-    if (typeof (jsonmysite) != "undefined") mywindowtitle = 'THANADOS: ' + jsonmysite.name + '. ';
+    mywindowtitle = 'MEDCEM: ';
+    if (typeof (myjson) != "undefined") mywindowtitle = 'MEDCEM: ' + myjson.name + '. ';
+    if (typeof (jsonmysite) != "undefined") mywindowtitle = 'MEDCEM: ' + jsonmysite.name + '. ';
 
 
     OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -545,7 +545,7 @@ function getBasemaps() {
 
     satellite = Esri_WorldImagery; //define aerial image layer
     landscape = thunderforestlandscape; // define topography layer
-    streets = OpenStreetMap_Mapnik // define streets Layer
+    streets = basemap_cz // define streets Layer
 
     baseLayers = {
         "Landscape": landscape,

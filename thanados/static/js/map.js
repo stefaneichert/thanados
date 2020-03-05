@@ -31,7 +31,7 @@ function setmap(myjson) {
     if (myjson.features[0].id !== 0) setSidebarContent(myjson);
 
     //set attribution title
-    mywindowtitle = 'THANADOS: ' + myjson.name + '. ';
+    mywindowtitle = 'MEDCEM: ' + myjson.name + '. ';
 
 //define basemaps
     var landscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=b3c55fb5010a4038975fd0a0f4976e64', {
