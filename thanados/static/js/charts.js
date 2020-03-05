@@ -11,7 +11,6 @@ if (site_ids.length > 20) {
         if (i < 20) mysite_ids.push(site_ids[i]);
     })
 }
-;
 
 setcharts();
 
@@ -132,13 +131,11 @@ $.fn.dataTable.ext.search.push(
         var max = parseInt($('#max').val(), 10);
         var age = parseFloat(data[3]) || 0; // use data for the age column
 
-        if ((isNaN(min) && isNaN(max)) ||
+        return (isNaN(min) && isNaN(max)) ||
             (isNaN(min) && age <= max) ||
             (min <= age && isNaN(max)) ||
-            (min <= age && age <= max)) {
-            return true;
-        }
-        return false;
+            (min <= age && age <= max);
+
     }
 );
 
@@ -148,13 +145,11 @@ $.fn.dataTable.ext.search.push(
         var max = parseInt($('#max1').val(), 10);
         var age = parseFloat(data[4]) || 0; // use data for the age column
 
-        if ((isNaN(min) && isNaN(max)) ||
+        return (isNaN(min) && isNaN(max)) ||
             (isNaN(min) && age <= max) ||
             (min <= age && isNaN(max)) ||
-            (min <= age && age <= max)) {
-            return true;
-        }
-        return false;
+            (min <= age && age <= max);
+
     }
 );
 
@@ -555,7 +550,7 @@ function setage(data) {
             }]
     };
     return (boxplotData)
-};
+}
 
 
 //change('violin', 'agechart', 'age-chart', ageconfig);
@@ -583,7 +578,7 @@ function change(newType, chartvar, canvasid, config) {
     var temp = jQuery.extend(true, {}, config);
     temp.type = newType;
     eval.chartvar = new Chart(ctx, temp);
-};
+}
 
 //remove trailing zeros from data with intervals after highest values of site with highest values
 function removeZeros(data) {

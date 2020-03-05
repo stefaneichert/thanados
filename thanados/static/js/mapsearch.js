@@ -1,10 +1,9 @@
 //function to query json for types, values etc. recursively
-$(".searchbutton").click(startsearch);
 
 $(document).ready(function () {
-local = true;
-})
+    local = true;
 
+})
 
 function startsearch() {
     initateQuery();
@@ -12,10 +11,23 @@ function startsearch() {
     appendSearch(1);
     $("#dialog").dialog({
         width: mymodalwith,
-        height: 450
+        height: 450,
+        open: function () {
+            // Destroy Close Button (for subsequent opens)
+            $('#dialog-close').remove();
+            // Create the Close Button (this can be a link, an image etc.)
+            var link = '<btn id="dialog-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
+            // Create Close Button
+            $(".ui-dialog-title").css({'width': ''});
+            $(this).parent().find(".ui-dialog-titlebar").append(link);
+            // Add close event handler to link
+            $('#dialog-close').on('click', function () {
+                $("#dialog").dialog('close');
+            });
+        }
     });
 }
-;
+
 
 function initateQuery() {
     //set global variables for search results
@@ -36,7 +48,6 @@ function initateQuery() {
     });
 }
 
-//todo: Add titles with instructions
 function appendSearch(Iter) {//append search form to dialog
     $('.toremovebtn').remove(); //removes former buttons to append new search
     $('.mysearchoptions').remove(); //removes former buttons to append new search
@@ -46,7 +57,7 @@ function appendSearch(Iter) {//append search form to dialog
         '<div class="input-group-prepend">' +
         '<label class="input-group-text" for="LevelSelect_' + Iter + '">' + Iter + '. </label>' +
         '</div>' +
-        '<select class="custom-select empty" id="LevelSelect_' + Iter + '">' +
+        '<select class="custom-select empty" title="Select whether to search in graves, burials (=human remains) or finds" id="LevelSelect_' + Iter + '">' +
         '<option selected disabled>Select search level...</option>' +
         '<option value="feature">Graves</option>' +
         '<option value="strat">Burials</option>' +
@@ -56,11 +67,12 @@ function appendSearch(Iter) {//append search form to dialog
     //after main level is selected:
     $('#LevelSelect_' + Iter).on('change', function () {
         appendLevel = $('#LevelSelect_' + Iter + ' option:selected').val(); //set level as variable
+        appendLevelName = $('#LevelSelect_' + Iter + ' option:selected').html(); //set level as variable
         $('#LevelSelect_' + Iter).prop('disabled', true); //disble former selection field
         if (Iter == 1)
             $('#LevelSelect_' + Iter + '_parent').append(//add reset button on first iteration
                 '<div class="input-group-append">' +
-                '<button class="btn btn-secondary btn-sm" type="button" id="resetsearchbutton" onclick="startsearch()" title="Reset search">' +
+                '<button class="btn btn-secondary btn-sm" type="button" id="resetsearchbutton" onclick="delete Globaliter; startsearch()" title="Reset search">' +
                 '<i class="fas fa-sync-alt"></i>' +
                 '</button>' +
                 '</div>'
@@ -68,14 +80,14 @@ function appendSearch(Iter) {//append search form to dialog
         $('#mysearchform').append(
             //selection for property to choose: maintype, types, dimensions, material or timespan
             '<div id="PropSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">' +
-            '<select class="custom-select empty" id="PropSelect_' + Iter + '">' +
+            '<select class="custom-select empty" title="select what property to search for" id="PropSelect_' + Iter + '">' +
             '<option selected disabled>Select search criteria...</option>' +
-            '<option value="maintype">Maintype</option>' +
-            '<option value="type">Properties</option>' +
-            '<option value="timespan">Timespan</option>' +
-            '<option value="dimension">Dimensions</option>' +
-            '<option value="material">Material</option>' +
-            '<option value="value">Value Properties</option>' +
+            '<option title="Main type of ' + appendLevelName + '" value="maintype">Maintype</option>' +
+            '<option title="Classifications, typology and other named types associated with ' + appendLevelName + '" value="type">Properties</option>' +
+            '<option title="Date range of ' + appendLevelName + '" value="timespan">Timespan</option>' +
+            '<option title="Dimensions and certain other measured values concerning the spatial extend of ' + appendLevelName + '" value="dimension">Dimensions</option>' +
+            '<option title="Materials (like copper, iron, ceramics etc.) of ' + appendLevelName + '" value="material">Material</option>' +
+            '<option title="Classifications of entities that are connected with values (e.g. maximum age, body height etc.)" value="value">Value Properties</option>' +
             '</select>' +
             '</div>'
         );
@@ -104,9 +116,9 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
             '</div>'
         );
         targetField = 'MaintypeSelect_' + Iter;
-        iniateTree(Iter, appendLevel, criteria, targetField); //open tree to select value and add variable to form after
+        initiateTree(Iter, appendLevel, criteria, targetField); //open tree to select value and add variable to form after
     }
-    ;
+
     if (criteria == 'timespan') { //if timespan append form with value fields
         //set global vars for button
         UnsetGlobalVars();
@@ -119,9 +131,9 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
             '<div class="input-group-prepend">' +
             '<span class="input-group-text dim-label">Timespan min: </span>' +
             '</div>' +
-            '<input id="valMin_' + Iter + '" class="form-control value-input" type="text">' +
+            '<input title="start year (CE) of the entity\'s dating" id="valMin_' + Iter + '" class="form-control value-input" type="text">' +
             '<span class="input-group-text input-group-middle">max: </span>' +
-            '<input id="valMax_' + Iter + '" class="form-control value-input" type="text">' +
+            '<input title="end year (CE) of the entity\'s dating" id="valMax_' + Iter + '" class="form-control value-input" type="text">' +
             '<div class="input-group-append">' +
             '<button class="btn btn-secondary btn-sm" type="button" id="timespanbutton_' + Iter + '" onclick="searchTime(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for timespan">' +
             '<i class="fas fa-search"></i>' +
@@ -130,7 +142,7 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
             '</div>'
         );
     }
-    ;
+
     if (criteria == 'dimension') {//if dimension append form with select
         UnsetGlobalVars();
         Globalcriteria = criteria;
@@ -145,8 +157,8 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
             '<option value="26188">Width (cm)</option>' +
             '<option value="26191">Diameter (cm)</option>' +
             '<option value="26190">Thickness (cm)</option>' +
-            '<option value="26192">Orientation (°)</option>' +
-            '<option value="118730">Azimuth (°)</option>' +
+            '<option title="Orientation represents the clockwise angle between North and the directed axis of the entity. E.g. between North and a skeleton\'s axis (from head to feet)" value="26192">Orientation (°)</option>' +
+            '<option title="Azimuth represents the smallest angle between north and the non directed axis of an entity. E.g. beetween North and a grave pit\'s axis" value="118730">Azimuth (°)</option>' +
             '<option value="15680">Weight (g)</option>' +
             '</select>' +
             '</div>'
@@ -155,9 +167,9 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
             $('#DimensionSelect_' + Iter).prop('disabled', true); //disable input
             $('#DimensionSelect_' + Iter + '_parent').append(//append input of values
                 '<span class="input-group-text input-group-middle">min: </span>' +
-                '<input id="valMin_' + Iter + '" class="form-control value-input" type="text">' +
+                '<input title="minumum value of the dimension to search for. Leave blank if you want to get all entities with any value of this type" id="valMin_' + Iter + '" class="form-control value-input" type="text">' +
                 '<span class="input-group-text input-group-middle">max: </span>' +
-                '<input id="valMax_' + Iter + '" class="form-control value-input" type="text">' +
+                '<input title="maximum value of the dimension to search for. Leave blank if you want to get all entities with any value of this type" id="valMax_' + Iter + '" class="form-control value-input" type="text">' +
                 '<div class="input-group-append">' +
                 '<button class="btn btn-secondary btn-sm" type="button" id="dimMatButton_' + Iter + '" onclick="searchDimMat(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for dimension">' +
                 '<i class="fas fa-search"></i>' +
@@ -166,7 +178,7 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
             )
         });
     }
-    ;
+
 
     if (criteria == 'material' || criteria == 'value') { //if material or value append form with tree select
         $('#mysearchform').append(
@@ -177,31 +189,29 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
             '</div>'
         );
         targetField = 'MaterialSelect_' + Iter;
-        iniateTree(Iter, appendLevel, criteria, targetField);
+        initiateTree(Iter, appendLevel, criteria, targetField);
     }
-    ;
+
 }
 
 function appendMaterial(Iter) { //append value input after material is chosen
     $('#MaterialSelect_' + Iter + '_parent').append(
         '<span class="input-group-text input-group-middle">min: </span>' +
-        '<input id="valMin_' + Iter + '" class="form-control value-input" type="text">' +
+        '<input title="minimum value of the criteria to search for. In case of material this can be left blank if you want to get all entities with any value of this material" id="valMin_' + Iter + '" class="form-control value-input" type="text">' +
         '<div class="input-group-append">' +
         '<span class="input-group-text input-group-middle">max: </span>' +
         '</div>' +
-        '<input id="valMax_' + Iter + '" class="form-control value-input" type="text">' +
+        '<input title="maximum value of the criteria to search for. In case of material this can be left blank if you want to get all entities with any value of this material" id="valMax_' + Iter + '" class="form-control value-input" type="text">' +
         '<div class="input-group-append">' +
-        '<button class="btn btn-secondary btn-sm" type="button" id="dimMatButton_' + Iter + '" onclick="searchDimMat(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for dimension">' +
+        '<button class="btn btn-secondary btn-sm" type="button" id="dimMatButton_' + Iter + '" onclick="searchDimMat(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for selected criteria">' +
         '<i class="fas fa-search"></i>' +
         '</button>' +
         '</div>'
     );
-    console.log(Iter);
 }
 
 //search functions depending on criteria
 function searchDimMat(criteria, appendLevel, Iter, val1, val2) {
-    console.log('prop ' + Iter);
     var val1 = $('#valMin_' + Iter).val();
     var val2 = $('#valMax_' + Iter).val();
     goOn = validateNumbers(val1, val2, criteria);
@@ -217,17 +227,14 @@ function searchDimMat(criteria, appendLevel, Iter, val1, val2) {
         dimId = $('#DimensionSelect_' + Iter + ' option:selected').val(); //set criteria variable
         if (criteria != 'dimension')
             dimId = nodeIds;
-            console.log(dimId);
-            console.log(appendLevel);
-            console.log(criteria);
-            console.log(val1 + ' - ' + val2);
         if (criteria == 'dimension')
             dimId = $('#DimensionSelect_' + Iter + ' option:selected').val().toLowerCase();
+        dimText = $('#DimensionSelect_' + Iter + ' option:selected').html();
         jsonquery(dimId, appendLevel, criteria, val1, val2);
         $('#dimMatResult_' + Iter).val(uniqueSearchResult.length + ' matches in ' + searchResult.length + ' graves');
         appendPlus(Iter);
     }
-    ;
+
 }
 
 function searchTime(criteria, appendLevel, Iter, val1, val2) {
@@ -248,7 +255,7 @@ function searchTime(criteria, appendLevel, Iter, val1, val2) {
         $('#TimespanResult_' + Iter).val(uniqueSearchResult.length + ' matches in ' + searchResult.length + ' graves');
         appendPlus(Iter);
     }
-    ;
+
 }
 
 function appendPlus(Iter) {
@@ -263,11 +270,11 @@ function appendPlus(Iter) {
 
         $('#mysearchform').append(
             '<div class="input-group input-group-sm mb-3">' +
-            '<input id="finalresult_' + Iter + '" class="form-control combiresult" onclick="this.blur()" title="' + resultlength + '" type="text" placeholder="' + resultlength.length + ' combined matches" readonly disabled>' +
+            '<input id="finalresult_' + Iter + '" class="form-control combiresult" onclick="this.blur()" title="' + resultlength + '" type="text" placeholder="' + CSVresult.length + ' combined matches in ' + resultlength.length + ' graves" readonly disabled>' +
             '</div>'
         );
     }
-    ;
+
 
     if (finalSearchResultIds.length > 0) {
         $('#mysearchform').append(
@@ -294,25 +301,28 @@ function appendPlus(Iter) {
             '<i class="fas fa-plus"></i>' +
             '</button>' +
             '<div class="dropdown">' +
-            '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="mapResultBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+            '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="mapResultBtn" title="Show on map" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
             '<i class="fas fa-map-marked-alt"></i>' +
             '</button>' +
             '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
-            '<a class="dropdown-item" onclick="finishQuery(true)" title="Show combined result on map" href="#">Polygons</a>' +
-            '<a class="dropdown-item" onclick="finishQuery(false)" title="Show combined result on map" href="#">Points</a>' +
+            '<a class="dropdown-item" onclick="finishQuery(true, true, false)" title="Show combined result on map as polygons" href="#">Polygons</a>' +
+            '<a class="dropdown-item" onclick="finishQuery(false, true, false)" title="Show combined result on map as points" href="#">Points</a>' +
             '</div>' +
             '</div>' +
             '<div class="dropdown">' +
-            '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+            '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
             '<i class="far fa-save"></i>' +
             '</button>' +
             '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
-            '<a class="dropdown-item" onclick="finishQuery(true); exportToJsonFile(jsonresult)" title="Show combined result on map and download as GEOJSON" href="#">Polygons</a>' +
-            '<a class="dropdown-item" onclick="finishQuery(false); exportToJsonFile(jsonresultPoints)" title="Show combined result on map and download as GEOJSON" href="#">Points</a>' +
+            '<a class="dropdown-item" onclick="finishQuery(true, false, false); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" href="#">Polygons</a>' +
+            '<a class="dropdown-item" onclick="finishQuery(false, false, false); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
             '</div>' +
             '</div>' +
-            '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="AdvSearchOptBtn" onclick="toggleSearchOpt()" title="Advanced Options">' +
-            '<i class="fas fa-ellipsis-h"></i>' +
+            '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, true)" type="button" id="ShowListButton" title="Show result list" data-toggle="modal" data-target="#CSVmodal">' +
+            '<i class="fas fa-list"></i>' +
+            '</button>' +
+            '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="AdvSearchOptBtn" onclick="toggleSearchOpt()" title="Styling Options">' +
+            '<i class="fas fa-palette"></i>' +
             '</button>'
         );
         toggleSearchOpt();
@@ -357,15 +367,23 @@ function appendPlus(Iter) {
                 $('#searchpointradius').val(0);
         });
     }
-    ;
+
     $('#mysearchform').append(
-        '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="resetSearchEndBtn" onclick="startsearch()" title="Reset search">' +
+        '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="resetSearchEndBtn" onclick="delete Globaliter; startsearch()" title="Reset search">' +
         '<i class="fas fa-sync-alt"></i>' +
         '</button>'
     );
+
+    $('#resetSearchEndBtn')[0].scrollIntoView(
+        {
+            behavior: "smooth", // or "auto" or "instant"
+            block: "end"
+        }
+    );
 }
 
-function finishQuery(mygeometry) { //finish query and show results on map
+
+function finishQuery(mygeometry, show, table) { //finish query and show results on map
 
     jsonresult = {
         "type": "FeatureCollection", //prepare geojson
@@ -405,20 +423,87 @@ function finishQuery(mygeometry) { //finish query and show results on map
         fillOpacity: 1 - mysearchopacity / 100
     };
 
-    if (mygeometry) {
-        resultpolys.clearLayers();
-        resultpoly = L.geoJSON(jsonresult, {style: mysearchresultstyle});
-        resultpolys.addLayer(resultpoly);
-    } else {
-        resultpoints.clearLayers();
-        resultpoint = L.geoJSON(jsonresultPoints, {
-            pointToLayer: function (feature, latlng) {
-                return L.circleMarker(latlng, geojsonMarkerOptions);
-            }
-        });
-        resultpoints.addLayer(resultpoint);
+    if (show) {
+        if (mygeometry) {
+            resultpolys.clearLayers();
+            resultpoly = L.geoJSON(jsonresult, {style: mysearchresultstyle});
+            resultpolys.addLayer(resultpoly);
+        } else {
+            resultpoints.clearLayers();
+            resultpoint = L.geoJSON(jsonresultPoints, {
+                pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, geojsonMarkerOptions);
+                }
+            });
+            resultpoints.addLayer(resultpoint);
+        }
     }
-    ;
+    if (table) {
+        CSVresultJSON = jQuery.extend(true, [], CSVresult);
+        var tmpCSV = JSON.parse(JSON.stringify(CSVresult));
+        $.each(tmpCSV, function (i, dataset) {
+            delete dataset.image
+        });
+        CSVresultExport = toCSV(tmpCSV);
+        CSVtable();
+    }
+}
+
+function CSVtable() {
+    var level = CSVresultJSON[0].ObjectClass;
+    var search = CSVresultJSON[0].Search;
+    if (search === 'timespan') search = (JSON.stringify(CSVresultJSON[0].searchResult)).slice(12);
+    if (typeof (tableIter) !== 'undefined') {
+        if (tableIter >= Globaliter) delete tableIter
+    }
+
+
+    table = $('#CSVmodalContent').DataTable({
+        destroy: true,
+        data: CSVresultJSON,
+        "pagingType": "numbers",
+        "scrollX": true,
+        drawCallback: function () {
+            $('a[rel=popover]').popover({
+                html: true,
+                trigger: 'hover',
+                placement: 'right',
+                container: '.modal-body',
+                content: function () {
+                    return '<img class="popover-img" src="' + $(this).data('img') + '" alt=""/>';
+                }
+            });
+        },
+        columns: [
+            {
+                data: "ObjectName",
+                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                    if (oData.image === null) $(nTd).html("<a href='/entity/" + oData.ObjectId + "' target='_blank' title='open in new tab'>" + oData.ObjectName + "</a>");
+                    if (oData.image !== null) $(nTd).html("<a href='/entity/" + oData.ObjectId + "' target='_blank' title='open in new tab'>" + oData.ObjectName + "</a>" +
+                        "<a class='btn-xs float-right' rel='popover' data-img='" + oData.image + "'><i class='fas fa-image'></i></a>"); //create links in rows
+                }
+            },
+            {data: 'ObjectType'},
+            {data: 'searchResult'},
+            {data: 'value'},
+            {data: 'unit'},
+            {data: 'earliestBegin'},
+            {data: 'latestEnd'},
+            {data: 'grave'}
+        ],
+    });
+
+    if ((search.includes('dimension') || search.includes('Material') || search.includes('value')) === false) table.columns([3, 4]).visible(false);
+
+
+    if (typeof (tableIter) === 'undefined') {
+        oldQuery = search;
+    }
+    if (typeof (tableIter) !== 'undefined' && tableIter < Globaliter) {
+        oldQuery += '" and "' + search;
+    }
+    $('#CSVmodalLabel').html('Search for: "' + level + '" where "' + oldQuery + '"');
+    tableIter = Globaliter;
 }
 
 function getCenter(arr) {
@@ -438,6 +523,7 @@ function jsonquery(id, level, prop, val1, val2) {
     //prepare searchresult array
     searchResult = [];
     searchResultIds = [];
+    CSVresult = [];
 
     //convert values to valid integers
     //set values to catch whole range if undefined
@@ -464,14 +550,13 @@ function jsonquery(id, level, prop, val1, val2) {
                     });
                 });
             }
-            ;
+
         });
     }
-    ;
+
 
     if (level == 'strat') {
         $.each(myjson.features, function (i, feature) {
-            feature = feature;
             $.each(feature.burials, function (b, burial) {
                 levelQuery(feature, burial, id, prop, val1, val2);
                 if (searchResultIds.includes(burial.id)) {
@@ -480,15 +565,14 @@ function jsonquery(id, level, prop, val1, val2) {
                         searchResultIds.push(parseInt(find.id));
                     });
                 }
-                ;
+
             });
         });
     }
-    ;
+
 
     if (level == 'find') {
         $.each(myjson.features, function (i, feature) {
-            feature = feature;
             $.each(feature.burials, function (b, burial) {
                 $.each(burial.finds, function (f, find) {
                     levelQuery(feature, find, id, prop, val1, val2);
@@ -500,7 +584,7 @@ function jsonquery(id, level, prop, val1, val2) {
             });
         });
     }
-    ;
+
 
     //intersect Search results
     uniqueSearchResult = searchResult;
@@ -521,15 +605,74 @@ function jsonquery(id, level, prop, val1, val2) {
     finalSearchResultIds = intermedIds;
 }
 
+function prepareCSV(result, path, value, unit, feature, level, entity) {
+    var tmpValue = {};
+    tmpValue.site = myjson.name.replace(/"/g, '\'');
+    tmpValue.siteID = myjson.site_id;
+    tmpValue.ObjectId = entity.id;
+    tmpValue.ObjectName = entity.properties.name.replace(/"/g, '\'');
+    tmpValue.ObjectType = entity.properties.maintype.name.replace(/"/g, '\'');
+    tmpValue.ObjectClass = entity.properties.maintype.systemtype;
+    tmpValue.Search = level;
+    tmpValue.searchResult = result.replace(/"/g, '\'');
+    tmpValue.path = path.replace(/"/g, '\'');
+    tmpValue.value = value;
+    tmpValue.unit = unit.replace(/"/g, '\'');
+    tmpValue.earliestBegin = null;
+    tmpValue.latestBegin = null;
+    tmpValue.earliestEnd = null;
+    tmpValue.latestEnd = null;
+    tmpValue.grave = feature.properties.name.replace(/"/g, '\'');
+    tmpValue.gravetype = feature.properties.maintype.name.replace(/"/g, '\'');
+    tmpValue.graveID = feature.id;
+    tmpValue.WGS84_Geometry = null;
+    tmpValue.easting = null;
+    tmpValue.northing = null;
+    tmpValue.image = null;
+
+    if (typeof (feature.geometry) != 'undefined') {
+        var wkt = new Wkt.Wkt();
+        var currentGeom = feature.geometry;
+        wkt.fromObject(currentGeom);
+        var wktGeom = (wkt.write());
+
+        if (feature.geometry.type === "Polygon") {
+            var arr = JSON.parse(JSON.stringify(feature.geometry.coordinates).slice(1, -1));
+            mycenter = getCenter(arr);
+            tmpValue.easting = mycenter[0];
+            tmpValue.northing = mycenter[1];
+        }
+        if (feature.geometry.type === "Point") {
+            tmpValue.easting = feature.geometry.coordinates[0];
+            tmpValue.northing = feature.geometry.coordinates[1];
+        }
+        tmpValue.WGS84_Geometry = wktGeom.replace(/"/g, '\'');
+    }
+    if (typeof (entity.properties.timespan) != 'undefined') {
+        if (typeof (entity.properties.timespan.begin_from) != 'undefined') tmpValue.earliestBegin = entity.properties.timespan.begin_from;
+        if (typeof (entity.properties.timespan.begin_to) != 'undefined') tmpValue.latestBegin = entity.properties.timespan.begin_to;
+        if (typeof (entity.properties.timespan.end_from) != 'undefined') tmpValue.earliestEnd = entity.properties.timespan.end_from;
+        if (typeof (entity.properties.timespan.end_to) != 'undefined') tmpValue.latestEnd = entity.properties.timespan.end_to;
+    }
+
+    if (typeof (entity.files) != 'undefined') tmpValue.image = entity.files[0].file_name;
+
+    CSVresult.push(tmpValue);
+}
+
+
 //query entitites based on level
 function levelQuery(feature, entity, id, prop, val1, val2) {
+
 // if search is for maintype push result to layer
     if (prop == 'maintype' && id.includes(entity.properties.maintype.id)) {
         searchResult.push(feature.id);
-        if (finalSearchResultIds.includes(entity.id))
+        if (finalSearchResultIds.includes(entity.id)) {
             searchResultIds.push(entity.id);
+            prepareCSV(entity.properties.maintype.name, entity.properties.maintype.path, "", "", feature, "maintype is: " + GlobalSelectedNodeName, entity);
+        }
     }
-    ;
+
 
     // if search is for timespan
     //first check if timespan is available
@@ -543,22 +686,28 @@ function levelQuery(feature, entity, id, prop, val1, val2) {
         //if begin and end are availale set a between timespan as result
         if (typeof (begin) !== 'undefined' && typeof (end) !== 'undefined' && begin >= val1 && end <= val2) {
             searchResult.push(feature.id);
-            if (finalSearchResultIds.includes(entity.id))
+            if (finalSearchResultIds.includes(entity.id)) {
                 searchResultIds.push(entity.id);
+                prepareCSV('Search for timespan between: ' + val1 + ' and ' + val2, "", "", "", feature, "timespan", entity);
+            }
         }
 
         //if only begin is available get all entities that start with or after begin
         if (typeof (begin) !== 'undefined' && end == '' && begin >= val1) {
             searchResult.push(feature.id);
-            if (finalSearchResultIds.includes(entity.id))
+            if (finalSearchResultIds.includes(entity.id)) {
                 searchResultIds.push(entity.id);
+                prepareCSV('Search for timespan begins after: ' + (val1), "", "", "", feature, "timespan", entity);
+            }
         }
 
         //if only end is available get all entities that end with or before begin
         if (typeof (end) !== 'undefined' && begin == '' && end <= val2) {
             searchResult.push(feature.id);
-            if (finalSearchResultIds.includes(entity.id))
+            if (finalSearchResultIds.includes(entity.id)) {
                 searchResultIds.push(entity.id);
+                prepareCSV('Search for timespan ends before: ' + (val2), "", "", "", feature, "timespan", entity);
+            }
         }
     }
 
@@ -567,8 +716,10 @@ function levelQuery(feature, entity, id, prop, val1, val2) {
         $.each(entity.properties.types, function (t, type) {
             if (id.includes(type.id)) {
                 searchResult.push(feature.id);
-                if (finalSearchResultIds.includes(entity.id))
+                if (finalSearchResultIds.includes(entity.id)) {
                     searchResultIds.push(entity.id);
+                    prepareCSV(type.name, type.path, "", "", feature, "property is: " + GlobalSelectedNodeName, entity);
+                }
             }
         });
     }
@@ -578,8 +729,10 @@ function levelQuery(feature, entity, id, prop, val1, val2) {
         $.each(entity.properties.dimensions, function (d, dim) {
             if (typeof (dim.value) !== 'undefined' && id.includes(dim.id) && dim.value >= val1 && dim.value <= val2) {
                 searchResult.push(feature.id);
-                if (finalSearchResultIds.includes(entity.id))
+                if (finalSearchResultIds.includes(entity.id)) {
                     searchResultIds.push(entity.id);
+                    prepareCSV(dim.name, dim.path, dim.value, dim.unit, feature, "dimension is: " + dimText + " between " + val1 + " and " + val2, entity);
+                }
             }
         });
     }
@@ -588,12 +741,24 @@ function levelQuery(feature, entity, id, prop, val1, val2) {
     if (prop == 'material' && (typeof (entity.properties.material)) !== 'undefined') {
         $.each(entity.properties.material, function (m, mat) {
             tempMatValue = mat.value;
-            if (mat.value == '0' || mat.value == '')
+            if (mat.value == '0' || mat.value == '' || mat.value == 0)
                 tempMatValue = 100;
             if (id.includes(mat.id) && tempMatValue >= val1 && tempMatValue <= val2) {
                 searchResult.push(feature.id);
-                if (finalSearchResultIds.includes(entity.id))
+                if (finalSearchResultIds.includes(entity.id)) {
                     searchResultIds.push(entity.id);
+                    if (val1 < 0) {
+                        var tmpVal1 = 0
+                    } else {
+                        tmpVal1 = val1
+                    }
+                    if (val2 > 100) {
+                        var tmpVal2 = 100
+                    } else {
+                        tmpVal2 = val2
+                    }
+                    prepareCSV(mat.name, mat.path, tempMatValue, "weight percentage", feature, "material is: " + GlobalSelectedNodeName + " between " + tmpVal1 + "% and " + tmpVal2 + "%", entity);
+                }
             }
         });
     }
@@ -602,8 +767,10 @@ function levelQuery(feature, entity, id, prop, val1, val2) {
             tempMatValue = mat.value;
             if (id.includes(mat.id) && tempMatValue >= val1 && tempMatValue <= val2) {
                 searchResult.push(feature.id);
-                if (finalSearchResultIds.includes(entity.id))
+                if (finalSearchResultIds.includes(entity.id)) {
                     searchResultIds.push(entity.id);
+                    prepareCSV(mat.name, mat.path, tempMatValue, mat.description, feature, "value is: " + GlobalSelectedNodeName + " between " + val1 + " and " + val2 + " (" + mat.description + ")", entity);
+                }
             }
         });
     }
