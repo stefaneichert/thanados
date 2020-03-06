@@ -853,13 +853,13 @@ function setcatalog(currentchildren, parentDiv, iter) {
             '<div id="myModalData_' + entId + '">' +
             '<div id="myModaltype_' + entId + '" class="modalrowitem" title="' + typepath + '">' + entType + '</div>' +
             '<div id="myModaltimespan' + entId + '" class="modalrowitem">' + dateToInsert + '</div>' +
+            '<div id="myModalImagecontainer' + entId + '" class="row mb-2"></div>' +
             '<div id="myModalDescr' + entId + '">' + entDesc + '</div>' +
             '<div id="myModalTypescontainer' + entId + '"></div>' +
             '<div id="myModalDimensionscontainer' + entId + '"></div>' +
             '<div id="myModalMaterialcontainer' + entId + '"></div>' +
             '</div>' +
             '</div>' +
-            '<div id="myModalImagecontainer' + entId + '" class="row"></div>' +
             '</div>' +
             '</div>' +
             '<div class="ml-4" id="' + parentDiv + '_' + entId + '"></div>'
