@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
     <div id="container1">
-        <h2 class="my-heading container">Medieval Cemeteries at the Periphery of the Carolingian World</h2>
+        <h2 class="my-heading container">Medieval Cemeteries at the Periphery of the Carolingian
+            World</h2>
 
         <div class="album py-5" style="background-color: #f2f2f2">
             <div class="container">
@@ -56,51 +57,66 @@
 
         <div class="container with-margin">
             <p class="lead text-muted" style="margin-top: 2em; margin-bottom: 2em">
-                This project (MEDCEM) deals with the digital collection and presentation of medieval cemeteries and it
+                This project (MEDCEM) deals with the digital collection and presentation of medieval
+                cemeteries and it
                 is based at the
-                <a href="http://www.arup.cas.cz/" target="_blank">Archaeological Institute of the Czech Academy of
+                <a href="http://www.arup.cas.cz/" target="_blank">Archaeological Institute of the
+                    Czech Academy of
                     Sciences
                     in Prague</a>.<br>
-                Currently it comprises three cemeteries from the 8th to the 10th century: <a href="/entity/50505">Thunau
+                Currently it comprises three cemeteries from the 8th to the 10th century: <a
+                    href="/entity/50505">Thunau
                 Obere Holzwiese</a> from Austria,
                 <a href="/entity/111285">Stará Kouřim</a> from Bohemia and <a href="/entity/50497">Pohansko
                 "Herrenhof"</a> from Moravia.<br>
-                All published information is provided online and can be explored via a digital catalogue and within an
-                interactive map. Cartographic visualisations as well as charts and plots are created dynamically based
+                All published information is provided online and can be explored via a digital
+                catalogue and within an
+                interactive map. Cartographic visualisations as well as charts and plots are created
+                dynamically based
                 on
                 real
                 archaeological research data.<br>
-                It aims at providing a best practice way on how to disseminate archaeological sources and research in
+                It aims at providing a best practice way on how to disseminate archaeological
+                sources and research in
                 the
                 21st century against the background of digital humanities.<br>
-                It is part of the <a href="https://www.openatlas.eu/" target="_blank">OpenAtlas</a> project and entirely
-                build upon open source technology. If you want to learn more please take a look at the <a
+                It is part of the <a href="https://www.openatlas.eu/" target="_blank">OpenAtlas</a>
+                project and entirely
+                build upon open source technology. If you want to learn more please take a look at
+                the <a
                     href="/manual">Help</a> section.
             </p>
             <h7>Screenshots:</h7>
-            <div id="carouselExampleIndicators" style="margin-bottom: 4em; border: 1px solid rgba(0, 0, 0, 0.125)"
+            <div id="carouselExampleIndicators"
+                 style="margin-bottom: 4em; border: 1px solid rgba(0, 0, 0, 0.125)"
                  class="carousel slide" data-ride="carousel">
                 <ol class="carousel-indicators">
-                    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                    <li data-target="#carouselExampleIndicators" data-slide-to="0"
+                        class="active"></li>
                     <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
                     <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
                 </ol>
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img class="d-block w-100" src="/static/images/home/slide1.jpg" alt="First slide">
+                        <img class="d-block w-100" src="/static/images/home/slide1.jpg"
+                             alt="First slide">
                     </div>
                     <div class="carousel-item">
-                        <img class="d-block w-100" src="/static/images/home/slide2.jpg" alt="Second slide">
+                        <img class="d-block w-100" src="/static/images/home/slide2.jpg"
+                             alt="Second slide">
                     </div>
                     <div class="carousel-item">
-                        <img class="d-block w-100" src="/static/images/home/slide3.jpg" alt="Third slide">
+                        <img class="d-block w-100" src="/static/images/home/slide3.jpg"
+                             alt="Third slide">
                     </div>
                 </div>
-                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button"
+                   data-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="sr-only">Previous</span>
                 </a>
-                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button"
+                   data-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="sr-only">Next</span>
                 </a>
@@ -119,5 +135,18 @@
             </div>
         </footer>
     </div>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-79200582-6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'UA-79200582-6');
+    </script>
     <script src="/static/js/index.js"></script>
 {% endblock %}
