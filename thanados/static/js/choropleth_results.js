@@ -175,10 +175,10 @@ function appendvisbuttons(iter) {
         '<option value="k">k-means</option>' +
         '</select>' +
         '</div>' +
-        '<button class="btn btn-secondary btn-sm visbutton" type="button" id="AdvOptBtn" onclick="toggleOpt()" title="Advanced Options">' +
+        '<button class="btn btn-secondary btn-sm visbutton" type="button" id="AdvOptBtn" onclick="toggleOpt()" title="Advanced options for gradient color">' +
         '<i class="fas fa-ellipsis-h"></i>' +
         '</button>' +
-        '<button class="btn btn-secondary btn-sm visbutton" type="button" id="VisResultBtn" onclick="finishvis()" title="Show on map">' +
+        '<button class="btn btn-secondary btn-sm visbutton" type="button" id="VisResultBtn" onclick="finishvis()" title="Show on map with gradient color">' +
         '<i class="fas fa-map-marked-alt"></i>' +
         '</button>'
     );
@@ -269,10 +269,10 @@ function appendsexbuttons(iter) {
         '<span class="input-group-text input-group-middle">Border width: </span>' +
         '<input class="form-control" id="borderwidth" type="number" value="0" min="0">' +
         '</div>' +
-        '<button class="btn btn-secondary btn-sm visbutton" type="button" id="AdvOptBtn" onclick="toggleOpt()" title="Advanced Options">' +
+        '<button class="btn btn-secondary btn-sm visbutton toremovebtn" type="button" id="AdvOptBtn" onclick="toggleOpt()" title="Advanced styling options">' +
         '<i class="fas fa-ellipsis-h"></i>' +
         '</button>' +
-        '<button class="btn btn-secondary btn-sm visbutton" type="button" id="VisResultBtn" onclick="finishvis()" title="Show on map">' +
+        '<button class="btn btn-secondary btn-sm visbutton toremovebtn" type="button" id="VisResultBtn" onclick="finishvis()" title="Show on map">' +
         '<i class="fas fa-map-marked-alt"></i>' +
         '</button>'
     );

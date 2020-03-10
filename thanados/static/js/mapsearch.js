@@ -282,50 +282,50 @@ function appendPlus(Iter) {
     if (finalSearchResultIds.length > 0) {
         $('#mysearchform').append(
             '<div class="mysearchoptions input-group input-group-sm mb-3">' +
-            '<div class="input-group-prepend">' +
-            '<label class="input-group-text" for="fillcolor">Fill color: </label>' +
-            '</div>' +
-            '<input class="form-control" id="fillcolor" style="max-width: 70px" type="color" value="#000dff">' +
-            '<span class="input-group-text input-group-middle">Opacity (%): </span>' +
-            '<input class="form-control" id="mysearchopacity" type="range" value="10" min="0" max="100">' +
-            '<input class="form-control" id="mysearchopacityvalue" type="number" value="10" min="0" max="100" style="max-width: 60px">' +
+                '<div class="input-group-prepend">' +
+                    '<label class="input-group-text" for="fillcolor">Fill color: </label>' +
+                '</div>' +
+                '<input class="form-control" id="fillcolor" style="max-width: 70px" type="color" value="#000dff">' +
+                '<span class="input-group-text input-group-middle">Opacity (%): </span>' +
+                '<input class="form-control" id="mysearchopacity" type="range" value="10" min="0" max="100">' +
+                '<input class="form-control" id="mysearchopacityvalue" type="number" value="10" min="0" max="100" style="max-width: 60px">' +
             '</div>' +
             '<div class="mysearchoptions input-group input-group-sm mb-3">' +
-            '<div class="input-group-prepend">' +
-            '<label class="input-group-text" for="searchbordercolor">Border color: </label>' +
-            '</div>' +
-            '<input class="form-control" id="colorborder" style="max-width: 70px" type="color" value="#000000">' +
-            '<span class="input-group-text input-group-middle">Border width: </span>' +
-            '<input class="form-control input-group-middle" id="searchborderwidth" type="number" value="0" min="0">' +
-            '<span title="Radius for point result" class="input-group-text input-group-middle">Radius: </span>' +
-            '<input title="Radius for point result" class="form-control" id="searchpointradius" type="number" value="8" min="1">' +
+                '<div class="input-group-prepend">' +
+                    '<label class="input-group-text" for="searchbordercolor">Border color: </label>' +
+                '</div>' +
+                '<input class="form-control" id="colorborder" style="max-width: 70px" type="color" value="#000000">' +
+                '<span class="input-group-text input-group-middle">Border width: </span>' +
+                '<input class="form-control input-group-middle" id="searchborderwidth" type="number" value="0" min="0">' +
+                '<span title="Radius for point result" class="input-group-text input-group-middle">Radius: </span>' +
+                '<input title="Radius for point result" class="form-control" id="searchpointradius" type="number" value="8" min="1">' +
             '</div>' +
             '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="addNewSearchCritBtn" onclick="appendSearch(Globaliter)" title="Add another search criteria">' +
-            '<i class="fas fa-plus"></i>' +
+                '<i class="fas fa-plus"></i>' +
             '</button>' +
             '<div class="dropdown">' +
-            '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="mapResultBtn" title="Show on map" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
-            '<i class="fas fa-map-marked-alt"></i>' +
+                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="mapResultBtn" title="Show on map" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                    '<i class="fas fa-map-marked-alt"></i>' +
+                '</button>' +
+                '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
+                    '<a class="dropdown-item" onclick="finishQuery(true, true, false)" title="Show combined result on map as polygons" href="#">Polygons</a>' +
+                    '<a class="dropdown-item" onclick="finishQuery(false, true, false)" title="Show combined result on map as points" href="#">Points</a>' +
+                '</div>' +
+            '</div>'  +
+            '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="AdvSearchOptBtn" onclick="toggleSearchOpt()" title="Styling Options for Polygons and Point Results">' +
+                '<i class="fas fa-palette"></i>' +
             '</button>' +
-            '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
-            '<a class="dropdown-item" onclick="finishQuery(true, true, false)" title="Show combined result on map as polygons" href="#">Polygons</a>' +
-            '<a class="dropdown-item" onclick="finishQuery(false, true, false)" title="Show combined result on map as points" href="#">Points</a>' +
-            '</div>' +
-            '</div>' +
             '<div class="dropdown">' +
-            '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
-            '<i class="far fa-save"></i>' +
-            '</button>' +
-            '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
-            '<a class="dropdown-item" onclick="finishQuery(true, false, false); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" href="#">Polygons</a>' +
-            '<a class="dropdown-item" onclick="finishQuery(false, false, false); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
-            '</div>' +
+                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                    '<i class="far fa-save"></i>' +
+                '</button>' +
+                '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
+                    '<a class="dropdown-item" onclick="finishQuery(true, false, false); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" href="#">Polygons</a>' +
+                    '<a class="dropdown-item" onclick="finishQuery(false, false, false); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
+                '</div>' +
             '</div>' +
             '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, true)" type="button" id="ShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
-            '<i class="fas fa-list"></i>' +
-            '</button>' +
-            '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="AdvSearchOptBtn" onclick="toggleSearchOpt()" title="Styling Options">' +
-            '<i class="fas fa-palette"></i>' +
+                '<i class="fas fa-list"></i>' +
             '</button>'
         );
         toggleSearchOpt();

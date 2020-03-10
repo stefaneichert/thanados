@@ -686,3 +686,7 @@ table.dataTable thead .sorting_desc_disabled:after {
     border: 0;
     background-clip: padding-box;
 }
+
+.resultlistfooter .btn {
+    align-self: end;
+}
