@@ -530,7 +530,7 @@ function getBasemaps() {
         maxZoom: 25,
     });
 
-    thunderforestlandscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=b3c55fb5010a4038975fd0a0f4976e64', {
+    thunderforestlandscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=' + thunderforestAPIkey , {
         attribution:
             '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
             '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a></div>',
@@ -554,7 +554,7 @@ function getBasemaps() {
     };
 
     //define basemap for Minimap
-    miniBaseMap = new L.TileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=b3c55fb5010a4038975fd0a0f4976e64',
+    miniBaseMap = new L.TileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=' + thunderforestAPIkey ,
         {
             minZoom: 0,
             maxZoom: 20,

@@ -10,9 +10,7 @@ def map(object_id: int):
     myjson = Data.get_data(object_id)
     g.cursor.execute('SELECT * FROM thanados.typesjson;')
     types = g.cursor.fetchall()
-    thunderforest = app.config["THUNDERFOREST_API_KEY"]
     return render_template('map/map.html',
                            myjson=myjson[0].data,
                            object_id=object_id,
-                           typesjson=types[0].types,
-                           thunderforestKey=thunderforest)
+                           typesjson=types[0].types)

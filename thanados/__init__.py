@@ -9,6 +9,7 @@ csrf.init_app(app)
 app.config.from_object('config.default')  # Load config/INSTANCE_NAME.py
 app.config.from_pyfile('production.py')  # Load instance/INSTANCE_NAME.py
 
+thunderforest_API_key = app.config["THUNDERFOREST_API_KEY"]
 
 from thanados.views import index, map, about, entity, charts, login, manual, sites, admin, search, ajax
 
@@ -41,6 +42,9 @@ def teardown_request(exception):
     if hasattr(g, 'db'):
         g.db.close()
 
+@app.context_processor
+def global_vars():
+    return dict(thunderforest=thunderforest_API_key)
 
 if __name__ == "__main__":  # pragma: no cover
     app.run()

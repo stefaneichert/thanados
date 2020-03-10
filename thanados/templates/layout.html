@@ -25,12 +25,11 @@
     <link href="/static/vendor/node_modules/leaflet-minimap/dist/Control.MiniMap.min.css" type="text/css" rel="stylesheet"/>
     <script src="/static/vendor/node_modules/leaflet-minimap/dist/Control.MiniMap.min.js"></script>
     <script src="/static/vendor/node_modules/jquery-validation/dist/jquery.validate.min.js"></script>
-{#    <script src="/static/vendor/node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js"></script>#}
     <script src="/static/vendor/node_modules/vanilla-lazyload/dist/lazyload.min.js"></script>
     <script src="/static/vendor/node_modules/dom-to-image/dist/dom-to-image.min.js"></script>
     <script src="/static/vendor/node_modules/file-saver/dist/FileSaver.min.js"></script>
     <script src="/static/vendor/node_modules/leaflet-easyprint/dist/bundle.js"></script>
-        <link rel="stylesheet" href="/static/vendor/node_modules/leaflet-easybutton/src/easy-button.css">
+    <link rel="stylesheet" href="/static/vendor/node_modules/leaflet-easybutton/src/easy-button.css">
     <script src="/static/vendor/node_modules/leaflet-easybutton/src/easy-button.js"></script>
     <script src="/static/vendor/node_modules/wicket/wicket.js"></script>
     <link href="/static/vendor/node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet">
@@ -40,6 +39,10 @@
     <script src="/static/js/globalfunctions.js"></script>
     <script src="/static/vendor/node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js"></script>
     <script src="/static/vendor/node_modules/leaflet-canvas-marker/dist/leaflet.canvas-markers.js"></script>
+    <link href="/static/vendor/node_modules/leaflet-dvf/dist/css/dvf.css" rel="stylesheet">
+    <script src="/static/vendor/node_modules/leaflet-dvf/dist/leaflet-dvf.min.js"></script>
+    <script> thunderforestAPIkey = "{{ thunderforest }}"</script>
+{#    <script src="/static/vendor/node_modules/leaflet-dvf/dist/leaflet-dvf.markers.min.js"></script>#}
 
 
 
@@ -49,7 +52,7 @@
 <body>
 
 <nav id="mynavbar" class="navbar navbar-expand-md navbar-dark bg-dark fixed-top" role="navigation">
-    <div class="container-fluid" style="padding-left: 0px">
+    <div class="container-fluid" style="padding-left: 0">
         <a class="navbar-brand" href="/">
             <img id="nav-logo" src="/static/images/icons/logo_big.png" height="30" alt="" title="Home">
         </a>

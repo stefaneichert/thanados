@@ -883,7 +883,7 @@ function addFilterSearch() {
             '                </button>\n' +
             '                <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonMap">\n' +
             '                    <a class="dropdown-item searchbutton" onclick="startsearch()" href="#">Filter/Search</a>\n' +
-            '                    <a class="dropdown-item visbutton" onclick="startvis()" href="#">Visualisations</a>\n' +
+            '                    <a class="dropdown-item visbutton" onclick="startvis(false)" href="#">Visualisations</a>\n' +
             '                </div>\n' +
             '            </div>';
         return div;

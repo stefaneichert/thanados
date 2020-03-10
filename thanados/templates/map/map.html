@@ -66,9 +66,14 @@
                         </table>
                     </div>
                     <div class="modal-footer costum-header-bg">
+                        <form id="myvisformCSV"></form>
+                        <button type="button" class="btn btn-primary"
+                                onclick="exportToCSV(CSVresultExport)"
+                                title="Download result as spreadsheet data (CSV - Comma separated Values)">
+                            Export CSV
+                        </button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
                         </button>
-                        <button type="button" class="btn btn-primary" onclick="exportToCSV(CSVresultExport)" title="Download result as spreadsheet data (CSV - Comma separated Values)">Export CSV</button>
                     </div>
                 </div>
             </div>
@@ -119,7 +124,7 @@
         </div>
 
         <div id="visdialog" title="Visualisations">
-            <form id="myvisform"></form>
+            <form id="myvisform" class="myvisform"></form>
         </div>
 
         <div id="mytreeModal" title="Select category">

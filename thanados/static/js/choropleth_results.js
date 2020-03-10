@@ -1,116 +1,135 @@
-
-
-function startvis() {
+function startvis(search) {
+    //appendSearch(1);
+    $('#myvisformCSV').empty();
     $('#myvisform').empty();
-    appendSearch(1);
-    $("#visdialog").dialog({
-        width: mymodalwith,
-        height: 450,
-        open: function () {
-            // Destroy Close Button (for subsequent opens)
-            $('#visdialog-close').remove();
-            // Create the Close Button (this can be a link, an image etc.)
-            var link = '<btn id="visdialog-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
-            // Create Close Button
-            $(".ui-dialog-title").css({'width': ''});
-            $(this).parent().find(".ui-dialog-titlebar").append(link);
-            // Add close event handler to link
-            $('#visdialog-close').on('click', function () {
-                $("#visdialog").dialog('close');
-            });
-        }
-    });
+    if ($('#dialog').hasClass("ui-dialog-content")) {
+        if (search !== true && ($('#dialog').dialog('isOpen') === true)) $("#dialog").dialog('close');
+    }
+
+    if (search) {
+        visform = $('#myvisformCSV');
+    }
+
+    if (search !== true) {
+
+        visform = $('#myvisform');
+
+        $("#visdialog").dialog({
+            width: mymodalwith,
+            height: 450,
+            open: function () {
+                // Destroy Close Button (for subsequent opens)
+                $('#visdialog-close').remove();
+                // Create the Close Button (this can be a link, an image etc.)
+                var link = '<btn id="visdialog-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
+                // Create Close Button
+                $(".ui-dialog-title").css({'width': ''});
+                $(this).parent().find(".ui-dialog-titlebar").append(link);
+                // Add close event handler to link
+                $('#visdialog-close').on('click', function () {
+                    $("#visdialog").dialog('close');
+                });
+            }
+        });
+    }
     visproperty = 'myprop';
     colorstart = "#ffffff";
     colorend = "#ff0000";
-    appendvis('vis');
+    appendvis('vis', search);
 }
 
-function appendvis(iter) { //append vis form to dialog
-    $('#myvisform').append(
-        //selection for vis level: grave, burial or find
-        '<div id="VisSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
-        '<div class="input-group-prepend">' +
-        '<label class="input-group-text" for="VisSelect_' + iter + '">1. </label>' +
-        '</div>' +
-        '<select class="custom-select empty" id="VisSelect_' + iter + '">' +
-        '<option selected disabled>Select Level...</option>' +
-        '<option value="gravedim">Graves</option>' +
-        '<option value="burialdim">Burials</option>' +
-        '<option value="findcount">No. of finds per grave</option>' +
-        '<option value="sex">Sex</option>' +
-        '<option value="age">Age</option>' +
-        '</select>' +
-        '</div>');
-    //after main level is selected:
-    $('#VisSelect_' + iter).on('change', function () {
-        visappendLevel = $('#VisSelect_' + iter + ' option:selected').val(); //set level as variable
-        $('#VisSelect_' + iter).prop('disabled', true); //disble former selection field
-        $('#VisSelect_' + iter + '_parent').append(//add reset button on first iteration
-            '<div class="input-group-append">' +
-            '<button class="btn btn-secondary btn-sm" type="button" id="resetvisbutton" onclick="startvis()" title="Reset">' +
-            '<i class="fas fa-sync-alt"></i>' +
-            '</button>' +
-            '</div>'
-        );
-        if (visappendLevel !== 'findcount' && visappendLevel !== 'sex' && visappendLevel !== 'age') {
-            $('#myvisform').append(
-                //selection for property to choose: maintype, types, dimensions, material or timespan
-                '<div id="PropSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="PropSelect_' + iter + '">2. </label>' +
-                '</div>' +
-                '<select class="custom-select empty" id="PropSelect_' + iter + '">' +
-                '<option selected disabled>Select property...</option>' +
-                '<option value="Height">Depth</option>' +
-                '<option value="Length">Length</option>' +
-                '<option value="Width">Width</option>' +
-                '<option value="Degrees">Orientation</option>' +
-                '<option value="Azimuth">Azimuth</option>' +
-                '</select>' +
+function appendvis(iter, search) { //append vis form to dialog
+    if (search !== true) {
+        visform.append(
+            //selection for vis level: grave, burial or find
+            '<div id="VisSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
+            '<div class="input-group-prepend">' +
+            '<label class="input-group-text" for="VisSelect_' + iter + '">1. </label>' +
+            '</div>' +
+            '<select class="custom-select empty" id="VisSelect_' + iter + '">' +
+            '<option selected disabled>Select Level...</option>' +
+            '<option value="gravedim">Graves</option>' +
+            '<option value="burialdim">Burials</option>' +
+            '<option value="findcount">No. of finds per grave</option>' +
+            '<option value="sex">Sex</option>' +
+            '<option value="age">Age</option>' +
+            '</select>' +
+            '</div>');
+        //after main level is selected:
+        $('#VisSelect_' + iter).on('change', function () {
+            visappendLevel = $('#VisSelect_' + iter + ' option:selected').val(); //set level as variable
+            $('#VisSelect_' + iter).prop('disabled', true); //disble former selection field
+            $('#VisSelect_' + iter + '_parent').append(//add reset button on first iteration
+                '<div class="input-group-append">' +
+                '<button class="btn btn-secondary btn-sm" type="button" id="resetvisbutton" onclick="startvis(false)" title="Reset">' +
+                '<i class="fas fa-sync-alt"></i>' +
+                '</button>' +
                 '</div>'
             );
-        }
-        if (visappendLevel == 'age') {
-            $('#myvisform').append(
-                //selection for property to choose: maintype, types, dimensions, material or timespan
-                '<div id="PropSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="PropSelect_' + iter + '">2. </label>' +
-                '</div>' +
-                '<select class="custom-select empty" id="PropSelect_' + iter + '">' +
-                '<option selected disabled>Select property...</option>' +
-                '<option value="min">Minimum</option>' +
-                '<option value="max">Maximum</option>' +
-                '<option value="average">Average</option>' +
-                '</select>' +
-                '</div>'
-            );
-        }
-        $('#PropSelect_' + iter).on('change', function () {
-            $('#PropSelect_' + iter).prop('disabled', true);
-            visproperty = $('#PropSelect_' + iter + ' option:selected').val(); //set property as variable
-            mylegendtitle = $('#PropSelect_' + iter + ' option:selected').text(); //set property as variable
-            appendvisbuttons();
-        });
-        switch (visappendLevel) {
-            case 'findcount':
-                mylegendtitle = "No. of finds in grave";
+            if (visappendLevel !== 'findcount' && visappendLevel !== 'sex' && visappendLevel !== 'age') {
+                visform.append(
+                    //selection for property to choose: maintype, types, dimensions, material or timespan
+                    '<div id="PropSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
+                    '<div class="input-group-prepend">' +
+                    '<label class="input-group-text" for="PropSelect_' + iter + '">2. </label>' +
+                    '</div>' +
+                    '<select class="custom-select empty" id="PropSelect_' + iter + '">' +
+                    '<option selected disabled>Select property...</option>' +
+                    '<option value="Height">Depth</option>' +
+                    '<option value="Length">Length</option>' +
+                    '<option value="Width">Width</option>' +
+                    '<option value="Degrees">Orientation</option>' +
+                    '<option value="Azimuth">Azimuth</option>' +
+                    '</select>' +
+                    '</div>'
+                );
+            }
+            if (visappendLevel == 'age') {
+                visform.append(
+                    //selection for property to choose: maintype, types, dimensions, material or timespan
+                    '<div id="PropSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
+                    '<div class="input-group-prepend">' +
+                    '<label class="input-group-text" for="PropSelect_' + iter + '">2. </label>' +
+                    '</div>' +
+                    '<select class="custom-select empty" id="PropSelect_' + iter + '">' +
+                    '<option selected disabled>Select property...</option>' +
+                    '<option value="min">Minimum</option>' +
+                    '<option value="max">Maximum</option>' +
+                    '<option value="average">Average</option>' +
+                    '</select>' +
+                    '</div>'
+                );
+            }
+            $('#PropSelect_' + iter).on('change', function () {
+                $('#PropSelect_' + iter).prop('disabled', true);
+                visproperty = $('#PropSelect_' + iter + ' option:selected').val(); //set property as variable
+                mylegendtitle = $('#PropSelect_' + iter + ' option:selected').text(); //set property as variable
                 appendvisbuttons();
-                break;
-            case 'sex':
-                mylegendtitle = "Sex of buried individuals";
-                appendsexbuttons();
-                break;
-            case 'age':
-                mylegendtitle = "Age at death estimation";
-                break;
-        }
-    });
+            });
+            switch (visappendLevel) {
+                case 'findcount':
+                    mylegendtitle = "No. of finds in grave";
+                    appendvisbuttons();
+                    break;
+                case 'sex':
+                    mylegendtitle = "Sex of buried individuals";
+                    appendsexbuttons();
+                    break;
+                case 'age':
+                    mylegendtitle = "Age at death estimation";
+                    break;
+            }
+        })
+    }
+    if (search) {
+        visappendLevel = 'value';
+        mylegendtitle = ''
+        appendvisbuttons();
+    }
 }
 
 function appendvisbuttons(iter) {
-    $('#myvisform').append(
+    visform.append(
         '<div class="myoptions input-group input-group-sm mb-3">' +
         '<div class="input-group-prepend">' +
         '<label class="input-group-text" for="colorrange">Color range</label>' +
@@ -164,6 +183,7 @@ function appendvisbuttons(iter) {
         '</button>'
     );
     toggleOpt();
+
 
     var firstInput = document.getElementById("colorstart");
     var firstColor = firstInput.value;
@@ -219,7 +239,7 @@ function appendvisbuttons(iter) {
 }
 
 function appendsexbuttons(iter) {
-    $('#myvisform').append(
+    visform.append(
         '<div class="myoptions input-group input-group-sm mb-3">' +
         '<div class="myoptions input-group input-group-sm mb-3">' +
         '<div class="input-group-prepend">' +
@@ -448,9 +468,41 @@ function getChoroplethJson(visproperty, visappendLevel, title, mysteps, mymode, 
         })
     }
 
+    if (visappendLevel == 'value') {
+        var CSVresultIds = ValueResultsChoropleth(CSVresultJSON);
+        $.each(mypolyjson.features, function (i, feature) {
+            var currentId = feature.id;
+            insertfeature = feature;
+            $.each(CSVresultIds, function (i, dataset) {
+                if (dataset.id === currentId) {
+                    jQuery.extend(insertfeature.properties, {chorovalue: dataset.value});
+                    mychorojson.features.push(insertfeature);
+                }
+            })
+        })
+    }
 
     if (visappendLevel !== 'sex') setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth, myfinalopacity, mylegend);
     if (visappendLevel == 'sex') setSexJson(title, colorstart, colorend, myborder, myborderwidth, myfinalopacity, mylegend);
+}
+
+function ValueResultsChoropleth(data) {
+    var graveList = [];
+    var graveListUnique = [];
+    $.each(data, function (i, feature) {
+        var insertValue = {
+            'id': feature.graveID,
+            'value': feature.value
+        }
+        graveList.push(insertValue);
+    })
+    var flags = [], output = [], l = graveList.length, i;
+    for (i = 0; i < l; i++) {
+        if (flags[graveList[i].id]) continue;
+        flags[graveList[i].id] = true;
+        output.push({'id': graveList[i].id, 'value': parseFloat(graveList[i].value)});
+    }
+    return (output)
 }
 
 function style(feature) {
@@ -566,13 +618,13 @@ function setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth,
     baseControl = L.control.layers(baseLayers, overlays).addTo(map);
 
     map.on('overlayadd', function (eventLayer) {
-        if (eventLayer.name === 'choroplethLayer') {
+        if (eventLayer.name === 'Visualisations') {
             map.addControl(legend);
         }
     });
 
     map.on('overlayremove', function (eventLayer) {
-        if (eventLayer.name === 'choroplethLayer') {
+        if (eventLayer.name === 'Visualisations') {
             map.removeControl(legend);
         }
     });

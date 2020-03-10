@@ -681,3 +681,8 @@ table.dataTable thead .sorting_desc_disabled:after {
     max-height: 300px;
     max-width: 100%;
 }
+
+.leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar {
+    border: 0;
+    background-clip: padding-box;
+}

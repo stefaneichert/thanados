@@ -9,6 +9,9 @@ function startsearch() {
     initateQuery();
     $('#mysearchform').empty();
     appendSearch(1);
+    if ($('#visdialog').hasClass("ui-dialog-content")) {
+        if ($('#visdialog').dialog('isOpen') === true) $("#visdialog").dialog('close');
+    }
     $("#dialog").dialog({
         width: mymodalwith,
         height: 450,
@@ -310,7 +313,7 @@ function appendPlus(Iter) {
             '</div>' +
             '</div>' +
             '<div class="dropdown">' +
-            '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+            '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
             '<i class="far fa-save"></i>' +
             '</button>' +
             '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
@@ -318,7 +321,7 @@ function appendPlus(Iter) {
             '<a class="dropdown-item" onclick="finishQuery(false, false, false); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
             '</div>' +
             '</div>' +
-            '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, true)" type="button" id="ShowListButton" title="Show result list" data-toggle="modal" data-target="#CSVmodal">' +
+            '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, true)" type="button" id="ShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
             '<i class="fas fa-list"></i>' +
             '</button>' +
             '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="AdvSearchOptBtn" onclick="toggleSearchOpt()" title="Styling Options">' +
@@ -493,7 +496,18 @@ function CSVtable() {
         ],
     });
 
-    if ((search.includes('dimension') || search.includes('Material') || search.includes('value')) === false) table.columns([3, 4]).visible(false);
+    if ((search.includes('dimension') || search.includes('material') || search.includes('value')) === false) {
+        table.columns([3, 4]).visible(false);
+        $('#myvisformCSV').empty();
+    } else {
+        startvis(true)
+        $('#myvisformCSV .visbutton').removeClass('btn-sm');
+        $('#AdvOptBtn').click(function () {
+            console.log('click');
+            var element = document.getElementById("AdvOptBtn");
+            element.scrollIntoView({behavior: "smooth"})
+        })
+    }
 
 
     if (typeof (tableIter) === 'undefined') {
