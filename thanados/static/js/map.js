@@ -66,14 +66,19 @@ function setmap(myjson) {
         "dashArray": [4, 4]
     };
 
+    legendlayers = []
 
     //add graves with polygon geometry
     graves = L.geoJSON(myjson, {
         filter: polygonFilter,
-        style: myStyle
+        style: myStyle,
+        shapetype: 'poly',
+        legendTitle: 'Graves',
+        layername: 'graves'
     });
 
     graves.addTo(map);
+    legendlayers.push(graves);
 
 
     //if geometry is point create a rectangle around that point

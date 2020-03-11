@@ -528,6 +528,9 @@ function setSexJson(title, colorstart, colorend, myborder, myborderwidth, myfina
         map.removeLayer(choroplethLayer);
 
     choroplethLayer = L.geoJSON(mychorojson, {
+        shapetype: 'colorPoly',
+        legendTitle: 'Unique Color visualisation',
+        layername: 'choroplethLayer',
         style: style
     }).addTo(map);
 
@@ -574,6 +577,9 @@ function setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth,
     if (typeof (choroplethLayer) !== 'undefined')
         map.removeLayer(choroplethLayer);
     choroplethLayer = L.choropleth(mychorojson, {
+        shapetype: 'choropoly',
+        legendTitle: 'Gradient color visualisation',
+        layername: 'choroplethLayer',
         valueProperty: 'chorovalue', // which property in the features to use
         scale: mycolor, // chroma.js scale - include as many as you like
         steps: mysteps, // number of breaks or steps in range

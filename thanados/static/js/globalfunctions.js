@@ -244,7 +244,7 @@ function initiateTree(Iter, appendLevel, criteria, targetField) {
 }
 
 function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, appendLevel, Iter, val1, val2) {
-    if (GlobalNodeSelected =='' || isNaN(GlobalNodeSelected)) {
+    if (GlobalNodeSelected == '' || isNaN(GlobalNodeSelected)) {
         alert('select property first');
         return;
     }
@@ -530,7 +530,7 @@ function getBasemaps() {
         maxZoom: 25,
     });
 
-    thunderforestlandscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=' + thunderforestAPIkey , {
+    thunderforestlandscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=' + thunderforestAPIkey, {
         attribution:
             '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
             '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a></div>',
@@ -554,7 +554,7 @@ function getBasemaps() {
     };
 
     //define basemap for Minimap
-    miniBaseMap = new L.TileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=' + thunderforestAPIkey ,
+    miniBaseMap = new L.TileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=' + thunderforestAPIkey,
         {
             minZoom: 0,
             maxZoom: 20,
@@ -581,3 +581,63 @@ function MultAttributionChange(myMap, mydiv, attribution) {
     attr.addTo(myMap)
     eval('$("' + mydiv + ' .togglebtn").next().toggle()');
 }
+
+legendEntries = [];
+
+function createLegend(containerMap, currentLayer) {
+    var mapId = containerMap.getContainer().id;
+    var currentLegend = document.getElementById(mapId + '_legendtitle');
+    var noLegend = (currentLegend === null);
+    console.log(currentLegend);
+    console.log(noLegend);
+
+    var options = {};
+
+//check if it is a layer or layer group
+    //layer
+    if (currentLayer.options !== {} && typeof (currentLayer.options.shapetype) !== 'undefined') {
+        console.log(currentLayer)
+        options.style = currentLayer.options.style;
+        options.type = currentLayer.options.shapetype;
+        options.name = currentLayer.options.legendTitle;
+        options.layername = currentLayer.options.layername;
+    } else {
+        //layerGroup with one layer
+        currentLayer.eachLayer(function (layer) {
+            console.log(layer)
+            options.style = layer.options.style;
+            options.type = layer.options.shapetype;
+            options.name = layer.options.legendTitle;
+            options.layername = layer.options.layername;
+        });
+    }
+    console.log(options);
+
+
+
+    if (noLegend) {
+        eval(mapId + '_legend = L.control({position: "bottomright"})');
+        eval(mapId + '_legend').onAdd = function (containermap) {
+            var div = L.DomUtil.create('div', 'info legend')
+            div.innerHTML =
+                '<div id="' + mapId + '_legendtitle">Legend</div>' +
+                '<div id="' + mapId + '_legendentries"></div>'
+            return div
+        }
+    }
+
+    console.log(legendEntries);
+
+    if (noLegend) eval(mapId + '_legend').addTo(containerMap);
+
+    if (legendEntries.includes(options.name) === false) {
+        legendEntries.push(options.name);
+    }
+    var entrycontainer = document.getElementById(mapId + '_legendentries');
+    var currentEntry = '<div id="'+ mapId + '_' + options.layername + '">' + options.name + '</div>';
+    var NoEntryYet = (document.getElementById(mapId + '_' + options.layername) === null);
+    var ExistingEntry = document.getElementById(mapId + '_' + options.layername);
+    if (NoEntryYet) {$(entrycontainer).append(currentEntry)} else {$(ExistingEntry).html(currentEntry)};
+}
+
+
