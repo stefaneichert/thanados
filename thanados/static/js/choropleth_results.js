@@ -529,47 +529,17 @@ function setSexJson(title, colorstart, colorend, myborder, myborderwidth, myfina
 
     choroplethLayer = L.geoJSON(mychorojson, {
         shapetype: 'colorPoly',
-        legendTitle: 'Unique Color visualisation',
+        legendTitle: title,
         layername: 'choroplethLayer',
         style: style
     }).addTo(map);
 
-    if (typeof (legend) !== 'undefined')
-        $('.legendtoremove').remove();
-    legend = L.control({position: 'bottomright'})
-    legend.onAdd = function (map) {
-        var div = L.DomUtil.create('div', 'info legend legendtoremove')
 
-        // Add min & max
-        div.innerHTML = '<div><div align="center">' + title + '</div>' +
-            '<ul><li style="padding-top: 8px">Male:</li><li style="margin-top: 4px; display: block; float: right; min-width: 60px; background-color: ' + colorstart + '">&nbsp;</li></ul>' +
-            '<ul><li style="padding-top: 8px">Female:</li><li style="margin-top: 4px; display: block; float: right; min-width: 60px; background-color: ' + colorend + '">&nbsp;</li></ul>';
-        return div;
-    }
-    if (mylegend)
-        legend.addTo(map)
+    var currentColorpoly = '<ul><li style="padding-top: 8px">Male:</li><li style="max-height: 20px; margin-top: 4px; display: block; float: right; min-width: 60px; background-color: ' + hexToRgbA(colorstart, myfinalopacity) + '; border: ' + myborderwidth + 'px solid ' + myborder + '">&nbsp;</li></ul>' +
+        '<ul><li style="padding-top: 8px">Female:</li><li style="max-height: 20px; margin-top: 4px; display: block; float: right; min-width: 60px; background-color: ' + hexToRgbA(colorend, myfinalopacity) + '; border: ' + myborderwidth + 'px solid ' + myborder + '">&nbsp;</li></ul>';
 
+    createLegend(map, choroplethLayer, currentColorpoly);
 
-    overlays = {
-        "Graves": graves,
-        "Search results": resultpolys,
-        "Search result markers": resultpoints,
-        "Visualisations": choroplethLayer
-    };
-    map.removeControl(baseControl);
-    baseControl = L.control.layers(baseLayers, overlays).addTo(map);
-
-    map.on('overlayadd', function (eventLayer) {
-        if (eventLayer.name === 'choroplethLayer') {
-            map.addControl(legend);
-        }
-    });
-
-    map.on('overlayremove', function (eventLayer) {
-        if (eventLayer.name === 'choroplethLayer') {
-            map.removeControl(legend);
-        }
-    });
 }
 
 
@@ -578,7 +548,7 @@ function setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth,
         map.removeLayer(choroplethLayer);
     choroplethLayer = L.choropleth(mychorojson, {
         shapetype: 'choropoly',
-        legendTitle: 'Gradient color visualisation',
+        legendTitle: title,
         layername: 'choroplethLayer',
         valueProperty: 'chorovalue', // which property in the features to use
         scale: mycolor, // chroma.js scale - include as many as you like
@@ -591,48 +561,21 @@ function setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth,
         },
     }).addTo(map);
 
-    if (typeof (legend) !== 'undefined')
-        $('.legendtoremove').remove();
-    legend = L.control({position: 'bottomright'})
-    legend.onAdd = function (map) {
-        var div = L.DomUtil.create('div', 'info legend legendtoremove')
-        var limits = choroplethLayer.options.limits
-        var colors = choroplethLayer.options.colors
-        var labels = []
+    var div = document.createElement('div');
+    var limits = choroplethLayer.options.limits
+    var colors = choroplethLayer.options.colors
+    var labels = []
 
-        // Add min & max
-        div.innerHTML = '<div class="labels"><div align="center">' + title + '</div><div class="min">' + limits[0] + '</div> \
-			<div class="max">' + limits[limits.length - 1] + '</div></div>'
+    // Add min & max
+    div.innerHTML = '<div class="labels"></div>'
 
-        limits.forEach(function (limit, index) {
-            labels.push('<li style="background-color: ' + colors[index] + '"></li>')
-        })
+    limits.forEach(function (limit, index) {
+        labels.push('<li style="background-color: ' + colors[index] + '"></li>')
+    })
 
-        div.innerHTML += '<ul>' + labels.join('') + '</ul>'
-        return div
-    }
-    if (mylegend)
-        legend.addTo(map)
+    div.innerHTML += '<ul><span class="float-left p-2 mb-2">'+ limits[0] + '</span><span>' + labels.join('') + '</span><span class="float-right p-2 mb-2">' + limits[limits.length - 1] + '</span></ul>'
+    //return div
+    createLegend(map, choroplethLayer, div)
 
-    overlays = {
-        "Graves": graves,
-        "Search results": resultpolys,
-        "Search result markers": resultpoints,
-        "Visualisations": choroplethLayer,
-    };
-    map.removeControl(baseControl);
-    baseControl = L.control.layers(baseLayers, overlays).addTo(map);
-
-    map.on('overlayadd', function (eventLayer) {
-        if (eventLayer.name === 'Visualisations') {
-            map.addControl(legend);
-        }
-    });
-
-    map.on('overlayremove', function (eventLayer) {
-        if (eventLayer.name === 'Visualisations') {
-            map.removeControl(legend);
-        }
-    });
 
 }

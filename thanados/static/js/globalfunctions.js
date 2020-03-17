@@ -400,12 +400,39 @@ function openStyleDialog() {
     setStyleValues();
 }
 
+function openSearchStyleDialog() {
+    $("#styledialog_Results").dialog({
+        width: mymodalwith,
+        open: function () {
+            // Destroy Close Button (for subsequent opens)
+            $('#styledialog-close').remove();
+            // Create the Close Button (this can be a link, an image etc.)
+            var link = '<btn id="styledialog-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
+            // Create Close Button
+            $(".ui-dialog-title").css({'width': ''});
+            $(this).parent().find(".ui-dialog-titlebar").append(link);
+            // Add close event handler to link
+            $('#styledialog-close').on('click', function () {
+                $("#styledialog_Results").dialog('close');
+            });
+        }
+    });
+    $("#styledialog_Results").removeClass('d-none');
+    setSearchStyleValues();
+}
+
 function setStyleValues() {
-    if (typeof (fillcolor) != "undefined") fillInput.value = fillcolor;
+    myfillcolor = myStyle.fillColor;
+    MyStyleOpacityVar = myStyle.fillOpacity;
+    mystylebordercolor = myStyle.color;
+    mystyleborderwidth = myStyle.weight;
+
+
     fillInput = document.getElementById("stylecolor");
-    fillcolor = fillInput.value;
+    if (typeof (myfillcolor) != "undefined") fillInput.value = myfillcolor;
+    myfillcolor = fillInput.value;
     fillInput.addEventListener("input", function () {
-        fillcolor = fillInput.value;
+        my  = fillInput.value;
     }, false);
 
     if (typeof (MyStyleOpacityVar) != "undefined") {
@@ -449,7 +476,33 @@ function setStyleValues() {
     });
 
 }
+function setSearchStyleValues() {
+    fillInput = document.getElementById("fillcolor");
+    fillcolor = fillInput.value;
+    fillInput.addEventListener("input", function () {
+        fillcolor = fillInput.value;
+    }, false);
 
+    mysearchopacity = 10;
+    $('#mysearchopacity').on('input change', function () {
+        mysearchopacity = $('#mysearchopacity').val();
+        $('#mysearchopacityvalue').val(mysearchopacity);
+    });
+    $('#mysearchopacityvalue').on('input change', function () {
+        mysearchopacity = $('#mysearchopacityvalue').val();
+        if (mysearchopacity > 100)
+            $('#mysearchopacityvalue').val(100);
+        if (mysearchopacity < 0)
+            $('#mysearchopacityvalue').val(0);
+        $('#mysearchopacity').val(mysearchopacity);
+    });
+    mysearchbordercolor = "#000000";
+    searchbordercolorInput = document.getElementById("colorborder");
+    searchbordercolor = searchbordercolorInput.value;
+    searchbordercolorInput.addEventListener("input", function () {
+        mysearchbordercolor = searchbordercolorInput.value;
+    }, false);
+}
 
 function applyStyle(fill, opacity, border, outline) {
     myStyle.fillColor = fill;
@@ -481,25 +534,6 @@ function printMapbutton(id, position) {
     $('a.A4Landscape.page').css({'background-image': 'url(data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTguMS4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDQ0NC44MzMgNDQ0LjgzMyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDQ0LjgzMyA0NDQuODMzOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgd2lkdGg9IjUxMnB4IiBoZWlnaHQ9IjUxMnB4Ij4KPGc+Cgk8Zz4KCQk8cGF0aCBkPSJNNTUuMjUsNDQ0LjgzM2gzMzQuMzMzYzkuMzUsMCwxNy03LjY1LDE3LTE3VjEzOS4xMTdjMC00LjgxNy0xLjk4My05LjM1LTUuMzgzLTEyLjQ2N0wyNjkuNzMzLDQuNTMzICAgIEMyNjYuNjE3LDEuNywyNjIuMzY3LDAsMjU4LjExNywwSDU1LjI1Yy05LjM1LDAtMTcsNy42NS0xNywxN3Y0MTAuODMzQzM4LjI1LDQzNy4xODMsNDUuOSw0NDQuODMzLDU1LjI1LDQ0NC44MzN6ICAgICBNMzcyLjU4MywxNDYuNDgzdjAuODVIMjU2LjQxN3YtMTA4LjhMMzcyLjU4MywxNDYuNDgzeiBNNzIuMjUsMzRoMTUwLjE2N3YxMzAuMzMzYzAsOS4zNSw3LjY1LDE3LDE3LDE3aDEzMy4xNjd2MjI5LjVINzIuMjVWMzR6ICAgICIgZmlsbD0iI0ZGRkZGRiIvPgoJPC9nPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+Cjwvc3ZnPg==)'});
     $('a.A4Portrait.page').css({'background-image': 'url(data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTguMS4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDQ0NC44MzMgNDQ0LjgzMyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDQ0LjgzMyA0NDQuODMzOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgd2lkdGg9IjUxMnB4IiBoZWlnaHQ9IjUxMnB4Ij4KPGc+Cgk8Zz4KCQk8cGF0aCBkPSJNNTUuMjUsNDQ0LjgzM2gzMzQuMzMzYzkuMzUsMCwxNy03LjY1LDE3LTE3VjEzOS4xMTdjMC00LjgxNy0xLjk4My05LjM1LTUuMzgzLTEyLjQ2N0wyNjkuNzMzLDQuNTMzICAgIEMyNjYuNjE3LDEuNywyNjIuMzY3LDAsMjU4LjExNywwSDU1LjI1Yy05LjM1LDAtMTcsNy42NS0xNywxN3Y0MTAuODMzQzM4LjI1LDQzNy4xODMsNDUuOSw0NDQuODMzLDU1LjI1LDQ0NC44MzN6ICAgICBNMzcyLjU4MywxNDYuNDgzdjAuODVIMjU2LjQxN3YtMTA4LjhMMzcyLjU4MywxNDYuNDgzeiBNNzIuMjUsMzRoMTUwLjE2N3YxMzAuMzMzYzAsOS4zNSw3LjY1LDE3LDE3LDE3aDEzMy4xNjd2MjI5LjVINzIuMjVWMzR6ICAgICIgZmlsbD0iI0ZGRkZGRiIvPgoJPC9nPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+Cjwvc3ZnPg==)'});
 }
-
-function testbutton() {
-    L.easyButton({
-        id: 'OptionsButton',
-        'data-toggle': 'dropdown',
-        position: 'topleft',      // inherited from L.Control -- the corner it goes in
-        states: [{                 // specify different icons and responses for your button
-            stateName: 'get-center',
-            onClick: function () {
-                console.log('hallo')
-            },
-            title: 'test me',
-            icon: 'fas fa-bars'
-        }]
-    }).addTo(map);
-    $('.Easy').css({'background-image': ''});
-
-}
-
 
 //basemaps
 //set attribution title
@@ -582,21 +616,35 @@ function MultAttributionChange(myMap, mydiv, attribution) {
     eval('$("' + mydiv + ' .togglebtn").next().toggle()');
 }
 
-legendEntries = [];
+function hexToRgbA(hex, opac) {
+    var c;
+    if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
+        c = hex.substring(1).split('');
+        if (c.length == 3) {
+            c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+        }
+        c = '0x' + c.join('');
+        return 'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ', ' + opac + ' )';
+    }
+    throw new Error('Bad Hex');
+}
 
-function createLegend(containerMap, currentLayer) {
-    var mapId = containerMap.getContainer().id;
-    var currentLegend = document.getElementById(mapId + '_legendtitle');
-    var noLegend = (currentLegend === null);
-    console.log(currentLegend);
-    console.log(noLegend);
+function toggleLayers() {
+    eval(this.dataset.map + '.removeLayer(' + this.dataset.layer + ')');
+}
 
+function createLegend(containerMap, currentLayer, legendContent) {
+
+    //hide layers from layer control
+
+
+    //1st: check layers and get data for legend
+    //create options for legend layers
     var options = {};
 
-//check if it is a layer or layer group
+    //check if it is a layer or layer group
     //layer
     if (currentLayer.options !== {} && typeof (currentLayer.options.shapetype) !== 'undefined') {
-        console.log(currentLayer)
         options.style = currentLayer.options.style;
         options.type = currentLayer.options.shapetype;
         options.name = currentLayer.options.legendTitle;
@@ -604,40 +652,157 @@ function createLegend(containerMap, currentLayer) {
     } else {
         //layerGroup with one layer
         currentLayer.eachLayer(function (layer) {
-            console.log(layer)
             options.style = layer.options.style;
             options.type = layer.options.shapetype;
             options.name = layer.options.legendTitle;
             options.layername = layer.options.layername;
         });
     }
-    console.log(options);
-
-
-
-    if (noLegend) {
-        eval(mapId + '_legend = L.control({position: "bottomright"})');
-        eval(mapId + '_legend').onAdd = function (containermap) {
-            var div = L.DomUtil.create('div', 'info legend')
-            div.innerHTML =
-                '<div id="' + mapId + '_legendtitle">Legend</div>' +
-                '<div id="' + mapId + '_legendentries"></div>'
-            return div
-        }
+    if (jQuery.isEmptyObject(options)) {
+        console.log('abort')
+        return
     }
 
-    console.log(legendEntries);
+    //console.log('options:');
+    //console.log(options);
 
-    if (noLegend) eval(mapId + '_legend').addTo(containerMap);
+    //create array of legend entries
+    if (typeof (legendEntries) === 'undefined') legendEntries = [];
+
 
     if (legendEntries.includes(options.name) === false) {
         legendEntries.push(options.name);
     }
+    //console.log('legendEntries:');
+    //console.log(legendEntries);
+
+
+    //2nd: create legend
+    var mapId = containerMap.getContainer().id; //get div id from map
+
+    //check if legend is already on map
+    var currentLegend = document.getElementById(mapId + '_legendtitle');
+    var noLegend = (currentLegend === null);
+    //console.log('currentLegend:');
+    //console.log(currentLegend);
+    //console.log('noLegend:');
+    //console.log(noLegend);
+    //create blank legend if it does not exist
+
+    if (noLegend) {
+        $(function () {
+            $(".sortEntry").sortable({
+                containment: "parent"
+            });
+            $(".sortEntry").disableSelection();
+        });
+
+        eval(mapId + '_legend = L.control({position: "bottomright"})');
+        eval(mapId + '_legend').onAdd = function (containermap) {
+            var div = L.DomUtil.create('div', 'info, legend')
+            div.innerHTML =
+                '<div id="' + mapId + '_legendtitle"></div>' +
+                '<div class="sortEntry" id="' + mapId + '_legendentries"></div>'
+            return div
+        }
+        eval(mapId + '_legend').addTo(containerMap);
+        var currentLegend = document.getElementById(mapId + '_legendtitle');
+
+        legendOn = 'Legend <a onclick="legendToggle(\'' + mapId + '\')" class="legendToggle" data-map=' + mapId + ' title="Hide legend"><i id="' + mapId + '_toggleLeg" style="color: #eeeeee; cursor: pointer; font-size: 1.3em;" class="legendBtn ml-2 float-right far fa-check-square"></a>'
+        legendOff = '<a onclick="legendToggle(\'' + mapId + '\')" class="legendToggle" data-map=' + mapId + ' title="show legend"><i id="' + mapId + '_toggleLeg" style="color: #eeeeee; cursor: pointer; font-size: 1.3em;" class="legendBtn fas fa-list-ul"></a>'
+
+        $(currentLegend).html(legendOn);
+
+
+        var mylegendBtn = $(currentLegend).find(".legendToggle");
+    }
+
+    eval(mapId + '_legend').getContainer().addEventListener('mouseover', function () {
+        map.dragging.disable();
+        map.doubleClickZoom.disable();
+    });
+
+    // Re-enable dragging when user's cursor leaves the element
+    eval(mapId + '_legend').getContainer().addEventListener('mouseout', function () {
+        map.dragging.enable();
+        map.doubleClickZoom.enable();
+    });
+
+    //set data for legend entries from layer
     var entrycontainer = document.getElementById(mapId + '_legendentries');
-    var currentEntry = '<div id="'+ mapId + '_' + options.layername + '">' + options.name + '</div>';
+    var currentEntry =
+        '<div class="legendEntry" id="' + mapId + '_' + options.layername + '" data-layer="' + options.layername + '"> \n' +
+        options.name + '<a id="' + options.layername + '_toggleBtn" \n' +
+        'onclick="toggleLayers(this.dataset.map, this.dataset.layer, this.dataset.show)" \n' +
+        'data-show=true data-map="' + mapId + '" data-layer="' + options.layername + '"> \n' +
+        '<i id="' + options.layername + '_toggleIcon" style="cursor: pointer; font-size: 1.3em;" class="ml-2 float-right far fa-check-square"></i></a></div>';
+
     var NoEntryYet = (document.getElementById(mapId + '_' + options.layername) === null);
+    //console.log('No entry yet: ' +  NoEntryYet);
     var ExistingEntry = document.getElementById(mapId + '_' + options.layername);
-    if (NoEntryYet) {$(entrycontainer).append(currentEntry)} else {$(ExistingEntry).html(currentEntry)};
+    //console.log('ExistingEntry: ');
+    //console.log(ExistingEntry);
+    if (NoEntryYet) {
+        $(entrycontainer).prepend(currentEntry)
+    } else {
+        $(ExistingEntry).remove();
+        $(entrycontainer).prepend(currentEntry)
+    }
+    var ExistingEntry = document.getElementById(mapId + '_' + options.layername);
+    $(ExistingEntry).append(legendContent);
+
+    eval('if (' + mapId + '.hasLayer(' + options.layername + ') !== true) ' + options.layername + '.addTo(' + mapId + ');');
+
+    var myselector = eval('$("#' + mapId + '_legendentries")');
+
+    $(myselector).on("sortstop", function (event, ui) {
+        orderlayer(myselector)
+    });
+
 }
 
+function legendToggle(mapId) {
+
+    var currentLegend = document.getElementById(mapId + '_legendtitle');
+    var legendentries  = document.getElementById(mapId + '_legendentries');
+    if ($(currentLegend).find('.legendBtn').hasClass("fa-check-square")) {
+        $(currentLegend).html(legendOff)
+    } else {
+        $(currentLegend).html(legendOn)
+    }
+    $(legendentries).toggle();
+
+}
+
+function orderlayer(myselector) {
+    var layerorder = ($(myselector).sortable("toArray", {
+        attribute: "data-layer"
+    }));
+
+    $.each(layerorder, function (i, layer) {
+        eval(layer).eachLayer(function (layer) {
+            layer.bringToBack();
+        })
+    })
+}
+
+function toggleLayers(thismap, layer, show) {
+    var thisIcon = eval('$("#' + layer + '_toggleIcon")');
+    var thisButton = eval('$("#' + layer + '_toggleBtn")');
+
+    var myselector = eval('$("#' + thismap + '_legendentries")');
+
+    if (show === 'true') {
+        $(thisIcon).removeClass('fa-check-square');
+        $(thisIcon).addClass('fa-square');
+        eval(thismap + '.removeLayer(' + layer + ')');
+        $(thisButton).attr('data-show', false);
+    } else {
+        $(thisIcon).removeClass('fa-square');
+        $(thisIcon).addClass('fa-check-square');
+        eval(layer + '.addTo(' + thismap + ')');
+        $(thisButton).attr('data-show', true);
+    }
+    orderlayer(myselector);
+}
 

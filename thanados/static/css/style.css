@@ -219,6 +219,49 @@ body {
     background-color: rgba(108, 117, 125, 0.90) !important;
 }
 
+.legend {
+    padding: 6px 8px;
+    font: 12px Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    color: #fff !important;
+    background-color: #696969 !important;
+    box-shadow: none !important;
+    border: 4px solid rgba(214, 214, 214, 0.9) !important;
+    border-radius: 8px !important;
+}
+
+.legendEntry {
+    margin-top: 1em;
+    padding: .5em;
+    color: #000000;
+    background-color: rgba(214, 214, 214, 0.9) !important;
+    border-radius: 4px !important;
+    cursor: move;
+}
+
+.legendBtn:hover {
+    color: #ffffff!important;
+}
+
+.legend ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    clear: both;
+}
+
+.legend li {
+    display: inline-block;
+    width: 30px;
+    height: 28px;
+}
+
+.legend .labels {
+padding-bottom: 1em;
+}
+
+
+
 .sidebarheading {
     display: block;
     font-weight: 500;
@@ -473,40 +516,6 @@ a.ui-button:active,
     float: right;
 }
 
-.legend {
-    color: #555;
-    padding: 6px 8px;
-    font: 12px Arial, Helvetica, sans-serif;
-    font-weight: bold;
-    background: white;
-    background: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-}
-
-.legend ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    clear: both;
-}
-
-.legend li {
-    display: inline-block;
-    width: 30px;
-    height: 22px;
-}
-
-.legend .min {
-    float: left;
-    padding-bottom: 5px;
-}
-
-.legend .max {
-    float: right;
-}
-
-
 .custom-tree {
     width: auto !important;
     top: 1em !important;
@@ -537,9 +546,7 @@ a.ui-button:active,
 
 .ui-widget-header {
     border: 0;
-    background: 0;
-    background-color: #f2f2f2;
-    border-bottom-left-radius: 0;
+    background: #f2f2f2 0 0;
     border-bottom-left-radius: 0;
     border-top-right-radius: 4px;
     border-top-left-radius: 4px;

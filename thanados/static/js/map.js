@@ -44,10 +44,10 @@ function setmap(myjson) {
 
 //style polygons
     myStyle = {
-        "color": "rgba(0,123,217,0.75)",
+        "color": "#007BD9",
         "weight": 1.5,
-        "fillOpacity": 0.5
-        //"opacity": 0.4
+        "fillOpacity": 0.5,
+        "fillColor": "#000000"
     };
 
     HoverStyle = {
@@ -76,6 +76,10 @@ function setmap(myjson) {
         legendTitle: 'Graves',
         layername: 'graves'
     });
+
+    var currentGraves = '<div onclick="openStyleDialog()" style="cursor: pointer; display: block; margin-left: 1em; margin-top: -1px; float: right; min-width: 60px; background-color: ' + hexToRgbA(myStyle.color, myStyle.fillOpacity) + '; border: ' + myStyle.weight + 'px solid ' + myStyle.color + '">&nbsp;</div>'
+            createLegend(map, graves, currentGraves);
+
 
     graves.addTo(map);
     legendlayers.push(graves);
@@ -154,13 +158,6 @@ function setmap(myjson) {
 
 //define map control
 
-
-    var overlays = {
-        "Graves": graves,
-        "Search result shapes": resultpolys,
-        "Search result markers": resultpoints
-    };
-
     L.easyButton({
         id: 'SidebarButton',  // an id for the generated button
         position: 'topleft',      // inherited from L.Control -- the corner it goes in
@@ -179,26 +176,10 @@ function setmap(myjson) {
     //add option button and exportbutton for map as image
     printMapbutton('map', 'topleft');
 
-    L.easyButton({
-        id: 'stylebutton',  // an id for the generated button
-        position: 'topleft',      // inherited from L.Control -- the corner it goes in
-        type: 'replace',          // set to animate when you're comfy with css
-        leafletClasses: true,     // use leaflet classes to style the button?
-        states: [{                 // specify different icons and responses for your button
-            stateName: 'get-center',
-            onClick: function (button, map) {
-                openStyleDialog();
-            },
-            title: 'style options for graves',
-            icon: 'fas fa-palette'
-        }]
-    }).addTo(map);
-
-
     addFilterSearch();
 
     //add layer control
-    baseControl = L.control.layers(baseLayers, overlays).addTo(map);
+    baseControl = L.control.layers(baseLayers).addTo(map);
 
 
 //hack for right order of basemaps
@@ -218,7 +199,7 @@ function setmap(myjson) {
 
 }
 
-function applyButton() {
+function applyGraveStyle() {
     applyStyle(fillcolor, (1 - MyStyleOpacityVar / 100), mystylebordercolor, mystyleborderwidth);
     graves.eachLayer(function (layer) {
         if (layer.feature.derivedPoly === 'true') {
@@ -227,6 +208,8 @@ function applyButton() {
             layer.setStyle(myStyle)
         }
     });
+    var currentGraves = '<div onclick="openStyleDialog()" style="cursor: pointer; display: block; margin-left: 1em; margin-top: -1px; float: right; min-width: 60px; background-color: ' + hexToRgbA(myStyle.fillColor, myStyle.fillOpacity) + '; border: ' + myStyle.weight + 'px solid ' + myStyle.color + '">&nbsp;</div>'
+    createLegend(map, graves, currentGraves);
 }
 
 //openpolygon for active sidebargrave

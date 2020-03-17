@@ -114,7 +114,43 @@
                 </div>
                 <button class="btn btn-sm btn-secondary btn-sm float-right" type="button"
                         id="applyStyle"
-                        onclick="applyButton()" title="Apply">Apply
+                        onclick="applyGraveStyle()" title="Apply">Apply
+                </button>
+            </form>
+        </div>
+
+        <div id="styledialog_Results" title="Styling Options for search Results">
+            <form id="mySearchstyleform">
+                <div class="mysearchoptions input-group input-group-sm mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="searchbordercolor">Border
+                            color: </label>
+                    </div>
+                    <input class="form-control" id="colorborder" style="max-width: 70px"
+                           type="color" value="#000000">
+                    <span class="input-group-text input-group-middle">Border width: </span>
+                    <input class="form-control input-group-middle" id="searchborderwidth"
+                           type="number" value="0" min="0">
+                    <span title="Radius for point result"
+                          class="input-group-text input-group-middle">Radius: </span>
+                    <input title="Radius for point result" class="form-control"
+                           id="searchpointradius" type="number" value="8" min="1">
+                </div>
+                <div class="mysearchoptions input-group input-group-sm mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="fillcolor">Fill color: </label>
+                    </div>
+                    <input class="form-control" id="fillcolor" style="max-width: 70px" type="color"
+                           value="#000dff">
+                    <span class="input-group-text input-group-middle">Opacity (%): </span>
+                    <input class="form-control" id="mysearchopacity" type="range" value="10" min="0"
+                           max="100">
+                    <input class="form-control" id="mysearchopacityvalue" type="number" value="10"
+                           min="0" max="100" style="max-width: 60px">
+                </div>
+                <button class="btn btn-sm btn-secondary btn-sm float-right" type="button"
+                        id="applySearchStyle"
+                        onclick="applySearchButton()" title="Apply">Apply
                 </button>
             </form>
         </div>
