@@ -281,6 +281,25 @@ function appendPlus(Iter) {
 
     if (finalSearchResultIds.length > 0) {
         $('#mysearchform').append(
+            '<div class="mysearchoptions input-group input-group-sm mb-3">' +
+            '<div class="input-group-prepend">' +
+            '<label class="input-group-text" for="fillcolor">Fill color: </label>' +
+            '</div>' +
+            '<input class="form-control" id="fillcolor" style="max-width: 70px" type="color" value="#000dff">' +
+            '<span class="input-group-text input-group-middle">Opacity (%): </span>' +
+            '<input class="form-control" id="mysearchopacity" type="range" value="10" min="0" max="100">' +
+            '<input class="form-control" id="mysearchopacityvalue" type="number" value="10" min="0" max="100" style="max-width: 60px">' +
+            '</div>' +
+            '<div class="mysearchoptions input-group input-group-sm mb-3">' +
+            '<div class="input-group-prepend">' +
+            '<label class="input-group-text" for="searchbordercolor">Border color: </label>' +
+            '</div>' +
+            '<input class="form-control" id="colorborder" style="max-width: 70px" type="color" value="#000000">' +
+            '<span class="input-group-text input-group-middle">Border width: </span>' +
+            '<input class="form-control input-group-middle" id="searchborderwidth" type="number" value="0" min="0">' +
+            '<span title="Radius for point result" class="input-group-text input-group-middle">Radius: </span>' +
+            '<input title="Radius for point result" class="form-control" id="searchpointradius" type="number" value="8" min="1">' +
+            '</div>' +
             '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="addNewSearchCritBtn" onclick="appendSearch(Globaliter)" title="Add another search criteria">' +
             '<i class="fas fa-plus"></i>' +
             '</button>' +
@@ -289,23 +308,67 @@ function appendPlus(Iter) {
             '<i class="fas fa-map-marked-alt"></i>' +
             '</button>' +
             '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
-            '<a class="dropdown-item" onclick="finishQuery(true, true, false)" title="Show combined result on map as polygons" href="#">Polygons</a>' +
-            '<a class="dropdown-item" onclick="finishQuery(false, true, false)" title="Show combined result on map as points" href="#">Points</a>' +
+            '<a class="dropdown-item" onclick="finishQuery(true, true, false, finalSearchResultIds, CSVresult)" title="Show combined result on map as polygons" href="#">Polygons</a>' +
+            '<a class="dropdown-item" onclick="finishQuery(false, true, false, finalSearchResultIds, CSVresult)" title="Show combined result on map as points" href="#">Points</a>' +
             '</div>' +
             '</div>' +
+            '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="AdvSearchOptBtn" onclick="toggleSearchOpt()" title="Styling Options for Polygons and Point Results">' +
+            '<i class="fas fa-palette"></i>' +
+            '</button>' +
             '<div class="dropdown">' +
             '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
             '<i class="far fa-save"></i>' +
             '</button>' +
             '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
-            '<a class="dropdown-item" onclick="finishQuery(true, false, false); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" href="#">Polygons</a>' +
-            '<a class="dropdown-item" onclick="finishQuery(false, false, false); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
+            '<a class="dropdown-item" onclick="finishQuery(true, false, false, finalSearchResultIds, CSVresult); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" href="#">Polygons</a>' +
+            '<a class="dropdown-item" onclick="finishQuery(false, false, false, finalSearchResultIds, CSVresult); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
             '</div>' +
             '</div>' +
-            '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, true)" type="button" id="ShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
+            '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, true, finalSearchResultIds, CSVresult)" type="button" id="ShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
             '<i class="fas fa-list"></i>' +
             '</button>'
         );
+        toggleSearchOpt();
+
+        fillInput = document.getElementById("fillcolor");
+        fillcolor = fillInput.value;
+        fillInput.addEventListener("input", function () {
+            fillcolor = fillInput.value;
+        }, false);
+
+        mysearchopacity = 10;
+        $('#mysearchopacity').on('input change', function () {
+            mysearchopacity = $('#mysearchopacity').val();
+            $('#mysearchopacityvalue').val(mysearchopacity);
+        });
+        $('#mysearchopacityvalue').on('input change', function () {
+            mysearchopacity = $('#mysearchopacityvalue').val();
+            if (mysearchopacity > 100)
+                $('#mysearchopacityvalue').val(100);
+            if (mysearchopacity < 0)
+                $('#mysearchopacityvalue').val(0);
+            $('#mysearchopacity').val(mysearchopacity);
+        });
+        mysearchbordercolor = "#000000";
+        searchbordercolorInput = document.getElementById("colorborder");
+        searchbordercolor = searchbordercolorInput.value;
+        searchbordercolorInput.addEventListener("input", function () {
+            mysearchbordercolor = searchbordercolorInput.value;
+        }, false);
+
+        mysearchborderwidth = 0;
+        $('#searchborderwidth').on('input change', function () {
+            mysearchborderwidth = $('#searchborderwidth').val();
+            if (mysearchborderwidth < 0)
+                $('#searchborderwidth').val(0);
+        });
+
+        mysearchpointradius = 8;
+        $('#searchpointradius').on('input change', function () {
+            mysearchpointradius = $('#searchpointradius').val();
+            if (mysearchpointradius < 0)
+                $('#searchpointradius').val(0);
+        });
     }
 
     $('#mysearchform').append(
@@ -323,8 +386,7 @@ function appendPlus(Iter) {
 }
 
 
-function finishQuery(mygeometry, show, table) { //finish query and show results on map
-
+function finishQuery(mygeometry, show, table, idlist, CSVdata) { //finish query and show results on map
     jsonresult = {
         "type": "FeatureCollection", //prepare geojson
         "features": []
@@ -335,7 +397,7 @@ function finishQuery(mygeometry, show, table) { //finish query and show results 
     };
 
     $.each(mypolyjson.features, function (i, feature) {
-        if (finalSearchResultIds.includes(feature.id)) {
+        if (idlist.includes(feature.id)) {
             jsonresult.features.push(feature);
             pointfeature = Object.assign({}, feature);
             pointfeature.geometry = {};
@@ -355,15 +417,23 @@ function finishQuery(mygeometry, show, table) { //finish query and show results 
     };
 
     geojsonMarkerOptions = {
-        radius: mysearchpointradius,
-        fillColor: fillcolor,
-        color: mysearchbordercolor,
-        weight: mysearchborderwidth,
-        opacity: 1,
-        fillOpacity: 1 - mysearchopacity / 100
+        "radius": mysearchpointradius,
+        "fillColor": fillcolor,
+        "color": mysearchbordercolor,
+        "weight": mysearchborderwidth,
+        "opacity": 1,
+        "fillOpacity": 1 - mysearchopacity / 100
     };
 
+    CSVresultJSON = jQuery.extend(true, [], CSVdata);
+    var tmpCSV = JSON.parse(JSON.stringify(CSVdata));
+    $.each(tmpCSV, function (i, dataset) {
+        delete dataset.image
+    });
+    CSVresultExport = toCSV(tmpCSV);
+
     if (show) {
+
         if (mygeometry) {
             resultpolys.clearLayers();
             resultpoly = L.geoJSON(jsonresult, {
@@ -373,8 +443,7 @@ function finishQuery(mygeometry, show, table) { //finish query and show results 
                 layername: 'resultpolys'
             });
             resultpolys.addLayer(resultpoly);
-            var currentSearchPolys = '<li style="margin-left: 1em; margin-top: -2px; display: block; float: right; max-height: 20px; min-width: 60px; background-color: ' + hexToRgbA(mysearchresultstyle.fillColor, mysearchresultstyle.fillOpacity) + '; border: ' + mysearchresultstyle.weight + 'px solid ' + mysearchresultstyle.color + '">&nbsp;</li>'
-            console.log('where is my legend')
+            var currentSearchPolys = '<li title="click to open layer options" onclick="CSVresult = JSON.parse(this.getAttribute(\'data-CSVresult\')); finalSearchResultIds = JSON.parse(this.getAttribute(\'data-idlist\')); searchStyle = JSON.parse(this.getAttribute(\'data-style\')); openStyleDialog(\'poly\')" data-CSVresult=\'' + JSON.stringify(CSVdata) + '\' data-idlist="' + JSON.stringify(finalSearchResultIds) + '" data-style=\'' + JSON.stringify(mysearchresultstyle) + '\' style="cursor: pointer; margin-left: 1em; margin-top: -2px; display: block; float: right; max-height: 20px; min-width: 60px; background-color: ' + hexToRgbA(mysearchresultstyle.fillColor, mysearchresultstyle.fillOpacity) + '; border: ' + mysearchresultstyle.weight + 'px solid ' + mysearchresultstyle.color + '">&nbsp;</li>'
             createLegend(map, resultpolys, currentSearchPolys);
 
         } else {
@@ -389,26 +458,19 @@ function finishQuery(mygeometry, show, table) { //finish query and show results 
                 }
             });
             resultpoints.addLayer(resultpoint);
-            var currentSearchPoints = '<li style="margin-left: 1em; margin-top: -2px; border-radius: 50%; display: block; float: right; width: 20px; height: 20px; background-color: ' + hexToRgbA(geojsonMarkerOptions.fillColor, geojsonMarkerOptions.fillOpacity) + '; border: ' + geojsonMarkerOptions.weight + 'px solid ' + geojsonMarkerOptions.color + '">&nbsp;</li>'
-            console.log('where is my point legend')
+            var currentSearchPoints = '<li title="click to open layer options" onclick="CSVresult = JSON.parse(this.getAttribute(\'data-CSVresult\')); finalSearchResultIds = JSON.parse(this.getAttribute(\'data-idlist\')); searchStyle = JSON.parse(this.getAttribute(\'data-style\')); openStyleDialog(\'point\')" data-CSVresult=\'' + JSON.stringify(CSVdata) + '\' data-idlist="' + JSON.stringify(finalSearchResultIds) + '" data-style=\'' + JSON.stringify(geojsonMarkerOptions) + '\' style="cursor: pointer; margin-left: 1em; margin-top: -2px; border-radius: 50%; display: block; float: right; width: 20px; height: 20px; background-color: ' + hexToRgbA(geojsonMarkerOptions.fillColor, geojsonMarkerOptions.fillOpacity) + '; border: ' + geojsonMarkerOptions.weight + 'px solid ' + geojsonMarkerOptions.color + '">&nbsp;</li>'
             createLegend(map, resultpoints, currentSearchPoints);
         }
     }
     if (table) {
-        CSVresultJSON = jQuery.extend(true, [], CSVresult);
-        var tmpCSV = JSON.parse(JSON.stringify(CSVresult));
-        $.each(tmpCSV, function (i, dataset) {
-            delete dataset.image
-        });
-        CSVresultExport = toCSV(tmpCSV);
-        CSVtable();
+        CSVtable(CSVresultJSON);
     }
 }
 
-function CSVtable() {
-    var level = CSVresultJSON[0].ObjectClass;
-    var search = CSVresultJSON[0].Search;
-    if (search === 'timespan') search = (JSON.stringify(CSVresultJSON[0].searchResult)).slice(12);
+function CSVtable(CSVdata) {
+    var level = CSVdata[0].ObjectClass;
+    var search = CSVdata[0].Search;
+    if (search === 'timespan') search = (JSON.stringify(CSVdata[0].searchResult)).slice(12);
     if (typeof (tableIter) !== 'undefined') {
         if (tableIter >= Globaliter) delete tableIter
     }
@@ -416,7 +478,7 @@ function CSVtable() {
 
     table = $('#CSVmodalContent').DataTable({
         destroy: true,
-        data: CSVresultJSON,
+        data: CSVdata,
         "pagingType": "numbers",
         "scrollX": true,
         drawCallback: function () {

@@ -38,6 +38,10 @@
             <form id="mysearchform"></form>
         </div>
 
+        <div id="SearchStyle" title="Styling options">
+            <form id="mySearchStyleform"></form>
+        </div>
+
         <div class="modal fade" id="CSVmodal" tabindex="-1" role="dialog"
              aria-labelledby="CSVmodalLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl" role="document">
@@ -79,81 +83,6 @@
             </div>
         </div>
 
-        <div id="styledialog" title="Styling Options for graves">
-            <form id="mystyleform">
-                <div class="mystyleoptions input-group input-group-sm mb-3">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text" for="stylecolor">Fill color: </label>
-                    </div>
-                    <input class="form-control" id="stylecolor" style="max-width: 70px" type="color"
-                           value="#000dff">
-                    <span class="input-group-text input-group-middle">Opacity (%): </span>
-                    <label for="mystyleopacity"></label><input class="form-control"
-                                                               id="mystyleopacity" type="range"
-                                                               value="10" min="0" max="100">
-                    <label for="mystyleopacityvalue"></label><input class="form-control"
-                                                                    id="mystyleopacityvalue"
-                                                                    type="number" value="10" min="0"
-                                                                    max="100"
-                                                                    style="max-width: 60px">
-                </div>
-                <div class="mystyleoptions input-group input-group-sm mb-3">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text" for="stylebordercolor">Border
-                            color: </label>
-                    </div>
-                    <label for="stylecolorborder"></label><input class="form-control"
-                                                                 id="stylecolorborder"
-                                                                 style="max-width: 70px"
-                                                                 type="color"
-                                                                 value="#000000">
-                    <span class="input-group-text input-group-middle">Border width: </span>
-                    <label for="styleborderwidth"></label><input class="form-control"
-                                                                 id="styleborderwidth" type="number"
-                                                                 value="0" min="0">
-                </div>
-                <button class="btn btn-sm btn-secondary btn-sm float-right" type="button"
-                        id="applyStyle"
-                        onclick="applyGraveStyle()" title="Apply">Apply
-                </button>
-            </form>
-        </div>
-
-        <div id="styledialog_Results" title="Styling Options for search Results">
-            <form id="mySearchstyleform">
-                <div class="mysearchoptions input-group input-group-sm mb-3">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text" for="searchbordercolor">Border
-                            color: </label>
-                    </div>
-                    <input class="form-control" id="colorborder" style="max-width: 70px"
-                           type="color" value="#000000">
-                    <span class="input-group-text input-group-middle">Border width: </span>
-                    <input class="form-control input-group-middle" id="searchborderwidth"
-                           type="number" value="0" min="0">
-                    <span title="Radius for point result"
-                          class="input-group-text input-group-middle">Radius: </span>
-                    <input title="Radius for point result" class="form-control"
-                           id="searchpointradius" type="number" value="8" min="1">
-                </div>
-                <div class="mysearchoptions input-group input-group-sm mb-3">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text" for="fillcolor">Fill color: </label>
-                    </div>
-                    <input class="form-control" id="fillcolor" style="max-width: 70px" type="color"
-                           value="#000dff">
-                    <span class="input-group-text input-group-middle">Opacity (%): </span>
-                    <input class="form-control" id="mysearchopacity" type="range" value="10" min="0"
-                           max="100">
-                    <input class="form-control" id="mysearchopacityvalue" type="number" value="10"
-                           min="0" max="100" style="max-width: 60px">
-                </div>
-                <button class="btn btn-sm btn-secondary btn-sm float-right" type="button"
-                        id="applySearchStyle"
-                        onclick="applySearchButton()" title="Apply">Apply
-                </button>
-            </form>
-        </div>
 
         <div id="myModal" title="mygrave">
             <div id="myModalContent" style="padding-bottom: 2em" class="modal-content"></div>

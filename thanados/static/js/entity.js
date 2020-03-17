@@ -204,13 +204,13 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div class="nav nav-tabs" id="nav-tab" role="tablist">' +
         '<a class="nav-item nav-link active" id="nav-table-tab' + entId + '" data-toggle="tab" href="#nav-table' + entId + '" role="tab" aria-controls="nav-table' + entId + '" aria-selected="true">Table</a>' +
         '<a class="nav-item nav-link" id="nav-pills-tab' + entId + '" data-toggle="tab" href="#nav-pills' + entId + '" role="tab" aria-controls="nav-pills' + entId + '" aria-selected="false">Simple</a>' +
-        '<a class="nav-item nav-link" id="nav-catalog-tab" data-toggle="tab" href="#nav-catalog" role="tab" aria-controls="nav-catalog" aria-selected="false">Catalog</a>' +
+        '<a class="nav-item nav-link" id="nav-catalogue-tab" data-toggle="tab" href="#nav-catalogue" role="tab" aria-controls="nav-catalogue" aria-selected="false">Catalogue</a>' +
         '</div>' +
         '</nav>' +
         '<div class="tab-content pl-2 pr-2 pt-4" id="nav-tabContent">' +
         '<div class="tab-pane fade show active" id="nav-table' + entId + '" role="tabpanel" aria-labelledby="nav-table-tab' + entId + '"></div>' +
         '<div class="tab-pane fade" id="nav-pills' + entId + '" role="tabpanel" aria-labelledby="nav-pills-tab' + entId + '"></div>' +
-        '<div class="tab-pane fade" id="nav-catalog" role="tabpanel" aria-labelledby="nav-catalog-tab' + entId + '"></div>' +
+        '<div class="tab-pane fade" id="nav-catalogue" role="tabpanel" aria-labelledby="nav-catalogue-tab' + entId + '"></div>' +
         '</div>' +
         '</div>' +
         '<div id="myMetadatacontainer' + entId + '" class="pt-5"></div>' +
@@ -817,9 +817,9 @@ L.extend(myjson, {//add necessary properties from json
 //add title to breadcrumb items
 $('.breadcrumb-item').prop('title', 'Path of the entity. Click to navigate');
 
-//create recursive catalog of all subunits
-function setcatalog(currentchildren, parentDiv, iter) {
-    if (iter == 1) $('#nav-catalog').append('<div id="mycatalog"></div>');
+//create recursive catalogue of all subunits
+function setcatalogue(currentchildren, parentDiv, iter) {
+    if (iter == 1) $('#nav-catalogue').append('<div id="mycatalogue"></div>');
     iter += 1;
     $.each(currentchildren, function (i, currentfeature) {
         var entId = currentfeature.id;
@@ -924,28 +924,28 @@ function setcatalog(currentchildren, parentDiv, iter) {
         });
 
         if (typeof (currentfeature.burials) != 'undefined') {
-            setcatalog(currentfeature.burials, parentDiv + '_' + entId, iter);
+            setcatalogue(currentfeature.burials, parentDiv + '_' + entId, iter);
         }
 
 
         if (typeof (currentfeature.finds) != 'undefined') {
-            setcatalog(currentfeature.finds, parentDiv + '_' + entId, iter);
+            setcatalogue(currentfeature.finds, parentDiv + '_' + entId, iter);
         }
 
 
     });
 }
 
-catalogtrue = false;
+cataloguetrue = false;
 
-$('#nav-catalog-tab').click(function (e) {
-    if (catalogtrue == false) {
-        setcatalog(children, 'mycatalog', 1);
+$('#nav-catalogue-tab').click(function (e) {
+    if (cataloguetrue == false) {
+        setcatalogue(children, 'mycatalogue', 1);
         var myLazyLoad = new LazyLoad({
             container: document.getElementById('mycontent')
         });
     }
-    catalogtrue = true;
+    cataloguetrue = true;
 })
 
 $('#myattr').toggle();

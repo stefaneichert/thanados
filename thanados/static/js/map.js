@@ -47,7 +47,7 @@ function setmap(myjson) {
         "color": "#007BD9",
         "weight": 1.5,
         "fillOpacity": 0.5,
-        "fillColor": "#000000"
+        "fillColor": "#007BD9"
     };
 
     HoverStyle = {
@@ -72,12 +72,12 @@ function setmap(myjson) {
     graves = L.geoJSON(myjson, {
         filter: polygonFilter,
         style: myStyle,
-        shapetype: 'poly',
+        shapetype: 'single',
         legendTitle: 'Graves',
         layername: 'graves'
     });
 
-    var currentGraves = '<div onclick="openStyleDialog()" style="cursor: pointer; display: block; margin-left: 1em; margin-top: -1px; float: right; min-width: 60px; background-color: ' + hexToRgbA(myStyle.color, myStyle.fillOpacity) + '; border: ' + myStyle.weight + 'px solid ' + myStyle.color + '">&nbsp;</div>'
+    var currentGraves = '<div onclick="openStyleDialog(\'single\')" style="cursor: pointer; display: block; margin-left: 1em; margin-top: -1px; float: right; min-width: 60px; background-color: ' + hexToRgbA(myStyle.color, myStyle.fillOpacity) + '; border: ' + myStyle.weight + 'px solid ' + myStyle.color + '">&nbsp;</div>'
             createLegend(map, graves, currentGraves);
 
 
@@ -199,18 +199,7 @@ function setmap(myjson) {
 
 }
 
-function applyGraveStyle() {
-    applyStyle(fillcolor, (1 - MyStyleOpacityVar / 100), mystylebordercolor, mystyleborderwidth);
-    graves.eachLayer(function (layer) {
-        if (layer.feature.derivedPoly === 'true') {
-            layer.setStyle(myStyleSquare)
-        } else {
-            layer.setStyle(myStyle)
-        }
-    });
-    var currentGraves = '<div onclick="openStyleDialog()" style="cursor: pointer; display: block; margin-left: 1em; margin-top: -1px; float: right; min-width: 60px; background-color: ' + hexToRgbA(myStyle.fillColor, myStyle.fillOpacity) + '; border: ' + myStyle.weight + 'px solid ' + myStyle.color + '">&nbsp;</div>'
-    createLegend(map, graves, currentGraves);
-}
+
 
 //openpolygon for active sidebargrave
 function showpolygon(id) {
