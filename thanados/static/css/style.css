@@ -254,6 +254,7 @@ body {
     display: inline-block;
     width: 30px;
     height: 28px;
+    margin-bottom: -9px;
 }
 
 .legend .labels {

@@ -4,7 +4,7 @@ $(document).ready(function () {
     markerset = false;
     getBasemaps();
     setmap(myjson);
-    console.log(myjson);
+    //console.log(myjson);
     $('#CSVmodal').on('shown.bs.modal', function (e) {
         table.draw();
     })

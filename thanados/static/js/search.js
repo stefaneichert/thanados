@@ -685,7 +685,7 @@ function setmymap(markers, heatmarkers) {
             stateName: 'get-center',
             onClick: function (button, map) {
                 currentID = button.options.id;
-                openStyleDialog();
+                openStyleDialog('single');
             },
             title: 'style options for search results (single)',
             icon: 'fas fa-palette'

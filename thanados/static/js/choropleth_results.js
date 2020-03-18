@@ -104,26 +104,28 @@ function appendvis(iter, search) { //append vis form to dialog
                 $('#PropSelect_' + iter).prop('disabled', true);
                 visproperty = $('#PropSelect_' + iter + ' option:selected').val(); //set property as variable
                 mylegendtitle = $('#PropSelect_' + iter + ' option:selected').text(); //set property as variable
+                currentLegend = mylegendtitle;
                 appendvisbuttons();
             });
             switch (visappendLevel) {
                 case 'findcount':
-                    mylegendtitle = "No. of finds in grave";
+                    currentLegend = "No. of finds in grave";
                     appendvisbuttons();
                     break;
                 case 'sex':
-                    mylegendtitle = "Sex of buried individuals";
+                    currentLegend = "Sex of buried individuals";
                     appendsexbuttons();
                     break;
                 case 'age':
-                    mylegendtitle = "Age at death estimation";
+                    currentLegend = "Age at death estimation";
                     break;
             }
         })
     }
     if (search) {
         visappendLevel = 'value';
-        mylegendtitle = ''
+        mylegendtitle = '';
+        currentLegend = mylegendtitle;
         appendvisbuttons();
     }
 }
@@ -143,12 +145,12 @@ function appendvisbuttons(iter) {
         '<div class="input-group-prepend">' +
         '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
         '</div>' +
-        '<input class="form-control" id="legendtitle" type="text" value="' + mylegendtitle + '">' +
-        '<div class="input-group-append">' +
-        '<div class="input-group-text" title="Show legend">' +
-        '<input id="showlegend" type="checkbox" aria-label="Checkbox for showing map" checked>' +
-        '</div>' +
-        '</div>' +
+        '<input class="form-control legendtext" id="legendtitle" type="text" value="' + currentLegend + '">' +
+        //'<div class="input-group-append">' +
+        //'<div class="input-group-text" title="Show legend">' +
+        //'<input id="showlegend" type="checkbox" aria-label="Checkbox for showing map" checked>' +
+        //'</div>' +
+        //'</div>' +
         '</div>' +
         '<div class="myoptions input-group input-group-sm mb-3">' +
         '<div class="input-group-prepend">' +
@@ -203,7 +205,7 @@ function appendvisbuttons(iter) {
             $('#steps').val(2);
     });
     $('#legendtitle').on('input change', function () {
-        mylegendtitle = $('#legendtitle').val();
+        currentLegend = $('#legendtitle').val();
     });
     myopacity = 10;
     $('#opacity').on('input change', function () {
@@ -245,14 +247,13 @@ function appendsexbuttons(iter) {
         '<div class="input-group-prepend">' +
         '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
         '</div>' +
-        '<input class="form-control" id="legendtitle" type="text" value="' + mylegendtitle + '">' +
-        '<div class="input-group-append">' +
-        '<div class="input-group-text" title="Show legend">' +
-        '<input id="showlegend" type="checkbox" aria-label="Checkbox for showing map" checked>' +
+        '<input class="form-control legendtext" id="legendtitle" type="text" value="' + currentLegend + '">' +
+        //'<div class="input-group-append">' +
+        //'<div class="input-group-text" title="Show legend">' +
+        //'<input id="showlegend" type="checkbox" aria-label="Checkbox for showing map" checked>' +
+        //'</div>' +
+        //'</div>' +
         '</div>' +
-        '</div>' +
-        '</div>' +
-
         '<div class="input-group-prepend">' +
         '<label class="input-group-text" for="male">Male:</label>' +
         '</div>' +
@@ -292,7 +293,7 @@ function appendsexbuttons(iter) {
         colorend = lastInput.value;
     }, false);
     $('#legendtitle').on('input change', function () {
-        mylegendtitle = $('#legendtitle').val();
+        currentLegend = $('#legendtitle').val();
     });
     myopacity = 10;
     $('#opacity').on('input change', function () {
@@ -327,12 +328,12 @@ function toggleOpt() {
 }
 
 function finishvis() {
-    mylegend = !!document.getElementById('showlegend').checked;
+    mylegend = true; //!!document.getElementById('showlegend').checked;
 
 
     myfinalopacity = (100 - myopacity) / 100;
-    if (visappendLevel !== 'sex') getChoroplethJson(visproperty, visappendLevel, mylegendtitle, mysteps, mymode, [colorstart, colorend], mybordercolor, myborderwidth, myfinalopacity, mylegend);
-    if (visappendLevel == 'sex') getChoroplethJson(visproperty, visappendLevel, mylegendtitle, 0, 'na', [colorstart, colorend], mybordercolor, myborderwidth, myfinalopacity, mylegend);
+    if (visappendLevel !== 'sex') getChoroplethJson(visproperty, visappendLevel, currentLegend, mysteps, mymode, [colorstart, colorend], mybordercolor, myborderwidth, myfinalopacity, mylegend);
+    if (visappendLevel == 'sex') getChoroplethJson(visproperty, visappendLevel, currentLegend, 0, 'na', [colorstart, colorend], mybordercolor, myborderwidth, myfinalopacity, mylegend);
 }
 
 function getChoroplethJson(visproperty, visappendLevel, title, mysteps, mymode, mycolor, myborder, myborderwidth, myfinalopacity, mylegend) {
@@ -482,6 +483,7 @@ function getChoroplethJson(visproperty, visappendLevel, title, mysteps, mymode, 
         })
     }
 
+    mychorojson = JSON.parse(JSON.stringify(mychorojson).replace(/'/g, ""));
     if (visappendLevel !== 'sex') setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth, myfinalopacity, mylegend);
     if (visappendLevel == 'sex') setSexJson(title, colorstart, colorend, myborder, myborderwidth, myfinalopacity, mylegend);
 }
@@ -554,6 +556,11 @@ function setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth,
         scale: mycolor, // chroma.js scale - include as many as you like
         steps: mysteps, // number of breaks or steps in range
         mode: mymode, // q for quantile, e for equidistant, k for k-means
+        polygonstyle: {
+            color: myborder, // border color
+            weight: myborderwidth,
+            fillOpacity: myfinalopacity
+        },
         style: {
             color: myborder, // border color
             weight: myborderwidth,
@@ -567,13 +574,13 @@ function setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth,
     var labels = []
 
     // Add min & max
-    div.innerHTML = '<div class="labels"></div>'
+    //div.innerHTML = '<div class="labels"></div>'
 
     limits.forEach(function (limit, index) {
         labels.push('<li style="background-color: ' + colors[index] + '"></li>')
     })
 
-    div.innerHTML += '<ul><span class="float-left p-2 mb-2">'+ limits[0] + '</span><span>' + labels.join('') + '</span><span class="float-right p-2 mb-2">' + limits[limits.length - 1] + '</span></ul>'
+    div.innerHTML += '<ul class="mt-2" onclick="choroOptions=JSON.parse(this.getAttribute(\'data-options\')); mychorojson = JSON.parse(this.getAttribute(\'data-choroJson\')); openStyleDialog(\'choropoly\')" title="Click for layer options" style="cursor: pointer!important" data-options=\'' + JSON.stringify(choroplethLayer.options) + '\' data-choroJson = \'' + JSON.stringify(mychorojson) + '\' ><span style="display: table; margin: auto;"><li style="width: auto; margin-right: 9px">' + limits[0] + '</li>' + labels.join('') + '<li style="width: auto; margin-left: 9px">' + limits[limits.length - 1] + '</li></span></ul>'
     //return div
     createLegend(map, choroplethLayer, div)
 

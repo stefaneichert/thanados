@@ -2,6 +2,7 @@
 
 $(document).ready(function () {
     local = true;
+    currentLegendTitle = '';
 
 })
 
@@ -71,7 +72,7 @@ function appendSearch(Iter) {//append search form to dialog
     $('#LevelSelect_' + Iter).on('change', function () {
         appendLevel = $('#LevelSelect_' + Iter + ' option:selected').val(); //set level as variable
         appendLevelName = $('#LevelSelect_' + Iter + ' option:selected').html(); //set level as variable
-        $('#LevelSelect_' + Iter).prop('disabled', true); //disble former selection field
+        $('#LevelSelect_' + Iter).prop('disabled', true); //disable former selection field
         if (Iter == 1)
             $('#LevelSelect_' + Iter + '_parent').append(//add reset button on first iteration
                 '<div class="input-group-append">' +
@@ -101,6 +102,7 @@ function appendSearch(Iter) {//append search form to dialog
 function appendCriteria(Iter, appendLevel) { //select search criteria after level is chosen
     $('#PropSelect_' + Iter).on('change', function () {
         criteria = $('#PropSelect_' + Iter + ' option:selected').val().toLowerCase(); //set criteria variable
+        currentLegendTitle = appendLevelName + ' > ' + $('#PropSelect_' + Iter + ' option:selected').html();
         $('#PropSelect_' + Iter).prop('disabled', true); //disable input
         appendCriteriaSearch(Iter, criteria, appendLevel); //append further search options
     });
@@ -217,6 +219,10 @@ function appendMaterial(Iter) { //append value input after material is chosen
 function searchDimMat(criteria, appendLevel, Iter, val1, val2) {
     var val1 = $('#valMin_' + Iter).val();
     var val2 = $('#valMax_' + Iter).val();
+    if (criteria === 'material') {
+    if (typeof (val1) == 'undefined' || val1 === '') val1 = '0';
+    if (typeof (val2) == 'undefined' || val2 === '') val2 = '100';
+    };
     goOn = validateNumbers(val1, val2, criteria);
     if (goOn) {
         $('#dimMatButton_' + Iter).prop('disabled', true);
@@ -228,11 +234,17 @@ function searchDimMat(criteria, appendLevel, Iter, val1, val2) {
         $('#valMin_' + Iter).prop('disabled', true);
         $('#valMax_' + Iter).prop('disabled', true);
         dimId = $('#DimensionSelect_' + Iter + ' option:selected').val(); //set criteria variable
-        if (criteria != 'dimension')
+        if (criteria != 'dimension') {
             dimId = nodeIds;
-        if (criteria == 'dimension')
+            currentLegendTitle = currentLegendTitle + ': ' + val1 + ' - ' + val2;
+            currentLegend = appendLevelName + ' > ' + GlobalSelectedNodeName + ': ' + val1 + ' - ' + val2;
+        }
+        if (criteria == 'dimension') {
             dimId = $('#DimensionSelect_' + Iter + ' option:selected').val().toLowerCase();
-        dimText = $('#DimensionSelect_' + Iter + ' option:selected').html();
+            dimText = $('#DimensionSelect_' + Iter + ' option:selected').html();
+            currentLegendTitle = currentLegendTitle + ' > ' + dimText + ': ' + val1 + ' - ' + val2;
+            currentLegend = appendLevelName + ' > ' + dimText + ': ' + val1 + ' - ' + val2;
+        }
         jsonquery(dimId, appendLevel, criteria, val1, val2);
         $('#dimMatResult_' + Iter).val(uniqueSearchResult.length + ' matches in ' + searchResult.length + ' graves');
         appendPlus(Iter);
@@ -256,6 +268,8 @@ function searchTime(criteria, appendLevel, Iter, val1, val2) {
         $('#valMax_' + Iter).prop('disabled', true);
         jsonquery(nodeIds, appendLevel, criteria, val1, val2);
         $('#TimespanResult_' + Iter).val(uniqueSearchResult.length + ' matches in ' + searchResult.length + ' graves');
+        currentLegendTitle += ': ' + val1 + ' - ' + val2;
+        currentLegend = appendLevelName + '> Time Span: ' + val1 + ' - ' + val2
         appendPlus(Iter);
     }
 
@@ -281,6 +295,18 @@ function appendPlus(Iter) {
 
     if (finalSearchResultIds.length > 0) {
         $('#mysearchform').append(
+            '<div class="mysearchoptions input-group input-group-sm mb-3">' +
+            '<div class="input-group-prepend">' +
+            '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
+            '</div>' +
+            '<input class="form-control legendtext" id="legendtitle" type="text" value="' + currentLegend + '">' +
+            //'<div class="input-group-append">' +
+            //'<div class="input-group-text" title="Show legend">' +
+            //'<input id="showlegend" type="checkbox" aria-label="Checkbox for showing map" checked>' +
+            //'</div>' +
+            //'</div>' +
+            '</div>' +
+            '</div>' +
             '<div class="mysearchoptions input-group input-group-sm mb-3">' +
             '<div class="input-group-prepend">' +
             '<label class="input-group-text" for="fillcolor">Fill color: </label>' +
@@ -439,11 +465,11 @@ function finishQuery(mygeometry, show, table, idlist, CSVdata) { //finish query 
             resultpoly = L.geoJSON(jsonresult, {
                 style: mysearchresultstyle,
                 shapetype: 'poly',
-                legendTitle: 'Search result polygons',
+                legendTitle: currentLegend,
                 layername: 'resultpolys'
             });
             resultpolys.addLayer(resultpoly);
-            var currentSearchPolys = '<li title="click to open layer options" onclick="CSVresult = JSON.parse(this.getAttribute(\'data-CSVresult\')); finalSearchResultIds = JSON.parse(this.getAttribute(\'data-idlist\')); searchStyle = JSON.parse(this.getAttribute(\'data-style\')); openStyleDialog(\'poly\')" data-CSVresult=\'' + JSON.stringify(CSVdata) + '\' data-idlist="' + JSON.stringify(finalSearchResultIds) + '" data-style=\'' + JSON.stringify(mysearchresultstyle) + '\' style="cursor: pointer; margin-left: 1em; margin-top: -2px; display: block; float: right; max-height: 20px; min-width: 60px; background-color: ' + hexToRgbA(mysearchresultstyle.fillColor, mysearchresultstyle.fillOpacity) + '; border: ' + mysearchresultstyle.weight + 'px solid ' + mysearchresultstyle.color + '">&nbsp;</li>'
+            var currentSearchPolys = '<li title="click to open layer options" onclick="CSVresult = JSON.parse(this.getAttribute(\'data-CSVresult\')); finalSearchResultIds = JSON.parse(this.getAttribute(\'data-idlist\')); searchStyle = JSON.parse(this.getAttribute(\'data-style\')); openStyleDialog(\'poly\')" data-CSVresult=\'' + JSON.stringify(CSVdata) + '\' data-idlist="' + JSON.stringify(finalSearchResultIds) + '" data-style=\'' + JSON.stringify(mysearchresultstyle) + '\' style="cursor: pointer; margin-left: 1em; margin-top: -1px; display: block; float: right; max-height: 16px; min-width: 60px; background-color: ' + hexToRgbA(mysearchresultstyle.fillColor, mysearchresultstyle.fillOpacity) + '; border: ' + mysearchresultstyle.weight + 'px solid ' + mysearchresultstyle.color + '">&nbsp;</li>'
             createLegend(map, resultpolys, currentSearchPolys);
 
         } else {
@@ -451,7 +477,7 @@ function finishQuery(mygeometry, show, table, idlist, CSVdata) { //finish query 
             resultpoint = L.geoJSON(jsonresultPoints, {
                 shapetype: 'point',
                 style: geojsonMarkerOptions,
-                legendTitle: 'Search result points',
+                legendTitle: currentLegend,
                 layername: 'resultpoints',
                 pointToLayer: function (feature, latlng) {
                     return L.circleMarker(latlng, geojsonMarkerOptions);

@@ -1,3 +1,11 @@
+$(document).on('change', "input[type|=\'text\']", function () {
+    if ($(this).hasClass('legendtext')) {
+        currentLegend = this.value;
+        console.log(currentLegend);
+    }
+
+});
+
 function setJson(data) {
     countGeom = 0
     $.each(data.features, function (i, feature) {
@@ -248,6 +256,8 @@ function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, app
         alert('select property first');
         return;
     }
+    currentLegendTitle = currentLegendTitle + ' > ' + GlobalSelectedNodeName;
+    currentLegend = GlobalSelectedNodeName;
 
     if (GlobalNodeSelected !== '' && Globalcriteria !== 'material' && Globalcriteria !== 'value') {
 
@@ -343,7 +353,7 @@ function validateNumbers(val1, val2, criteria) { //validate numbers and continue
         return false;
     }
 
-    if (criteria === 'value') {
+    if (criteria === 'value' || criteria === 'dimension') {
         if (val1 === '' || val2 === '') {
             alert('Please enter valid range');
             return false;
@@ -392,6 +402,7 @@ function openStyleDialog(layerType) {
     if ($('#SearchStyle').hasClass("ui-dialog-content")) {
         if ($('#SearchStyle').dialog('isOpen') === true) $("#SearchStyle").dialog('close');
     }
+
 
     switch (layerType) {
         case 'single':
@@ -456,6 +467,18 @@ function openStyleDialog(layerType) {
         case 'point':
         case 'poly':
             var styledialog =
+                '<div class="mysearchoptions input-group input-group-sm mb-3">' +
+                '<div class="input-group-prepend">' +
+                '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
+                '</div>' +
+                '<input class="form-control legendtext" id="legendtitle" type="text" value="' + currentLegend + '">' +
+                //'<div class="input-group-append">' +
+                //'<div class="input-group-text" title="Show legend">' +
+                //'<input id="showlegend" type="checkbox" aria-label="Checkbox for showing map" checked>' +
+                //'</div>' +
+                //'</div>' +
+                '</div>' +
+                '</div>' +
                 '<div class="mysearchoptions input-group input-group-sm mb-3">' +
                 '<div class="input-group-prepend">' +
                 '<label class="input-group-text" for="Searchfillcolor">Fill color: </label>' +
@@ -560,7 +583,147 @@ function openStyleDialog(layerType) {
 
             break;
         case 'choropoly':
-            var styledialog = $("#chorodialog");
+
+            myChorolegendtitle = currentLegend;
+            myChorosteps = choroOptions.steps;
+            myChoromode = choroOptions.mode;
+            myChorocolor = choroOptions.scale;
+            myChoroborder = choroOptions.polygonstyle.color;
+            myChoroborderwidth = choroOptions.polygonstyle.weight;
+            myChorofinalopacity = choroOptions.polygonstyle.fillOpacity;
+            myChorolegendvar = true;
+            myChorolegend = true;
+
+            var styledialog =
+                '<div class="myoptions input-group input-group-sm mb-3">' +
+                '<div class="input-group-prepend">' +
+                '<label class="input-group-text" for="colorrange">Color range</label>' +
+                '</div>' +
+                '<input class="form-control" id="colorstart" style="max-width: 70px" type="color" value="' + myChorocolor[0] + '">' +
+                '<input class="form-control" id="colorend" style="max-width: 70px" type="color" value="' + myChorocolor[1] + '">' +
+                '<span class="input-group-text input-group-middle">Steps: </span>' +
+                '<input class="form-control" id="chorosteps" type="number" value="' + myChorosteps + '" min="2" max="100">' +
+                '</div>' +
+                '<div class="myoptions input-group input-group-sm mb-3">' +
+                '<div class="input-group-prepend">' +
+                '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
+                '</div>' +
+                '<input class="form-control legendtext" id="legendtitle" type="text" value="' + myChorolegendtitle + '">' +
+                //'<div class="input-group-append">' +
+                //'<div class="input-group-text" title="Show legend">' +
+                //'<input id="showlegend" type="checkbox" aria-label="Checkbox for showing map" checked>' +
+                //'</div>' +
+                //'</div>' +
+                '</div>' +
+                '<div class="myoptions input-group input-group-sm mb-3">' +
+                '<div class="input-group-prepend">' +
+                '<label class="input-group-text" for="ChoroOpacity">Opacity (%): </label>' +
+                '</div>' +
+                '<input class="form-control" id="ChoroOpacity" type="range" value="' + (100 - (myChorofinalopacity * 100)) + '" min="0" max="100">' +
+                '<input class="form-control" id="ChoroOpacityvalue" type="number" value="10" min="0" max="100" style="max-width: 60px">' +
+                '</div>' +
+                '<div class="myoptions input-group input-group-sm mb-3">' +
+                '<div class="input-group-prepend">' +
+                '<label class="input-group-text" for="bordercolor">Border color: </label>' +
+                '</div>' +
+                '<input class="form-control" id="ChoroColorborder" style="max-width: 70px" type="color" value="' + myChoroborder + '">' +
+                '<span class="input-group-text input-group-middle">Border width: </span>' +
+                '<input class="form-control" id="ChoroBorderwidth" type="number" value="' + myChoroborderwidth + '" min="0">' +
+                '</div>' +
+                '<div id="MethodSelect_parent" class="myoptions input-group input-group-sm mb-3">' +
+                '<div class="input-group-prepend">' +
+                '<label class="input-group-text" for="MethodSelect">Method: </label>' +
+                '</div>' +
+                '<select class="custom-select empty" id="MethodSelect">' +
+                '<option value="e">equidistant</option>' +
+                '<option value="q">quantile</option>' +
+                '<option value="k">k-means</option>' +
+                '</select>' +
+                '</div>' +
+                '<button class="btn btn-secondary btn-sm visbutton" type="button" id="ChoroStyleBtn" title="Show on map with gradient color">' +
+                '<i class="fas fa-map-marked-alt"></i>' +
+                '</button>';
+
+            $("#ChoroStyle").html(styledialog);
+            $('#MethodSelect').val(myChoromode)
+
+            var firstInput = document.getElementById("colorstart");
+            var firstColor = firstInput.value;
+            firstInput.addEventListener("input", function () {
+                colorstart = firstInput.value;
+            }, false);
+
+            var lastInput = document.getElementById("colorend");
+            var lastColor = lastInput.value;
+            lastInput.addEventListener("input", function () {
+                colorend = lastInput.value;
+            }, false);
+            myChorosteps = $('#chorosteps').val();
+            $('#chorosteps').on('input change', function () {
+                myChorosteps = $('#chorosteps').val();
+                if (myChorosteps < 2)
+                    $('#chorosteps').val(2);
+            });
+            $('#legendtitle').on('input change', function () {
+                myChorolegendtitle = $('#legendtitle').val();
+            });
+            myChoroopacity = $('#ChoroOpacity').val();
+            $('#ChoroOpacity').on('input change', function () {
+                myChoroopacity = $('#ChoroOpacity').val();
+                $('#ChoroOpacityvalue').val(myChoroopacity);
+            });
+            $('#ChoroOpacityvalue').on('input change', function () {
+                myChoroopacity = $('#ChoroOpacityvalue').val();
+                if (myChoroopacity > 100)
+                    $('#ChoroOpacityvalue').val(100);
+                if (myChoroopacity < 0)
+                    $('#ChoroOpacityvalue').val(0);
+                $('#ChoroOpacity').val(myChoroopacity);
+            });
+            var borderColorInput = document.getElementById("ChoroColorborder");
+            myChoroborder = borderColorInput.value;
+            var borderColor = borderColorInput.value;
+            borderColorInput.addEventListener("input", function () {
+                myChoroborder = borderColorInput.value;
+                console.log(myChoroborder);
+            }, false);
+
+            $('#ChoroBorderwidth').on('input change', function () {
+                myChoroborderwidth = $('#ChoroBorderwidth').val();
+                if (myChoroborderwidth < 0)
+                    $('#ChoroBorderwidth').val(0);
+            });
+
+            $('#MethodSelect').on('change', function () {
+                myChoromode = $('#MethodSelect option:selected').val();
+            });
+
+
+            $("#ChoroStyle").dialog({
+                width: mymodalwith,
+                //height: 450,
+                open: function () {
+                    // Destroy Close Button (for subsequent opens)
+                    $('#dialog-close').remove();
+                    // Create the Close Button (this can be a link, an image etc.)
+                    var link = '<btn id="dialog-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
+                    // Create Close Button
+                    $(".ui-dialog-title").css({'width': ''});
+                    $(this).parent().find(".ui-dialog-titlebar").append(link);
+                    // Add close event handler to link
+                    $('#dialog-close').on('click', function () {
+                        $("#ChoroStyle").dialog('close');
+                    });
+                }
+            });
+
+            $('#ChoroStyleBtn').click(function () {
+                myChorofinalopacity = ((100 - myChoroopacity)/100);
+                //console.log(currentLegend, myChorosteps, myChoromode, [colorstart, colorend], myChoroborder, myChoroborderwidth, myChorofinalopacity, myChorolegend);
+                setChoropleth(currentLegend, myChorosteps, myChoromode, [colorstart, colorend], myChoroborder, myChoroborderwidth, myChorofinalopacity, myChorolegend);
+            });
+
+
             break;
         case 'colorPoly':
             var styledialog = $("#colordialog");
@@ -572,7 +735,7 @@ function openStyleDialog(layerType) {
             var styledialog = $("#heatdialog");
             break;
         default:
-            styledialog = {}
+            return
     }
 
 }
@@ -829,8 +992,8 @@ function createLegend(containerMap, currentLayer, legendContent) {
     var mapId = containerMap.getContainer().id; //get div id from map
 
     //check if legend is already on map
-    var currentLegend = document.getElementById(mapId + '_legendtitle');
-    var noLegend = (currentLegend === null);
+    var currentLegendDom = document.getElementById(mapId + '_legendtitle');
+    var noLegend = (currentLegendDom === null);
     //console.log('currentLegend:');
     //console.log(currentLegend);
     //console.log('noLegend:');
@@ -854,26 +1017,26 @@ function createLegend(containerMap, currentLayer, legendContent) {
             return div
         }
         eval(mapId + '_legend').addTo(containerMap);
-        var currentLegend = document.getElementById(mapId + '_legendtitle');
+        var currentLegendDom = document.getElementById(mapId + '_legendtitle');
 
         legendOn = 'Legend <a onclick="legendToggle(\'' + mapId + '\')" class="legendToggle" data-map=' + mapId + ' title="Hide legend"><i id="' + mapId + '_toggleLeg" style="color: #eeeeee; cursor: pointer; font-size: 1.3em;" class="legendBtn ml-2 float-right far fa-check-square"></a>'
         legendOff = '<a onclick="legendToggle(\'' + mapId + '\')" class="legendToggle" data-map=' + mapId + ' title="show legend"><i id="' + mapId + '_toggleLeg" style="color: #eeeeee; cursor: pointer; font-size: 1.3em;" class="legendBtn fas fa-list-ul"></a>'
 
-        $(currentLegend).html(legendOn);
+        $(currentLegendDom).html(legendOn);
 
 
-        var mylegendBtn = $(currentLegend).find(".legendToggle");
+        var mylegendBtn = $(currentLegendDom).find(".legendToggle");
     }
 
     eval(mapId + '_legend').getContainer().addEventListener('mouseover', function () {
-        map.dragging.disable();
-        map.doubleClickZoom.disable();
+        eval(mapId + '.dragging.disable();');
+        eval(mapId + '.doubleClickZoom.disable();');
     });
 
     // Re-enable dragging when user's cursor leaves the element
     eval(mapId + '_legend').getContainer().addEventListener('mouseout', function () {
-        map.dragging.enable();
-        map.doubleClickZoom.enable();
+        eval(mapId + '.dragging.enable();');
+        eval(mapId + '.doubleClickZoom.enable();');
     });
 
     //set data for legend entries from layer
@@ -911,12 +1074,14 @@ function createLegend(containerMap, currentLayer, legendContent) {
 
 function legendToggle(mapId) {
 
-    var currentLegend = document.getElementById(mapId + '_legendtitle');
+    var currentLegendDom = document.getElementById(mapId + '_legendtitle');
     var legendentries = document.getElementById(mapId + '_legendentries');
-    if ($(currentLegend).find('.legendBtn').hasClass("fa-check-square")) {
-        $(currentLegend).html(legendOff)
+    if ($(currentLegendDom).find('.legendBtn').hasClass("fa-check-square")) {
+        $(currentLegendDom).html(legendOff)
+        eval(mapId + '.dragging.enable();');
+        eval(mapId + '.doubleClickZoom.enable();');
     } else {
-        $(currentLegend).html(legendOn)
+        $(currentLegendDom).html(legendOn)
     }
     $(legendentries).toggle();
 
