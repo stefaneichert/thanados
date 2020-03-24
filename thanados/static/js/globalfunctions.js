@@ -813,7 +813,7 @@ function applyButton(styleLayer) {
 function printMapbutton(id, position) {
 
     currentID = id;
-      eval('L.easyPrint({position: "' + position + '", title: "Export map as image file", sizeModes: ["A4Landscape", "A4Portrait"], exportOnly: true, filename: "ThanadosMap"}).addTo(' + currentID + ');');
+    eval('L.easyPrint({position: "' + position + '", title: "Export map as image file", sizeModes: ["A4Landscape", "A4Portrait"], exportOnly: true, filename: "ThanadosMap"}).addTo(' + currentID + ');');
     $('.leaflet-control-easyPrint-button-export').html('<span class="fas fa-image"></span>');
     $('.leaflet-control-easyPrint-button-export').removeClass('leaflet-control-easyPrint-button-export');
     $('#leafletEasyPrint').css({
@@ -1080,12 +1080,99 @@ function toggleLayers(thismap, layer, show) {
 }
 
 function makeid(length) {
-   var result           = 'Layer_';
-   var characters       = '0123456789';
-   var charactersLength = characters.length;
-   for ( var i = 0; i < length; i++ ) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-   }
-   return result;
+    var result = 'Layer_';
+    var characters = '0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
 }
 
+function setSearchInfo(data, CSV) {
+
+    var resultlist = [];
+    var resultCount = [];
+    var resultCount = [];
+
+    $.each(CSVresultJSON, function (i, dataset) {
+        var tmpDataset = {
+            id: dataset.graveID,
+            searchResult: dataset.searchResult,
+        }
+        resultlist.push(dataset.searchResult)
+    });
+    var distinctResultList = Array.from(new Set(resultlist))
+
+    $.each(distinctResultList, function (i, result) {
+        count = 0;
+        resultName = result;
+        $.each(CSVresultJSON, function (i, dataset) {
+            if (dataset.searchResult === resultName) count += 1;
+        })
+        var tmpDataset = {
+            SearchKey: result,
+            Count: count,
+        }
+
+        optionchain = '"' + result + '" : {"fillColor":  "' + chroma.random().hex() +'" , "minValue": 0, "maxValue": 20, "maxHeight": 20}';
+        if (i === 0) oldoptionchain = optionchain
+        if (i > 0 ) optionchain = oldoptionchain + ', ' + optionchain;
+        oldoptionchain = optionchain;
+        resultCount.push(tmpDataset);
+    });
+    console.log(JSON.parse('{' + optionchain + '}'));
+    ValueResult = {};
+    ValueResult.search = CSVresultJSON[0].Search;
+    ValueResult.count = resultCount;
+    ValueResult.ChartOptions = JSON.parse('{' + optionchain + '}');
+
+    $.each(data.features, function (i, feature) {
+        var currentId = feature.id;
+        feature.search = {}
+        feature.search.searchResults = [];
+        feature.search.count = 0;
+        feature.search.distinctIds = []
+        //feature.search.distinctCount = [];
+
+        //feature.search.searchValues = [];
+        $.each(CSV, function (i, dataset) {
+            if (dataset.graveID === currentId) {
+                if (dataset.value !== "") {
+                    chorovalue = parseFloat(dataset.value);
+                } else {
+                    chorovalue = null
+                }
+                category = dataset.searchResult;
+                searchObject = {
+                    id: dataset.ObjectId,
+                    result: dataset.searchResult,
+                    value: chorovalue
+                }
+                //console.log(chorovalue + ' - ' + category);
+                $.each(data.features, function (i, feature) {
+                    if (currentId === feature.id) {
+                        feature.search.searchResults.push(searchObject);
+                        feature.search.count += 1;
+                        feature.search.distinctIds.push(searchObject.id)
+                        //if (chorovalue !== null) feature.properties.search.searchValues.push(chorovalue);
+                    }
+                })
+            }
+        })
+    });
+    $.each(data.features, function (i, feature) {
+        feature.search.uniqueCount = (Array.from(new Set(feature.search.distinctIds))).length;
+        delete feature.search.distinctIds;
+
+        res = {};
+        feature.search.searchResults.forEach(function (v) {
+            res[v.result] = (res[v.result] || 0) + 1;
+        })
+        feature.search.distinctCount = res;
+    })
+    data.properties.search = ValueResult.search;
+    data.properties.statistics = ValueResult.count;
+    data.properties.ChartOptions = ValueResult.ChartOptions;
+    return data;
+}

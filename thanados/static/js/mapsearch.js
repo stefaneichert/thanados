@@ -1,5 +1,7 @@
 //function to query json for types, values etc. recursively
 
+
+
 $(document).ready(function () {
     local = true;
     currentLegendTitle = '';
@@ -20,7 +22,7 @@ function startsearch() {
             $('#dialog-close').remove();
             // Create the Close Button (this can be a link, an image etc.)
             var link =
-                '<btn id="dialog-close" title="close"' +
+                '<btn id="dialog-close" title="close" ' +
                 'class="btn btn-sm btn-secondary d-inline-block float-right text-decoration-none;">' +
                 '<i class="fas fa-times"></i></btn>';
             // Create Close Button
@@ -407,24 +409,26 @@ function finishQuery(mygeometry, show, table, idlist, csvData, first, layerId) {
         mysearchbordercolor = '#000000';
         mysearchborderwidth = 1;
         var layer_id = makeid(3)
-        console.log(layer_id);
+        //console.log(layer_id);
         while (layerIds.includes(layer_id)) {
             var layer_id = makeid(3)
         }
         layerIds.push(layer_id);
-        console.log(layerIds);
+        //console.log(layerIds);
     } else {
         layer_id = layerId;
-        if (show) eval('map.removeLayer(' + layer_id+ ')');
+        if (show) eval('map.removeLayer(' + layer_id + ')');
     }
     jsonresult = {
         "type": "FeatureCollection", //prepare geojson
         "features": [],
+        "properties": {},
         "uniqueLayerId": layer_id
     };
     jsonresultPoints = {
         "type": "FeatureCollection", //prepare geojson
         "features": [],
+        "properties": {},
         "uniqueLayerId": layer_id
     };
 
@@ -464,29 +468,10 @@ function finishQuery(mygeometry, show, table, idlist, csvData, first, layerId) {
     });
     CSVresultExport = toCSV(tmpCSV);
 
-    jsonresult.statistics = prepareValueJSON(CSVresultJSON);
-    jsonresultPoints.statistics = prepareValueJSON(CSVresultJSON);
+    jsonresult = setSearchInfo(jsonresult, CSVresultJSON);
+    jsonresultPoints = setSearchInfo(jsonresultPoints, CSVresultJSON);
 
-    var CSVresultIds = ValueResultsChoropleth(CSVresultJSON);
-    $.each(jsonresult.features, function (i, feature) {
-        var currentId = feature.id;
-        $.each(CSVresultIds, function (i, dataset) {
-            if (dataset.id === currentId) {
-                chorovalue = dataset.value;
-                category = dataset.category;
-            }
-        })
-        jQuery.extend(feature.properties, {chorovalue: chorovalue, category: category});
-    });
-    $.each(jsonresultPoints.features, function (i, feature) {
-        var currentId = feature.id;
-        insertfeature = feature;
-        $.each(CSVresultIds, function (i, dataset) {
-            if (dataset.id === currentId) {
-                jQuery.extend(insertfeature.properties, {chorovalue: dataset.value});
-            }
-        })
-    });
+
 
 
     if (show) {
@@ -498,22 +483,22 @@ function finishQuery(mygeometry, show, table, idlist, csvData, first, layerId) {
                 layername: layer_id
             });
             eval(layer_id + ' = $.extend(true, {}, resultpoly)');
-            console.log(eval(layer_id));
-            $('.showPolygons').addClass('disabled').prop('disabled', true).prop('title', '').css('cursor' , 'default').addClass('noHover');
+            //console.log(eval(layer_id));
+            $('.showPolygons').addClass('disabled').prop('disabled', true).prop('title', '').css('cursor', 'default').addClass('noHover');
             map.addLayer((eval(layer_id)));
 
             var currentSearchPolys =
-                '<li class="layerOptionsClick" title="click to open layer options" '+
-                'onclick="currentLegend = (this.getAttribute(\'data-legend\')); '+
-                'CSVresult = JSON.parse(this.getAttribute(\'data-CSVresult\')); '+
-                'finalSearchResultIds = JSON.parse(this.getAttribute(\'data-idlist\')); '+
-                'searchStyle = JSON.parse(this.getAttribute(\'data-style\')); '+
-                'currentLayerId = this.getAttribute(\'data-layerId\'); '+
+                '<li class="layerOptionsClick" title="click to open layer options" ' +
+                'onclick="currentLegend = (this.getAttribute(\'data-legend\')); ' +
+                'CSVresult = JSON.parse(this.getAttribute(\'data-CSVresult\')); ' +
+                'finalSearchResultIds = JSON.parse(this.getAttribute(\'data-idlist\')); ' +
+                'searchStyle = JSON.parse(this.getAttribute(\'data-style\')); ' +
+                'currentLayerId = this.getAttribute(\'data-layerId\'); ' +
                 'openStyleDialog(\'poly\')" data-CSVresult=\'' + JSON.stringify(csvData) + '\' ' +
                 'data-legend=\'' + currentLegend + '\' ' +
-                'data-idlist="' + JSON.stringify(finalSearchResultIds) + '" '+
-                'data-layerId="' + layer_id + '" '+
-                'data-style=\'' + JSON.stringify(mysearchresultstyle) + '\' '+
+                'data-idlist="' + JSON.stringify(finalSearchResultIds) + '" ' +
+                'data-layerId="' + layer_id + '" ' +
+                'data-style=\'' + JSON.stringify(mysearchresultstyle) + '\' ' +
                 'style="background-color: ' + hexToRgbA(mysearchresultstyle.fillColor, mysearchresultstyle.fillOpacity) + '; ' +
                 'border: ' + mysearchresultstyle.weight + 'px solid ' + mysearchresultstyle.color + '">&nbsp;</li>'
             createLegend(map, (eval(layer_id)), currentSearchPolys);
@@ -530,23 +515,23 @@ function finishQuery(mygeometry, show, table, idlist, csvData, first, layerId) {
                 }
             });
             eval(layer_id + ' = $.extend(true, {}, resultpoint)');
-            console.log(eval(layer_id));
-            $('.showPoints').addClass('disabled').prop('disabled', true).prop('title', '').css('cursor' , 'default').addClass('noHover');
+            //console.log(eval(layer_id));
+            $('.showPoints').addClass('disabled').prop('disabled', true).prop('title', '').css('cursor', 'default').addClass('noHover');
             map.addLayer((eval(layer_id)));
 
             var currentSearchPoints =
-                '<li class="layerOptionsClickPoint" title="click to open layer options" '+
-                'onclick="currentLegend = (this.getAttribute(\'data-legend\')); '+
-                'CSVresult = JSON.parse(this.getAttribute(\'data-CSVresult\')); '+
-                'finalSearchResultIds = JSON.parse(this.getAttribute(\'data-idlist\')); '+
-                'searchStyle = JSON.parse(this.getAttribute(\'data-style\')); '+
-                'currentLayerId = this.getAttribute(\'data-layerId\'); '+
+                '<li class="layerOptionsClickPoint" title="click to open layer options" ' +
+                'onclick="currentLegend = (this.getAttribute(\'data-legend\')); ' +
+                'CSVresult = JSON.parse(this.getAttribute(\'data-CSVresult\')); ' +
+                'finalSearchResultIds = JSON.parse(this.getAttribute(\'data-idlist\')); ' +
+                'searchStyle = JSON.parse(this.getAttribute(\'data-style\')); ' +
+                'currentLayerId = this.getAttribute(\'data-layerId\'); ' +
                 'openStyleDialog(\'point\')" ' +
                 'data-CSVresult=\'' + JSON.stringify(csvData) + '\' ' +
                 'data-legend=\'' + currentLegend + '\' ' +
-                'data-idlist="' + JSON.stringify(finalSearchResultIds) + '" '+
-                'data-layerId="' + layer_id + '" '+
-                'data-style=\'' + JSON.stringify(geojsonMarkerOptions) + '\' '+
+                'data-idlist="' + JSON.stringify(finalSearchResultIds) + '" ' +
+                'data-layerId="' + layer_id + '" ' +
+                'data-style=\'' + JSON.stringify(geojsonMarkerOptions) + '\' ' +
                 'style="background-color: ' + hexToRgbA(geojsonMarkerOptions.fillColor, geojsonMarkerOptions.fillOpacity) + '; ' +
                 'border: ' + geojsonMarkerOptions.weight + 'px solid ' + geojsonMarkerOptions.color + '">&nbsp;</li>'
             createLegend(map, (eval(layer_id)), currentSearchPoints);
@@ -556,6 +541,25 @@ function finishQuery(mygeometry, show, table, idlist, csvData, first, layerId) {
     if (table) {
         CSVtable(CSVresultJSON);
     }
+
+
+
+
+    $.each(jsonresultPoints.features, function (i, feature) {
+        var options = {
+            data: feature.search.distinctCount,
+            chartOptions: jsonresultPoints.properties.ChartOptions,
+            weight: 1,
+            color: '#000000',
+            radius: 20
+        };
+        //console.log(JSON.stringify(options));
+        //console.log(feature.geometry.coordinates[0]);
+        //console.log(feature.geometry.coordinates[1]);
+        if (i === 0) console.log(options)
+        var barChartMarker = new L.PieChartMarker(new L.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]), options).addTo(map);
+    })
+
 }
 
 function CSVtable(csvData) {

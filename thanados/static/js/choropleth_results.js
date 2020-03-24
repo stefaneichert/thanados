@@ -491,7 +491,7 @@ function getChoroplethJson(visproperty, visappendLevel, title, mysteps, mymode, 
 
 //get only one value if search result is displayed as choropleth
 function ValueResultsChoropleth(data) {
-    var graveList = [];
+    graveList = [];
     $.each(data, function (i, feature) {
         //console.log(feature);
         var insertValue = {
@@ -509,44 +509,14 @@ function ValueResultsChoropleth(data) {
         output.push({'id': graveList[i].id, 'value': parseFloat(graveList[i].value), 'category': graveList[i].category });
     }
     //console.log(graveList.length); console.log (output.length);
-    if (graveList.length !== output.length) console.log(
+    /*if (graveList.length !== output.length) console.log(
         'Please not that there are ' + graveList.length + ' results in ' + output.length + ' graves. ' +
         'For each grave only one value of these is considered for the gradient color mapping. ' +
         'If the mapping result is not sufficient you can narrow your search to get one unique value for each grave.');
-    return (output)
+    return (output)*/
 }
 
-function prepareValueJSON(data) {
-    var resultlist = [];
-    var resultGraves = [];
-    var resultCount = [];
-    $.each(data, function (i, dataset) {
-        var tmpDataset = {
-            id: dataset.graveID,
-            searchResult: dataset.searchResult,
-        }
-        resultlist.push(dataset.searchResult)
-        resultGraves.push(tmpDataset);
-    });
-    var distinctResultList = Array.from(new Set(resultlist))
 
-    $.each(distinctResultList, function (i, result) {
-        count = 0;
-        resultName = result;
-        $.each(data, function (i, dataset) {
-            if (dataset.searchResult === resultName) count += 1;
-        })
-        var tmpDataset = {
-            SearchKey: result,
-            Count: count
-        }
-        resultCount.push(tmpDataset);
-    });
-    ValueResult = {};
-    ValueResult.search = data[0].Search;
-    ValueResult.count = resultCount;
-    return ValueResult;
-}
 
 function style(feature) {
     if ("male" == feature.properties.chorovalue) {
@@ -588,7 +558,7 @@ function setSexJson(title, colorstart, colorend, myborder, myborderwidth, myfina
 function setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth, myfinalopacity, mylegend) {
     if (mylegend) {
         currentLegend = currentCreateLegend;
-        console.log('first creation')
+        //console.log('first creation')
     }
     if (typeof (choroplethLayer) !== 'undefined') map.removeLayer(choroplethLayer);
     choroplethLayer = L.choropleth(mychorojson, {

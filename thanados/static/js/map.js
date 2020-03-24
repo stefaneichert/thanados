@@ -183,6 +183,8 @@ function setmap(myjson) {
 
     //add option button and exportbutton for map as image
     printMapbutton('map', 'topleft');
+
+    //add filter/Search button
     addFilterSearch();
 
     //add layer control
@@ -202,6 +204,39 @@ function setmap(myjson) {
 
     //set THANADOS style for layer control (see style.css)
     $('.leaflet-control-layers-toggle').css({'background-image': ''});
+
+    var baroptions = {
+        "data": {
+            "Animal Remains": 12,
+            "Finger-Ring with D-shaped Profile": 5,
+            "Wire Ring with S-Loop": 10
+        },
+        chartOptions: {
+            'Animal Remains': {
+                fillColor: '#FEE5D9',
+                minValue: 0,
+                maxValue: 50,
+                maxHeight: 50
+            },
+            'Finger-Ring with D-shaped Profile': {
+                fillColor: '#FCAE91',
+                minValue: 0,
+                maxValue: 50,
+                maxHeight: 50,
+            },
+            'Wire Ring with S-Loop': {
+                fillColor: '#CB181D',
+                minValue: 0,
+                maxValue: 50,
+                maxHeight: 50,
+            }
+        },
+        weight: 0.5,
+        color: '#000000'
+        //backgroundStyle: false
+    }
+
+    var barChartMarker = new L.BarChartMarker(new L.LatLng(48.5, 16.5), baroptions).addTo(map);
 }
 
 
