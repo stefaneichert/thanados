@@ -104,20 +104,20 @@ function appendvis(iter, search) { //append vis form to dialog
                 $('#PropSelect_' + iter).prop('disabled', true);
                 visproperty = $('#PropSelect_' + iter + ' option:selected').val(); //set property as variable
                 mylegendtitle = $('#PropSelect_' + iter + ' option:selected').text(); //set property as variable
-                currentLegend = mylegendtitle;
+                currentCreateLegend = mylegendtitle;
                 appendvisbuttons();
             });
             switch (visappendLevel) {
                 case 'findcount':
-                    currentLegend = "No. of finds in grave";
+                    currentCreateLegend = "No. of finds in grave";
                     appendvisbuttons();
                     break;
                 case 'sex':
-                    currentLegend = "Sex of buried individuals";
+                    currentCreateLegend = "Sex of buried individuals";
                     appendsexbuttons();
                     break;
                 case 'age':
-                    currentLegend = "Age at death estimation";
+                    currentCreateLegend = "Age at death estimation";
                     break;
             }
         })
@@ -125,7 +125,7 @@ function appendvis(iter, search) { //append vis form to dialog
     if (search) {
         visappendLevel = 'value';
         mylegendtitle = '';
-        currentLegend = mylegendtitle;
+        currentCreateLegend = mylegendtitle;
         appendvisbuttons();
     }
 }
@@ -145,7 +145,7 @@ function appendvisbuttons(iter) {
         '<div class="input-group-prepend">' +
         '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
         '</div>' +
-        '<input class="form-control legendtext" id="legendtitle" type="text" value="' + currentLegend + '">' +
+        '<input class="form-control legendtext" id="legendtitle" type="text" value="' + currentCreateLegend + '">' +
         //'<div class="input-group-append">' +
         //'<div class="input-group-text" title="Show legend">' +
         //'<input id="showlegend" type="checkbox" aria-label="Checkbox for showing map" checked>' +
@@ -205,7 +205,7 @@ function appendvisbuttons(iter) {
             $('#steps').val(2);
     });
     $('#legendtitle').on('input change', function () {
-        currentLegend = $('#legendtitle').val();
+        currentCreateLegend = $('#legendtitle').val();
     });
     myopacity = 10;
     $('#opacity').on('input change', function () {
@@ -247,7 +247,7 @@ function appendsexbuttons(iter) {
         '<div class="input-group-prepend">' +
         '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
         '</div>' +
-        '<input class="form-control legendtext" id="legendtitle" type="text" value="' + currentLegend + '">' +
+        '<input class="form-control legendtext" id="legendtitle" type="text" value="' + currentCreateLegend + '">' +
         //'<div class="input-group-append">' +
         //'<div class="input-group-text" title="Show legend">' +
         //'<input id="showlegend" type="checkbox" aria-label="Checkbox for showing map" checked>' +
@@ -293,7 +293,7 @@ function appendsexbuttons(iter) {
         colorend = lastInput.value;
     }, false);
     $('#legendtitle').on('input change', function () {
-        currentLegend = $('#legendtitle').val();
+        currentCreateLegend = $('#legendtitle').val();
     });
     myopacity = 10;
     $('#opacity').on('input change', function () {
@@ -332,8 +332,8 @@ function finishvis() {
 
 
     myfinalopacity = (100 - myopacity) / 100;
-    if (visappendLevel !== 'sex') getChoroplethJson(visproperty, visappendLevel, currentLegend, mysteps, mymode, [colorstart, colorend], mybordercolor, myborderwidth, myfinalopacity, mylegend);
-    if (visappendLevel == 'sex') getChoroplethJson(visproperty, visappendLevel, currentLegend, 0, 'na', [colorstart, colorend], mybordercolor, myborderwidth, myfinalopacity, mylegend);
+    if (visappendLevel !== 'sex') getChoroplethJson(visproperty, visappendLevel, currentCreateLegend, mysteps, mymode, [colorstart, colorend], mybordercolor, myborderwidth, myfinalopacity, mylegend);
+    if (visappendLevel == 'sex') getChoroplethJson(visproperty, visappendLevel, currentCreateLegend, 0, 'na', [colorstart, colorend], mybordercolor, myborderwidth, myfinalopacity, mylegend);
 }
 
 function getChoroplethJson(visproperty, visappendLevel, title, mysteps, mymode, mycolor, myborder, myborderwidth, myfinalopacity, mylegend) {
@@ -480,31 +480,72 @@ function getChoroplethJson(visproperty, visappendLevel, title, mysteps, mymode, 
                     mychorojson.features.push(insertfeature);
                 }
             })
-        })
+        });
+        currentCreateLegend = GlobalSelectedNodeName;
     }
 
     mychorojson = JSON.parse(JSON.stringify(mychorojson).replace(/'/g, ""));
-    if (visappendLevel !== 'sex') setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth, myfinalopacity, mylegend);
-    if (visappendLevel == 'sex') setSexJson(title, colorstart, colorend, myborder, myborderwidth, myfinalopacity, mylegend);
+    if (visappendLevel !== 'sex') setChoropleth(currentCreateLegend, mysteps, mymode, mycolor, myborder, myborderwidth, myfinalopacity, mylegend);
+    if (visappendLevel == 'sex') setSexJson(currentCreateLegend, colorstart, colorend, myborder, myborderwidth, myfinalopacity, mylegend);
 }
 
+//get only one value if search result is displayed as choropleth
 function ValueResultsChoropleth(data) {
     var graveList = [];
-    var graveListUnique = [];
     $.each(data, function (i, feature) {
+        //console.log(feature);
         var insertValue = {
             'id': feature.graveID,
-            'value': feature.value
+            'value': feature.value,
+            'category': feature.searchResult
         }
         graveList.push(insertValue);
     })
+
     var flags = [], output = [], l = graveList.length, i;
     for (i = 0; i < l; i++) {
         if (flags[graveList[i].id]) continue;
         flags[graveList[i].id] = true;
-        output.push({'id': graveList[i].id, 'value': parseFloat(graveList[i].value)});
+        output.push({'id': graveList[i].id, 'value': parseFloat(graveList[i].value), 'category': graveList[i].category });
     }
+    //console.log(graveList.length); console.log (output.length);
+    if (graveList.length !== output.length) console.log(
+        'Please not that there are ' + graveList.length + ' results in ' + output.length + ' graves. ' +
+        'For each grave only one value of these is considered for the gradient color mapping. ' +
+        'If the mapping result is not sufficient you can narrow your search to get one unique value for each grave.');
     return (output)
+}
+
+function prepareValueJSON(data) {
+    var resultlist = [];
+    var resultGraves = [];
+    var resultCount = [];
+    $.each(data, function (i, dataset) {
+        var tmpDataset = {
+            id: dataset.graveID,
+            searchResult: dataset.searchResult,
+        }
+        resultlist.push(dataset.searchResult)
+        resultGraves.push(tmpDataset);
+    });
+    var distinctResultList = Array.from(new Set(resultlist))
+
+    $.each(distinctResultList, function (i, result) {
+        count = 0;
+        resultName = result;
+        $.each(data, function (i, dataset) {
+            if (dataset.searchResult === resultName) count += 1;
+        })
+        var tmpDataset = {
+            SearchKey: result,
+            Count: count
+        }
+        resultCount.push(tmpDataset);
+    });
+    ValueResult = {};
+    ValueResult.search = data[0].Search;
+    ValueResult.count = resultCount;
+    return ValueResult;
 }
 
 function style(feature) {
@@ -536,18 +577,20 @@ function setSexJson(title, colorstart, colorend, myborder, myborderwidth, myfina
         style: style
     }).addTo(map);
 
-
     var currentColorpoly = '<ul><li style="padding-top: 8px">Male:</li><li style="max-height: 20px; margin-top: 4px; display: block; float: right; min-width: 60px; background-color: ' + hexToRgbA(colorstart, myfinalopacity) + '; border: ' + myborderwidth + 'px solid ' + myborder + '">&nbsp;</li></ul>' +
         '<ul><li style="padding-top: 8px">Female:</li><li style="max-height: 20px; margin-top: 4px; display: block; float: right; min-width: 60px; background-color: ' + hexToRgbA(colorend, myfinalopacity) + '; border: ' + myborderwidth + 'px solid ' + myborder + '">&nbsp;</li></ul>';
 
     createLegend(map, choroplethLayer, currentColorpoly);
-
+    orderlayer(myselector);
 }
 
 
 function setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth, myfinalopacity, mylegend) {
-    if (typeof (choroplethLayer) !== 'undefined')
-        map.removeLayer(choroplethLayer);
+    if (mylegend) {
+        currentLegend = currentCreateLegend;
+        console.log('first creation')
+    }
+    if (typeof (choroplethLayer) !== 'undefined') map.removeLayer(choroplethLayer);
     choroplethLayer = L.choropleth(mychorojson, {
         shapetype: 'choropoly',
         legendTitle: title,
@@ -568,6 +611,7 @@ function setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth,
         },
     }).addTo(map);
 
+
     var div = document.createElement('div');
     var limits = choroplethLayer.options.limits
     var colors = choroplethLayer.options.colors
@@ -580,9 +624,10 @@ function setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth,
         labels.push('<li style="background-color: ' + colors[index] + '"></li>')
     })
 
-    div.innerHTML += '<ul class="mt-2" onclick="choroOptions=JSON.parse(this.getAttribute(\'data-options\')); mychorojson = JSON.parse(this.getAttribute(\'data-choroJson\')); openStyleDialog(\'choropoly\')" title="Click for layer options" style="cursor: pointer!important" data-options=\'' + JSON.stringify(choroplethLayer.options) + '\' data-choroJson = \'' + JSON.stringify(mychorojson) + '\' ><span style="display: table; margin: auto;"><li style="width: auto; margin-right: 9px">' + limits[0] + '</li>' + labels.join('') + '<li style="width: auto; margin-left: 9px">' + limits[limits.length - 1] + '</li></span></ul>'
+    div.innerHTML += '<ul class="mt-2" onclick="choroOptions=JSON.parse(this.getAttribute(\'data-options\')); mychorojson = JSON.parse(this.getAttribute(\'data-choroJson\')); currentLegend = (this.getAttribute(\'data-legend\')); openStyleDialog(\'choropoly\')" title="Click for layer options" style="cursor: pointer!important" data-options=\'' + JSON.stringify(choroplethLayer.options) + '\' data-legend=\'' + currentLegend + '\' data-choroJson = \'' + JSON.stringify(mychorojson) + '\' ><span style="display: table; margin: auto;"><li style="width: auto; margin-right: 9px">' + limits[0] + '</li>' + labels.join('') + '<li style="width: auto; margin-left: 9px">' + limits[limits.length - 1] + '</li></span></ul>'
     //return div
-    createLegend(map, choroplethLayer, div)
-
-
+    createLegend(map, choroplethLayer, div);
+    orderlayer(myselector);
 }
+
+

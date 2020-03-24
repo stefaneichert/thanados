@@ -240,7 +240,7 @@ body {
 }
 
 .legendBtn:hover {
-    color: #ffffff!important;
+    color: #ffffff !important;
 }
 
 .legend ul {
@@ -258,9 +258,8 @@ body {
 }
 
 .legend .labels {
-padding-bottom: 1em;
+    padding-bottom: 1em;
 }
-
 
 
 .sidebarheading {
@@ -697,4 +696,33 @@ table.dataTable thead .sorting_desc_disabled:after {
 
 .resultlistfooter .btn {
     align-self: end;
+}
+
+.layerOptionsClick {
+    cursor: pointer;
+    display: block;
+    margin-left: 1em;
+    margin-top: -1px;
+    float: right;
+    min-width: 60px;
+    max-height: 16px;
+}
+
+.layerOptionsClickPoint {
+    cursor: pointer;
+    margin-left: 1em;
+    margin-top: -2px;
+    border-radius: 50%;
+    display: block;
+    float: right;
+    width: 20px!important;
+    height: 20px!important;
+}
+
+.gravediv {
+    max-height: 42px;
+}
+
+.noHover {
+    pointer-events: none;
 }

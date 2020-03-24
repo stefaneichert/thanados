@@ -3,7 +3,6 @@
 $(document).ready(function () {
     local = true;
     currentLegendTitle = '';
-
 })
 
 function startsearch() {
@@ -20,7 +19,10 @@ function startsearch() {
             // Destroy Close Button (for subsequent opens)
             $('#dialog-close').remove();
             // Create the Close Button (this can be a link, an image etc.)
-            var link = '<btn id="dialog-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
+            var link =
+                '<btn id="dialog-close" title="close"' +
+                'class="btn btn-sm btn-secondary d-inline-block float-right text-decoration-none;">' +
+                '<i class="fas fa-times"></i></btn>';
             // Create Close Button
             $(".ui-dialog-title").css({'width': ''});
             $(this).parent().find(".ui-dialog-titlebar").append(link);
@@ -57,17 +59,18 @@ function appendSearch(Iter) {//append search form to dialog
     $('.mysearchoptions').remove(); //removes former buttons to append new search
     $('#mysearchform').append(
         //selection for search level: grave, burial or find
-        '<div id="LevelSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">' +
-        '<div class="input-group-prepend">' +
-        '<label class="input-group-text" for="LevelSelect_' + Iter + '">' + Iter + '. </label>' +
-        '</div>' +
-        '<select class="custom-select empty" title="Select whether to search in graves, burials (=human remains) or finds" id="LevelSelect_' + Iter + '">' +
-        '<option selected disabled>Select search level...</option>' +
-        '<option value="feature">Graves</option>' +
-        '<option value="strat">Burials</option>' +
-        '<option value="find">Finds</option>' +
-        '</select>' +
+        '<div id="LevelSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">\n' +
+        '<div class="input-group-prepend">\n' +
+        '<label class="input-group-text" for="LevelSelect_' + Iter + '">' + Iter + '. </label>\n' +
+        '</div>\n' +
+        '<select class="custom-select empty" title="Select whether to search in graves, burials (=human remains) or finds" id="LevelSelect_' + Iter + '">\n' +
+        '<option selected disabled>Select search level...</option>\n' +
+        '<option value="feature">Graves</option>\n' +
+        '<option value="strat">Burials</option>\n' +
+        '<option value="find">Finds</option>\n' +
+        '</select>\n' +
         '</div>');
+
     //after main level is selected:
     $('#LevelSelect_' + Iter).on('change', function () {
         appendLevel = $('#LevelSelect_' + Iter + ' option:selected').val(); //set level as variable
@@ -184,7 +187,6 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
         });
     }
 
-
     if (criteria == 'material' || criteria == 'value') { //if material or value append form with tree select
         $('#mysearchform').append(
             '<div id="MaterialSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">' +
@@ -196,7 +198,6 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
         targetField = 'MaterialSelect_' + Iter;
         initiateTree(Iter, appendLevel, criteria, targetField);
     }
-
 }
 
 function appendMaterial(Iter) { //append value input after material is chosen
@@ -220,9 +221,9 @@ function searchDimMat(criteria, appendLevel, Iter, val1, val2) {
     var val1 = $('#valMin_' + Iter).val();
     var val2 = $('#valMax_' + Iter).val();
     if (criteria === 'material') {
-    if (typeof (val1) == 'undefined' || val1 === '') val1 = '0';
-    if (typeof (val2) == 'undefined' || val2 === '') val2 = '100';
-    };
+        if (typeof (val1) == 'undefined' || val1 === '') val1 = '0';
+        if (typeof (val2) == 'undefined' || val2 === '') val2 = '100';
+    }
     goOn = validateNumbers(val1, val2, criteria);
     if (goOn) {
         $('#dimMatButton_' + Iter).prop('disabled', true);
@@ -237,19 +238,18 @@ function searchDimMat(criteria, appendLevel, Iter, val1, val2) {
         if (criteria != 'dimension') {
             dimId = nodeIds;
             currentLegendTitle = currentLegendTitle + ': ' + val1 + ' - ' + val2;
-            currentLegend = appendLevelName + ' > ' + GlobalSelectedNodeName + ': ' + val1 + ' - ' + val2;
+            currentCreateLegend = appendLevelName + ' > ' + GlobalSelectedNodeName + ': ' + val1 + ' - ' + val2;
         }
         if (criteria == 'dimension') {
             dimId = $('#DimensionSelect_' + Iter + ' option:selected').val().toLowerCase();
             dimText = $('#DimensionSelect_' + Iter + ' option:selected').html();
             currentLegendTitle = currentLegendTitle + ' > ' + dimText + ': ' + val1 + ' - ' + val2;
-            currentLegend = appendLevelName + ' > ' + dimText + ': ' + val1 + ' - ' + val2;
+            currentCreateLegend = appendLevelName + ' > ' + dimText + ': ' + val1 + ' - ' + val2;
         }
         jsonquery(dimId, appendLevel, criteria, val1, val2);
         $('#dimMatResult_' + Iter).val(uniqueSearchResult.length + ' matches in ' + searchResult.length + ' graves');
         appendPlus(Iter);
     }
-
 }
 
 function searchTime(criteria, appendLevel, Iter, val1, val2) {
@@ -269,10 +269,9 @@ function searchTime(criteria, appendLevel, Iter, val1, val2) {
         jsonquery(nodeIds, appendLevel, criteria, val1, val2);
         $('#TimespanResult_' + Iter).val(uniqueSearchResult.length + ' matches in ' + searchResult.length + ' graves');
         currentLegendTitle += ': ' + val1 + ' - ' + val2;
-        currentLegend = appendLevelName + '> Time Span: ' + val1 + ' - ' + val2
+        currentCreateLegend = appendLevelName + '> Time Span: ' + val1 + ' - ' + val2
         appendPlus(Iter);
     }
-
 }
 
 function appendPlus(Iter) {
@@ -299,12 +298,7 @@ function appendPlus(Iter) {
             '<div class="input-group-prepend">' +
             '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
             '</div>' +
-            '<input class="form-control legendtext" id="legendtitle" type="text" value="' + currentLegend + '">' +
-            //'<div class="input-group-append">' +
-            //'<div class="input-group-text" title="Show legend">' +
-            //'<input id="showlegend" type="checkbox" aria-label="Checkbox for showing map" checked>' +
-            //'</div>' +
-            //'</div>' +
+            '<input class="form-control legendtext" id="legendtitle" type="text" value="' + currentCreateLegend + '">' +
             '</div>' +
             '</div>' +
             '<div class="mysearchoptions input-group input-group-sm mb-3">' +
@@ -329,28 +323,22 @@ function appendPlus(Iter) {
             '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="addNewSearchCritBtn" onclick="appendSearch(Globaliter)" title="Add another search criteria">' +
             '<i class="fas fa-plus"></i>' +
             '</button>' +
-            '<div class="dropdown">' +
-            '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="mapResultBtn" title="Show on map" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
-            '<i class="fas fa-map-marked-alt"></i>' +
+            '<button class="showPolygons btn btn-secondary btn-sm toremovebtn" type="button" onclick="finishQuery(true, true, false, finalSearchResultIds, CSVresult, true)" title="Add polygon layer">' +
+            '<i class="fas fa-draw-polygon"></i>' +
             '</button>' +
-            '<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">' +
-            '<a class="dropdown-item" onclick="finishQuery(true, true, false, finalSearchResultIds, CSVresult)" title="Show combined result on map as polygons" href="#">Polygons</a>' +
-            '<a class="dropdown-item" onclick="finishQuery(false, true, false, finalSearchResultIds, CSVresult)" title="Show combined result on map as points" href="#">Points</a>' +
-            '</div>' +
-            '</div>' +
-            '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="AdvSearchOptBtn" onclick="toggleSearchOpt()" title="Styling Options for Polygons and Point Results">' +
-            '<i class="fas fa-palette"></i>' +
+            '<button class="showPoints btn btn-secondary btn-sm toremovebtn" type="button" onclick="finishQuery(false, true, false, finalSearchResultIds, CSVresult, true)" title="Add point layer">' +
+            '<i class="fas fa-map-marker"></i>' +
             '</button>' +
             '<div class="dropdown">' +
             '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
             '<i class="far fa-save"></i>' +
             '</button>' +
             '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
-            '<a class="dropdown-item" onclick="finishQuery(true, false, false, finalSearchResultIds, CSVresult); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" href="#">Polygons</a>' +
-            '<a class="dropdown-item" onclick="finishQuery(false, false, false, finalSearchResultIds, CSVresult); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
+            '<a class="dropdown-item" onclick="finishQuery(true, false, false, finalSearchResultIds, CSVresult, true); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" href="#">Polygons</a>' +
+            '<a class="dropdown-item" onclick="finishQuery(false, false, false, finalSearchResultIds, CSVresult, true); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
             '</div>' +
             '</div>' +
-            '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, true, finalSearchResultIds, CSVresult)" type="button" id="ShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
+            '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, true, finalSearchResultIds, CSVresult, true)" type="button" id="ShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
             '<i class="fas fa-list"></i>' +
             '</button>'
         );
@@ -412,14 +400,32 @@ function appendPlus(Iter) {
 }
 
 
-function finishQuery(mygeometry, show, table, idlist, CSVdata) { //finish query and show results on map
+function finishQuery(mygeometry, show, table, idlist, csvData, first, layerId) { //finish query and show results on map
+    if (first) {
+        currentLegend = currentCreateLegend;
+        fillcolor = chroma.random().hex();
+        mysearchbordercolor = '#000000';
+        mysearchborderwidth = 1;
+        var layer_id = makeid(3)
+        console.log(layer_id);
+        while (layerIds.includes(layer_id)) {
+            var layer_id = makeid(3)
+        }
+        layerIds.push(layer_id);
+        console.log(layerIds);
+    } else {
+        layer_id = layerId;
+        if (show) eval('map.removeLayer(' + layer_id+ ')');
+    }
     jsonresult = {
         "type": "FeatureCollection", //prepare geojson
-        "features": []
+        "features": [],
+        "uniqueLayerId": layer_id
     };
     jsonresultPoints = {
         "type": "FeatureCollection", //prepare geojson
-        "features": []
+        "features": [],
+        "uniqueLayerId": layer_id
     };
 
     $.each(mypolyjson.features, function (i, feature) {
@@ -451,41 +457,100 @@ function finishQuery(mygeometry, show, table, idlist, CSVdata) { //finish query 
         "fillOpacity": 1 - mysearchopacity / 100
     };
 
-    CSVresultJSON = jQuery.extend(true, [], CSVdata);
-    var tmpCSV = JSON.parse(JSON.stringify(CSVdata));
+    CSVresultJSON = jQuery.extend(true, [], csvData);
+    var tmpCSV = JSON.parse(JSON.stringify(csvData));
     $.each(tmpCSV, function (i, dataset) {
         delete dataset.image
     });
     CSVresultExport = toCSV(tmpCSV);
 
-    if (show) {
+    jsonresult.statistics = prepareValueJSON(CSVresultJSON);
+    jsonresultPoints.statistics = prepareValueJSON(CSVresultJSON);
 
+    var CSVresultIds = ValueResultsChoropleth(CSVresultJSON);
+    $.each(jsonresult.features, function (i, feature) {
+        var currentId = feature.id;
+        $.each(CSVresultIds, function (i, dataset) {
+            if (dataset.id === currentId) {
+                chorovalue = dataset.value;
+                category = dataset.category;
+            }
+        })
+        jQuery.extend(feature.properties, {chorovalue: chorovalue, category: category});
+    });
+    $.each(jsonresultPoints.features, function (i, feature) {
+        var currentId = feature.id;
+        insertfeature = feature;
+        $.each(CSVresultIds, function (i, dataset) {
+            if (dataset.id === currentId) {
+                jQuery.extend(insertfeature.properties, {chorovalue: dataset.value});
+            }
+        })
+    });
+
+
+    if (show) {
         if (mygeometry) {
-            resultpolys.clearLayers();
             resultpoly = L.geoJSON(jsonresult, {
                 style: mysearchresultstyle,
                 shapetype: 'poly',
                 legendTitle: currentLegend,
-                layername: 'resultpolys'
+                layername: layer_id
             });
-            resultpolys.addLayer(resultpoly);
-            var currentSearchPolys = '<li title="click to open layer options" onclick="CSVresult = JSON.parse(this.getAttribute(\'data-CSVresult\')); finalSearchResultIds = JSON.parse(this.getAttribute(\'data-idlist\')); searchStyle = JSON.parse(this.getAttribute(\'data-style\')); openStyleDialog(\'poly\')" data-CSVresult=\'' + JSON.stringify(CSVdata) + '\' data-idlist="' + JSON.stringify(finalSearchResultIds) + '" data-style=\'' + JSON.stringify(mysearchresultstyle) + '\' style="cursor: pointer; margin-left: 1em; margin-top: -1px; display: block; float: right; max-height: 16px; min-width: 60px; background-color: ' + hexToRgbA(mysearchresultstyle.fillColor, mysearchresultstyle.fillOpacity) + '; border: ' + mysearchresultstyle.weight + 'px solid ' + mysearchresultstyle.color + '">&nbsp;</li>'
-            createLegend(map, resultpolys, currentSearchPolys);
+            eval(layer_id + ' = $.extend(true, {}, resultpoly)');
+            console.log(eval(layer_id));
+            $('.showPolygons').addClass('disabled').prop('disabled', true).prop('title', '').css('cursor' , 'default').addClass('noHover');
+            map.addLayer((eval(layer_id)));
+
+            var currentSearchPolys =
+                '<li class="layerOptionsClick" title="click to open layer options" '+
+                'onclick="currentLegend = (this.getAttribute(\'data-legend\')); '+
+                'CSVresult = JSON.parse(this.getAttribute(\'data-CSVresult\')); '+
+                'finalSearchResultIds = JSON.parse(this.getAttribute(\'data-idlist\')); '+
+                'searchStyle = JSON.parse(this.getAttribute(\'data-style\')); '+
+                'currentLayerId = this.getAttribute(\'data-layerId\'); '+
+                'openStyleDialog(\'poly\')" data-CSVresult=\'' + JSON.stringify(csvData) + '\' ' +
+                'data-legend=\'' + currentLegend + '\' ' +
+                'data-idlist="' + JSON.stringify(finalSearchResultIds) + '" '+
+                'data-layerId="' + layer_id + '" '+
+                'data-style=\'' + JSON.stringify(mysearchresultstyle) + '\' '+
+                'style="background-color: ' + hexToRgbA(mysearchresultstyle.fillColor, mysearchresultstyle.fillOpacity) + '; ' +
+                'border: ' + mysearchresultstyle.weight + 'px solid ' + mysearchresultstyle.color + '">&nbsp;</li>'
+            createLegend(map, (eval(layer_id)), currentSearchPolys);
+            orderlayer(myselector);
 
         } else {
-            resultpoints.clearLayers();
             resultpoint = L.geoJSON(jsonresultPoints, {
                 shapetype: 'point',
                 style: geojsonMarkerOptions,
                 legendTitle: currentLegend,
-                layername: 'resultpoints',
+                layername: layer_id,
                 pointToLayer: function (feature, latlng) {
                     return L.circleMarker(latlng, geojsonMarkerOptions);
                 }
             });
-            resultpoints.addLayer(resultpoint);
-            var currentSearchPoints = '<li title="click to open layer options" onclick="CSVresult = JSON.parse(this.getAttribute(\'data-CSVresult\')); finalSearchResultIds = JSON.parse(this.getAttribute(\'data-idlist\')); searchStyle = JSON.parse(this.getAttribute(\'data-style\')); openStyleDialog(\'point\')" data-CSVresult=\'' + JSON.stringify(CSVdata) + '\' data-idlist="' + JSON.stringify(finalSearchResultIds) + '" data-style=\'' + JSON.stringify(geojsonMarkerOptions) + '\' style="cursor: pointer; margin-left: 1em; margin-top: -2px; border-radius: 50%; display: block; float: right; width: 20px; height: 20px; background-color: ' + hexToRgbA(geojsonMarkerOptions.fillColor, geojsonMarkerOptions.fillOpacity) + '; border: ' + geojsonMarkerOptions.weight + 'px solid ' + geojsonMarkerOptions.color + '">&nbsp;</li>'
-            createLegend(map, resultpoints, currentSearchPoints);
+            eval(layer_id + ' = $.extend(true, {}, resultpoint)');
+            console.log(eval(layer_id));
+            $('.showPoints').addClass('disabled').prop('disabled', true).prop('title', '').css('cursor' , 'default').addClass('noHover');
+            map.addLayer((eval(layer_id)));
+
+            var currentSearchPoints =
+                '<li class="layerOptionsClickPoint" title="click to open layer options" '+
+                'onclick="currentLegend = (this.getAttribute(\'data-legend\')); '+
+                'CSVresult = JSON.parse(this.getAttribute(\'data-CSVresult\')); '+
+                'finalSearchResultIds = JSON.parse(this.getAttribute(\'data-idlist\')); '+
+                'searchStyle = JSON.parse(this.getAttribute(\'data-style\')); '+
+                'currentLayerId = this.getAttribute(\'data-layerId\'); '+
+                'openStyleDialog(\'point\')" ' +
+                'data-CSVresult=\'' + JSON.stringify(csvData) + '\' ' +
+                'data-legend=\'' + currentLegend + '\' ' +
+                'data-idlist="' + JSON.stringify(finalSearchResultIds) + '" '+
+                'data-layerId="' + layer_id + '" '+
+                'data-style=\'' + JSON.stringify(geojsonMarkerOptions) + '\' '+
+                'style="background-color: ' + hexToRgbA(geojsonMarkerOptions.fillColor, geojsonMarkerOptions.fillOpacity) + '; ' +
+                'border: ' + geojsonMarkerOptions.weight + 'px solid ' + geojsonMarkerOptions.color + '">&nbsp;</li>'
+            createLegend(map, (eval(layer_id)), currentSearchPoints);
+            orderlayer(myselector);
         }
     }
     if (table) {
@@ -493,10 +558,10 @@ function finishQuery(mygeometry, show, table, idlist, CSVdata) { //finish query 
     }
 }
 
-function CSVtable(CSVdata) {
-    var level = CSVdata[0].ObjectClass;
-    var search = CSVdata[0].Search;
-    if (search === 'timespan') search = (JSON.stringify(CSVdata[0].searchResult)).slice(12);
+function CSVtable(csvData) {
+    var level = csvData[0].ObjectClass;
+    var search = csvData[0].Search;
+    if (search === 'timespan') search = (JSON.stringify(csvData[0].searchResult)).slice(12);
     if (typeof (tableIter) !== 'undefined') {
         if (tableIter >= Globaliter) delete tableIter
     }
@@ -504,7 +569,7 @@ function CSVtable(CSVdata) {
 
     table = $('#CSVmodalContent').DataTable({
         destroy: true,
-        data: CSVdata,
+        data: csvData,
         "pagingType": "numbers",
         "scrollX": true,
         drawCallback: function () {
@@ -544,11 +609,10 @@ function CSVtable(CSVdata) {
         startvis(true)
         $('#myvisformCSV .visbutton').removeClass('btn-sm');
         $('#AdvOptBtn').click(function () {
-            var element = document.getElementById("AdvOptBtn");
+            var element = $("#AdvOptBtn");
             element.scrollIntoView({behavior: "smooth"})
         })
     }
-
 
     if (typeof (tableIter) === 'undefined') {
         oldQuery = search;

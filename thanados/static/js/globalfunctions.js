@@ -1,6 +1,7 @@
 $(document).on('change', "input[type|=\'text\']", function () {
     if ($(this).hasClass('legendtext')) {
         currentLegend = this.value;
+        currentCreateLegend = currentLegend;
         console.log(currentLegend);
     }
 
@@ -74,6 +75,7 @@ function AccRemove() {
 
     }());
 }
+
 
 function exportToJsonFile(data) {
     if (typeof (myjson) != 'undefined') {
@@ -257,7 +259,7 @@ function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, app
         return;
     }
     currentLegendTitle = currentLegendTitle + ' > ' + GlobalSelectedNodeName;
-    currentLegend = GlobalSelectedNodeName;
+    currentCreateLegend = GlobalSelectedNodeName;
 
     if (GlobalNodeSelected !== '' && Globalcriteria !== 'material' && Globalcriteria !== 'value') {
 
@@ -472,11 +474,6 @@ function openStyleDialog(layerType) {
                 '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
                 '</div>' +
                 '<input class="form-control legendtext" id="legendtitle" type="text" value="' + currentLegend + '">' +
-                //'<div class="input-group-append">' +
-                //'<div class="input-group-text" title="Show legend">' +
-                //'<input id="showlegend" type="checkbox" aria-label="Checkbox for showing map" checked>' +
-                //'</div>' +
-                //'</div>' +
                 '</div>' +
                 '</div>' +
                 '<div class="mysearchoptions input-group input-group-sm mb-3">' +
@@ -498,19 +495,19 @@ function openStyleDialog(layerType) {
                 '<span title="Radius for point result" class="pointBtn input-group-text input-group-middle">Radius: </span>' +
                 '<input title="Radius for point result" class="pointBtn form-control" id="Searchsearchpointradius" type="number" value="8" min="1">' +
                 '</div>' +
-                '<button class="pointBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(false, true, false, finalSearchResultIds, CSVresult)" title="Apply style" type="button">' +
+                '<button class="pointBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(false, true, false, finalSearchResultIds, CSVresult, false, currentLayerId)" title="Apply style" type="button">' +
                 '<i class="fas fa-map-marked-alt"></i>' +
                 '</button>' +
-                '<button class="polyBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, true, false, finalSearchResultIds, CSVresult)" title="Apply style" type="button">' +
+                '<button class="polyBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, true, false, finalSearchResultIds, CSVresult, false, currentLayerId)" title="Apply style" type="button">' +
                 '<i class="fas fa-map-marked-alt"></i>' +
                 '</button>' +
-                '<button class="polyBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, false, finalSearchResultIds, CSVresult); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" type="button">' +
+                '<button class="polyBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, false, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" type="button">' +
                 '<i class="far fa-save"></i>' +
                 '</button>' +
-                '<button class="pointBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(false, false, false, finalSearchResultIds, CSVresult); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" type="button">' +
+                '<button class="pointBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(false, false, false, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" type="button">' +
                 '<i class="far fa-save"></i>' +
                 '</button>' +
-                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, true, finalSearchResultIds, CSVresult)" type="button" id="SearchShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
+                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, true, finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
                 '<i class="fas fa-list"></i>' +
                 '</button>'
 
@@ -592,7 +589,7 @@ function openStyleDialog(layerType) {
             myChoroborderwidth = choroOptions.polygonstyle.weight;
             myChorofinalopacity = choroOptions.polygonstyle.fillOpacity;
             myChorolegendvar = true;
-            myChorolegend = true;
+            myChorolegend = false;
 
             var styledialog =
                 '<div class="myoptions input-group input-group-sm mb-3">' +
@@ -609,11 +606,6 @@ function openStyleDialog(layerType) {
                 '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
                 '</div>' +
                 '<input class="form-control legendtext" id="legendtitle" type="text" value="' + myChorolegendtitle + '">' +
-                //'<div class="input-group-append">' +
-                //'<div class="input-group-text" title="Show legend">' +
-                //'<input id="showlegend" type="checkbox" aria-label="Checkbox for showing map" checked>' +
-                //'</div>' +
-                //'</div>' +
                 '</div>' +
                 '<div class="myoptions input-group input-group-sm mb-3">' +
                 '<div class="input-group-prepend">' +
@@ -718,7 +710,7 @@ function openStyleDialog(layerType) {
             });
 
             $('#ChoroStyleBtn').click(function () {
-                myChorofinalopacity = ((100 - myChoroopacity)/100);
+                myChorofinalopacity = ((100 - myChoroopacity) / 100);
                 //console.log(currentLegend, myChorosteps, myChoromode, [colorstart, colorend], myChoroborder, myChoroborderwidth, myChorofinalopacity, myChorolegend);
                 setChoropleth(currentLegend, myChorosteps, myChoromode, [colorstart, colorend], myChoroborder, myChoroborderwidth, myChorofinalopacity, myChorolegend);
             });
@@ -816,25 +808,12 @@ function applyButton(styleLayer) {
         var currentGraves = '<div onclick="openStyleDialog(\'single\')" style="cursor: pointer; display: block; margin-left: 1em; margin-top: -1px; float: right; min-width: 60px; background-color: ' + hexToRgbA(myStyle.fillColor, myStyle.fillOpacity) + '; border: ' + myStyle.weight + 'px solid ' + myStyle.color + '">&nbsp;</div>'
         createLegend(map, graves, currentGraves);
     }
-
-    if (styleLayer === 'point') {
-        finishQuery(false, true, false)
-    }
-
-    if (styleLayer === 'poly') {
-        finishQuery(true, true, false)
-    }
-
 }
 
 function printMapbutton(id, position) {
 
     currentID = id;
-    //eval('printPlugin_' + currentID + ' = L.easyPrint({position: "topleft", hidden: true, sizeModes: ["A4Landscape"], filename: "ThanadosMap"}).addTo(' + currentID + ');');
-    //console.log('filePlugin_' + currentID + ' = L.easyPrint({position: "topleft", hidden: true, sizeModes: ["A4Landscape"], exportOnly: true, filename: "ThanadosMap"}).addTo(' + currentID + ');');
-    //eval('filePlugin_' + currentID + ' = L.easyPrint({position: "topleft", hidden: true, sizeModes: ["A4Landscape"], exportOnly: true, filename: "ThanadosMap"}).addTo(' + currentID + ');');
-    eval('L.easyPrint({position: "' + position + '", title: "Export map as image file", sizeModes: ["A4Landscape", "A4Portrait"], exportOnly: true, filename: "ThanadosMap"}).addTo(' + currentID + ');');
-    //eval('printPlugin_' + currentID + '.printMap("A4Portrait", "MyFileName");');
+      eval('L.easyPrint({position: "' + position + '", title: "Export map as image file", sizeModes: ["A4Landscape", "A4Portrait"], exportOnly: true, filename: "ThanadosMap"}).addTo(' + currentID + ');');
     $('.leaflet-control-easyPrint-button-export').html('<span class="fas fa-image"></span>');
     $('.leaflet-control-easyPrint-button-export').removeClass('leaflet-control-easyPrint-button-export');
     $('#leafletEasyPrint').css({
@@ -974,20 +953,6 @@ function createLegend(containerMap, currentLayer, legendContent) {
         return
     }
 
-    //console.log('options:');
-    //console.log(options);
-
-    //create array of legend entries
-    if (typeof (legendEntries) === 'undefined') legendEntries = [];
-
-
-    if (legendEntries.includes(options.name) === false) {
-        legendEntries.push(options.name);
-    }
-    //console.log('legendEntries:');
-    //console.log(legendEntries);
-
-
     //2nd: create legend
     var mapId = containerMap.getContainer().id; //get div id from map
 
@@ -1056,24 +1021,22 @@ function createLegend(containerMap, currentLayer, legendContent) {
     if (NoEntryYet) {
         $(entrycontainer).prepend(currentEntry)
     } else {
-        $(ExistingEntry).remove();
-        $(entrycontainer).prepend(currentEntry)
+        $(ExistingEntry).replaceWith(currentEntry);
+        //$(entrycontainer).prepend(currentEntry)
     }
     var ExistingEntry = document.getElementById(mapId + '_' + options.layername);
     $(ExistingEntry).append(legendContent);
 
     eval('if (' + mapId + '.hasLayer(' + options.layername + ') !== true) ' + options.layername + '.addTo(' + mapId + ');');
 
-    var myselector = eval('$("#' + mapId + '_legendentries")');
+    myselector = eval('$("#' + mapId + '_legendentries")');
 
     $(myselector).on("sortstop", function (event, ui) {
         orderlayer(myselector)
     });
-
 }
 
 function legendToggle(mapId) {
-
     var currentLegendDom = document.getElementById(mapId + '_legendtitle');
     var legendentries = document.getElementById(mapId + '_legendentries');
     if ($(currentLegendDom).find('.legendBtn').hasClass("fa-check-square")) {
@@ -1084,7 +1047,6 @@ function legendToggle(mapId) {
         $(currentLegendDom).html(legendOn)
     }
     $(legendentries).toggle();
-
 }
 
 function orderlayer(myselector) {
@@ -1102,9 +1064,7 @@ function orderlayer(myselector) {
 function toggleLayers(thismap, layer, show) {
     var thisIcon = eval('$("#' + layer + '_toggleIcon")');
     var thisButton = eval('$("#' + layer + '_toggleBtn")');
-
     var myselector = eval('$("#' + thismap + '_legendentries")');
-
     if (show === 'true') {
         $(thisIcon).removeClass('fa-check-square');
         $(thisIcon).addClass('fa-square');
@@ -1117,5 +1077,15 @@ function toggleLayers(thismap, layer, show) {
         $(thisButton).attr('data-show', true);
     }
     orderlayer(myselector);
+}
+
+function makeid(length) {
+   var result           = 'Layer_';
+   var characters       = '0123456789';
+   var charactersLength = characters.length;
+   for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+   }
+   return result;
 }
 
