@@ -205,38 +205,6 @@ function setmap(myjson) {
     //set THANADOS style for layer control (see style.css)
     $('.leaflet-control-layers-toggle').css({'background-image': ''});
 
-    var baroptions = {
-        "data": {
-            "Animal Remains": 12,
-            "Finger-Ring with D-shaped Profile": 5,
-            "Wire Ring with S-Loop": 10
-        },
-        chartOptions: {
-            'Animal Remains': {
-                fillColor: '#FEE5D9',
-                minValue: 0,
-                maxValue: 50,
-                maxHeight: 50
-            },
-            'Finger-Ring with D-shaped Profile': {
-                fillColor: '#FCAE91',
-                minValue: 0,
-                maxValue: 50,
-                maxHeight: 50,
-            },
-            'Wire Ring with S-Loop': {
-                fillColor: '#CB181D',
-                minValue: 0,
-                maxValue: 50,
-                maxHeight: 50,
-            }
-        },
-        weight: 0.5,
-        color: '#000000'
-        //backgroundStyle: false
-    }
-
-    var barChartMarker = new L.BarChartMarker(new L.LatLng(48.5, 16.5), baroptions).addTo(map);
 }
 
 
@@ -569,6 +537,7 @@ function collapseAllOthers(collapseDiv) {
 //get current entity data and appent to modal
 // noinspection JSDuplicatedDeclaration
 function getModalData(parentDiv, currentfeature, parenttimespan) {
+    console.log(currentfeature);
 
     if (currentfeature.type == "FeatureCollection") {
         var closebutton = '';
@@ -649,13 +618,13 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     }
     var entdims = currentfeature.properties.dimensions;
     var entmaterial = currentfeature.properties.material;
-
+    console.log(entName);
     $('#' + parentDiv).append(
         '<div class="modal-header">' +
         '<h5 class="modal-title">' +
         '<img src="' + iconpath + '" width="30" height="30" class="modaltitleicon" alt="my image">' +
-        +entName + '<div class="float-right mt-1" id="myModalPermalink' +
-        +entId + '"></div></h5>' + closebutton +
+        ''+ entName + '<div class="float-right mt-1" id="myModalPermalink' +
+        ''+ entId + '"></div></h5>' + closebutton +
         '</div>' +
         '<div class="modal-body">' +
         '<div class="container-fluid">' +

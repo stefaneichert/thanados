@@ -258,8 +258,10 @@ function transferNode(targetField, NodeSelected, SelectedNodeName, criteria, app
         alert('select property first');
         return;
     }
-    currentLegendTitle = currentLegendTitle + ' > ' + GlobalSelectedNodeName;
-    currentCreateLegend = GlobalSelectedNodeName;
+    if (local) {
+        currentLegendTitle = currentLegendTitle + ' > ' + GlobalSelectedNodeName;
+        currentCreateLegend = GlobalSelectedNodeName;
+    }
 
     if (GlobalNodeSelected !== '' && Globalcriteria !== 'material' && Globalcriteria !== 'value') {
 
@@ -1115,9 +1117,9 @@ function setSearchInfo(data, CSV) {
             Count: count,
         }
 
-        optionchain = '"' + result + '" : {"fillColor":  "' + chroma.random().hex() +'" , "minValue": 0, "maxValue": 20, "maxHeight": 20}';
+        optionchain = '"' + result + '" : {"fillColor":  "' + chroma.random().hex() + '" , "minValue": 0, "maxValue": 20, "maxHeight": 20}';
         if (i === 0) oldoptionchain = optionchain
-        if (i > 0 ) optionchain = oldoptionchain + ', ' + optionchain;
+        if (i > 0) optionchain = oldoptionchain + ', ' + optionchain;
         oldoptionchain = optionchain;
         resultCount.push(tmpDataset);
     });

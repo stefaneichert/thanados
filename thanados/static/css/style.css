@@ -230,6 +230,16 @@ body {
     border-radius: 8px !important;
 }
 
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+    background: rgb(227, 227, 227);;
+    color: #000000;
+    box-shadow: 0 0 0px 4px #696969;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+    color: #696969;
+}
+
 .legendEntry {
     margin-top: 1em;
     padding: .5em;
@@ -725,4 +735,43 @@ table.dataTable thead .sorting_desc_disabled:after {
 
 .noHover {
     pointer-events: none;
+}
+
+.leaflet-div-icon {
+    background: rgba(0, 0, 0, 0) none !important;
+    border: 0!important;
+    padding: 0!important;
+    margin-left: 40px!important;
+    margin-top: -50px!important;
+    width: auto!important;
+}
+
+.legend-box {
+    min-width: 15px!important;
+    min-height: 15px!important;
+    width: 15px!important;
+    height: 15px!important;
+    margin-top: 5px!important;
+    margin-right: 0!important;
+}
+
+.legend-values {
+    padding-left: 8px!important;
+    padding-right: 8px!important;
+}
+
+.key {
+    font-size: larger!important;
+    font-weight: bold!important;
+    margin-top: 5px!important;
+    margin-bottom: 5px!important;
+    width: max-content;
+    min-width: 70px!important;
+    max-width: 110px!important;
+    line-height: 12px!important;
+}
+
+.value {
+    font-size: larger!important;
+    margin-bottom: 5px!important;
 }

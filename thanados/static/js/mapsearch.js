@@ -1,7 +1,6 @@
 //function to query json for types, values etc. recursively
 
 
-
 $(document).ready(function () {
     local = true;
     currentLegendTitle = '';
@@ -472,8 +471,6 @@ function finishQuery(mygeometry, show, table, idlist, csvData, first, layerId) {
     jsonresultPoints = setSearchInfo(jsonresultPoints, CSVresultJSON);
 
 
-
-
     if (show) {
         if (mygeometry) {
             resultpoly = L.geoJSON(jsonresult, {
@@ -543,21 +540,17 @@ function finishQuery(mygeometry, show, table, idlist, csvData, first, layerId) {
     }
 
 
-
-
     $.each(jsonresultPoints.features, function (i, feature) {
         var options = {
             data: feature.search.distinctCount,
             chartOptions: jsonresultPoints.properties.ChartOptions,
+            color: '#000',
             weight: 1,
-            color: '#000000',
-            radius: 20
+            radius: 30,
+            fillOpacity: 1,
+            barThickness: 15
         };
-        //console.log(JSON.stringify(options));
-        //console.log(feature.geometry.coordinates[0]);
-        //console.log(feature.geometry.coordinates[1]);
-        if (i === 0) console.log(options)
-        var barChartMarker = new L.PieChartMarker(new L.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]), options).addTo(map);
+        var ChartMarker = new L.PieChartMarker(new L.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]), options).addTo(map);
     })
 
 }
