@@ -546,11 +546,13 @@ function finishQuery(mygeometry, show, table, idlist, csvData, first, layerId) {
             chartOptions: jsonresultPoints.properties.ChartOptions,
             color: '#000',
             weight: 1,
-            radius: 30,
+            radius: 25,
             fillOpacity: 1,
             barThickness: 15
         };
-        var ChartMarker = new L.PieChartMarker(new L.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]), options).addTo(map);
+
+        //var ChartMarker = new L.PieChartMarker(new L.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]), options).addTo(map);
+
     })
 
 }

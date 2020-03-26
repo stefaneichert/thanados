@@ -47,6 +47,15 @@
     <script src="/static/vendor/node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js"></script>
     <script src="/static/vendor/node_modules/chroma-js/chroma.min.js"></script>
     <script src="/static/vendor/node_modules/leaflet-dvf/dist/leaflet-dvf.markers.js"></script>
+    <link href="/static/vendor/node_modules/leaflet.markercluster/dist/MarkerCluster.css"
+          rel="stylesheet">
+    <link href="/static/vendor/node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css"
+          rel="stylesheet">
+    <link href="/static/vendor/node_modules/leaflet.fullscreen/Control.FullScreen.css"
+          rel="stylesheet">
+    <script src="/static/vendor/node_modules/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+    <script src="/static/vendor/node_modules/leaflet.heat/dist/leaflet-heat.js"></script>
+    <script src="/static/vendor/node_modules/leaflet.fullscreen/Control.FullScreen.js"></script>
     <script> thunderforestAPIkey = "{{ thunderforest }}"</script>
 </head>
 <body>
@@ -99,23 +108,23 @@
     </div>
 </nav>
 
-<div class="modal fade" id="HelpModal" tabindex="-1" role="dialog"
-     aria-labelledby="How to use this" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="HelpModalLabel">How to use this:</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" id="helptext">
-            </div>
-        </div>
+<div id="styledialog" class="d-none" title="Layer options">
+    <div id="LayerOptionSelect" class="input-group input-group-sm mb-3">
+        <select class="custom-select empty"
+                title="Select how to display the layer on the map"
+                id="OptionSelect">
+            <option selected disabled>Select display style...</option>
+            <option value="point">Single symbol</option>
+            <option value="poly">Single color</option>
+            <option value="colorPoly">Multiple colors</option>
+            <option value="colorPoint">Multiple symbols</option>
+            <option value="choropoly">Gradient colors</option>
+            <option value="chart">Chart symbols</option>
+        </select>
+    </div>
+    <div id="styleContent">
     </div>
 </div>
-
-<div id="styledialog" class="d-none" title="Layer style options"></div>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}

@@ -623,8 +623,8 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         '<div class="modal-header">' +
         '<h5 class="modal-title">' +
         '<img src="' + iconpath + '" width="30" height="30" class="modaltitleicon" alt="my image">' +
-        ''+ entName + '<div class="float-right mt-1" id="myModalPermalink' +
-        ''+ entId + '"></div></h5>' + closebutton +
+        '' + entName + '<div class="float-right mt-1" id="myModalPermalink' +
+        '' + entId + '"></div></h5>' + closebutton +
         '</div>' +
         '<div class="modal-body">' +
         '<div class="container-fluid">' +

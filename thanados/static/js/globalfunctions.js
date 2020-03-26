@@ -393,6 +393,7 @@ $.ajaxSetup({
     }
 });
 
+
 function openStyleDialog(layerType) {
     if ($('#dialog').hasClass("ui-dialog-content")) {
         if ($('#dialog').dialog('isOpen') === true) $("#dialog").dialog('close');
@@ -403,24 +404,46 @@ function openStyleDialog(layerType) {
     if ($('#styledialog').hasClass("ui-dialog-content")) {
         if ($('#styledialog').dialog('isOpen') === true) $("#styledialog").dialog('close');
     }
-    if ($('#SearchStyle').hasClass("ui-dialog-content")) {
-        if ($('#SearchStyle').dialog('isOpen') === true) $("#SearchStyle").dialog('close');
-    }
 
+    $("#styledialog").removeClass('d-none');
+    $("#styledialog").dialog({
+        width: mymodalwith,
+        //height: 450,
+        open: function () {
+            // Destroy Close Button (for subsequent opens)
+            $('#styledialog-close').remove();
+            // Create the Close Button (this can be a link, an image etc.)
+            var link = '<btn id="styledialog-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
+            // Create Close Button
+            $(".ui-dialog-title").css({'width': ''});
+            $(this).parent().find(".ui-dialog-titlebar").append(link);
+            // Add close event handler to link
+            $('#styledialog-close').on('click', function () {
+                $("#styledialog").dialog('close');
+            });
+        }
+    });
+    $('#LayerOptionSelect').removeClass('d-none');
+
+    $('#OptionSelect').on('change', function () {
+        newlayerType = $('#OptionSelect option:selected').val();
+        openStyleDialog((newlayerType))//set level as variable
+    });
 
     switch (layerType) {
         case 'single':
+            $('#LayerOptionSelect').addClass('d-none')
             var styledialog = '<form id="mystyleform">\n' +
                 '        <div class="mystyleoptions input-group input-group-sm mb-3">\n' +
                 '            <div class="input-group-prepend">\n' +
                 '                <label class="input-group-text" for="stylecolor">Fill color: </label>\n' +
                 '            </div>\n' +
                 '            <input class="form-control" id="stylecolor" style="max-width: 70px" type="color"\n' +
-                '                   value="#000dff">\n' +
+                '                   value="' + myStyle.fillColor + '">\n' +
                 '            <span class="input-group-text input-group-middle">Opacity (%): </span>\n' +
                 '            <label for="mystyleopacity"></label><input class="form-control"\n' +
                 '                                                       id="mystyleopacity" type="range"\n' +
-                '                                                       value="10" min="0" max="100">\n' +
+                '                                                       value="' + (100 - (myStyle.fillOpacity * 100)) + '" min="0" max="100">\n' +
                 '            <label for="mystyleopacityvalue"></label><input class="form-control"\n' +
                 '                                                            id="mystyleopacityvalue"\n' +
                 '                                                            type="number" value="10" min="0"\n' +
@@ -436,41 +459,26 @@ function openStyleDialog(layerType) {
                 '                                                         id="stylecolorborder"\n' +
                 '                                                         style="max-width: 70px"\n' +
                 '                                                         type="color"\n' +
-                '                                                         value="#000000">\n' +
+                '                                                         value="' + myStyle.color + '">\n' +
                 '            <span class="input-group-text input-group-middle">Border width: </span>\n' +
                 '            <label for="styleborderwidth"></label><input class="form-control"\n' +
                 '                                                         id="styleborderwidth" type="number"\n' +
-                '                                                         value="0" min="0">\n' +
+                '                                                         value="' + myStyle.color + '" min="0">\n' +
                 '        </div>\n' +
                 '        <button class="btn btn-sm btn-secondary btn-sm float-right" type="button"\n' +
                 '                id="applyStyle"\n' +
                 '                onclick="applyButton(\'graves\')" title="Apply">Apply\n' +
                 '        </button>\n' +
                 '    </form>';
-            $("#styledialog").html(styledialog);
-            $("#styledialog").dialog({
-                width: mymodalwith,
-                open: function () {
-                    // Destroy Close Button (for subsequent opens)
-                    $('#styledialog-close').remove();
-                    // Create the Close Button (this can be a link, an image etc.)
-                    var link = '<btn id="styledialog-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
-                    // Create Close Button
-                    $(".ui-dialog-title").css({'width': ''});
-                    $(this).parent().find(".ui-dialog-titlebar").append(link);
-                    // Add close event handler to link
-                    $('#styledialog-close').on('click', function () {
-                        $("#styledialog").dialog('close');
-                    });
-                }
-            });
-            $("#styledialog").removeClass('d-none');
+
+            $("#styleContent").empty();
+            $("#styleContent").html(styledialog);
             setStyleValues();
 
             break;
         case 'point':
         case 'poly':
-            var styledialog =
+            var styledialog = '<form id="mystyleform">\n' +
                 '<div class="mysearchoptions input-group input-group-sm mb-3">' +
                 '<div class="input-group-prepend">' +
                 '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
@@ -511,9 +519,11 @@ function openStyleDialog(layerType) {
                 '</button>' +
                 '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, true, finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
                 '<i class="fas fa-list"></i>' +
-                '</button>'
+                '</button>' +
+                '</form>'
 
-            $("#SearchStyle").html(styledialog);
+            $("#styleContent").empty();
+            $("#styleContent").html(styledialog);
 
             if (layerType === 'point') {
                 $('.polyBtn').toggle()
@@ -554,31 +564,18 @@ function openStyleDialog(layerType) {
                     $('#Searchsearchborderwidth').val(0);
             });
 
+            console.log($('#Searchsearchpointradius').val())
             mysearchpointradius = $('#Searchsearchpointradius').val()
+            if (mysearchpointradius == '') {
+                mysearchpointradius = 8;
+                $('#Searchsearchpointradius').val(8);
+            }
             $('#Searchsearchpointradius').on('input change', function () {
                 mysearchpointradius = $('#Searchsearchpointradius').val();
                 if (mysearchpointradius < 0)
                     $('#Searchsearchpointradius').val(0);
             });
 
-
-            $("#SearchStyle").dialog({
-                width: mymodalwith,
-                //height: 450,
-                open: function () {
-                    // Destroy Close Button (for subsequent opens)
-                    $('#dialog-close').remove();
-                    // Create the Close Button (this can be a link, an image etc.)
-                    var link = '<btn id="dialog-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
-                    // Create Close Button
-                    $(".ui-dialog-title").css({'width': ''});
-                    $(this).parent().find(".ui-dialog-titlebar").append(link);
-                    // Add close event handler to link
-                    $('#dialog-close').on('click', function () {
-                        $("#SearchStyle").dialog('close');
-                    });
-                }
-            });
 
             break;
         case 'choropoly':
@@ -638,7 +635,8 @@ function openStyleDialog(layerType) {
                 '<i class="fas fa-map-marked-alt"></i>' +
                 '</button>';
 
-            $("#ChoroStyle").html(styledialog);
+            $("#styleContent").empty();
+            $("#styleContent").html(styledialog);
             $('#MethodSelect').val(myChoromode)
 
             var firstInput = document.getElementById("colorstart");
@@ -692,25 +690,6 @@ function openStyleDialog(layerType) {
                 myChoromode = $('#MethodSelect option:selected').val();
             });
 
-
-            $("#ChoroStyle").dialog({
-                width: mymodalwith,
-                //height: 450,
-                open: function () {
-                    // Destroy Close Button (for subsequent opens)
-                    $('#dialog-close').remove();
-                    // Create the Close Button (this can be a link, an image etc.)
-                    var link = '<btn id="dialog-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
-                    // Create Close Button
-                    $(".ui-dialog-title").css({'width': ''});
-                    $(this).parent().find(".ui-dialog-titlebar").append(link);
-                    // Add close event handler to link
-                    $('#dialog-close').on('click', function () {
-                        $("#ChoroStyle").dialog('close');
-                    });
-                }
-            });
-
             $('#ChoroStyleBtn').click(function () {
                 myChorofinalopacity = ((100 - myChoroopacity) / 100);
                 //console.log(currentLegend, myChorosteps, myChoromode, [colorstart, colorend], myChoroborder, myChoroborderwidth, myChorofinalopacity, myChorolegend);
@@ -720,9 +699,87 @@ function openStyleDialog(layerType) {
 
             break;
         case 'colorPoly':
-            var styledialog = $("#colordialog");
+            var styledialog = '<form id="mystyleform">\n' +
+                '<div class="mysearchoptions input-group input-group-sm mb-3">' +
+                '<div class="input-group-prepend">' +
+                '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
+                '</div>' +
+                '<input class="form-control legendtext" id="legendtitle" type="text" value="' + 'currentLegend' + '">' +
+                '</div>' +
+                '<div class="mysearchoptions input-group input-group-sm mb-3">' +
+                '<div class="input-group-prepend">' +
+                '<label class="input-group-text" for="searchbordercolor">Border color: </label>' +
+                '</div>' +
+                '<input class="form-control" id="Searchcolorborder" style="max-width: 70px" type="color" value="#FFFFF">' +
+                '<span class="input-group-text input-group-middle">Border width: </span>' +
+                '<input class="form-control input-group-middle" id="Searchsearchborderwidth" type="number" value="1" min="0">' +
+                '<span title="Radius for point result" class="pointBtn input-group-text input-group-middle">Radius: </span>' +
+                '<input title="Radius for point result" class="pointBtn form-control" id="Searchsearchpointradius" type="number" value="8" min="1">' +
+                '</div>' +
+
+                '<div class="mysearchoptions input-group input-group-sm mb-3">' +
+                '<div class="input-group-prepend">' +
+                '<label class="input-group-text" for="Opacity">Opacity (%): </label>' +
+                '</div>' +
+                '<input class="form-control input-group-middle" id="Searchmysearchopacity" type="range" value="50" min="0" max="100">' +
+                '<input class="form-control" id="Searchmysearchopacityvalue" type="number" value="50" min="0" max="100" style="max-width: 60px">' +
+                '</div>' +
+
+                '<div id="mytable" class="mt-2 mb-2 border" style="max-height: 300px; overflow-y: auto; overflow-x: hidden">' +
+                '<table id="layerlist" class="display table table-striped table-bordered"\n' +
+                '                       width="100%">\n' +
+                '                    <thead>\n' +
+                '                    <tr>\n' +
+                '                        <th>Categories: ' + jsonresult.properties.statistics.length + ' </th>\n' +
+                '                        <th>No.</th>\n' +
+                '                    </tr>\n' +
+                '                    </thead>\n' +
+                '</table>' +
+                '</div>' +
+
+
+                '<button class="pointBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(false, true, false, finalSearchResultIds, CSVresult, false, currentLayerId)" title="Apply style" type="button">' +
+                '<i class="fas fa-map-marked-alt"></i>' +
+                '</button>' +
+                '<button class="polyBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, true, false, finalSearchResultIds, CSVresult, false, currentLayerId)" title="Apply style" type="button">' +
+                '<i class="fas fa-map-marked-alt"></i>' +
+                '</button>' +
+                '<button class="polyBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, false, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" type="button">' +
+                '<i class="far fa-save"></i>' +
+                '</button>' +
+                '<button class="pointBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(false, false, false, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" type="button">' +
+                '<i class="far fa-save"></i>' +
+                '</button>' +
+                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, true, finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
+                '<i class="fas fa-list"></i>' +
+                '</button>' +
+                '</form>'
+            $("#styleContent").empty();
+            $("#styleContent").html(styledialog);
+            table = $('#layerlist').DataTable({
+                data: jsonresult.properties.statistics,
+                "paging": false,
+                "searching": false,
+                "bInfo": false,
+                columns: [
+                    {
+                        data: "SearchKey",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).html("<span>" + oData.SearchKey + "</span><span class='layerOptionsClick' style='background-color: " + oData.FillColor + "; border: 1px solid'>&nbsp;</span>");
+                        }
+                    },
+                    {data: 'Count'},
+                ],
+            });
+            //$('#layerlist').removeClass('table-bordered');
+            $('#layerlist_wrapper').css('margin-top', '-6px');
+            table.draw();
+            $('.table, #layerlist').css('color', '#495057!important');
+            $('.table, #layerlist').css('font-size', '0.875rem!important;');
+
+
             break;
-        case 'cluster':
+        case 'chart':
             var styledialog = $("#clusterdialog");
             break;
         case 'heat':
@@ -731,7 +788,6 @@ function openStyleDialog(layerType) {
         default:
             return
     }
-
 }
 
 function setStyleValues() {
@@ -746,7 +802,7 @@ function setStyleValues() {
         $('#mystyleopacity').val(MyStyleOpacityVar);
         $('#mystyleopacityvalue').val(MyStyleOpacityVar);
     } else {
-        MyStyleOpacityVar = 10;
+        MyStyleOpacityVar = (100 - (myStyle.fillOpacity) * 100);
         $('#mystyleopacity').val(MyStyleOpacityVar);
         $('#mystyleopacityvalue').val(MyStyleOpacityVar);
     }
@@ -766,7 +822,7 @@ function setStyleValues() {
         stylebordercolorInput = document.getElementById("stylecolorborder");
         stylebordercolor = stylebordercolorInput.value;
     } else {
-        mystylebordercolor = "#000000";
+        mystylebordercolor = myStyle.color;
     }
     stylebordercolorInput = document.getElementById("stylecolorborder");
     stylebordercolor = stylebordercolorInput.value;
@@ -774,7 +830,7 @@ function setStyleValues() {
         mystylebordercolor = stylebordercolorInput.value;
     }, false);
 
-    if (typeof (mystyleborderwidth) == "undefined") mystyleborderwidth = 1;
+    if (typeof (mystyleborderwidth) == "undefined") mystyleborderwidth = myStyle.weight;
     $('#styleborderwidth').val(mystyleborderwidth);
     $('#styleborderwidth').on('input change', function () {
         mystyleborderwidth = $('#styleborderwidth').val();
@@ -807,7 +863,9 @@ function applyButton(styleLayer) {
                 layer.setStyle(myStyle)
             }
         });
-        var currentGraves = '<div onclick="openStyleDialog(\'single\')" style="cursor: pointer; display: block; margin-left: 1em; margin-top: -1px; float: right; min-width: 60px; background-color: ' + hexToRgbA(myStyle.fillColor, myStyle.fillOpacity) + '; border: ' + myStyle.weight + 'px solid ' + myStyle.color + '">&nbsp;</div>'
+        var maxBorder = 8;
+        if (myStyle.weight < 8) maxBorder = myStyle.weight;
+        var currentGraves = '<div class="layerOptionsClick" onclick="openStyleDialog(\'single\')" style="background-color: ' + hexToRgbA(myStyle.fillColor, myStyle.fillOpacity) + '; border: ' + maxBorder + 'px solid ' + myStyle.color + '">&nbsp;</div>'
         createLegend(map, graves, currentGraves);
     }
 }
@@ -1112,18 +1170,19 @@ function setSearchInfo(data, CSV) {
         $.each(CSVresultJSON, function (i, dataset) {
             if (dataset.searchResult === resultName) count += 1;
         })
+        var randomColor = chroma.random().hex();
         var tmpDataset = {
             SearchKey: result,
             Count: count,
+            FillColor: randomColor
         }
 
-        optionchain = '"' + result + '" : {"fillColor":  "' + chroma.random().hex() + '" , "minValue": 0, "maxValue": 20, "maxHeight": 20}';
+        optionchain = '"' + result + '" : {"fillColor":  "' + randomColor + '"}';
         if (i === 0) oldoptionchain = optionchain
         if (i > 0) optionchain = oldoptionchain + ', ' + optionchain;
         oldoptionchain = optionchain;
         resultCount.push(tmpDataset);
     });
-    console.log(JSON.parse('{' + optionchain + '}'));
     ValueResult = {};
     ValueResult.search = CSVresultJSON[0].Search;
     ValueResult.count = resultCount;
