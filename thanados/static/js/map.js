@@ -46,10 +46,10 @@ function setmap(myjson) {
 
     //style polygons
     myStyle = {
-        "color": "#007BD9",
+        "color": "#007bd9",
         "weight": 1.5,
         "fillOpacity": 0.5,
-        "fillColor": "#007BD9"
+        "fillColor": "#007bd9"
     };
 
     HoverStyle = {
@@ -71,6 +71,17 @@ function setmap(myjson) {
         "weight": 1.5,
         "fillOpacity": 0.5,
         "dashArray": [4, 4]
+    };
+
+    choroOptions = {
+        "steps": 5,
+        "mode": "e",
+        "scale": ["#ffffff","#ff0000"],
+        "polygonstyle": {
+            "color": "#000000",
+            "weight": 0,
+            "fillOpacity": 10
+        }
     };
 
     legendlayers = []
@@ -401,6 +412,7 @@ $(document).ready(function () {
     if (mymodalwith > 500) mymodalwith = 500;
     $('.ui-dialog').css('max-width', mymodalwith + 'px');
     $('#mytreeModal').css('max-width', ($(window).width()) + 'px');
+    $('.legend').css('max-height', (containerheight - 159))
 
 });
 

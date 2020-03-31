@@ -406,8 +406,13 @@ function openStyleDialog(layerType) {
     }
 
     $("#styledialog").removeClass('d-none');
+
+    mapdiv = document.getElementById('map');
     $("#styledialog").dialog({
+
         width: mymodalwith,
+        minHeight: 450,
+        position: {my: "center", at: "top+250", of: mapdiv},
         //height: 450,
         open: function () {
             // Destroy Close Button (for subsequent opens)
@@ -432,7 +437,7 @@ function openStyleDialog(layerType) {
 
     switch (layerType) {
         case 'single':
-            $('#LayerOptionSelect').addClass('d-none')
+            $('#LayerOptionSelect').addClass('d-none');
             var styledialog = '<form id="mystyleform">\n' +
                 '        <div class="mystyleoptions input-group input-group-sm mb-3">\n' +
                 '            <div class="input-group-prepend">\n' +
@@ -470,13 +475,11 @@ function openStyleDialog(layerType) {
                 '                onclick="applyButton(\'graves\')" title="Apply">Apply\n' +
                 '        </button>\n' +
                 '    </form>';
-
             $("#styleContent").empty();
             $("#styleContent").html(styledialog);
             setStyleValues();
 
             break;
-        case 'point':
         case 'poly':
             var styledialog = '<form id="mystyleform">\n' +
                 '<div class="mysearchoptions input-group input-group-sm mb-3">' +
@@ -505,19 +508,22 @@ function openStyleDialog(layerType) {
                 '<span title="Radius for point result" class="pointBtn input-group-text input-group-middle">Radius: </span>' +
                 '<input title="Radius for point result" class="pointBtn form-control" id="Searchsearchpointradius" type="number" value="8" min="1">' +
                 '</div>' +
-                '<button class="pointBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(false, true, false, finalSearchResultIds, CSVresult, false, currentLayerId)" title="Apply style" type="button">' +
-                '<i class="fas fa-map-marked-alt"></i>' +
+                '<button class="polyBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'poly\', finalSearchResultIds, CSVresult, false, currentLayerId)" title="Apply as polygon layer" type="button">' +
+                '<i class="fas fa-draw-polygon"></i>' +
                 '</button>' +
-                '<button class="polyBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, true, false, finalSearchResultIds, CSVresult, false, currentLayerId)" title="Apply style" type="button">' +
-                '<i class="fas fa-map-marked-alt"></i>' +
+                '<button class="pointBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'point\', finalSearchResultIds, CSVresult, false, currentLayerId)" title="Apply as point layer" type="button">' +
+                '<i class="fas fa-map-marker"></i>' +
                 '</button>' +
-                '<button class="polyBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, false, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" type="button">' +
+                '<div class="dropdown">' +
+                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
                 '<i class="far fa-save"></i>' +
                 '</button>' +
-                '<button class="pointBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(false, false, false, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" type="button">' +
-                '<i class="far fa-save"></i>' +
-                '</button>' +
-                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, true, finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
+                '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
+                '<a class="dropdown-item" onclick="finishQuery(null, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" href="#">Polygons</a>' +
+                '<a class="dropdown-item" onclick="finishQuery(null, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
+                '</div>' +
+                '</div>' +
+                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
                 '<i class="fas fa-list"></i>' +
                 '</button>' +
                 '</form>'
@@ -525,12 +531,8 @@ function openStyleDialog(layerType) {
             $("#styleContent").empty();
             $("#styleContent").html(styledialog);
 
-            if (layerType === 'point') {
-                $('.polyBtn').toggle()
-                $('#Searchsearchpointradius').val(searchStyle.radius);
-            } else {
-                $('.pointBtn').toggle()
-            }
+            $('#Searchsearchpointradius').val(searchStyle.radius);
+
             fillInput = document.getElementById("Searchfillcolor");
             fillcolor = fillInput.value;
             fillInput.addEventListener("input", function () {
@@ -564,7 +566,6 @@ function openStyleDialog(layerType) {
                     $('#Searchsearchborderwidth').val(0);
             });
 
-            console.log($('#Searchsearchpointradius').val())
             mysearchpointradius = $('#Searchsearchpointradius').val()
             if (mysearchpointradius == '') {
                 mysearchpointradius = 8;
@@ -631,14 +632,31 @@ function openStyleDialog(layerType) {
                 '<option value="k">k-means</option>' +
                 '</select>' +
                 '</div>' +
-                '<button class="btn btn-secondary btn-sm visbutton" type="button" id="ChoroStyleBtn" title="Show on map with gradient color">' +
-                '<i class="fas fa-map-marked-alt"></i>' +
+                '<button id="ChoroStyleBtn" class="polyBtn btn btn-secondary btn-sm toremovebtn" title="Apply as polygon layer" type="button">' +
+                '<i class="fas fa-draw-polygon"></i>' +
+                '</button>' +
+                '<button class="pointBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'point\', finalSearchResultIds, CSVresult, false, currentLayerId)" title="Apply as point layer" type="button">' +
+                '<i class="fas fa-map-marker"></i>' +
+                '</button>' +
+                '<div class="dropdown">' +
+                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                '<i class="far fa-save"></i>' +
+                '</button>' +
+                '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
+                '<a class="dropdown-item" onclick="finishQuery(null, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" href="#">Polygons</a>' +
+                '<a class="dropdown-item" onclick="finishQuery(null, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
+                '</div>' +
+                '</div>' +
+                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
+                '<i class="fas fa-list"></i>' +
                 '</button>';
 
             $("#styleContent").empty();
             $("#styleContent").html(styledialog);
             $('#MethodSelect').val(myChoromode)
 
+            colorstart = myChorocolor[0];
+            colorend = myChorocolor[1];
             var firstInput = document.getElementById("colorstart");
             var firstColor = firstInput.value;
             firstInput.addEventListener("input", function () {
@@ -692,8 +710,9 @@ function openStyleDialog(layerType) {
 
             $('#ChoroStyleBtn').click(function () {
                 myChorofinalopacity = ((100 - myChoroopacity) / 100);
-                //console.log(currentLegend, myChorosteps, myChoromode, [colorstart, colorend], myChoroborder, myChoroborderwidth, myChorofinalopacity, myChorolegend);
-                setChoropleth(currentLegend, myChorosteps, myChoromode, [colorstart, colorend], myChoroborder, myChoroborderwidth, myChorofinalopacity, myChorolegend);
+                //console.log(currentLegend +' - '+ myChorosteps +' - '+ myChoromode +' - '+ colorstart +' - '+ colorend +' - '+ myChoroborder +' - '+ myChoroborderwidth +' - '+ myChorofinalopacity +' - '+ myChorolegend);
+                //setChoropleth(currentLegend, myChorosteps, myChoromode, [colorstart, colorend], myChoroborder, myChoroborderwidth, myChorofinalopacity, myChorolegend);
+                finishQuery('choropoly', finalSearchResultIds, CSVresultJSON, false, currentLayerId)
             });
 
 
@@ -704,13 +723,13 @@ function openStyleDialog(layerType) {
                 '<div class="input-group-prepend">' +
                 '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
                 '</div>' +
-                '<input class="form-control legendtext" id="legendtitle" type="text" value="' + 'currentLegend' + '">' +
+                '<input class="form-control legendtext" id="legendtitle" type="text" value="' + currentLegend + '">' +
                 '</div>' +
                 '<div class="mysearchoptions input-group input-group-sm mb-3">' +
                 '<div class="input-group-prepend">' +
                 '<label class="input-group-text" for="searchbordercolor">Border color: </label>' +
                 '</div>' +
-                '<input class="form-control" id="Searchcolorborder" style="max-width: 70px" type="color" value="#FFFFF">' +
+                '<input class="form-control" id="Searchcolorborder" style="max-width: 70px" type="color" value="#ffffff">' +
                 '<span class="input-group-text input-group-middle">Border width: </span>' +
                 '<input class="form-control input-group-middle" id="Searchsearchborderwidth" type="number" value="1" min="0">' +
                 '<span title="Radius for point result" class="pointBtn input-group-text input-group-middle">Radius: </span>' +
@@ -738,19 +757,22 @@ function openStyleDialog(layerType) {
                 '</div>' +
 
 
-                '<button class="pointBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(false, true, false, finalSearchResultIds, CSVresult, false, currentLayerId)" title="Apply style" type="button">' +
-                '<i class="fas fa-map-marked-alt"></i>' +
+                '<button class="polyBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'colorpoly\', finalSearchResultIds, CSVresult, false, currentLayerId)" title="Apply as polygon layer" type="button">' +
+                '<i class="fas fa-draw-polygon"></i>' +
                 '</button>' +
-                '<button class="polyBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, true, false, finalSearchResultIds, CSVresult, false, currentLayerId)" title="Apply style" type="button">' +
-                '<i class="fas fa-map-marked-alt"></i>' +
+                '<button class="pointBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'colorpoint\', finalSearchResultIds, CSVresult, false, currentLayerId)" title="Apply as point layer" type="button">' +
+                '<i class="fas fa-map-marker"></i>' +
                 '</button>' +
-                '<button class="polyBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, false, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" type="button">' +
+                '<div class="dropdown">' +
+                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
                 '<i class="far fa-save"></i>' +
                 '</button>' +
-                '<button class="pointBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(false, false, false, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" type="button">' +
-                '<i class="far fa-save"></i>' +
-                '</button>' +
-                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(true, false, true, finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
+                '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
+                '<a class="dropdown-item" onclick="finishQuery(null, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" href="#">Polygons</a>' +
+                '<a class="dropdown-item" onclick="finishQuery(null, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
+                '</div>' +
+                '</div>' +
+                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
                 '<i class="fas fa-list"></i>' +
                 '</button>' +
                 '</form>'
@@ -776,7 +798,7 @@ function openStyleDialog(layerType) {
             table.draw();
             $('.table, #layerlist').css('color', '#495057!important');
             $('.table, #layerlist').css('font-size', '0.875rem!important;');
-
+            currentStatistics = $.extend(true, {}, jsonresult.properties.statistics);
 
             break;
         case 'chart':
@@ -1056,12 +1078,14 @@ function createLegend(containerMap, currentLayer, legendContent) {
     eval(mapId + '_legend').getContainer().addEventListener('mouseover', function () {
         eval(mapId + '.dragging.disable();');
         eval(mapId + '.doubleClickZoom.disable();');
+        eval(mapId + '.scrollWheelZoom.disable();');
     });
 
     // Re-enable dragging when user's cursor leaves the element
     eval(mapId + '_legend').getContainer().addEventListener('mouseout', function () {
         eval(mapId + '.dragging.enable();');
         eval(mapId + '.doubleClickZoom.enable();');
+        eval(mapId + '.scrollWheelZoom.enable();');
     });
 
     //set data for legend entries from layer
@@ -1094,6 +1118,8 @@ function createLegend(containerMap, currentLayer, legendContent) {
     $(myselector).on("sortstop", function (event, ui) {
         orderlayer(myselector)
     });
+    containerheight = ($('#container').height());
+    $('.legend').css('max-height', (containerheight - 159))
 }
 
 function legendToggle(mapId) {
@@ -1149,10 +1175,9 @@ function makeid(length) {
     return result;
 }
 
-function setSearchInfo(data, CSV) {
+function setSearchInfo(data, CSV, first) {
 
     var resultlist = [];
-    var resultCount = [];
     var resultCount = [];
 
     $.each(CSVresultJSON, function (i, dataset) {
@@ -1170,7 +1195,12 @@ function setSearchInfo(data, CSV) {
         $.each(CSVresultJSON, function (i, dataset) {
             if (dataset.searchResult === resultName) count += 1;
         })
-        var randomColor = chroma.random().hex();
+        if (typeof(currentStatistics) != "undefined") {
+        $.each(currentStatistics, function (i, dataset) {
+            if (dataset.SearchKey === resultName) randomColor = dataset.FillColor;
+        })
+        } else {randomColor = chroma.random().hex();}
+
         var tmpDataset = {
             SearchKey: result,
             Count: count,
@@ -1188,6 +1218,10 @@ function setSearchInfo(data, CSV) {
     ValueResult.count = resultCount;
     ValueResult.ChartOptions = JSON.parse('{' + optionchain + '}');
 
+    data.properties.search = ValueResult.search;
+    data.properties.statistics = ValueResult.count;
+    data.properties.ChartOptions = ValueResult.ChartOptions;
+
     $.each(data.features, function (i, feature) {
         var currentId = feature.id;
         feature.search = {}
@@ -1204,13 +1238,16 @@ function setSearchInfo(data, CSV) {
                 } else {
                     chorovalue = null
                 }
-                category = dataset.searchResult;
+                searchResult = dataset.searchResult;
+                $.each(data.properties.statistics, function (i, stat) {
+                    if (searchResult === stat.SearchKey) randomColor = stat.FillColor;
+                })
                 searchObject = {
                     id: dataset.ObjectId,
                     result: dataset.searchResult,
-                    value: chorovalue
+                    value: chorovalue,
+                    fillColor: randomColor
                 }
-                //console.log(chorovalue + ' - ' + category);
                 $.each(data.features, function (i, feature) {
                     if (currentId === feature.id) {
                         feature.search.searchResults.push(searchObject);
@@ -1232,8 +1269,19 @@ function setSearchInfo(data, CSV) {
         })
         feature.search.distinctCount = res;
     })
-    data.properties.search = ValueResult.search;
-    data.properties.statistics = ValueResult.count;
-    data.properties.ChartOptions = ValueResult.ChartOptions;
+
+    return data;
+}
+
+function setChoroplethJSON(data, value) {
+    $.each(data.features, function (i, feature) {
+        //console.log(feature.search.searchResults[0].value);
+        if (feature.search.count === 1 && value) {
+            feature.properties.chorovalue = parseFloat(feature.search.searchResults[0].value);
+        }
+        if (value === false) {
+            feature.properties.chorovalue = feature.search.count
+        }
+    });
     return data;
 }

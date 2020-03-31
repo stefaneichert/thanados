@@ -228,6 +228,8 @@ body {
     box-shadow: none !important;
     border: 4px solid rgba(214, 214, 214, 0.9) !important;
     border-radius: 8px !important;
+    overflow: auto;
+    max-height: 600px;
 }
 
 .leaflet-popup-content-wrapper, .leaflet-popup-tip {
@@ -247,6 +249,12 @@ body {
     background-color: rgba(214, 214, 214, 0.9) !important;
     border-radius: 4px !important;
     cursor: move;
+}
+
+.overflowlegend {
+    max-height: 250px;
+    overflow: auto;
+    display: contents;
 }
 
 .legendBtn:hover {
@@ -725,8 +733,8 @@ table.dataTable thead .sorting_desc_disabled:after {
     border-radius: 50%;
     display: block;
     float: right;
-    width: 20px!important;
-    height: 20px!important;
+    width: 20px !important;
+    height: 20px !important;
 }
 
 .gravediv {
@@ -739,39 +747,58 @@ table.dataTable thead .sorting_desc_disabled:after {
 
 .leaflet-div-icon {
     background: rgba(0, 0, 0, 0) none !important;
-    border: 0!important;
-    padding: 0!important;
-    margin-left: 40px!important;
-    margin-top: -50px!important;
-    width: auto!important;
+    border: 0 !important;
+    padding: 0 !important;
+    margin-left: 40px !important;
+    margin-top: -50px !important;
+    width: auto !important;
 }
 
 .legend-box {
-    min-width: 15px!important;
-    min-height: 15px!important;
-    width: 15px!important;
-    height: 15px!important;
-    margin-top: 5px!important;
-    margin-right: 0!important;
+    min-width: 15px !important;
+    min-height: 15px !important;
+    width: 15px !important;
+    height: 15px !important;
+    margin-top: 5px !important;
+    margin-right: 0 !important;
 }
 
 .legend-values {
-    padding-left: 8px!important;
-    padding-right: 8px!important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
 }
 
 .key {
-    font-size: larger!important;
-    font-weight: bold!important;
-    margin-top: 5px!important;
-    margin-bottom: 5px!important;
+    font-size: larger !important;
+    font-weight: bold !important;
+    margin-top: 5px !important;
+    margin-bottom: 5px !important;
     width: max-content;
-    min-width: 70px!important;
-    max-width: 110px!important;
-    line-height: 12px!important;
+    min-width: 70px !important;
+    max-width: 110px !important;
+    line-height: 12px !important;
 }
 
 .value {
-    font-size: larger!important;
-    margin-bottom: 5px!important;
+    font-size: larger !important;
+    margin-bottom: 5px !important;
+}
+
+.multicolor {
+    display: inline-block;
+    width: auto;
+    max-height: 16px;
+    font-weight: lighter !important;
+}
+
+.multicolorlist {
+    margin-bottom: 20px !important;
+}
+
+.multicolorbtn {
+    cursor: pointer;
+    font-size: 1.3em;
+    margin-right: 8px;
+    margin-left: 28px;
+    margin-top: -1px;
 }
