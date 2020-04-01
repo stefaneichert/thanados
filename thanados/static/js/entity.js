@@ -542,14 +542,14 @@ function getEntityData(parentName, parentId, currentfeature) {
 
 
     myStyle = {
-        "color": "rgba(0,123,217,0.75)",
-        "weight": 1.5,
+        "color": "#007BD9",
+        "weight": 1,
         "fillOpacity": 0.8
     };
 
     myStyleSquare = {
-        "color": "rgba(0,123,217,0.75)",
-        "weight": 1.5,
+        "color": "#007BD9",
+        "weight": 1,
         "fillOpacity": 0.5,
         "dashArray": [4, 4]
     };

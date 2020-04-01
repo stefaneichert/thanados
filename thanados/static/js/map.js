@@ -9,6 +9,10 @@ $(document).ready(function () {
         table.draw();
     })
     layerIds = [];
+    $('#OptionSelect').on('change', function () {
+        newlayerType = $('#OptionSelect option:selected').val();
+        openStyleDialog((newlayerType))//set level as variable
+    });
 });
 
 //set map and sidebar content//
@@ -47,28 +51,28 @@ function setmap(myjson) {
     //style polygons
     myStyle = {
         "color": "#007bd9",
-        "weight": 1.5,
+        "weight": 1,
         "fillOpacity": 0.5,
         "fillColor": "#007bd9"
     };
 
     HoverStyle = {
-        "fillColor": "rgb(255,0,9)",
-        "color": "rgb(64,64,64)",
+        "fillColor": "#ff0009",
+        "color": "#404040",
         "weight": 3,
         "fillOpacity": 0.3
     };
 
     SelectionStyle = {
-        "fillColor": "rgb(255,0,9)",
-        "color": "rgb(255,0,2)",
+        "fillColor": "#ff0009",
+        "color": "#FF0002",
         "weight": 3,
         "fillOpacity": 0.5
     };
 
     myStyleSquare = {
-        "color": "rgba(0,123,217,0.75)",
-        "weight": 1.5,
+        "color": "#007ED9",
+        "weight": 1,
         "fillOpacity": 0.5,
         "dashArray": [4, 4]
     };
@@ -83,6 +87,13 @@ function setmap(myjson) {
             "fillOpacity": 10
         }
     };
+
+    MultiColorSearchStyle = {
+        "color": "#000000",
+        "weight": 1,
+        "fillOpacity": 0.9,
+        "radius": 8
+    }
 
     legendlayers = []
 

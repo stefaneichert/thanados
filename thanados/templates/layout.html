@@ -110,10 +110,12 @@
 
 <div id="styledialog" class="d-none" title="Layer options">
     <div id="LayerOptionSelect" class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+        <label class="input-group-text" for="custom-select">Select layer type:</label>
+        </div>
         <select class="custom-select empty"
                 title="Select how to display the layer on the map"
                 id="OptionSelect">
-            <option selected disabled>Select display style...</option>
             <option value="poly">Single color</option>
             <option value="colorPoly">Multiple colors</option>
             <option value="choropoly">Gradient colors</option>

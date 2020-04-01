@@ -252,9 +252,7 @@ body {
 }
 
 .overflowlegend {
-    max-height: 250px;
-    overflow: auto;
-    display: contents;
+    display: grid;
 }
 
 .legendBtn:hover {
@@ -792,7 +790,7 @@ table.dataTable thead .sorting_desc_disabled:after {
 }
 
 .multicolorlist {
-    margin-bottom: 20px !important;
+    margin-bottom: 18px !important;
 }
 
 .multicolorbtn {

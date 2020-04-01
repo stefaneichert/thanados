@@ -833,7 +833,7 @@ function applyButton() {
 
 myStyle = {
     "color": "rgba(0,96,180,0.88)",
-    "weight": 1.5,
+    "weight": 1,
     "fillOpacity": 0.5,
     "radius": 10
     //"opacity": 0.4
