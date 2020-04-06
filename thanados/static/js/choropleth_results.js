@@ -506,7 +506,11 @@ function ValueResultsChoropleth(data) {
     for (i = 0; i < l; i++) {
         if (flags[graveList[i].id]) continue;
         flags[graveList[i].id] = true;
-        output.push({'id': graveList[i].id, 'value': parseFloat(graveList[i].value), 'category': graveList[i].category });
+        output.push({
+            'id': graveList[i].id,
+            'value': parseFloat(graveList[i].value),
+            'category': graveList[i].category
+        });
     }
     //console.log(graveList.length); console.log (output.length);
     /*if (graveList.length !== output.length) console.log(
@@ -515,7 +519,6 @@ function ValueResultsChoropleth(data) {
         'If the mapping result is not sufficient you can narrow your search to get one unique value for each grave.');
     return (output)*/
 }
-
 
 
 function style(feature) {
@@ -547,8 +550,8 @@ function setSexJson(title, colorstart, colorend, myborder, myborderwidth, myfina
         style: style
     }).addTo(map);
 
-    var currentColorpoly = '<ul><li style="padding-top: 8px">Male:</li><li style="max-height: 20px; margin-top: 4px; display: block; float: right; min-width: 60px; background-color: ' + hexToRgbA(colorstart, myfinalopacity) + '; border: ' + myborderwidth + 'px solid ' + myborder + '">&nbsp;</li></ul>' +
-        '<ul><li style="padding-top: 8px">Female:</li><li style="max-height: 20px; margin-top: 4px; display: block; float: right; min-width: 60px; background-color: ' + hexToRgbA(colorend, myfinalopacity) + '; border: ' + myborderwidth + 'px solid ' + myborder + '">&nbsp;</li></ul>';
+    var currentColorpoly = '<ul><li style="padding-top: 8px">Male:</li><li onclick="InfoAlert()" style="cursor: pointer; max-height: 20px; margin-top: 4px; display: block; float: right; min-width: 60px; background-color: ' + hexToRgbA(colorstart, myfinalopacity) + '; border: ' + myborderwidth + 'px solid ' + myborder + '">&nbsp;</li></ul>' +
+        '<ul><li style="padding-top: 8px">Female:</li><li onclick="InfoAlert()" style="cursor: pointer; max-height: 20px; margin-top: 4px; display: block; float: right; min-width: 60px; background-color: ' + hexToRgbA(colorend, myfinalopacity) + '; border: ' + myborderwidth + 'px solid ' + myborder + '">&nbsp;</li></ul>';
 
     createLegend(map, choroplethLayer, currentColorpoly);
     orderlayer(myselector);
@@ -594,10 +597,39 @@ function setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth,
         labels.push('<li style="background-color: ' + colors[index] + '"></li>')
     })
 
-    div.innerHTML += '<ul class="mt-2" onclick="choroOptions=JSON.parse(this.getAttribute(\'data-options\')); mychorojson = JSON.parse(this.getAttribute(\'data-choroJson\')); currentLegend = (this.getAttribute(\'data-legend\')); openStyleDialog(\'choropoly\')" title="Click for layer options" style="cursor: pointer!important" data-options=\'' + JSON.stringify(choroplethLayer.options) + '\' data-legend=\'' + currentLegend + '\' data-choroJson = \'' + JSON.stringify(mychorojson) + '\' ><span style="display: table; margin: auto;"><li style="width: auto; margin-right: 9px">' + limits[0] + '</li>' + labels.join('') + '<li style="width: auto; margin-left: 9px">' + limits[limits.length - 1] + '</li></span></ul>'
+    div.innerHTML += '<ul class="mt-2" onclick="InfoAlert()"><span style="display: table; margin: auto; cursor: pointer;"><li style="width: auto; margin-right: 9px">' + limits[0] + '</li>' + labels.join('') + '<li style="width: auto; margin-left: 9px">' + limits[limits.length - 1] + '</li></span></ul>'
     //return div
     createLegend(map, choroplethLayer, div);
     orderlayer(myselector);
 }
 
+function InfoAlert(text) {
+    /*$('#map').append('<div style="z-index: 50000; font-size: 1.3em;" class="alert alert-primary alert-dismissible fade show" role="alert">\n' +
+        '' + text + '\n' +
+        '  <button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+        '    <span aria-hidden="true">&times;</span>\n' +
+        '  </button>\n' +
+        '</div>')*/
+    $('.toast').remove();
+    $('#map').append('<div class="toast" style="position: absolute; bottom: 50%; left: 40%; z-index: 50000; background-color: rgb(255, 255, 255);"\n' +
+        'data-autohide="false" role="alert" aria-live="assertive" aria-atomic="true">\n' +
+        '  <div class="ui-widget-header toast-header">\n' +
+        '    <span class="mr-auto">Info</span>\n' +
+        '    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">\n' +
+        '      <span aria-hidden="true">&times;</span>\n' +
+        '    </button>\n' +
+        '  </div>\n' +
+        '  <div class="toast-body ui-dialog-content">\n' +
+        ' This is a predefined visualisation that cannot be restyled after adding it to the map. You can style the layer on adding it. ' +
+        'If you want to do more complex visualisations/stylings of your layers, you can use the <a style=\'cursor: pointer; color: blue\' onclick=\'startsearch(); removeToast()\'><b> filter/search </b></a> function and then ' +
+        'style the search result via clicking the layer in the legend.' +
+        '  </div>\n' +
+        '</div>');
+
+    $('.toast').toast('show');
+}
+
+function removeToast() {
+    $('.toast').toast('hide');
+}
 

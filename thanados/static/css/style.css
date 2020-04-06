@@ -235,7 +235,7 @@ body {
 .leaflet-popup-content-wrapper, .leaflet-popup-tip {
     background: rgb(227, 227, 227);;
     color: #000000;
-    box-shadow: 0 0 0px 4px #696969;
+    box-shadow: 0 0 0 4px #696969;
 }
 
 .leaflet-container a.leaflet-popup-close-button {
@@ -441,7 +441,11 @@ body {
 }
 
 .ui-dialog {
-    z-index: 1000 !important;
+    z-index: 1001 !important;
+}
+
+ui-widget-overlay ui-front {
+    z-index: 1000;
 }
 
 a.ui-button:active,
@@ -489,8 +493,8 @@ a.ui-button:active,
 }
 
 .input-group-addon {
-    border-left-width: 0;
-    border-right-width: 0;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
 }
 
 .input-group-text {
@@ -799,4 +803,76 @@ table.dataTable thead .sorting_desc_disabled:after {
     margin-right: 8px;
     margin-left: 28px;
     margin-top: -1px;
+}
+
+
+#LayerOptionSelect {
+    cursor: pointer;
+}
+
+.row-tabs {
+    min-height: inherit;
+    border-radius: 0;
+}
+
+.col-tab-left {
+    max-width: fit-content;
+    padding: 0;
+    background: #f2f2f2 0 0;
+    margin-top: -8px;
+    margin-bottom: -8px;
+    margin-left: -2px;
+    border-bottom-left-radius: 6px;
+}
+
+.tabs-left, .tabs-right {
+    border: none;
+    background: #f2f2f2 0 0;
+}
+
+.tabs-left > li > .nav-link {
+    border: none;
+    border-radius: 0;
+}
+
+.tabs-left > li > .nav-link:active {
+    background-color: white;
+    border: none;
+}
+
+.tabs-left > li > .nav-link:hover {
+    background: #e2e2e2 0 0;
+    border: none;
+}
+
+.tabs-left > li > .nav-link.active:hover {
+    background-color: white;
+    border: none;
+}
+
+*:focus {
+    outline: none;
+}
+
+#layerlistOv > tbody > tr > td,
+#layerlistOv > thead > tr > th {
+    font-size: 0.9em;
+    line-height: 1.3em;
+}
+
+#layerlist > tbody > tr > td {
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+}
+
+#layerlist > thead > tr > th {
+    padding: 0.4em 30px 0.4em 0.4em;
+}
+
+#CSVmodal > .modal-dialog {
+    max-width: 95%!important;
+}
+
+input[type=color] {
+    cursor: pointer;
 }

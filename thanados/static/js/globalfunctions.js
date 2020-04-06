@@ -2,10 +2,11 @@ $(document).on('change', "input[type|=\'text\']", function () {
     if ($(this).hasClass('legendtext')) {
         currentLegend = this.value;
         currentCreateLegend = currentLegend;
-        console.log(currentLegend);
+        //console.log(currentLegend);
     }
 
 });
+
 
 function setJson(data) {
     countGeom = 0
@@ -105,7 +106,7 @@ function exportToJsonFile(data) {
 }
 
 function toCSV(json) {
-    console.log('toCSV')
+    //console.log('toCSV')
     var csv = "";
     var keys = (json[0] && Object.keys(json[0])) || [];
     csv += '"' + keys.join('\",\"') + '"\n';
@@ -396,7 +397,7 @@ $.ajaxSetup({
 
 
 function openStyleDialog(layerType) {
-    console.log('stylestart');
+    //console.log('stylestart');
     if ($('#dialog').hasClass("ui-dialog-content")) {
         if ($('#dialog').dialog('isOpen') === true) $("#dialog").dialog('close');
     }
@@ -409,14 +410,12 @@ function openStyleDialog(layerType) {
 
     $("#styledialog").removeClass('d-none');
 
-    $("#OptionSelect").val(layerType);
-
     mapdiv = document.getElementById('map');
     $("#styledialog").dialog({
 
         width: mymodalwith,
         minHeight: 450,
-        position: {my: "center", at: "top+350", of: window},
+        position: {my: "left top", at: "right bottom", of: $('#SidebarButton')},
         //height: 450,
         open: function () {
             // Destroy Close Button (for subsequent opens)
@@ -432,12 +431,21 @@ function openStyleDialog(layerType) {
             });
         }
     });
-    $('#LayerOptionSelect').removeClass('d-none');
+
+    infoalert = '<div class="alert alert-info alert-dismissible fade show" role="alert"><span class="infotext">\n' +
+        '  This is an info alert with </span>\n' +
+        '  <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="">\n' +
+        '    <span aria-hidden="true">×</span>\n' +
+        '  </button>\n' +
+        '</div>';
+
+    $('.LayerOptionSelect').removeClass('d-none');
 
     switch (layerType) {
         case 'single':
-            $('#LayerOptionSelect').addClass('d-none');
+            $('.LayerOptionSelect').addClass('d-none');
             var styledialog = '<form id="mystyleform">\n' +
+                '<h5 class="mt-1 mb-3"> Layer options for graves </h5>' +
                 '        <div class="mystyleoptions input-group input-group-sm mb-3">\n' +
                 '            <div class="input-group-prepend">\n' +
                 '                <label class="input-group-text" for="stylecolor">Fill color: </label>\n' +
@@ -481,6 +489,7 @@ function openStyleDialog(layerType) {
             break;
         case 'poly':
             var styledialog = '<form id="mystyleform">\n' +
+                '<h5 class="mt-1 mb-3"> Single color layer options</h5>' +
                 '<div class="mysearchoptions input-group input-group-sm mb-3">' +
                 '<div class="input-group-prepend">' +
                 '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
@@ -583,6 +592,7 @@ function openStyleDialog(layerType) {
             myChorolegendtitle = currentLegend;
             myChorosteps = choroOptions.steps;
             myChoromode = choroOptions.mode;
+            myValueMode = choroOptions.valuemode;
             myChorocolor = choroOptions.scale;
             myChoroborder = choroOptions.polygonstyle.color;
             myChoroborderwidth = choroOptions.polygonstyle.weight;
@@ -590,7 +600,8 @@ function openStyleDialog(layerType) {
             myChorolegendvar = true;
             myChorolegend = false;
 
-            var styledialog =
+            var styledialog = '<form id="mystyleform">\n' +
+                '<h5 class="mt-1 mb-3"> Gradient color layer options</h5>' +
                 '<div class="myoptions input-group input-group-sm mb-3">' +
                 '<div class="input-group-prepend">' +
                 '<label class="input-group-text" for="colorrange">Color range</label>' +
@@ -610,8 +621,8 @@ function openStyleDialog(layerType) {
                 '<div class="input-group-prepend">' +
                 '<label class="input-group-text" for="ChoroOpacity">Opacity (%): </label>' +
                 '</div>' +
-                '<input class="form-control" id="ChoroOpacity" type="range" value="' + (100 - (myChorofinalopacity * 100)) + '" min="0" max="100">' +
-                '<input class="form-control" id="ChoroOpacityvalue" type="number" value="' + (100 - (myChorofinalopacity * 100)) + '" min="0" max="100" style="max-width: 60px">' +
+                '<input class="form-control" id="ChoroOpacity" type="range" value="' + myChorofinalopacity + '" min="0" max="100">' +
+                '<input class="form-control" id="ChoroOpacityvalue" type="number" value="' + myChorofinalopacity + '" min="0" max="100" style="max-width: 60px">' +
                 '</div>' +
                 '<div class="myoptions input-group input-group-sm mb-3">' +
                 '<div class="input-group-prepend">' +
@@ -632,6 +643,15 @@ function openStyleDialog(layerType) {
                 '<option value="q">quantile</option>' +
                 '<option value="k">k-means</option>' +
                 '</select>' +
+                '<span class="input-group-text input-group-middle">Color value: </span>' +
+                '<div class="input-group-append input-group-sm">\n' +
+                '       <select class="custom-select input-group-addon empty"\n' +
+                '                title="Select what value the color intensity is calculated from." \n' +
+                '                id="ValueSelect">\n' +
+                '            <option id="valueOption" class="d-none" title="The value associated with the search result. E.g. the depth of a grave" value="value">Value</option>\n' +
+                '            <option title="The total count of search results per grave. E.g. the number of finds" value="count">Count</option>\n' +
+                '        </select>' +
+                '</div>' +
                 '</div>' +
                 '<button id="ChoroStyleBtn" class="polyBtn btn btn-secondary btn-sm toremovebtn" title="Apply as polygon layer" type="button">' +
                 '<i class="fas fa-draw-polygon"></i>' +
@@ -650,11 +670,20 @@ function openStyleDialog(layerType) {
                 '</div>' +
                 '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
                 '<i class="fas fa-list"></i>' +
-                '</button>';
+                '</button>' +
+                '</form>';
 
             $("#styleContent").empty();
             $("#styleContent").html(styledialog);
-            $('#MethodSelect').val(myChoromode)
+            $('#MethodSelect').val(myChoromode);
+
+            if (layertypes.gradientcolor) {
+                $('#valueOption').removeClass('d-none');
+                $('#ValueSelect').val(myValueMode);
+            } else {
+                $('#ValueSelect').val('count')
+            }
+
 
             colorstart = myChorocolor[0];
             colorend = myChorocolor[1];
@@ -696,7 +725,7 @@ function openStyleDialog(layerType) {
             var borderColor = borderColorInput.value;
             borderColorInput.addEventListener("input", function () {
                 myChoroborder = borderColorInput.value;
-                console.log(myChoroborder);
+                //console.log(myChoroborder);
             }, false);
 
             $('#ChoroBorderwidth').on('input change', function () {
@@ -720,6 +749,10 @@ function openStyleDialog(layerType) {
                 myChoromode = $('#MethodSelect option:selected').val();
             });
 
+            $('#ValueSelect').on('change', function () {
+                myValueMode = $('#ValueSelect option:selected').val();
+            });
+
             $('#ChoroStyleBtn').click(function () {
                 myChorofinalopacity = ((100 - myChoroopacity) / 100);
                 finishQuery('choropoly', finalSearchResultIds, CSVresultJSON, false, currentLayerId)
@@ -729,11 +762,11 @@ function openStyleDialog(layerType) {
                 finishQuery('choropoint', finalSearchResultIds, CSVresultJSON, false, currentLayerId)
             });
 
-
             break;
         case 'colorPoly':
 
             var styledialog = '<form id="mystyleform">\n' +
+                '<h5 class="mt-1 mb-3"> Multiple color layer options</h5>' +
                 '<div class="mysearchoptions input-group input-group-sm mb-3">' +
                 '<div class="input-group-prepend">' +
                 '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
@@ -758,9 +791,9 @@ function openStyleDialog(layerType) {
                 '<input class="form-control" id="Searchmysearchopacityvalue" type="number" value="' + (100 - ((MultiColorSearchStyle.fillOpacity) * 100)) + '" min="0" max="100" style="max-width: 60px">' +
                 '</div>' +
 
-                '<div id="mytable" class="mt-2 mb-2 border" style="max-height: 300px; overflow-y: auto; overflow-x: hidden">' +
+                '<div id="mytable" class="mt-2 mb-2 border" style="line-height: 1.3em; max-height: 302px; font-size: 0.9em; overflow-y: auto; overflow-x: hidden; border-collapse: collapse;">' +
                 '<table id="layerlist" class="display table table-striped table-bordered"\n' +
-                '                       width="100%">\n' +
+                '                       style="width: 100%; border-collapse: collapse !important;">\n' +
                 '                    <thead>\n' +
                 '                    <tr>\n' +
                 '                        <th>Categories: ' + jsonresult.properties.statistics.length + ' </th>\n' +
@@ -769,7 +802,6 @@ function openStyleDialog(layerType) {
                 '                    </thead>\n' +
                 '</table>' +
                 '</div>' +
-
 
                 '<button class="polyBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'colorpoly\', finalSearchResultIds, CSVresult, false, currentLayerId)" title="Apply as polygon layer" type="button">' +
                 '<i class="fas fa-draw-polygon"></i>' +
@@ -869,10 +901,183 @@ function openStyleDialog(layerType) {
 
             break;
         case 'chart':
-            var styledialog = $("#clusterdialog");
+
+            var styledialog = '<form id="mystyleform">\n' +
+                '<h5 class="mt-1 mb-3"> Chart Markers layer options</h5>' +
+                '<div class="mysearchoptions input-group input-group-sm mb-3">' +
+                '<div class="input-group-prepend">' +
+                '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
+                '</div>' +
+                '<input class="form-control legendtext" id="legendtitle" type="text" value="' + currentLegend + '">' +
+                '</div>' +
+                '<div class="mysearchoptions input-group input-group-sm mb-3">' +
+                '<div class="input-group-prepend">' +
+                '<label class="input-group-text" for="searchbordercolor">Border color: </label>' +
+                '</div>' +
+                '<input class="form-control" id="Searchcolorborder" style="max-width: 70px" type="color" value="' + MultiColorSearchStyle.color + '">' +
+                '<span class="input-group-text input-group-middle">Border width: </span>' +
+                '<input class="form-control input-group-middle" id="Searchsearchborderwidth" type="number" value="' + MultiColorSearchStyle.weight + '" min="0">' +
+                '<span title="Radius for point result" class="pointBtn input-group-text input-group-middle">Radius: </span>' +
+                '<input title="Radius for point result" class="pointBtn form-control" id="Searchsearchpointradius" type="number" value="' + MultiColorSearchStyle.radius + '" min="1">' +
+                '</div>' +
+                '<div class="mysearchoptions input-group input-group-sm mb-3">' +
+                '<div class="input-group-prepend">' +
+                '<label class="input-group-text" for="Opacity">Opacity (%): </label>' +
+                '</div>' +
+                '<input class="form-control input-group-middle" id="Searchmysearchopacity" type="range" value="' + (100 - ((MultiColorSearchStyle.fillOpacity) * 100)) + '" min="0" max="100">' +
+                '<input class="form-control" id="Searchmysearchopacityvalue" type="number" value="' + (100 - ((MultiColorSearchStyle.fillOpacity) * 100)) + '" min="0" max="100" style="max-width: 60px">' +
+                '</div>' +
+
+                '<div id="mytable" class="mt-2 mb-2 border" style="line-height: 1.3em; max-height: 302px; font-size: 0.9em; overflow-y: auto; overflow-x: hidden; border-collapse: collapse;">' +
+                '<table id="layerlist" class="display table table-striped table-bordered"\n' +
+                '                       style="width: 100%; border-collapse: collapse !important;">\n' +
+                '                    <thead>\n' +
+                '                    <tr>\n' +
+                '                        <th>Categories: ' + jsonresult.properties.statistics.length + ' </th>\n' +
+                '                        <th>No.</th>\n' +
+                '                    </tr>\n' +
+                '                    </thead>\n' +
+                '</table>' +
+                '</div>' +
+
+                '<button class="pointBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'chart\', finalSearchResultIds, CSVresult, false, currentLayerId)" title="Apply as chart-marker layer" type="button">' +
+                '<i class="fas fa-chart-pie"></i>' +
+                '</button>' +
+                '<div class="dropdown">' +
+                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                '<i class="far fa-save"></i>' +
+                '</button>' +
+                '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
+                '<a class="dropdown-item" onclick="finishQuery(null, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" href="#">Polygons</a>' +
+                '<a class="dropdown-item" onclick="finishQuery(null, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
+                '</div>' +
+                '</div>' +
+                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
+                '<i class="fas fa-list"></i>' +
+                '</button>' +
+                '</form>'
+            $("#styleContent").empty();
+            $("#styleContent").html(styledialog);
+            table = $('#layerlist').DataTable({
+                data: jsonresult.properties.statistics,
+                "paging": false,
+                "searching": false,
+                "bInfo": false,
+                columns: [
+                    {
+                        data: "SearchKey",
+                        "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                            $(nTd).html("<span>" + oData.SearchKey + "</span>" +
+                                "<input class='MultiColorPicker float-right' id='" + oData.SearchKey + "' style='cursor: pointer; border: none; min-width: 60px; padding: 0;' type='color' value='" + oData.FillColor + "'>");
+                        }
+                    },
+                    {data: 'Count'},
+                ],
+            });
+
+            $('.MultiColorPicker').on('change', function () {
+                currentStatId = this.id;
+                currentStatColor = this.value;
+                $.each(currentStatistics, function (i, stat) {
+                    if (stat.SearchKey === currentStatId) {
+                        stat.FillColor = currentStatColor;
+                    }
+                });
+                jsonresult.properties.statistics = currentStatistics;
+                jsonresultPoints.properties.statistics = currentStatistics;
+            });
+
+            mysearchopacity = (100 - MultiColorSearchStyle.fillOpacity * 100);
+            $('#Searchmysearchopacity').on('input change', function () {
+                mysearchopacity = $('#Searchmysearchopacity').val();
+                $('#Searchmysearchopacityvalue').val(mysearchopacity);
+            });
+            $('#Searchmysearchopacityvalue').on('input change', function () {
+                mysearchopacity = $('#Searchmysearchopacityvalue').val();
+                if (mysearchopacity > 100)
+                    $('#Searchmysearchopacityvalue').val(100);
+                if (mysearchopacity < 0)
+                    $('#Searchmysearchopacityvalue').val(0);
+                $('#Searchmysearchopacity').val(mysearchopacity);
+            });
+            mysearchbordercolor = MultiColorSearchStyle.color;
+            searchbordercolorInput = document.getElementById("Searchcolorborder");
+            mysearchbordercolor = searchbordercolorInput.value;
+            searchbordercolorInput.addEventListener("input", function () {
+                mysearchbordercolor = searchbordercolorInput.value;
+            }, false);
+
+            mysearchborderwidth = MultiColorSearchStyle.weight;
+            $('#Searchsearchborderwidth').on('input change', function () {
+                mysearchborderwidth = $('#Searchsearchborderwidth').val();
+                if (mysearchborderwidth < 0)
+                    $('#Searchsearchborderwidth').val(0);
+            });
+
+            mysearchpointradius = $('#Searchsearchpointradius').val()
+            if (mysearchpointradius == '') {
+                mysearchpointradius = 8;
+                $('#Searchsearchpointradius').val(8);
+            }
+            $('#Searchsearchpointradius').on('input change', function () {
+                mysearchpointradius = $('#Searchsearchpointradius').val();
+                if (mysearchpointradius < 0)
+                    $('#Searchsearchpointradius').val(0);
+            });
+
+
+            $('#layerlist_wrapper').css('margin-top', '-6px');
+            table.draw();
+            $('.table, #layerlist').css('color', '#495057!important');
+            $('.table, #layerlist').css('font-size', '0.875rem!important;');
+            currentStatistics = $.extend(true, {}, jsonresult.properties.statistics);
+
             break;
-        case 'heat':
-            var styledialog = $("#heatdialog");
+        case 'info':
+            $('#styledialog').find('.active').removeClass('active');
+            $('#info').addClass('active');
+            var styledialog = '<form id="mystyleform">\n' +
+                '<h5>Layer overview: ' + currentLegend + '</h5>' +
+                '<h7>' + currentInfoHeadline + '</h7>' +
+                '<p>' + CSVresult.length + ' matches in ' + jsonresult.features.length + ' graves.' + '</p>' +
+                '<div id="mytable" class="mt-2 mb-2 border" style="max-height: 295px; overflow-y: auto; overflow-x: hidden">' +
+                '<table id="layerlistOv" class="display table table-striped table-bordered"\n' +
+                '                       style="width: 100%; margin-top: -1px !important; margin-bottom: -1px !important;">\n' +
+                '                    <thead>\n' +
+                '                    <tr>\n' +
+                '                        <th>Categories: ' + jsonresult.properties.statistics.length + ' </th>\n' +
+                '                        <th>No.</th>\n' +
+                '                    </tr>\n' +
+                '                    </thead>\n' +
+                '</table>' +
+                '</div>' +
+                '<div class="dropdown">' +
+                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                '<i class="far fa-save"></i>' +
+                '</button>' +
+                '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
+                '<a class="dropdown-item" onclick="finishQuery(null, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" href="#">Polygons</a>' +
+                '<a class="dropdown-item" onclick="finishQuery(null, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
+                '</div>' +
+                '</div>' +
+                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
+                '<i class="fas fa-list"></i>' +
+                '</button>' +
+                '    </form>';
+            $("#styleContent").empty();
+            $("#styleContent").html(styledialog);
+
+            table = $('#layerlistOv').DataTable({
+                data: jsonresult.properties.statistics,
+                "paging": false,
+                "searching": false,
+                "bInfo": false,
+                columns: [
+                    {data: "SearchKey"},
+                    {data: 'Count'},
+                ],
+            });
+
             break;
         default:
             return
@@ -880,7 +1085,7 @@ function openStyleDialog(layerType) {
 }
 
 function setStyleValues() {
-    console.log('setStyleValues');
+    //console.log('setStyleValues');
     if (typeof (fillcolor) != "undefined") fillInput.value = fillcolor;
     fillInput = document.getElementById("stylecolor");
     fillcolor = fillInput.value;
@@ -1074,7 +1279,7 @@ function toggleLayers() {
 }
 
 function createLegend(containerMap, currentLayer, legendContent) {
-    console.log('createLegend');
+    //console.log('createLegend');
     //hide layers from layer control
 
 
@@ -1099,7 +1304,7 @@ function createLegend(containerMap, currentLayer, legendContent) {
         });
     }
     if (jQuery.isEmptyObject(options)) {
-        console.log('abort')
+        //console.log('abort')
         return
     }
 
@@ -1133,6 +1338,7 @@ function createLegend(containerMap, currentLayer, legendContent) {
         }
         eval(mapId + '_legend').addTo(containerMap);
         var currentLegendDom = document.getElementById(mapId + '_legendtitle');
+
 
         legendOn = 'Legend <a onclick="legendToggle(\'' + mapId + '\')" class="legendToggle" data-map=' + mapId + ' title="Hide legend"><i id="' + mapId + '_toggleLeg" style="color: #eeeeee; cursor: pointer; font-size: 1.3em;" class="legendBtn ml-2 float-right far fa-check-square"></a>'
         legendOff = '<a onclick="legendToggle(\'' + mapId + '\')" class="legendToggle" data-map=' + mapId + ' title="show legend"><i id="' + mapId + '_toggleLeg" style="color: #eeeeee; cursor: pointer; font-size: 1.3em;" class="legendBtn fas fa-list-ul"></a>'
@@ -1188,6 +1394,10 @@ function createLegend(containerMap, currentLayer, legendContent) {
     });
     containerheight = ($('#container').height());
     $('.legend').css('max-height', (containerheight - 159))
+
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    })
 }
 
 function legendToggle(mapId) {
@@ -1204,7 +1414,7 @@ function legendToggle(mapId) {
 }
 
 function orderlayer(myselector) {
-    console.log('orderlayer')
+    //console.log('orderlayer')
     var layerorder = ($(myselector).sortable("toArray", {
         attribute: "data-layer"
     }));
@@ -1245,18 +1455,26 @@ function makeid(length) {
 }
 
 function setSearchInfo(data, CSV, first) {
-    console.log('setSearchInfo');
+    //console.log('setSearchInfo');
+
+    data.properties.layertypes =
+        {
+            multicolor: false,
+            multicolorNoOverlaps: true,
+            gradientcount: false,
+            gradientcolor: false,
+            gradientcolorNoOverlaps: true,
+            charts: false,
+            chartsNoOverlaps: true
+        }
 
     var resultlist = [];
     var resultCount = [];
 
     $.each(CSVresultJSON, function (i, dataset) {
-        var tmpDataset = {
-            id: dataset.graveID,
-            searchResult: dataset.searchResult,
-        }
         resultlist.push(dataset.searchResult)
     });
+
     var distinctResultList = Array.from(new Set(resultlist))
 
     $.each(distinctResultList, function (i, result) {
@@ -1285,6 +1503,7 @@ function setSearchInfo(data, CSV, first) {
         oldoptionchain = optionchain;
         resultCount.push(tmpDataset);
     });
+
     ValueResult = {};
     ValueResult.search = CSVresultJSON[0].Search;
     ValueResult.count = resultCount;
@@ -1299,13 +1518,14 @@ function setSearchInfo(data, CSV, first) {
         feature.search = {}
         feature.search.searchResults = [];
         feature.search.count = 0;
-        feature.search.distinctIds = []
+        feature.search.searchArray = [];
 
         //todo: select between value and count and add auto switch if values are not available
         $.each(CSV, function (i, dataset) {
             if (dataset.graveID === currentId) {
                 if (dataset.value !== "") {
                     chorovalue = parseFloat(dataset.value);
+                    data.properties.layertypes.gradientcolor = true;
                 } else {
                     chorovalue = null
                 }
@@ -1323,23 +1543,39 @@ function setSearchInfo(data, CSV, first) {
                     if (currentId === feature.id) {
                         feature.search.searchResults.push(searchObject);
                         feature.search.count += 1;
-                        feature.search.distinctIds.push(searchObject.id)
-                        //if (chorovalue !== null) feature.properties.search.searchValues.push(chorovalue);
+                        feature.search.searchArray.push(searchObject.result)
                     }
                 })
             }
         })
     });
     $.each(data.features, function (i, feature) {
-        feature.search.uniqueCount = (Array.from(new Set(feature.search.distinctIds))).length;
-        delete feature.search.distinctIds;
-
+        feature.search.uniqueCount = (Array.from(new Set(feature.search.searchArray))).length;
+        chorocount = 0;
         res = {};
         feature.search.searchResults.forEach(function (v) {
             res[v.result] = (res[v.result] || 0) + 1;
         })
         feature.search.distinctCount = res;
+        if (feature.search.count > 1) {
+            if (feature.search.uniqueCount > 1) {
+                data.properties.layertypes.multicolorNoOverlaps = false;
+            }
+            data.properties.layertypes.gradientcount = true;
+        }
+
+        if (data.properties.layertypes.gradientcolor) {
+            $.each(feature.search.searchResults, function (i, dataset) {
+                if (dataset.value !== null) {
+                    chorocount += 1;
+                }
+            })
+            if (chorocount > 1) data.properties.layertypes.gradientcolorNoOverlaps = false
+        }
     })
+
+    //data.properties.layertypes = setLayerTypes(data);
+    if (data.properties.statistics.length > 1) data.properties.layertypes.multicolor = true;
 
     return data;
 }
@@ -1347,7 +1583,7 @@ function setSearchInfo(data, CSV, first) {
 function setChoroplethJSON(data, value) {
     $.each(data.features, function (i, feature) {
         //console.log(feature.search.searchResults[0].value);
-        if (feature.search.count === 1 && value) {
+        if (value) {
             feature.properties.chorovalue = parseFloat(feature.search.searchResults[0].value);
         }
         if (value === false) {

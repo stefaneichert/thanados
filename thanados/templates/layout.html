@@ -109,20 +109,35 @@
 </nav>
 
 <div id="styledialog" class="d-none" title="Layer options">
-    <div id="LayerOptionSelect" class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-        <label class="input-group-text" for="custom-select">Select layer type:</label>
+
+    <div class="row row-tabs">
+        <div class="col-sm-auto col-tab-left LayerOptionSelect" style="max-width: fit-content">
+            <ul class="nav flex-column nav-tabs tabs-left" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link" title="Overview" id="info" href="#"><i
+                            class="fas fa-info"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" title="Single color layer settings" id="poly" mt-1 mb-3href="#"><i
+                            class="fas fa-map-marker-alt"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" title="Multiple color layer settings" id="colorPoly" mt-1 mb-3href="#"><i
+                            class="fas fas fa-palette"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" title="Gradient color layer settings" id="choropoly" mt-1 mb-3href="#"><i
+                            class="fas fa-swatchbook"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" title="Chart markers settings" id="chart" mt-1 mb-3href="#"><i
+                            class="fas fa-chart-pie"></i></a>
+                </li>
+            </ul>
         </div>
-        <select class="custom-select empty"
-                title="Select how to display the layer on the map"
-                id="OptionSelect">
-            <option value="poly">Single color</option>
-            <option value="colorPoly">Multiple colors</option>
-            <option value="choropoly">Gradient colors</option>
-            <option value="chart">Chart symbols</option>
-        </select>
-    </div>
-    <div id="styleContent">
+
+        <div class=col id="styleContent">
+        </div>
     </div>
 </div>
 

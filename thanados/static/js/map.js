@@ -9,10 +9,11 @@ $(document).ready(function () {
         table.draw();
     })
     layerIds = [];
-    $('#OptionSelect').on('change', function () {
-        newlayerType = $('#OptionSelect option:selected').val();
-        openStyleDialog((newlayerType))//set level as variable
-    });
+    $('#styledialog .row .col-tab-left ul a').click(function () {
+        openStyleDialog(this.id)
+        $('#styledialog').find('.active').removeClass('active');
+        $(this).addClass('active');
+    })
 });
 
 //set map and sidebar content//
@@ -81,6 +82,7 @@ function setmap(myjson) {
         "steps": 5,
         "mode": "e",
         "scale": ["#ffffff","#ff0000"],
+        "valuemode" : 'count',
         "polygonstyle": {
             "color": "#000000",
             "weight": 0,
@@ -560,7 +562,7 @@ function collapseAllOthers(collapseDiv) {
 //get current entity data and appent to modal
 // noinspection JSDuplicatedDeclaration
 function getModalData(parentDiv, currentfeature, parenttimespan) {
-    console.log(currentfeature);
+    //console.log(currentfeature);
 
     if (currentfeature.type == "FeatureCollection") {
         var closebutton = '';
@@ -641,7 +643,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     }
     var entdims = currentfeature.properties.dimensions;
     var entmaterial = currentfeature.properties.material;
-    console.log(entName);
+    //console.log(entName);
     $('#' + parentDiv).append(
         '<div class="modal-header">' +
         '<h5 class="modal-title">' +
@@ -879,13 +881,13 @@ function addFilterSearch() {
     LeafletDropdownButton.onAdd = function (map) {
         var div = L.DomUtil.create('div');
         div.innerHTML = '<div class="dropdown" id="sidebarclosed-menu">\n' +
-            '                <button class="btn btn-secondary btn-sm mapbutton" type="button" onclick="this.blur()"\n' +
+            '                <button class="btn btn-secondary btn-sm mapbutton" type="button" onclick="this.blur(); startsearch()"\n' +
             '                        id="dropdownMenuButtonMap" data-toggle="dropdown" title="Filter/Search/Visualise"\n' +
             '                        aria-haspopup="true"\n' +
             '                        aria-expanded="false">\n' +
             '                    <i class="fas fa-search"></i>\n' +
             '                </button>\n' +
-            '                <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonMap">\n' +
+            '                <div class="dropdown-menu d-none" aria-labelledby="dropdownMenuButtonMap">\n' +
             '                    <a class="dropdown-item searchbutton" onclick="startsearch()" href="#">Filter/Search</a>\n' +
             '                    <a class="dropdown-item visbutton" onclick="startvis(false)" href="#">Visualisations</a>\n' +
             '                </div>\n' +
