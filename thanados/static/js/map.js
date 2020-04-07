@@ -97,6 +97,14 @@ function setmap(myjson) {
         "radius": 8
     }
 
+    ChartStyle = {
+        "color": "#000000",
+        "weight": 1,
+        "fillOpacity": 1,
+        "radius": 25,
+        "barthickness": 15
+    }
+
     legendlayers = []
 
     //add graves with polygon geometry
@@ -112,6 +120,7 @@ function setmap(myjson) {
     var currentGraves =
         '<div class="layerOptionsClick" ' +
         'onclick="openStyleDialog(\'single\')" ' +
+        'title="click to open layer options" ' +
         'style="background-color: ' + hexToRgbA(myStyle.color, myStyle.fillOpacity) + '; ' +
         'border: ' + myStyle.weight + 'px solid ' + myStyle.color + '">&nbsp;</div>';
     createLegend(map, graves, currentGraves);

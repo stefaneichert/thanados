@@ -7,6 +7,7 @@ $(document).ready(function () {
 })
 
 function startsearch() {
+    $('#infoalert').empty();
     initateQuery();
     $('#mysearchform').empty();
     appendSearch(1);
@@ -56,6 +57,7 @@ function initateQuery() {
 }
 
 function appendSearch(Iter) {//append search form to dialog
+    $('#infoalert').empty();
     $('.toremovebtn').remove(); //removes former buttons to append new search
     $('.mysearchoptions').remove(); //removes former buttons to append new search
     $('#mysearchform').append(
@@ -176,9 +178,9 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
             $('#DimensionSelect_' + Iter).prop('disabled', true); //disable input
             $('#DimensionSelect_' + Iter + '_parent').append(//append input of values
                 '<span class="input-group-text input-group-middle">min: </span>' +
-                '<input title="minumum value of the dimension to search for. Leave blank if you want to get all entities with any value of this type" id="valMin_' + Iter + '" class="form-control value-input" type="text">' +
+                '<input title="minumum value of the dimension to search for." id="valMin_' + Iter + '" class="form-control value-input" type="text">' +
                 '<span class="input-group-text input-group-middle">max: </span>' +
-                '<input title="maximum value of the dimension to search for. Leave blank if you want to get all entities with any value of this type" id="valMax_' + Iter + '" class="form-control value-input" type="text">' +
+                '<input title="maximum value of the dimension to search for." id="valMax_' + Iter + '" class="form-control value-input" type="text">' +
                 '<div class="input-group-append">' +
                 '<button class="btn btn-secondary btn-sm" type="button" id="dimMatButton_' + Iter + '" onclick="searchDimMat(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for dimension">' +
                 '<i class="fas fa-search"></i>' +
@@ -236,16 +238,18 @@ function searchDimMat(criteria, appendLevel, Iter, val1, val2) {
         $('#valMin_' + Iter).prop('disabled', true);
         $('#valMax_' + Iter).prop('disabled', true);
         dimId = $('#DimensionSelect_' + Iter + ' option:selected').val(); //set criteria variable
-        if (criteria != 'dimension') {
+        if (criteria !== 'dimension') {
             dimId = nodeIds;
             currentLegendTitle = currentLegendTitle + ': ' + val1 + ' - ' + val2;
             currentCreateLegend = appendLevelName + ' > ' + GlobalSelectedNodeName + ': ' + val1 + ' - ' + val2;
         }
-        if (criteria == 'dimension') {
+        if (criteria === 'dimension') {
             dimId = $('#DimensionSelect_' + Iter + ' option:selected').val().toLowerCase();
             dimText = $('#DimensionSelect_' + Iter + ' option:selected').html();
             currentLegendTitle = currentLegendTitle + ' > ' + dimText + ': ' + val1 + ' - ' + val2;
             currentCreateLegend = appendLevelName + ' > ' + dimText + ': ' + val1 + ' - ' + val2;
+            console.log(criteria);
+            console.log(currentCreateLegend);
         }
         jsonquery(dimId, appendLevel, criteria, val1, val2);
         $('#dimMatResult_' + Iter).val(uniqueSearchResult.length + ' matches in ' + searchResult.length + ' graves');
@@ -270,7 +274,7 @@ function searchTime(criteria, appendLevel, Iter, val1, val2) {
         jsonquery(nodeIds, appendLevel, criteria, val1, val2);
         $('#TimespanResult_' + Iter).val(uniqueSearchResult.length + ' matches in ' + searchResult.length + ' graves');
         currentLegendTitle += ': ' + val1 + ' - ' + val2;
-        currentCreateLegend = appendLevelName + '> Time Span: ' + val1 + ' - ' + val2
+        currentCreateLegend = appendLevelName + ' > Time Span: ' + val1 + ' - ' + val2
         appendPlus(Iter);
     }
 }
@@ -328,7 +332,7 @@ function appendPlus(Iter) {
             /*'<button class="showPoints btn btn-secondary btn-sm toremovebtn" type="button" onclick="finishQuery(\'point\', finalSearchResultIds, CSVresult, true, null)" title="Add point layer">' +
             '<i class="fas fa-map-marker"></i>' +
             '</button>' +*/
-            '<div class="dropdown">' +
+            /*'<div class="dropdown">' +
             '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
             '<i class="far fa-save"></i>' +
             '</button>' +
@@ -336,7 +340,7 @@ function appendPlus(Iter) {
             '<a class="dropdown-item" onclick="finishQuery(null, finalSearchResultIds, CSVresult, false, null); exportToJsonFile(jsonresult)" title="Download as GEOJson polygons" href="#">Polygons</a>' +
             '<a class="dropdown-item" onclick="finishQuery(null, finalSearchResultIds, CSVresult, false, null); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
             '</div>' +
-            '</div>' +
+            '</div>' +*/
             '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, true, null)" type="button" id="ShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
             '<i class="fas fa-list"></i>' +
             '</button>' +
@@ -406,7 +410,7 @@ function appendPlus(Iter) {
 function finishQuery(type, idlist, csvData, first, layerId) { //finish query and show results on map
     //console.log('finishQuery');
     if (first) {
-        currentLegend = currentCreateLegend;
+        if (currentCreateLegend !== '') currentLegend = currentCreateLegend;
         fillcolor = chroma.random().hex();
         mysearchbordercolor = '#000000';
         mysearchborderwidth = 1;
@@ -421,6 +425,7 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
         layer_id = layerId;
         if (type !== 'table' && type !== null) eval('map.removeLayer(' + layer_id + ')');
     }
+    console.log(currentLegend);
     jsonresult = {
         "type": "FeatureCollection", //prepare geojson
         "features": [],
@@ -472,8 +477,8 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
     });
     CSVresultExport = toCSV(tmpCSV);
 
-    jsonresult = setSearchInfo(jsonresult, CSVresultJSON, false);
-    jsonresultPoints = setSearchInfo(jsonresultPoints, CSVresultJSON, false);
+    jsonresult = setSearchInfo(jsonresult, CSVresultJSON, first);
+    jsonresultPoints = setSearchInfo(jsonresultPoints, CSVresultJSON, first);
 
 
     if (type === 'poly') {
@@ -675,8 +680,8 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
 
     if (type === 'choropoly' || type === 'choropoint') {
         //console.log('create chorolayers');
-        if (type === 'choropoly') jsonresult = setChoroplethJSON(jsonresult, false);
-        if (type === 'choropoint') jsonresult = setChoroplethJSON(jsonresultPoints, false);
+        if (type === 'choropoly') jsonresult = setChoroplethJSON(jsonresult, myValueMode);
+        if (type === 'choropoint') jsonresult = setChoroplethJSON(jsonresultPoints, myValueMode);
         choroplethLayer = L.choropleth(jsonresult, {
             pointToLayer: function (feature, latlng) {
                 return L.circleMarker(latlng);
@@ -744,56 +749,49 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
 
 
     if (type === 'chart') {
-        
+
+        var chartmarkers = [];
+        console.log(mysearchpointradius);
+
         $.each(jsonresultPoints.features, function (i, feature) {
             var options = {
                 data: feature.search.distinctCount,
                 chartOptions: jsonresultPoints.properties.ChartOptions,
-                color: '#000',
-                weight: 1,
-                radius: 25,
-                fillOpacity: 1,
-                barThickness: 15
+                //color: '#000000',
+                //fillColor: 'hsl(' + (Math.random() * 360) + ',100%,100%)',
+                weight: parseFloat(mysearchborderwidth),
+                radius: parseFloat(mysearchpointradius),
+                fillOpacity: parseFloat(1 - mysearchopacity / 100),
+                barThickness: parseFloat(mysearchbarthickness)
             };
 
-            var ChartMarker = new L.PieChartMarker(new L.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]), options).addTo(map);
+            var ChartMarker = new L.PieChartMarker(new L.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]), options);
+            chartmarkers.push(ChartMarker);
         });
-        MultiColorSearchStyle = {
-                "color": mysearchbordercolor,
-                "weight": mysearchborderwidth,
-                "fillOpacity": (1 - (mysearchopacity / 100)),
-                "radius": mysearchpointradius
-            }
-            //console.log('colorpoly resultjson')
-            resultpoly = L.geoJSON(jsonresult, {
-                style: function (feature) {
-                    var color = feature.search.searchResults[0].fillColor;
-                    return {
-                        fillColor: color,
-                        weight: mysearchborderwidth,
-                        fillOpacity: (1 - mysearchopacity / 100),
-                        color: mysearchbordercolor
-                    }
-                },
-                shapetype: 'poly',
-                legendTitle: currentLegend,
-                layername: layer_id
-            });
-            eval(layer_id + ' = $.extend(true, {}, resultpoly)');
-            map.addLayer((eval(layer_id)));
-            var currentColorPolys
+        ChartStyle = {
+            "color": mysearchbordercolor,
+            "weight": mysearchborderwidth,
+            "fillOpacity": (1 - (mysearchopacity / 100)),
+            "radius": mysearchpointradius,
+            "barthickness": mysearchbarthickness
+        }
+        //console.log('colorpoly resultjson')
 
-            //console.log('create color entries poly');
-            $.each(currentStatistics, function (i, stat) {
-                //console.log(stat);
-                if (i == 0) {
-                    currentColorPolys = '<ul class="multicolorlist"><li class="multicolor" style="float: left; width: auto; margin-right: 6px">' + stat.SearchKey + '</li><li class="multicolor"' +
-                        ' style="float: right; min-width: 60px; border: ' + mysearchborderwidth + 'px solid; border-color: ' + mysearchbordercolor + '; background-color: ' + stat.FillColor + ';">&nbsp;</li></ul>';
-                } else {
-                    currentColorPolys += '<ul class="multicolorlist"><li class="multicolor" style="float: left; width: auto; margin-right: 6px">' + stat.SearchKey + '</li><li class="multicolor"' +
-                        ' style="float: right; min-width: 60px; border: ' + mysearchborderwidth + 'px solid; border-color: ' + mysearchbordercolor + '; background-color: ' + stat.FillColor + ';">&nbsp;</li></ul>';
-                }
-            })
+        eval(layer_id + ' = L.layerGroup(chartmarkers, {shapetype: \'chart\', legendTitle: currentLegend, layername: layer_id})');
+        map.addLayer((eval(layer_id)));
+        var currentColorPolys;
+
+        //console.log('create color entries poly');
+        $.each(currentStatistics, function (i, stat) {
+            //console.log(stat);
+            if (i == 0) {
+                currentColorPolys = '<ul class="multicolorlist"><li class="multicolor" style="float: left; width: auto; margin-right: 6px">' + stat.SearchKey + '</li><li class="multicolor"' +
+                    ' style="float: right; min-width: 60px; border: ' + mysearchborderwidth + 'px solid; border-color: ' + mysearchbordercolor + '; background-color: ' + stat.FillColor + ';">&nbsp;</li></ul>';
+            } else {
+                currentColorPolys += '<ul class="multicolorlist"><li class="multicolor" style="float: left; width: auto; margin-right: 6px">' + stat.SearchKey + '</li><li class="multicolor"' +
+                    ' style="float: right; min-width: 60px; border: ' + mysearchborderwidth + 'px solid; border-color: ' + mysearchbordercolor + '; background-color: ' + stat.FillColor + ';">&nbsp;</li></ul>';
+            }
+        })
 
         var multibutton = '<a onclick="minmaxLegend(this);"' +
             ' style="cursor: pointer; font-size: 1.3em; margin-top: -1px;" class="float-right"><i class="far fa-minus-square" title="collapse"></i></a>' +
@@ -801,7 +799,7 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
             'onclick="currentLegend = (this.getAttribute(\'data-legend\')); ' +
             'CSVresult = JSON.parse(this.getAttribute(\'data-CSVresult\')); ' +
             'finalSearchResultIds = JSON.parse(this.getAttribute(\'data-idlist\')); ' +
-            'MultiColorSearchStyle = JSON.parse(this.getAttribute(\'data-style\')); ' +
+            'ChartStyle = JSON.parse(this.getAttribute(\'data-style\')); ' +
             'currentStatistics = JSON.parse(this.getAttribute(\'data-search\')); ' +
             'layertypes = JSON.parse(this.getAttribute(\'data-layertypes\')); ' +
             'jsonresult.properties.statistics = currentStatistics; ' +
@@ -814,7 +812,7 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
             'data-layertypes=\'' + JSON.stringify(jsonresult.properties.layertypes) + '\' ' +
             'data-idlist="' + JSON.stringify(finalSearchResultIds) + '" ' +
             'data-layerId="' + layer_id + '" ' +
-            'data-style=\'' + JSON.stringify(MultiColorSearchStyle) + '\' ' +
+            'data-style=\'' + JSON.stringify(ChartStyle) + '\' ' +
             '>' +
             '<i class="fas fa-palette" title="click to open layer options"></i></a>' +
             '<div class="mt-2"></div>'
@@ -823,13 +821,26 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
         createLegend(map, (eval(layer_id)), currentColorPolys);
         orderlayer(myselector);
     }
+    //todo: add success icon :-)
+    infoalert = '<div class="alert alert-info alert-dismissible fade show" role="alert"><span class="infotext">\n' +
+        '  One layer has been added to the map. Click the legend entry for further options or add other search criteria </span>\n' +
+        '  <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="">\n' +
+        '    <span aria-hidden="true">×</span>\n' +
+        '  </button>\n' +
+        '</div>';
+    if (first && type !== 'table') {$('#infoalert').html(infoalert);
+    var thisAlert = document.getElementById('infoalert');
+    thisAlert.scrollIntoView(false);
+    }
+
 }
 
 function CSVtable(csvData) {
     //console.log('CSVtable');
     var level = csvData[0].ObjectClass;
     var search = csvData[0].Search;
-    if (search === 'timespan') search = (JSON.stringify(csvData[0].searchResult)).slice(12);
+    if (search === 'timespan') search = (JSON.stringify(csvData[0].searchResult)).slice(12, -1);
+    console.log(search);
     if (typeof (tableIter) !== 'undefined') {
         if (tableIter >= Globaliter) delete tableIter
     }
@@ -873,14 +884,6 @@ function CSVtable(csvData) {
 
     if ((search.includes('dimension') || search.includes('material') || search.includes('value')) === false) {
         table.columns([3, 4]).visible(false);
-        $('#myvisformCSV').empty();
-    } else {
-        startvis(true)
-        $('#myvisformCSV .visbutton').removeClass('btn-sm');
-        $('#AdvOptBtn').click(function () {
-            var element = $("#AdvOptBtn");
-            element.scrollIntoView({behavior: "smooth"})
-        })
     }
 
     if (typeof (tableIter) === 'undefined') {

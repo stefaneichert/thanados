@@ -324,7 +324,7 @@ function appendsexbuttons(iter) {
 }
 
 function toggleOpt() {
-    $('.myoptions').toggle();
+    //$('.myoptions').toggle();
 }
 
 function finishvis() {

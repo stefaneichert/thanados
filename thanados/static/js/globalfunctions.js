@@ -415,7 +415,7 @@ function openStyleDialog(layerType) {
 
         width: mymodalwith,
         minHeight: 450,
-        position: {my: "left top", at: "right bottom", of: $('#SidebarButton')},
+        position: {my: "left+20 top+20", at: "left top", of: $('#container')},
         //height: 450,
         open: function () {
             // Destroy Close Button (for subsequent opens)
@@ -521,6 +521,12 @@ function openStyleDialog(layerType) {
                 '</button>' +
                 '<button class="pointBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'point\', finalSearchResultIds, CSVresult, false, currentLayerId)" title="Apply as point layer" type="button">' +
                 '<i class="fas fa-map-marker"></i>' +
+                '</button>' +
+                '<button onclick="removeLayer(currentLayerId, \'map\')" id="RemoveLayerBtn" class="pointBtn btn btn-secondary btn-sm toremovebtn" title="Delete layer" type="button">' +
+                '<i class="fas fa-trash-alt"></i>' +
+                '</button>' +
+                '<button onclick="copyLayer()" id="CopyLayerBtn" class="pointBtn btn btn-secondary btn-sm toremovebtn" title="Duplicate layer and add to map" type="button">' +
+                '<i class="fas fa-clone"></i>' +
                 '</button>' +
                 '<div class="dropdown">' +
                 '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
@@ -659,6 +665,12 @@ function openStyleDialog(layerType) {
                 '<button id="ChoroStylePntBtn" class="pointBtn btn btn-secondary btn-sm toremovebtn" title="Apply as point layer" type="button">' +
                 '<i class="fas fa-map-marker"></i>' +
                 '</button>' +
+                '<button onclick="removeLayer(currentLayerId, \'map\')" id="RemoveLayerBtn" class="pointBtn btn btn-secondary btn-sm toremovebtn" title="Delete layer" type="button">' +
+                '<i class="fas fa-trash-alt"></i>' +
+                '</button>' +
+                '<button onclick="copyLayer()" id="CopyLayerBtn" class="pointBtn btn btn-secondary btn-sm toremovebtn" title="Duplicate layer and add to map" type="button">' +
+                '<i class="fas fa-clone"></i>' +
+                '</button>' +
                 '<div class="dropdown">' +
                 '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
                 '<i class="far fa-save"></i>' +
@@ -791,7 +803,7 @@ function openStyleDialog(layerType) {
                 '<input class="form-control" id="Searchmysearchopacityvalue" type="number" value="' + (100 - ((MultiColorSearchStyle.fillOpacity) * 100)) + '" min="0" max="100" style="max-width: 60px">' +
                 '</div>' +
 
-                '<div id="mytable" class="mt-2 mb-2 border" style="line-height: 1.3em; max-height: 302px; font-size: 0.9em; overflow-y: auto; overflow-x: hidden; border-collapse: collapse;">' +
+                '<div id="mytable" class="mt-2 mb-2 border" style="line-height: 1.3em; max-height: 313px; font-size: 0.9em; overflow-y: auto; overflow-x: hidden; border-collapse: collapse;">' +
                 '<table id="layerlist" class="display table table-striped table-bordered"\n' +
                 '                       style="width: 100%; border-collapse: collapse !important;">\n' +
                 '                    <thead>\n' +
@@ -808,6 +820,12 @@ function openStyleDialog(layerType) {
                 '</button>' +
                 '<button class="pointBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'colorpoint\', finalSearchResultIds, CSVresult, false, currentLayerId)" title="Apply as point layer" type="button">' +
                 '<i class="fas fa-map-marker"></i>' +
+                '</button>' +
+                '<button onclick="removeLayer(currentLayerId, \'map\')" id="RemoveLayerBtn" class="pointBtn btn btn-secondary btn-sm toremovebtn" title="Delete layer" type="button">' +
+                '<i class="fas fa-trash-alt"></i>' +
+                '</button>' +
+                '<button onclick="copyLayer()" id="CopyLayerBtn" class="pointBtn btn btn-secondary btn-sm toremovebtn" title="Duplicate layer and add to map" type="button">' +
+                '<i class="fas fa-clone"></i>' +
                 '</button>' +
                 '<div class="dropdown">' +
                 '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
@@ -912,23 +930,24 @@ function openStyleDialog(layerType) {
                 '</div>' +
                 '<div class="mysearchoptions input-group input-group-sm mb-3">' +
                 '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="searchbordercolor">Border color: </label>' +
+                '<label class="input-group-text" for="Searchsearchbarwidth">Bar thickness: </label>' +
                 '</div>' +
-                '<input class="form-control" id="Searchcolorborder" style="max-width: 70px" type="color" value="' + MultiColorSearchStyle.color + '">' +
-                '<span class="input-group-text input-group-middle">Border width: </span>' +
-                '<input class="form-control input-group-middle" id="Searchsearchborderwidth" type="number" value="' + MultiColorSearchStyle.weight + '" min="0">' +
-                '<span title="Radius for point result" class="pointBtn input-group-text input-group-middle">Radius: </span>' +
-                '<input title="Radius for point result" class="pointBtn form-control" id="Searchsearchpointradius" type="number" value="' + MultiColorSearchStyle.radius + '" min="1">' +
+                '<input class="form-control input-group-middle" id="Searchsearchbarwidth" type="number" value="' + ChartStyle.barthickness + '" min="0">' +
+                '<span title="Radius chart marker" class="pointBtn input-group-text input-group-middle">Radius: </span>' +
+                '<input title="Radius chart marker" class="pointBtn form-control" id="Searchsearchpointradius" type="number" value="' + ChartStyle.radius + '" min="1">' +
                 '</div>' +
                 '<div class="mysearchoptions input-group input-group-sm mb-3">' +
                 '<div class="input-group-prepend">' +
                 '<label class="input-group-text" for="Opacity">Opacity (%): </label>' +
                 '</div>' +
-                '<input class="form-control input-group-middle" id="Searchmysearchopacity" type="range" value="' + (100 - ((MultiColorSearchStyle.fillOpacity) * 100)) + '" min="0" max="100">' +
-                '<input class="form-control" id="Searchmysearchopacityvalue" type="number" value="' + (100 - ((MultiColorSearchStyle.fillOpacity) * 100)) + '" min="0" max="100" style="max-width: 60px">' +
+                '<input class="form-control input-group-middle" id="Searchmysearchopacity" type="range" value="' + (100 - ((ChartStyle.fillOpacity) * 100)) + '" min="0" max="100">' +
+                '<input class="form-control" id="Searchmysearchopacityvalue" type="number" value="' + (100 - ((ChartStyle.fillOpacity) * 100)) + '" min="0" max="100" style="max-width: 60px">' +
+                '<span class="input-group-text input-group-middle">Border width: </span>' +
+                '<input class="form-control input-group-addon" id="Searchsearchborderwidth" type="number" value="' + ChartStyle.weight + '" min="0">' +
                 '</div>' +
 
-                '<div id="mytable" class="mt-2 mb-2 border" style="line-height: 1.3em; max-height: 302px; font-size: 0.9em; overflow-y: auto; overflow-x: hidden; border-collapse: collapse;">' +
+
+                '<div id="mytable" class="mt-2 mb-2 border" style="line-height: 1.3em; max-height: 313px; font-size: 0.9em; overflow-y: auto; overflow-x: hidden; border-collapse: collapse;">' +
                 '<table id="layerlist" class="display table table-striped table-bordered"\n' +
                 '                       style="width: 100%; border-collapse: collapse !important;">\n' +
                 '                    <thead>\n' +
@@ -942,6 +961,12 @@ function openStyleDialog(layerType) {
 
                 '<button class="pointBtn btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'chart\', finalSearchResultIds, CSVresult, false, currentLayerId)" title="Apply as chart-marker layer" type="button">' +
                 '<i class="fas fa-chart-pie"></i>' +
+                '</button>' +
+                '<button onclick="removeLayer(currentLayerId, \'map\')" id="RemoveLayerBtn" class="pointBtn btn btn-secondary btn-sm toremovebtn" title="Delete layer" type="button">' +
+                '<i class="fas fa-trash-alt"></i>' +
+                '</button>' +
+                '<button onclick="copyLayer()" id="CopyLayerBtn" class="pointBtn btn btn-secondary btn-sm toremovebtn" title="Duplicate layer and add to map" type="button">' +
+                '<i class="fas fa-clone"></i>' +
                 '</button>' +
                 '<div class="dropdown">' +
                 '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
@@ -987,7 +1012,7 @@ function openStyleDialog(layerType) {
                 jsonresultPoints.properties.statistics = currentStatistics;
             });
 
-            mysearchopacity = (100 - MultiColorSearchStyle.fillOpacity * 100);
+            mysearchopacity = (100 - ChartStyle.fillOpacity * 100);
             $('#Searchmysearchopacity').on('input change', function () {
                 mysearchopacity = $('#Searchmysearchopacity').val();
                 $('#Searchmysearchopacityvalue').val(mysearchopacity);
@@ -1000,18 +1025,20 @@ function openStyleDialog(layerType) {
                     $('#Searchmysearchopacityvalue').val(0);
                 $('#Searchmysearchopacity').val(mysearchopacity);
             });
-            mysearchbordercolor = MultiColorSearchStyle.color;
-            searchbordercolorInput = document.getElementById("Searchcolorborder");
-            mysearchbordercolor = searchbordercolorInput.value;
-            searchbordercolorInput.addEventListener("input", function () {
-                mysearchbordercolor = searchbordercolorInput.value;
-            }, false);
+            mysearchbordercolor = "#000000";
 
-            mysearchborderwidth = MultiColorSearchStyle.weight;
+            mysearchborderwidth = ChartStyle.weight;
             $('#Searchsearchborderwidth').on('input change', function () {
                 mysearchborderwidth = $('#Searchsearchborderwidth').val();
                 if (mysearchborderwidth < 0)
                     $('#Searchsearchborderwidth').val(0);
+            });
+
+            mysearchbarthickness = ChartStyle.barthickness;
+            $('#Searchsearchbarwidth').on('input change', function () {
+                mysearchbarthickness = $('#Searchsearchbarwidth').val();
+                if (mysearchbarthickness < 0)
+                    $('#Searchsearchbarwidth').val(0);
             });
 
             mysearchpointradius = $('#Searchsearchpointradius').val()
@@ -1051,6 +1078,12 @@ function openStyleDialog(layerType) {
                 '                    </thead>\n' +
                 '</table>' +
                 '</div>' +
+                '<button onclick="removeLayer(currentLayerId, \'map\')" id="RemoveLayerBtn" class="pointBtn btn btn-secondary btn-sm toremovebtn" title="Delete layer" type="button">' +
+                '<i class="fas fa-trash-alt"></i>' +
+                '</button>' +
+                '<button onclick="copyLayer()" id="CopyLayerBtn" class="pointBtn btn btn-secondary btn-sm toremovebtn" title="Duplicate layer and add to map" type="button">' +
+                '<i class="fas fa-clone"></i>' +
+                '</button>' +
                 '<div class="dropdown">' +
                 '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
                 '<i class="far fa-save"></i>' +
@@ -1407,6 +1440,7 @@ function legendToggle(mapId) {
         $(currentLegendDom).html(legendOff);
         eval(mapId + '.dragging.enable();');
         eval(mapId + '.doubleClickZoom.enable();');
+        eval(mapId + '.scrollWheelZoom.enable();');
     } else {
         $(currentLegendDom).html(legendOn)
     }
@@ -1483,7 +1517,7 @@ function setSearchInfo(data, CSV, first) {
         $.each(CSVresultJSON, function (i, dataset) {
             if (dataset.searchResult === resultName) count += 1;
         })
-        if (typeof (currentStatistics) != "undefined") {
+        if (first === false) {
             $.each(currentStatistics, function (i, dataset) {
                 if (dataset.SearchKey === resultName) randomColor = dataset.FillColor;
             })
@@ -1520,7 +1554,6 @@ function setSearchInfo(data, CSV, first) {
         feature.search.count = 0;
         feature.search.searchArray = [];
 
-        //todo: select between value and count and add auto switch if values are not available
         $.each(CSV, function (i, dataset) {
             if (dataset.graveID === currentId) {
                 if (dataset.value !== "") {
@@ -1583,10 +1616,10 @@ function setSearchInfo(data, CSV, first) {
 function setChoroplethJSON(data, value) {
     $.each(data.features, function (i, feature) {
         //console.log(feature.search.searchResults[0].value);
-        if (value) {
+        if (value === 'value') {
             feature.properties.chorovalue = parseFloat(feature.search.searchResults[0].value);
         }
-        if (value === false) {
+        if (value === 'count') {
             feature.properties.chorovalue = feature.search.count
         }
     });
@@ -1604,4 +1637,17 @@ function minmaxLegend(div) {
         $(div).find('.far').addClass('fa-minus-square');
         $(div).find('.far').prop('title', 'collapse');
     }
+}
+
+function removeLayer(thislayer, thismap) {
+    var thisLayer = eval('$("#' + thismap + '_' + thislayer +'")');
+    eval(thismap + '.removeLayer(' + thislayer + ')');
+    var myselector = eval('$("#' + thismap + '_legendentries")');
+    $(thisLayer).remove();
+    orderlayer(myselector);
+}
+
+function copyLayer() {
+    currentLegend = currentLegend + ' (copy)';
+    finishQuery('poly', finalSearchResultIds, CSVresult, true, null)
 }

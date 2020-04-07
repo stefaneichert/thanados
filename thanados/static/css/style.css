@@ -562,6 +562,8 @@ a.ui-button:active,
 
 .ui-dialog {
     padding: 0;
+    -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
 }
 
 .ui-widget-header {
@@ -875,4 +877,8 @@ table.dataTable thead .sorting_desc_disabled:after {
 
 input[type=color] {
     cursor: pointer;
+}
+
+#infoalert {
+    padding-top: 3em;
 }
