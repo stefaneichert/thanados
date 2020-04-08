@@ -17,7 +17,7 @@
     <link href="/static/vendor/node_modules/jquery-ui-dist/jquery-ui.min.css" rel="stylesheet">
     <script src="/static/vendor/node_modules/jquery-ui-dist/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="/static/vendor/node_modules/leaflet-dvf/dist/css/dvf.css">
-
+    <link href="/static/css/style.css" rel="stylesheet">
     <link href="/static/vendor/node_modules/@fortawesome/fontawesome-free/css/all.css"
           rel="stylesheet">
     <link href="/static/vendor/node_modules/jstree/dist/themes/default/style.min.css"
@@ -56,7 +56,7 @@
     <script src="/static/vendor/node_modules/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
     <script src="/static/vendor/node_modules/leaflet.heat/dist/leaflet-heat.js"></script>
     <script src="/static/vendor/node_modules/leaflet.fullscreen/Control.FullScreen.js"></script>
-    <link href="/static/css/style.css" rel="stylesheet">
+    <link href="/static/css/datatables.css" rel="stylesheet">
     <script> thunderforestAPIkey = "{{ thunderforest }}"</script>
 </head>
 <body>
@@ -115,23 +115,23 @@
         <div class="col-sm-auto col-tab-left LayerOptionSelect" style="max-width: fit-content">
             <ul class="nav flex-column nav-tabs tabs-left" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link" title="Overview" id="info" href="#"><i
+                    <a class="nav-link nav-display" title="Overview" id="info" href="#"><i
                             class="fas fa-info"></i></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" title="Single color layer settings" id="poly" mt-1 mb-3href="#"><i
+                    <a class="nav-link nav-display" title="Single color layer settings" id="poly" href="#"><i
                             class="fas fa-map-marker-alt"></i></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" title="Multiple color layer settings" id="colorPoly" mt-1 mb-3href="#"><i
+                    <a class="nav-link nav-display" title="Multiple color layer settings" id="colorPoly" href="#"><i
                             class="fas fas fa-palette"></i></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" title="Gradient color layer settings" id="choropoly" mt-1 mb-3href="#"><i
+                    <a class="nav-link nav-display" title="Gradient color layer settings" id="choropoly" href="#"><i
                             class="fas fa-swatchbook"></i></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" title="Chart markers settings" id="chart" mt-1 mb-3href="#"><i
+                    <a class="nav-link nav-display" title="Chart markers settings" id="chart" href="#"><i
                             class="fas fa-chart-pie"></i></a>
                 </li>
             </ul>

@@ -600,10 +600,10 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
                 //console.log(stat);
                 if (i == 0) {
                     currentColorPolys = '<ul class="multicolorlist"><li class="multicolor" style="float: left; width: auto; margin-right: 6px">' + stat.SearchKey + '</li><li class="multicolor"' +
-                        ' style="float: right; min-width: 60px; border: ' + mysearchborderwidth + 'px solid; border-color: ' + mysearchbordercolor + '; background-color: ' + stat.FillColor + ';">&nbsp;</li></ul>';
+                        ' style="float: right; min-width: 60px; border: ' + mysearchborderwidth + 'px solid ' + mysearchbordercolor + '; background-color: ' + stat.FillColor + ';">&nbsp;</li></ul>';
                 } else {
                     currentColorPolys += '<ul class="multicolorlist"><li class="multicolor" style="float: left; width: auto; margin-right: 6px">' + stat.SearchKey + '</li><li class="multicolor"' +
-                        ' style="float: right; min-width: 60px; border: ' + mysearchborderwidth + 'px solid; border-color: ' + mysearchbordercolor + '; background-color: ' + stat.FillColor + ';">&nbsp;</li></ul>';
+                        ' style="float: right; min-width: 60px; border: ' + mysearchborderwidth + 'px solid ' + mysearchbordercolor + '; background-color: ' + stat.FillColor + ';">&nbsp;</li></ul>';
                 }
             })
         }
@@ -639,13 +639,13 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
                         'style="float: right; margin-left: 1em;\n' +
                         '    margin-top: -2px;\n' +
                         '    border-radius: 50%; width: 16px !important;\n' +
-                        '    height: 16px !important; max-height: 16px; border: ' + mysearchborderwidth + 'px solid; border-color: ' + mysearchbordercolor + '; background-color: ' + stat.FillColor + ';">&nbsp;</li></ul>';
+                        '    height: 16px !important; max-height: 16px; border: ' + mysearchborderwidth + 'px solid ' + mysearchbordercolor + '; background-color: ' + stat.FillColor + ';">&nbsp;</li></ul>';
                 } else {
                     currentColorPolys += '<ul class="multicolorlist"><li class="multicolor" style="float: left; width: auto; margin-right: 6px">' + stat.SearchKey + '</li><li class="multicolor" ' +
                         'style="float: right; margin-left: 1em;\n' +
                         '    margin-top: -2px;\n' +
                         '    border-radius: 50%; width: 16px !important;\n' +
-                        '    height: 16px !important; max-height: 16px; border: ' + mysearchborderwidth + 'px solid; border-color: ' + mysearchbordercolor + '; background-color: ' + stat.FillColor + ';">&nbsp;</li></ul>';
+                        '    height: 16px !important; max-height: 16px; border: ' + mysearchborderwidth + 'px solid ' + mysearchbordercolor + '; background-color: ' + stat.FillColor + ';">&nbsp;</li></ul>';
                 }
             })
         }
@@ -786,10 +786,10 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
             //console.log(stat);
             if (i == 0) {
                 currentColorPolys = '<ul class="multicolorlist"><li class="multicolor" style="float: left; width: auto; margin-right: 6px">' + stat.SearchKey + '</li><li class="multicolor"' +
-                    ' style="float: right; min-width: 60px; border: ' + mysearchborderwidth + 'px solid; border-color: ' + mysearchbordercolor + '; background-color: ' + stat.FillColor + ';">&nbsp;</li></ul>';
+                    ' style="float: right; min-width: 60px; border: ' + mysearchborderwidth + 'px solid ' + mysearchbordercolor + '; background-color: ' + stat.FillColor + ';">&nbsp;</li></ul>';
             } else {
                 currentColorPolys += '<ul class="multicolorlist"><li class="multicolor" style="float: left; width: auto; margin-right: 6px">' + stat.SearchKey + '</li><li class="multicolor"' +
-                    ' style="float: right; min-width: 60px; border: ' + mysearchborderwidth + 'px solid; border-color: ' + mysearchbordercolor + '; background-color: ' + stat.FillColor + ';">&nbsp;</li></ul>';
+                    ' style="float: right; min-width: 60px; border: ' + mysearchborderwidth + 'px solid ' + mysearchbordercolor + '; background-color: ' + stat.FillColor + ';">&nbsp;</li></ul>';
             }
         })
 
@@ -821,13 +821,10 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
         createLegend(map, (eval(layer_id)), currentColorPolys);
         orderlayer(myselector);
     }
-    //todo: add success icon :-)
-    infoalert = '<div class="alert alert-info alert-dismissible fade show" role="alert"><span class="infotext">\n' +
-        '  One layer has been added to the map. Click the legend entry for further options or add other search criteria </span>\n' +
-        '  <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="">\n' +
-        '    <span aria-hidden="true">×</span>\n' +
-        '  </button>\n' +
-        '</div>';
+
+    infoalert = '<div onclick="$(\'#infoalert\').empty()" class="alert alert-info fade show" role="alert"><i style="float: right; font-size: 2em; margin: 0.5em;" class="fas fa-check"></i><span>\n' +
+                'One layer has been added to the map. <br> Click the legend entry for further options or add other search criteria. </span>\n' +
+                '</div>';
     if (first && type !== 'table') {$('#infoalert').html(infoalert);
     var thisAlert = document.getElementById('infoalert');
     thisAlert.scrollIntoView(false);

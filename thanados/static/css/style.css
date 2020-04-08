@@ -636,25 +636,6 @@ a:hover {
     padding: 0.5em;
 }
 
-.table th, .table td {
-    padding: 0.4rem;
-}
-
-table.dataTable thead .sorting:before, table.dataTable thead .sorting:after,
-table.dataTable thead .sorting_asc:before,
-table.dataTable thead .sorting_asc:after,
-table.dataTable thead .sorting_desc:before,
-table.dataTable thead .sorting_desc:after,
-table.dataTable thead .sorting_asc_disabled:before,
-table.dataTable thead .sorting_asc_disabled:after,
-table.dataTable thead .sorting_desc_disabled:before,
-table.dataTable thead .sorting_desc_disabled:after {
-    position: absolute;
-    bottom: 0.5em;
-    display: block;
-    opacity: 0.3;
-}
-
 .page-item.active .page-link {
     z-index: 3;
     color: #fff;
@@ -872,7 +853,7 @@ table.dataTable thead .sorting_desc_disabled:after {
 }
 
 #CSVmodal > .modal-dialog {
-    max-width: 95%!important;
+    max-width: 95% !important;
 }
 
 input[type=color] {
@@ -881,4 +862,64 @@ input[type=color] {
 
 #infoalert {
     padding-top: 3em;
+}
+
+#mystyleform > .card > .card-header {
+    padding: 0;
+    font-size: 0.875rem;
+    height: 34px;
+    color: #495057 !important;
+    background-color: #e9ecef;
+    border-bottom: none !important;
+}
+
+#mystyleform > .card > .card-header > h7 > .btn {
+    color: #495057 !important;
+}
+
+#mystyleform > .card {
+    border: 1px solid #ced4da;
+    border-bottom: none;
+}
+
+#mystyleform > .card > .collapse > .card-body {
+    padding: 1.5em 0.7em 1.5em 0.7em;
+    font-size: 0.9em;
+}
+
+#mystyleform > .card > .collapse > .card-body > ul > li {
+    padding: 0.6em;
+    font-size: 0.9em;
+}
+
+.card-first {
+    border-top-left-radius: 0.25em !important;
+    border-top-right-radius: 0.25em !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-bottom: none;
+
+}
+
+#mystyleform > .card > .card-header:first-child {
+    border-radius: 0;
+}
+
+.card-middle {
+    border-radius: 0 !important;
+}
+
+.card-last {
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-left-radius: 0.25em !important;
+    border-bottom-right-radius: 0.25em !important;
+    margin-bottom: 0.5em;
+    border-bottom: 1px solid #ced4da !important;
+    border-top: none;
+}
+
+.card-table {
+    padding: 0 !important;
+    border: none !important;
 }

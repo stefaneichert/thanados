@@ -412,10 +412,10 @@ function openStyleDialog(layerType) {
 
     mapdiv = document.getElementById('map');
     $("#styledialog").dialog({
-
+        dialogClass: 'layerdialog',
         width: mymodalwith,
         minHeight: 450,
-        position: {my: "left+20 top+20", at: "left top", of: $('#container')},
+        position: {my: "left+20 top+20", at: "left top", of: "body"}, //$('#container')},
         //height: 450,
         open: function () {
             // Destroy Close Button (for subsequent opens)
@@ -432,12 +432,57 @@ function openStyleDialog(layerType) {
         }
     });
 
-    infoalert = '<div class="alert alert-info alert-dismissible fade show" role="alert"><span class="infotext">\n' +
-        '  This is an info alert with </span>\n' +
-        '  <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="">\n' +
-        '    <span aria-hidden="true">×</span>\n' +
-        '  </button>\n' +
-        '</div>';
+    if (layerType !== 'single') {
+
+        $('.nav-display').removeClass('d-none');
+
+        if (layertypes.multicolor) {
+            if (layertypes.multicolorNoOverlaps) {
+                var multibadge = '<span title="Multiple colors for sub categories of your search parameters are possible without overlaps" class="ml-1 badge float-right badge-success badge-pill"><i class="fas fa-check"></i></span>'
+            } else {
+                var multibadge = '<span title="Multiple colors for sub categories of your search parameters are possible but there are overlapping results. This results from multiple matches in one grave. For one grave only one category can be displayed. You can narrow the results by selecting more detailed categories in the search." class="ml-1 badge float-right badge-success badge-pill">Overlaps &nbsp;<i class="fas fa-info"></i></span>\n'
+            }
+        } else {
+            $('#colorPoly').addClass('d-none');
+            var multibadge = '<span title="There are no distinctive categories in this search. No multiple color display is possible." class="ml-1 badge float-right badge-secondary badge-pill"><i class="fas fa-exclamation-triangle"></i></span>';
+
+        }
+
+        //todo: switch value select
+        if (layertypes.gradientcolor) {
+            if (layertypes.gradientcolorNoOverlaps) {
+                var gradibadge = '<span title="Gradient colors for values of your search parameters are possible without overlaps" class="ml-1 badge float-right badge-success badge-pill">Values &nbsp;<i class="fas fa-check"></i></span>\n'
+            } else {
+                var gradibadge = '<span title="Gradient colors for values of your search parameters are possible but there are overlapping results. This results from multiple matches in one grave. For one grave only one category can be displayed. You can narrow the results by selecting more detailed categories in the search." class="ml-1 badge float-right badge-success badge-pill">Values overlaps &nbsp;<i class="fas fa-info"></i></span>\n'
+            }
+        } else {
+            var gradibadge = '<span title="There are no values to be displayed as gradient colors." class="ml-1 badge float-right badge-secondary badge-pill">Values &nbsp;<i class="fas fa-exclamation-triangle"></i></span>'
+        }
+
+        if (layertypes.gradientcount) {
+            var gradicountbadge = '<span title="Gradient colors for the count of your search parameters for each grave are possible" class="ml-1 badge float-right badge-success badge-pill">Count &nbsp;<i class="fas fa-check"></i></span>\n'
+        } else var gradicountbadge = '<span title="There are no varying counts to be displayed as gradient colors." class="ml-1 badge float-right badge-secondary badge-pill">Count &nbsp;<i class="fas fa-exclamation-triangle"></i></span>\n'
+
+        if (layertypes.gradientcount === false) {
+            if (layertypes.gradientcolor === false) $('#choropoly').addClass('d-none')
+        }
+
+        if (layertypes.charts) {
+            var chartcountbadge = '<span title="Chart markers for the count of your search parameters for each grave are possible" class="ml-1 badge float-right badge-success badge-pill"><i class="fas fa-check"></i></span>\n'
+        } else {
+            $('#chart').addClass('d-none');
+            var chartcountbadge = '<span title="There are no multiple counts of your search results per grave to be displayed as chart markers." class="ml-1 badge float-right badge-secondary badge-pill"><i class="fas fa-exclamation-triangle"></i></span>'
+        }
+    }
+// multicolorNoOverlaps: true,
+// gradientcount: false,
+// gradientcolor: false,
+// gradientcolorNoOverlaps: true,
+// charts: false,
+// chartsNoOverlaps: true
+
+    $("#styleContent").css('max-height', (containerheight - 110) + 'px');
+    $("#styleContent").css('overflow-y', 'auto');
 
     $('.LayerOptionSelect').removeClass('d-none');
 
@@ -655,7 +700,7 @@ function openStyleDialog(layerType) {
                 '                title="Select what value the color intensity is calculated from." \n' +
                 '                id="ValueSelect">\n' +
                 '            <option id="valueOption" class="d-none" title="The value associated with the search result. E.g. the depth of a grave" value="value">Value</option>\n' +
-                '            <option title="The total count of search results per grave. E.g. the number of finds" value="count">Count</option>\n' +
+                '            <option id="countOption" title="The total count of search results per grave. E.g. the number of finds" value="count">Count</option>\n' +
                 '        </select>' +
                 '</div>' +
                 '</div>' +
@@ -803,7 +848,7 @@ function openStyleDialog(layerType) {
                 '<input class="form-control" id="Searchmysearchopacityvalue" type="number" value="' + (100 - ((MultiColorSearchStyle.fillOpacity) * 100)) + '" min="0" max="100" style="max-width: 60px">' +
                 '</div>' +
 
-                '<div id="mytable" class="mt-2 mb-2 border" style="line-height: 1.3em; max-height: 313px; font-size: 0.9em; overflow-y: auto; overflow-x: hidden; border-collapse: collapse;">' +
+                '<div id="mytable" class="mt-2 mb-2 border" style="line-height: 1.3em; max-height: 284px; font-size: 0.9em; overflow-y: auto; overflow-x: hidden; border-collapse: collapse;">' +
                 '<table id="layerlist" class="display table table-striped table-bordered"\n' +
                 '                       style="width: 100%; border-collapse: collapse !important;">\n' +
                 '                    <thead>\n' +
@@ -1064,10 +1109,34 @@ function openStyleDialog(layerType) {
             $('#styledialog').find('.active').removeClass('active');
             $('#info').addClass('active');
             var styledialog = '<form id="mystyleform">\n' +
-                '<h5>Layer overview: ' + currentLegend + '</h5>' +
-                '<h7>' + currentInfoHeadline + '</h7>' +
-                '<p>' + CSVresult.length + ' matches in ' + jsonresult.features.length + ' graves.' + '</p>' +
-                '<div id="mytable" class="mt-2 mb-2 border" style="max-height: 295px; overflow-y: auto; overflow-x: hidden">' +
+                '<h5 class="mt-1 mb-3">Layer overview</h5>' +
+                '  <div class="card card-first">\n' +
+                '    <div class="card-header" id="InfoLayername">\n' +
+                '      <h7 class="mb-0">\n' +
+                '        <button class="btn btn-link infobtns" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoOne" aria-expanded="true" aria-controls="collapseInfoOne">\n' +
+                '        <i class="fas fa-chevron-down mr-2"></i>Info\n' +
+                '        </button>\n' +
+                '      </h7>\n' +
+                '    </div>\n' +
+                '    <div id="collapseInfoOne" class="collapse show" aria-labelledby="headingOne">\n' +
+                '      <div class="card-body">\n' +
+                '        <b>Legend title: </b>' + currentLegend + '<br> \n' +
+                '        <b>Parameters: </b>' + currentInfoHeadline + '<br> \n' +
+                '        <b>Results: </b>' + CSVresult.length + ' matches in ' + jsonresult.features.length + ' graves. \n' +
+                '      </div>\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '  <div class="card card-middle">\n' +
+                '    <div class="card-header" id="headingTwo">\n' +
+                '      <h7 class="mb-0">\n' +
+                '        <button class="btn btn-link infobtns" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoTwo" aria-expanded="false" aria-controls="collapseInfoTwo">\n' +
+                '        <i class="fas fa-chevron-right mr-2"></i>Results\n' +
+                '        </button>\n' +
+                '      </h7>\n' +
+                '    </div>\n' +
+                '    <div id="collapseInfoTwo" class="collapse" aria-labelledby="headingTwo">\n' +
+                '      <div class="card-body card-table">\n' +
+                '<div id="mytable" class="border" style="max-height: 295px; overflow-y: auto; overflow-x: hidden">' +
                 '<table id="layerlistOv" class="display table table-striped table-bordered"\n' +
                 '                       style="width: 100%; margin-top: -1px !important; margin-bottom: -1px !important;">\n' +
                 '                    <thead>\n' +
@@ -1077,6 +1146,37 @@ function openStyleDialog(layerType) {
                 '                    </tr>\n' +
                 '                    </thead>\n' +
                 '</table>' +
+                '</div>' +
+                '      </div>\n' +
+                '    </div>\n' +
+                '  </div>\n' +
+                '  <div class="card card-last">\n' +
+                '    <div class="card-header" id="headingThree">\n' +
+                '      <h7 class="mb-0">\n' +
+                '        <button class="btn btn-link infobtns" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoThree" aria-expanded="false" aria-controls="collapseInfoThree">\n' +
+                '           <i class="fas fa-chevron-right mr-2"></i>Display possibilites' +
+                '        </button>\n' +
+                '      </h7>\n' +
+                '    </div>\n' +
+                '    <div id="collapseInfoThree" class="collapse" aria-labelledby="headingThree">\n' +
+                '      <div class="card-body">\n' +
+                '<ul class="list-group">\n' +
+                '  <li class="list-group-item h7 align-items-center">\n' +
+                '    Single color\n' +
+                '    <span class="ml-1 badge float-right badge-success badge-pill"><i class="fas fa-check"></i></span>\n' +
+                '  </li>\n' +
+                '  <li class="list-group-item h7 align-items-center">\n' +
+                '    <span> Multiple color </span>' + multibadge +
+                '  </li>\n' +
+                '  <li class="list-group-item h7 align-items-center">\n' +
+                '    <span> Gradient color </span>' + gradibadge + gradicountbadge +
+                '  </li>\n' +
+                '  <li class="list-group-item h7 align-items-center">\n' +
+                '    <span> Chart markers </span>' + chartcountbadge +
+                '  </li>\n' +
+                '</ul>' +
+                '      </div>\n' +
+                '    </div>\n' +
                 '</div>' +
                 '<button onclick="removeLayer(currentLayerId, \'map\')" id="RemoveLayerBtn" class="pointBtn btn btn-secondary btn-sm toremovebtn" title="Delete layer" type="button">' +
                 '<i class="fas fa-trash-alt"></i>' +
@@ -1099,6 +1199,17 @@ function openStyleDialog(layerType) {
                 '    </form>';
             $("#styleContent").empty();
             $("#styleContent").html(styledialog);
+
+            $('.infobtns').click(function () {
+                console.log($(this).find('i'));
+                if ($(this).find('i').hasClass('fa-chevron-right')) {
+                    $(this).find('i').removeClass('fa-chevron-right');
+                    $(this).find('i').addClass('fa-chevron-down');
+                } else {
+                    $(this).find('i').removeClass('fa-chevron-down');
+                    $(this).find('i').addClass('fa-chevron-right');
+                }
+            })
 
             table = $('#layerlistOv').DataTable({
                 data: jsonresult.properties.statistics,
@@ -1499,7 +1610,6 @@ function setSearchInfo(data, CSV, first) {
             gradientcolor: false,
             gradientcolorNoOverlaps: true,
             charts: false,
-            chartsNoOverlaps: true
         }
 
     var resultlist = [];
@@ -1593,6 +1703,7 @@ function setSearchInfo(data, CSV, first) {
         if (feature.search.count > 1) {
             if (feature.search.uniqueCount > 1) {
                 data.properties.layertypes.multicolorNoOverlaps = false;
+                data.properties.layertypes.charts = true;
             }
             data.properties.layertypes.gradientcount = true;
         }
@@ -1609,6 +1720,7 @@ function setSearchInfo(data, CSV, first) {
 
     //data.properties.layertypes = setLayerTypes(data);
     if (data.properties.statistics.length > 1) data.properties.layertypes.multicolor = true;
+
 
     return data;
 }
@@ -1640,7 +1752,7 @@ function minmaxLegend(div) {
 }
 
 function removeLayer(thislayer, thismap) {
-    var thisLayer = eval('$("#' + thismap + '_' + thislayer +'")');
+    var thisLayer = eval('$("#' + thismap + '_' + thislayer + '")');
     eval(thismap + '.removeLayer(' + thislayer + ')');
     var myselector = eval('$("#' + thismap + '_legendentries")');
     $(thisLayer).remove();
