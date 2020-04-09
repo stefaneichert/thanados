@@ -822,7 +822,7 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
         orderlayer(myselector);
     }
 
-    infoalert = '<div onclick="$(\'#infoalert\').empty()" class="alert alert-info fade show" role="alert"><i style="float: right; font-size: 2em; margin: 0.5em;" class="fas fa-check"></i><span>\n' +
+    infoalert = '<div onclick="$(\'#infoalert\').empty()" class="alert alert-info fade show" role="alert"><i style="float: right; font-size: 2em; margin: 0.5em; color: #00acff;" class="fas fa-check"></i><span style="font-size: 0.9em;">\n' +
                 'One layer has been added to the map. <br> Click the legend entry for further options or add other search criteria. </span>\n' +
                 '</div>';
     if (first && type !== 'table') {$('#infoalert').html(infoalert);
