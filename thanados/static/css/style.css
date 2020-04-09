@@ -543,6 +543,7 @@ a.ui-button:active,
 
 #mybreadcrumbs {
     margin-bottom: 0;
+    background-color: rgba(0, 0, 0, 0.03);
 }
 
 #mycontent {
@@ -866,11 +867,14 @@ input[type=color] {
 
 #mystyleform > .card > .card-header {
     padding: 0;
-    font-size: 0.875rem;
+    font-size: 0.875rem!important;
     height: 34px;
     color: #495057 !important;
     background-color: #e9ecef;
     border-bottom: none !important;
+}
+.infobtns {
+    font-size: 0.875rem!important;
 }
 
 #mystyleform > .card > .card-header > h7 > .btn {
@@ -883,6 +887,11 @@ input[type=color] {
 }
 
 #mystyleform > .card > .collapse > .card-body {
+    padding: 1.5em 0.7em 1.5em 0.7em;
+    font-size: 0.9em;
+}
+
+#mystyleform > .card > .collapse:not(.show) > .card-body {
     padding: 1.5em 0.7em 1.5em 0.7em;
     font-size: 0.9em;
 }

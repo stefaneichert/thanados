@@ -1113,13 +1113,14 @@ function openStyleDialog(layerType) {
                 '  <div class="card card-first">\n' +
                 '    <div class="card-header" id="InfoLayername">\n' +
                 '      <h7 class="mb-0">\n' +
-                '        <button class="btn btn-link infobtns" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoOne" aria-expanded="true" aria-controls="collapseInfoOne">\n' +
+                '        <a href="#" class="btn infobtns btn-link" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoOne" aria-expanded="true" aria-controls="collapseInfoOne">\n' +
                 '        <i class="fas fa-chevron-down mr-2"></i>Info\n' +
-                '        </button>\n' +
+                '        </a>\n' +
                 '      </h7>\n' +
                 '    </div>\n' +
                 '    <div id="collapseInfoOne" class="collapse show" aria-labelledby="headingOne">\n' +
-                '      <div class="card-body">\n' +
+                '      <div class="card-body" style="padding: 1.5em 0.7em 1.5em 0.7em;\n' +
+                '    font-size: 0.9em;">\n' +
                 '        <b>Legend title: </b>' + currentLegend + '<br> \n' +
                 '        <b>Parameters: </b>' + currentInfoHeadline + '<br> \n' +
                 '        <b>Results: </b>' + CSVresult.length + ' matches in ' + jsonresult.features.length + ' graves. \n' +
@@ -1129,13 +1130,14 @@ function openStyleDialog(layerType) {
                 '  <div class="card card-middle">\n' +
                 '    <div class="card-header" id="headingTwo">\n' +
                 '      <h7 class="mb-0">\n' +
-                '        <button class="btn btn-link infobtns" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoTwo" aria-expanded="false" aria-controls="collapseInfoTwo">\n' +
+                '        <a href="#" class="btn infobtns btn-link" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoTwo" aria-expanded="false" aria-controls="collapseInfoTwo">\n' +
                 '        <i class="fas fa-chevron-right mr-2"></i>Results\n' +
-                '        </button>\n' +
+                '        </a>\n' +
                 '      </h7>\n' +
                 '    </div>\n' +
                 '    <div id="collapseInfoTwo" class="collapse" aria-labelledby="headingTwo">\n' +
-                '      <div class="card-body card-table">\n' +
+                '      <div class="card-body card-table" style="padding: 0 !important;\n' +
+                '    border: none !important; font-size: 0.9em; line-height: 1.3em;">\n' +
                 '<div id="mytable" class="border" style="max-height: 295px; overflow-y: auto; overflow-x: hidden">' +
                 '<table id="layerlistOv" class="display table table-striped table-bordered"\n' +
                 '                       style="width: 100%; margin-top: -1px !important; margin-bottom: -1px !important;">\n' +
@@ -1153,25 +1155,26 @@ function openStyleDialog(layerType) {
                 '  <div class="card card-last">\n' +
                 '    <div class="card-header" id="headingThree">\n' +
                 '      <h7 class="mb-0">\n' +
-                '        <button class="btn btn-link infobtns" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoThree" aria-expanded="false" aria-controls="collapseInfoThree">\n' +
+                '        <a href="#" class="btn infobtns btn-link" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoThree" aria-expanded="false" aria-controls="collapseInfoThree">\n' +
                 '           <i class="fas fa-chevron-right mr-2"></i>Display possibilites' +
-                '        </button>\n' +
+                '        </a>\n' +
                 '      </h7>\n' +
                 '    </div>\n' +
                 '    <div id="collapseInfoThree" class="collapse" aria-labelledby="headingThree">\n' +
-                '      <div class="card-body">\n' +
+                '      <div class="card-body" style="padding: 1.5em 0.7em 1.5em 0.7em;\n' +
+                '    font-size: 0.9em;">\n' +
                 '<ul class="list-group">\n' +
-                '  <li class="list-group-item h7 align-items-center">\n' +
+                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h7 align-items-center">\n' +
                 '    Single color\n' +
                 '    <span class="ml-1 badge float-right badge-success badge-pill"><i class="fas fa-check"></i></span>\n' +
                 '  </li>\n' +
-                '  <li class="list-group-item h7 align-items-center">\n' +
+                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h7 align-items-center">\n' +
                 '    <span> Multiple color </span>' + multibadge +
                 '  </li>\n' +
-                '  <li class="list-group-item h7 align-items-center">\n' +
+                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h7 align-items-center">\n' +
                 '    <span> Gradient color </span>' + gradibadge + gradicountbadge +
                 '  </li>\n' +
-                '  <li class="list-group-item h7 align-items-center">\n' +
+                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h7 align-items-center">\n' +
                 '    <span> Chart markers </span>' + chartcountbadge +
                 '  </li>\n' +
                 '</ul>' +
@@ -1201,7 +1204,6 @@ function openStyleDialog(layerType) {
             $("#styleContent").html(styledialog);
 
             $('.infobtns').click(function () {
-                console.log($(this).find('i'));
                 if ($(this).find('i').hasClass('fa-chevron-right')) {
                     $(this).find('i').removeClass('fa-chevron-right');
                     $(this).find('i').addClass('fa-chevron-down');
