@@ -425,7 +425,6 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
         layer_id = layerId;
         if (type !== 'table' && type !== null) eval('map.removeLayer(' + layer_id + ')');
     }
-    console.log(currentLegend);
     jsonresult = {
         "type": "FeatureCollection", //prepare geojson
         "features": [],
@@ -693,7 +692,7 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
             scale: myChorocolor, // chroma.js scale - include as many as you like
             steps: myChorosteps, // number of breaks or steps in range
             mode: myChoromode, // q for quantile, e for equidistant, k for k-means
-            valuemode: myValueMode, // q for quantile, e for equidistant, k for k-means
+            valuemode: myValueMode, // count, value, begin, middle, end
             polygonstyle: {
                 color: myChoroborder, // border color
                 weight: myChoroborderwidth,
@@ -837,7 +836,6 @@ function CSVtable(csvData) {
     var level = csvData[0].ObjectClass;
     var search = csvData[0].Search;
     if (search === 'timespan') search = (JSON.stringify(csvData[0].searchResult)).slice(12, -1);
-    console.log(search);
     if (typeof (tableIter) !== 'undefined') {
         if (tableIter >= Globaliter) delete tableIter
     }

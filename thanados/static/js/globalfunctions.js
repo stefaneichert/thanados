@@ -448,8 +448,7 @@ function openStyleDialog(layerType) {
 
         }
 
-        //todo: switch value select
-        if (layertypes.gradientcolor) {
+        if (layertypes.gradientcolor || layertypes.gradientcolorTimespan) {
             if (layertypes.gradientcolorNoOverlaps) {
                 var gradibadge = '<span title="Gradient colors for values of your search parameters are possible without overlaps" class="ml-1 badge float-right badge-success badge-pill">Values &nbsp;<i class="fas fa-check"></i></span>\n'
             } else {
@@ -463,9 +462,7 @@ function openStyleDialog(layerType) {
             var gradicountbadge = '<span title="Gradient colors for the count of your search parameters for each grave are possible" class="ml-1 badge float-right badge-success badge-pill">Count &nbsp;<i class="fas fa-check"></i></span>\n'
         } else var gradicountbadge = '<span title="There are no varying counts to be displayed as gradient colors." class="ml-1 badge float-right badge-secondary badge-pill">Count &nbsp;<i class="fas fa-exclamation-triangle"></i></span>\n'
 
-        if (layertypes.gradientcount === false) {
-            if (layertypes.gradientcolor === false) $('#choropoly').addClass('d-none')
-        }
+        if (layertypes.gradientcount === false && layertypes.gradientcolor === false && layertypes.gradientcolorTimespan === false) $('#choropoly').addClass('d-none')
 
         if (layertypes.charts) {
             var chartcountbadge = '<span title="Chart markers for the count of your search parameters for each grave are possible" class="ml-1 badge float-right badge-success badge-pill"><i class="fas fa-check"></i></span>\n'
@@ -701,6 +698,9 @@ function openStyleDialog(layerType) {
                 '                id="ValueSelect">\n' +
                 '            <option id="valueOption" class="d-none" title="The value associated with the search result. E.g. the depth of a grave" value="value">Value</option>\n' +
                 '            <option id="countOption" title="The total count of search results per grave. E.g. the number of finds" value="count">Count</option>\n' +
+                '            <option id="beginOption" class="d-none timeOption" title="Display the begin value in gradient colors" value="begin">Begin</option>\n' +
+                '            <option id="middleOption" class="d-none timeOption" title="Display the average value between begin and end in gradient colors" value="middle">Middle</option>\n' +
+                '            <option id="endOption" class="d-none timeOption" title="Display the end value in gradient colors" value="end">End</option>\n' +
                 '        </select>' +
                 '</div>' +
                 '</div>' +
@@ -736,10 +736,18 @@ function openStyleDialog(layerType) {
 
             if (layertypes.gradientcolor) {
                 $('#valueOption').removeClass('d-none');
-                $('#ValueSelect').val(myValueMode);
-            } else {
+                $('#ValueSelect').val('value');
+                //$('#ValueSelect').val(myValueMode);
+            } else if (layertypes.gradientcolorTimespan) {
+                $('.timeOption').removeClass('d-none');
+                $('#ValueSelect').val('begin');
+                //$('#ValueSelect').val(myValueMode);
+            } else if (layertypes.gradientcount) {
                 $('#ValueSelect').val('count')
             }
+            if (layertypes.gradientcount === false) $('#countOption').addClass('d-none');
+
+
 
 
             colorstart = myChorocolor[0];
@@ -810,8 +818,11 @@ function openStyleDialog(layerType) {
                 myValueMode = $('#ValueSelect option:selected').val();
             });
 
+            myValueMode = $('#ValueSelect').val();
+
             $('#ChoroStyleBtn').click(function () {
                 myChorofinalopacity = ((100 - myChoroopacity) / 100);
+
                 finishQuery('choropoly', finalSearchResultIds, CSVresultJSON, false, currentLayerId)
             });
             $('#ChoroStylePntBtn').click(function () {
@@ -1610,6 +1621,7 @@ function setSearchInfo(data, CSV, first) {
             multicolorNoOverlaps: true,
             gradientcount: false,
             gradientcolor: false,
+            gradientcolorTimespan: false,
             gradientcolorNoOverlaps: true,
             charts: false,
         }
@@ -1672,7 +1684,11 @@ function setSearchInfo(data, CSV, first) {
                     chorovalue = parseFloat(dataset.value);
                     data.properties.layertypes.gradientcolor = true;
                 } else {
-                    chorovalue = null
+                    if (dataset.Search === "timespan"){
+                        chorovalue = [dataset.earliestBegin, dataset.latestEnd];
+                        data.properties.layertypes.gradientcolorTimespan = true;
+                    } else {
+                    chorovalue = null}
                 }
                 searchResult = dataset.searchResult;
                 $.each(data.properties.statistics, function (i, stat) {
@@ -1710,7 +1726,7 @@ function setSearchInfo(data, CSV, first) {
             data.properties.layertypes.gradientcount = true;
         }
 
-        if (data.properties.layertypes.gradientcolor) {
+        if (data.properties.layertypes.gradientcolor || data.properties.layertypes.gradientcolorTimespan) {
             $.each(feature.search.searchResults, function (i, dataset) {
                 if (dataset.value !== null) {
                     chorocount += 1;
@@ -1735,6 +1751,15 @@ function setChoroplethJSON(data, value) {
         }
         if (value === 'count') {
             feature.properties.chorovalue = feature.search.count
+        }
+        if (value === 'begin') {
+            feature.properties.chorovalue = parseFloat(feature.search.searchResults[0].value[0])
+        }
+        if (value === 'end') {
+            feature.properties.chorovalue = parseFloat(feature.search.searchResults[0].value[1])
+        }
+        if (value === 'middle') {
+            feature.properties.chorovalue = ((parseFloat(feature.search.searchResults[0].value[0]) + parseFloat(feature.search.searchResults[0].value[1]))/2)
         }
     });
     return data;

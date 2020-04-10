@@ -1894,3 +1894,65 @@ UPDATE model.entity SET end_to = burial_end_to FROM (SELECT id, burial_end_to FR
 
     g.cursor.execute(sql_6)
     return redirect(url_for('jsonprepare_execute'))
+
+
+@app.route('/admin/fileref/')
+@login_required
+def fileref_execute():  # pragma: no cover
+    if current_user.group not in ['admin']:
+        abort(403)
+
+    sql_7 = """
+    --cleanup for missing file references
+    -- check for files without references and add reference of entity if available
+
+DROP TABLE IF EXISTS thanados.refFilesTmp;
+
+CREATE table thanados.refFilesTmp AS (
+SELECT
+	f.child_name,
+	f.child_id,
+	fi.id AS range_id,
+	fi.filename
+FROM thanados.finds f JOIN thanados.files fi ON f.child_id = fi.parent_id WHERE source ISNULL);
+
+INSERT INTO thanados.refFilesTmp
+	SELECT
+	f.child_name,
+	f.child_id,
+	fi.id AS range_id,
+	fi.filename
+FROM thanados.burials f JOIN thanados.files fi ON f.child_id = fi.parent_id WHERE source ISNULL;
+
+INSERT INTO thanados.refFilesTmp
+	SELECT
+	f.child_name,
+	f.child_id,
+	fi.id AS range_id,
+	fi.filename
+FROM thanados.graves f JOIN thanados.files fi ON f.child_id = fi.parent_id WHERE source ISNULL;
+
+INSERT INTO thanados.refFilesTmp
+	SELECT
+	f.child_name,
+	f.child_id,
+	fi.id AS range_id,
+	fi.filename
+FROM thanados.sites f JOIN thanados.files fi ON f.child_id = fi.parent_id WHERE source ISNULL;
+
+
+
+INSERT INTO model.link (range_id, domain_id, property_code, description)
+
+SELECT 	f.range_id,
+	r.id AS domain_id,
+	'P67' AS property_code,
+	r.reference AS description
+
+FROM thanados.reffilestmp f JOIN thanados.reference r ON r.parent_id = f.child_id;
+
+DROP TABLE IF EXISTS thanados.refFilesTmp;
+    """
+
+    g.cursor.execute(sql_7)
+    return redirect(url_for('jsonprepare_execute'))
