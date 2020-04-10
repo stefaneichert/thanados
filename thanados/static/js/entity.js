@@ -1,6 +1,21 @@
 getBasemaps();
 sitename = jsonmysite.name;
 
+descriptionSummary = {
+    graves: jsonmysite.features.length,
+    burials: 0,
+    finds: 0,
+}
+
+$.each(jsonmysite.features, function (i, feature) {
+    $.each(feature.burials, function (i, burial) {
+        descriptionSummary.burials += 1;
+        $.each(burial.finds, function (i, feature) {
+            descriptionSummary.finds += 1;
+        })
+    })
+})
+
 $('#mybreadcrumb').append(
     '<nav aria-label="breadcrumb">' +
     '<ol id="mybreadcrumbs" class="breadcrumb">' +
@@ -778,9 +793,9 @@ function setImages(entId, entfiles) {
         $('#myImagecontainer' + entId).remove()
     }
     var lazyLoadInstance = new LazyLoad({
-                    elements_selector: ".lazy"
-                });
-                lazyLoadInstance.update();
+        elements_selector: ".lazy"
+    });
+    lazyLoadInstance.update();
 }
 
 function toggleSubunits() {
@@ -823,7 +838,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
     iter += 1;
     $.each(currentchildren, function (i, currentfeature) {
         var entId = currentfeature.id;
-        var entName = currentfeature.properties.name;
+        var entName = '<a href="../entity/' + entId + '" title="Permalink to this entity">'+ currentfeature.properties.name +'</a>';
         var entDesc = currentfeature.properties.description;
         if (typeof entDesc == 'undefined') {
             var entDesc = '';
@@ -841,7 +856,6 @@ function setcatalogue(currentchildren, parentDiv, iter) {
         if (typeof tsbegin == 'undefined') {
             var dateToInsert = '';
         }
-
 
 
         if (currentfeature.type == 'Feature' && i > 0) $('#' + parentDiv).append('<h4 class="border-top pt-4 mt-4">' + entName + '</h4>');
@@ -949,3 +963,5 @@ $('#nav-catalogue-tab').click(function (e) {
 })
 
 $('#myattr').toggle();
+
+eval('$(\'#myDescr' + jsonmysite.site_id +'\').prepend(\'Graves/Features: ' + descriptionSummary.graves + '<br>Burials/Stratigraphic Units: ' + descriptionSummary.burials + '<br>Finds: ' + descriptionSummary.finds +'<br><br>\')')
