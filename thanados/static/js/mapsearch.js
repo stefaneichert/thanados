@@ -280,7 +280,9 @@ function searchTime(criteria, appendLevel, Iter, val1, val2) {
 }
 
 function appendPlus(Iter) {
+    console.log(Iter);
     Globaliter = Iter + 1;
+    var features = false;
     if (Iter > 1) {
         resultlength = [];
         $.each(myjson.features, function (i, feature) {
@@ -298,6 +300,13 @@ function appendPlus(Iter) {
 
 
     if (finalSearchResultIds.length > 0) {
+        $.each(myjson.features, function (i, feature) {
+            if (finalSearchResultIds.includes(feature.id)) {
+                if (typeof (feature.geometry) !== 'undefined') features = true;
+            }
+        });
+
+
         $('#mysearchform').append(
             '<div class="mysearchoptions input-group input-group-sm mb-3">' +
             '<div class="input-group-prepend">' +
@@ -349,6 +358,17 @@ function appendPlus(Iter) {
             //'Continue search' +
             '</button>'
         );
+
+        if (features === false) {
+            $('.showPolygons').addClass('d-none');
+            infoalert = '<div onclick="$(\'#infoalert\').empty()" class="alert alert-info fade show" role="alert"><i style="float: right; font-size: 2em; margin-top: 0.2em; margin-left: 0.7em; color: #00acff;" class="fas fa-exclamation-circle"></i><span style="font-size: 0.9em;">\n' +
+                'Your search contains only results with unkown location and cannot be displayed on the map </span>\n' +
+                '</div>';
+            $('#infoalert').html(infoalert);
+            var thisAlert = document.getElementById('infoalert');
+            thisAlert.scrollIntoView(false);
+        }
+
         toggleSearchOpt();
 
         fillInput = document.getElementById("fillcolor");
@@ -822,12 +842,14 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
     }
 
     infoalert = '<div onclick="$(\'#infoalert\').empty()" class="alert alert-info fade show" role="alert"><i style="float: right; font-size: 2em; margin: 0.5em; color: #00acff;" class="fas fa-check"></i><span style="font-size: 0.9em;">\n' +
-                'One layer has been added to the map. <br> Click the legend entry for further options or add other search criteria. </span>\n' +
-                '</div>';
-    if (first && type !== 'table') {$('#infoalert').html(infoalert);
-    var thisAlert = document.getElementById('infoalert');
-    thisAlert.scrollIntoView(false);
+        'One layer has been added to the map. <br> Click the legend entry for further options or add other search criteria. </span>\n' +
+        '</div>';
+    if (first && type !== 'table') {
+        $('#infoalert').html(infoalert);
+        var thisAlert = document.getElementById('infoalert');
+        thisAlert.scrollIntoView(false);
     }
+
 
 }
 
