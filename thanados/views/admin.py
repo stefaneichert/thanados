@@ -1119,6 +1119,13 @@ FROM (SELECT ST_AsGeoJSON(geom) AS geom,
                JOIN model.link l ON p.entity_id = l.range_id) g
 WHERE thanados.tbl_sites.id = g.domain_id;
 
+UPDATE thanados.tbl_sites
+SET point = geom
+FROM (SELECT ST_AsGeoJSON(ST_PointOnSurface(geom)) AS geom,
+             domain_id
+      FROM gis.polygon p
+               JOIN model.link l ON p.entity_id = l.range_id) g
+WHERE thanados.tbl_sites.id = g.domain_id AND tbl_sites.point ISNULL;
 
 DROP TABLE IF EXISTS thanados.tbl_sitescomplete;
 CREATE TABLE thanados.tbl_sitescomplete

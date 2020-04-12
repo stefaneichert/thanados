@@ -217,8 +217,8 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myChildrencontainer' + entId + '">' +
         '<nav>' +
         '<div class="nav nav-tabs" id="nav-tab" role="tablist">' +
-        '<a class="nav-item nav-link active" id="nav-table-tab' + entId + '" data-toggle="tab" href="#nav-table' + entId + '" role="tab" aria-controls="nav-table' + entId + '" aria-selected="true">Table</a>' +
-        '<a class="nav-item nav-link" id="nav-pills-tab' + entId + '" data-toggle="tab" href="#nav-pills' + entId + '" role="tab" aria-controls="nav-pills' + entId + '" aria-selected="false">Simple</a>' +
+        '<a class="nav-item nav-link active" id="nav-table-tab' + entId + '" data-toggle="tab" href="#nav-table' + entId + '" role="tab" aria-controls="nav-table' + entId + '" aria-selected="true">List</a>' +
+        '<a class="nav-item nav-link d-none" id="nav-pills-tab' + entId + '" data-toggle="tab" href="#nav-pills' + entId + '" role="tab" aria-controls="nav-pills' + entId + '" aria-selected="false">Simple</a>' +
         '<a class="nav-item nav-link" id="nav-catalogue-tab" data-toggle="tab" href="#nav-catalogue" role="tab" aria-controls="nav-catalogue" aria-selected="false">Catalogue</a>' +
         '</div>' +
         '</nav>' +
@@ -644,11 +644,12 @@ function getEntityData(parentName, parentId, currentfeature) {
 
         if (setJson(jsonmysite)) {
             mymap.fitBounds(graves.getBounds());
-            if ((mymap.getZoom()) > 20) mymap.setZoom(20);
+            if ((mymap.getZoom()) > 18) mymap.setZoom(18);
         } else {
             var latlng = [jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]];
             var marker = L.marker(latlng).addTo(mymap);
             centerpoint = latlng;
+            mymap.setZoom(18);
             mymap.panTo(centerpoint);
         }
 
