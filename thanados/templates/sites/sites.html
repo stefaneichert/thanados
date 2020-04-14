@@ -1,12 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-    <link href="/static/vendor/node_modules/leaflet.markercluster/dist/MarkerCluster.css" rel="stylesheet">
-    <link href="/static/vendor/node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css"
-          rel="stylesheet">
-    <link href="/static/vendor/node_modules/leaflet.fullscreen/Control.FullScreen.css" rel="stylesheet">
-    <script src="/static/vendor/node_modules/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-    <script src="/static/vendor/node_modules/leaflet.heat/dist/leaflet-heat.js"></script>
-    <script src="/static/vendor/node_modules/leaflet.fullscreen/Control.FullScreen.js"></script>
+
     <link href="/static/css/style.css" rel="stylesheet">
 
     <div id="mycontent" class="container-fluid">
@@ -15,6 +9,12 @@
 
         <div class="row" style="width: 100%">
             <div class="col">
+                <div class="row mb-3" style="width: 100%; margin-left: 0.1em">
+                    <div class="col">
+                        <label for="amount">Begin between</label>
+                        <input type="text" id="amount" readonly style="border:0;">
+                        <div id="slider-range"></div>
+
                 <table id="sitelist" class="display table table-striped table-bordered" width="100%">
                     <div class="row" style="width: 100%; margin-left: 0.1em">
                         <div class="col">
@@ -30,6 +30,16 @@
                             </p>
                         </div>
                     </div>
+                    <div class="col">
+                        <label for="amount2">End between</label>
+                        <input type="text" id="amount2" readonly style="border:0;">
+                        <div id="slider-range2"></div>
+
+                    </div>
+                </div>
+                <table id="sitelist" class="display table table-striped table-bordered"
+                       width="100%">
+
                     <thead>
                     <tr>
                         <th>Name</th>
@@ -72,14 +82,14 @@
                 </div>
                 <div class="modal-body">
                     <p>
-                        Here you can find a list of sites that are already prepared for online dissemination. You can
-                        select
-                        detailed views and maps by clicking the names respectively the map markers. They are currently
-                        being
-                        translated and edited and it is still work in progress. The number of online sites will be
-                        increased in the
-                        course of the project. If you encounter any bugs or mistakes in the content as well as for any
-                        kind of
+                        Here you can find a list of sites that are already prepared for online
+                        dissemination. You can select
+                        detailed views and maps by clicking the names respectively the map markers.
+                        They are currently being
+                        translated and edited and it is still work in progress. The number of online
+                        sites will be increased in the
+                        course of the project. If you encounter any bugs or mistakes in the content
+                        as well as for any kind of
                         feedback please feel free to contact us under stefan.eichert@nhm-wien.ac.at.
                     </p>
                 </div>
@@ -89,6 +99,8 @@
             </div>
         </div>
     </div>
+  </div>
+</div>
 
     <script>    sitelist = {{ sitelist|tojson }};    </script>
     <script src="/static/js/sites.js"></script>

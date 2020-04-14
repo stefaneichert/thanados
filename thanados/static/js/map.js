@@ -4,9 +4,15 @@ $(document).ready(function () {
     markerset = false;
     getBasemaps();
     setmap(myjson);
-    console.log(myjson);
+    //console.log(myjson);
     $('#CSVmodal').on('shown.bs.modal', function (e) {
         table.draw();
+    })
+    layerIds = [];
+    $('#styledialog .row .col-tab-left ul a').click(function () {
+        openStyleDialog(this.id)
+        $('#styledialog').find('.active').removeClass('active');
+        $(this).addClass('active');
     })
 });
 
@@ -27,11 +33,11 @@ function pointFilter(feature) {
 
 
 function setmap(myjson) {
-//set sidebar to current json
+    //set sidebar to current json
     if (myjson.features[0].id !== 0) setSidebarContent(myjson);
 
 
-//define map
+    //define map
     map = L.map('map', {
         zoom: 22,
         zoomControl: false,
@@ -39,42 +45,87 @@ function setmap(myjson) {
     });
 
     //hack to show landscape first
-    map.removeLayer(streets)
+    map.removeLayer(streets);
+    map.removeLayer(Esri_WorldImagery);
 
 
-//style polygons
+    //style polygons
     myStyle = {
-        "color": "rgba(0,123,217,0.75)",
-        "weight": 1.5,
-        "fillOpacity": 0.5
-        //"opacity": 0.4
+        "color": "#007bd9",
+        "weight": 1,
+        "fillOpacity": 0.5,
+        "fillColor": "#007bd9"
     };
 
     HoverStyle = {
-        "fillColor": "rgb(217,0,2)",
-        "color": "rgb(0,0,0)",
+        "fillColor": "#ff0009",
+        "color": "#404040",
         "weight": 3,
-        "fillOpacity": 0,
+        "fillOpacity": 0.3
+    };
 
-        //"opacity": 0.4
+    SelectionStyle = {
+        "fillColor": "#ff0009",
+        "color": "#FF0002",
+        "weight": 3,
+        "fillOpacity": 0.5
     };
 
     myStyleSquare = {
-        "color": "rgba(0,123,217,0.75)",
-        "weight": 1.5,
+        "color": "#007ED9",
+        "weight": 1,
         "fillOpacity": 0.5,
         "dashArray": [4, 4]
     };
 
+    choroOptions = {
+        "steps": 5,
+        "mode": "e",
+        "scale": ["#ffffff","#ff0000"],
+        "valuemode" : 'count',
+        "polygonstyle": {
+            "color": "#000000",
+            "weight": 0,
+            "fillOpacity": 10
+        }
+    };
+
+    MultiColorSearchStyle = {
+        "color": "#000000",
+        "weight": 1,
+        "fillOpacity": 0.9,
+        "radius": 8
+    }
+
+    ChartStyle = {
+        "color": "#000000",
+        "weight": 1,
+        "fillOpacity": 1,
+        "radius": 25,
+        "barthickness": 15
+    }
+
+    legendlayers = []
 
     //add graves with polygon geometry
     graves = L.geoJSON(myjson, {
         filter: polygonFilter,
-        style: myStyle
+        style: myStyle,
+        shapetype: 'single',
+        legendTitle: 'Graves',
+        layername: 'graves'
     });
 
+    //add graves with legend
+    var currentGraves =
+        '<div class="layerOptionsClick" ' +
+        'onclick="openStyleDialog(\'single\')" ' +
+        'title="click to open layer options" ' +
+        'style="background-color: ' + hexToRgbA(myStyle.color, myStyle.fillOpacity) + '; ' +
+        'border: ' + myStyle.weight + 'px solid ' + myStyle.color + '">&nbsp;</div>';
+    createLegend(map, graves, currentGraves);
     graves.addTo(map);
-
+    legendlayers.push(graves);
 
     //if geometry is point create a rectangle around that point
     pointgraves = L.geoJSON(myjson, {
@@ -97,7 +148,10 @@ function setmap(myjson) {
                 graves.addData(rect);
                 markerset = false;
             } else {
-                var popupLine = '<a id="' + myjson.site_id + '" onclick="modalsetsite()" href="#"><p><b>' + feature.properties.name + ' </b><br>(' + myjson.properties.maintype.name + ')</p></a>';
+                var popupLine =
+                    '<a id="' + myjson.site_id + '" onclick="modalsetsite()" href="#">' +
+                    '<p><b>' + feature.properties.name + ' </b>' +
+                    '<br>(' + myjson.properties.maintype.name + ')</p></a>';
                 var marker = L.marker(latlng).bindPopup(popupLine).addTo(map);
                 centerpoint = latlng;
                 markerset = true;
@@ -123,39 +177,28 @@ function setmap(myjson) {
     } else {
         if (setJson(myjson)) map.fitBounds(graves.getBounds());
         else {
-            var popupLine = '<a id="' + myjson.site_id + '" onclick="modalsetsite()" href="#"><p><b>' + myjson.name + ' </b><br>(' + myjson.properties.maintype.name + ')</p></a>';
+            var popupLine =
+                '<a id="' + myjson.site_id + '" onclick="modalsetsite()" href="#"><p>' +
+                '<b>' + myjson.name + ' </b><br>(' + myjson.properties.maintype.name + ')</p></a>';
             var latlng = [myjson.properties.center.coordinates[1], myjson.properties.center.coordinates[0]];
             var marker = L.marker(latlng).bindPopup(popupLine).addTo(map);
             centerpoint = latlng;
             map.panTo(centerpoint);
         }
-
     }
 
+    //set zoom
     myzoom = (map.getZoom());
     if (myzoom > 20) map.setZoom(20);
 
-
     //add emtpty Layergroup for search results
-    resultpolys = new L.LayerGroup();
-    resultpolys.addTo(map);
-
-    resultpoints = new L.LayerGroup();
-    resultpoints.addTo(map);
 
     choroplethLayer = new L.LayerGroup();
     choroplethLayer.addTo(map);
 
 
-//define map control
-
-
-    var overlays = {
-        "Graves": graves,
-        "Search result shapes": resultpolys,
-        "Search result markers": resultpoints
-    };
-
+//define map controls
+    //sidebar toggle button
     L.easyButton({
         id: 'SidebarButton',  // an id for the generated button
         position: 'topleft',      // inherited from L.Control -- the corner it goes in
@@ -174,57 +217,31 @@ function setmap(myjson) {
     //add option button and exportbutton for map as image
     printMapbutton('map', 'topleft');
 
-    L.easyButton({
-        id: 'stylebutton',  // an id for the generated button
-        position: 'topleft',      // inherited from L.Control -- the corner it goes in
-        type: 'replace',          // set to animate when you're comfy with css
-        leafletClasses: true,     // use leaflet classes to style the button?
-        states: [{                 // specify different icons and responses for your button
-            stateName: 'get-center',
-            onClick: function (button, map) {
-                openStyleDialog();
-            },
-            title: 'style options for graves',
-            icon: 'fas fa-palette'
-        }]
-    }).addTo(map);
-
-
+    //add filter/Search button
     addFilterSearch();
 
     //add layer control
-    baseControl = L.control.layers(baseLayers, overlays).addTo(map);
+    baseControl = L.control.layers(baseLayers).addTo(map);
 
-
-//hack for right order of basemaps
-    map.removeLayer(Esri_WorldImagery);
-
+    //add scalebar
     L.control.scale({imperial: false}).addTo(map);
 
     //initiate selection of clicked polygons
     polygonSelect();
 
+    //initiate map attribution
     map.on('baselayerchange', function (e) {
         attributionChange()
     });
     attributionChange();
 
+    //set THANADOS style for layer control (see style.css)
     $('.leaflet-control-layers-toggle').css({'background-image': ''});
 
 }
 
-function applyButton() {
-    applyStyle(fillcolor, (1 - MyStyleOpacityVar / 100), mystylebordercolor, mystyleborderwidth);
-    graves.eachLayer(function (layer) {
-        if (layer.feature.derivedPoly === 'true') {
-            layer.setStyle(myStyleSquare)
-        } else {
-            layer.setStyle(myStyle)
-        }
-    });
-}
 
-//openpolygon for active sidebargrave
+//highlight polygon for active selection in sidebar
 function showpolygon(id) {
     var polys = L.geoJSON(mypolyjson, {
             onEachFeature: function (feature, layer) {
@@ -232,7 +249,7 @@ function showpolygon(id) {
                     if (feature.properties.maintype.systemtype === 'feature') {
                         selectedpolys.clearLayers();
                         var polyPoints = layer.getLatLngs()
-                        var selectedpoly = L.polygon(polyPoints, {color: 'red'});
+                        var selectedpoly = L.polygon(polyPoints, SelectionStyle);
                         selectedpolys.addLayer(selectedpoly);
                         var boundscenter = (selectedpoly.getBounds()).getCenter();
                         map.panTo(boundscenter);
@@ -240,9 +257,7 @@ function showpolygon(id) {
                     if (typeof (newMarker) !== 'undefined') {
                         map.removeLayer(newMarker);
                     }
-
                 }
-
             }
         }
     );
@@ -252,10 +267,11 @@ function showpolygon(id) {
 //**select overlapping polygons on click**//
 ///////////////////////////////////////////////
 function polygonSelect() {
-//define layergroup for selected polygons
+    //define layergroup for selected polygons
     selectedpolys = new L.LayerGroup();
     selectedpolys.addTo(map);
 
+    //layergroup for highlighting on popup hover
     hoverPolys = new L.LayerGroup();
     hoverPolys.addTo(map);
 
@@ -271,7 +287,6 @@ function polygonSelect() {
         if (typeof (newMarker) !== 'undefined') {
             map.removeLayer(newMarker);
         }
-
         popupContent = '';
         newMarker = new L.marker(e.latlng, {icon: invisIcon}); //global to have it for further use
 
@@ -285,8 +300,8 @@ function polygonSelect() {
                 isMarkerInsidePolygon(newMarker, layer)
             }
         });
-        //set popup content to matching polygons
 
+        //set popup content to matching polygons for invisible marker
         if (selectedIDs.length !== 0) {
             newMarker.addTo(map);
             newMarker.bindPopup(popupContent).openPopup();
@@ -296,9 +311,7 @@ function polygonSelect() {
                 if (down)
                     $('#btn' + oldcollapsediv).removeClass('fa-chevron-down').addClass('fa-chevron-right');
             }
-
         }
-
     });
 }
 
@@ -320,18 +333,27 @@ function isMarkerInsidePolygon(checkmarker, poly) {
             }
         }
         if (inside) {
-            var mypopupLine = JSON.parse('{"id":"' + poly.feature.id + '", "name":"' + poly.feature.properties.name + '", "type":"' + poly.feature.properties.maintype.name + '"}');
+            var mypopupLine =
+                JSON.parse('{"id":"' + poly.feature.id + '"' +
+                    ', "name":"' + poly.feature.properties.name + '"' +
+                    ', "type":"' + poly.feature.properties.maintype.name + '"}');
             selectedIDs.push(mypopupLine);
-            var popupLine = '<a id="' + poly.feature.id + '" onclick="modalset(this.id)" onmouseout="hoverPolys.clearLayers()" onmouseover="HoverId = this.id; hoverPoly()" href="#"><p><b>' + poly.feature.properties.name + ' </b>(' + poly.feature.properties.maintype.name + ')</p></a>';
+            var popupLine =
+                '<a id="' + poly.feature.id + '"' +
+                ' onclick="modalset(this.id)" ' +
+                ' onmouseout="hoverPolys.clearLayers()"' +
+                ' onmouseover="HoverId = this.id; hoverPoly()"' +
+                ' href="#"><p><b>' + poly.feature.properties.name + ' </b>' +
+                '(' + poly.feature.properties.maintype.name + ')</p></a>';
             popupContent += popupLine;
-            var selectedpoly = L.polygon(polyPoints, {color: 'red'});
+            var selectedpoly = L.polygon(polyPoints, SelectionStyle);
             selectedpolys.addLayer(selectedpoly);
         }
-
         return inside;
     }
 }
 
+//add the respective polygon if hovered over popup link
 function hoverPoly() {
     hoverPolys.clearLayers();
     hoverGraves = L.geoJSON(mypolyjson, {
@@ -341,7 +363,7 @@ function hoverPoly() {
     hoverPolys.addLayer(hoverGraves);
 }
 
-
+//filter to check whether it is the matching polygon
 function hoverFilter(feature) {
     if (feature.id == HoverId) {
         return true
@@ -349,8 +371,8 @@ function hoverFilter(feature) {
 }
 
 //UI Elements
+//////////////////////////////
 //min mid max sidebar
-
 function animateSidebar(withzoom) {
     sidebarSize = $("#sidebar").width();
     if (sidebarSize > 0) sidebarSize = 350;
@@ -379,33 +401,8 @@ function animateSidebar(withzoom) {
                 if (myzoom > 20) map.setZoom(20);
             }
         }
-
     });
 }
-
-function animateSidebarMax() {
-    $("#sidebar").animate({
-            width: "100%"
-        }, 0, function () {
-            map.invalidateSize();
-        }
-    );
-}
-
-$("#sidebar-start").click(function () {
-    animateSidebar(false);
-    return false;
-});
-
-$("#sidebar-max").click(function () {
-    animateSidebarMax(false);
-    return false;
-});
-
-$("#sidebar-smaller").click(function () {
-    animateSidebar(false);
-    return false;
-});
 
 $(window).resize(function () {
     navheight = ($('#mynavbar').height());
@@ -437,6 +434,7 @@ $(document).ready(function () {
     if (mymodalwith > 500) mymodalwith = 500;
     $('.ui-dialog').css('max-width', mymodalwith + 'px');
     $('#mytreeModal').css('max-width', ($(window).width()) + 'px');
+    $('.legend').css('max-height', (containerheight - 159))
 
 });
 
@@ -454,24 +452,34 @@ function setSidebarContent(myjson) {
         if (gravedescription == null) {
             gravedescription = 'no description available'
         }
-        if (typeof (features.geometry) == "undefined") gravename = (gravename + ' <i class="far fa-eye-slash" title="location unknown"></i>');
+        if (typeof (features.geometry) == "undefined") {
+            gravename = (gravename + ' <i class="far fa-eye-slash" title="location unknown"></i>')
+        }
+
 
         $('#accordion1').append(
-            '<div id="' + gravediv + '" style="max-height: 42px">' +
-            '<a grave="' + features.id + '" onclick="collapseAllOthers(' + features.id + '); toggleButtons(' + features.id + ', true)" for="collapse' + gravediv + '" class="entity sidebarheading" ' +
-            'data-toggle="collapse" aria-expanded="true" aria-controls="#collapse' + gravediv + '" data-parent="#accordion1" href="#collapse' + gravediv + '">' +
-            '<i id="btn' + features.id + '" class="collapsetitle collapsebutton fa fa-chevron-right fa-pull-left"></i>' +
+            '<div class="gravediv" id="' + gravediv + '">\n' +
+            '<a grave="' + features.id + '" onclick="collapseAllOthers(' + features.id + '); ' +
+            'toggleButtons(' + features.id + ', true)"' +
+            ' for="collapse' + gravediv + '" class="entity sidebarheading" ' +
+            'data-toggle="collapse" aria-expanded="true"' +
+            ' aria-controls="#collapse' + gravediv + '"' +
+            ' data-parent="#accordion1" href="#collapse' + gravediv + '">\n' +
+            '<i id="btn' + features.id + '"' +
+            ' class="collapsetitle collapsebutton fa fa-chevron-right fa-pull-left"></i>' +
             '<div class="collapsetitle">' + gravename +
-            '</div>' +
-            '</a>' +
-            '<button type="button" class="gravebutton btn btn-secondary btn-xs" onclick="this.blur(); modalset(this.id)" title="show details" id="' + features.id + '">' +
-            '<i class="fa fa-info"></i>' +
-            '</button>' +
-            '</div>' +
-            '<div id="collapse' + gravediv + '" class="panel-collapse collapse">' +
-            '<div class="sidebardescription">' + gravedescription + '</div>' +
+            '</div>\n' +
+            '</a>\n' +
+            '<button type="button" class="gravebutton btn btn-secondary btn-xs"' +
+            ' onclick="this.blur(); modalset(this.id)" title="show details" id="' + features.id + '">\n' +
+            '<i class="fa fa-info"></i>\n' +
+            '</button>\n' +
+            '</div>\n' +
+            '<div id="collapse' + gravediv + '" class="panel-collapse collapse">\n' +
+            '<div class="sidebardescription">' + gravedescription + '</div>\n' +
             '<div id= "desc_' + gravediv + '"></div>' +
             '</div>');
+
         $.each(features.burials, function (u, burials) {
             burialdiv = gravediv + '_b' + burials.id;
             burialname = burials.properties.name;
@@ -486,8 +494,12 @@ function setSidebarContent(myjson) {
 
             $('#desc_' + gravediv).append(
                 '<div id="' + burialdiv + '">' +
-                '<a onclick="toggleButtons(' + burials.id + ')" for="collapse' + burialdiv + '" class="entity subheading" data-toggle="collapse" aria-expanded="true" aria-controls="#collapse' + burialdiv + '" data-parent="#' + burialdiv + '" href="#collapse' + burialdiv + '">' +
-                '<i id="btn' + burials.id + '" class="collapsetitle1 collapsebutton1 fa fa-chevron-right fa-pull-right"></i>' +
+                '<a onclick="toggleButtons(' + burials.id + ')" for="collapse' + burialdiv + '"' +
+                ' class="entity subheading" data-toggle="collapse" aria-expanded="true"' +
+                ' aria-controls="#collapse' + burialdiv + '" data-parent="#' + burialdiv + '"' +
+                ' href="#collapse' + burialdiv + '">' +
+                '<i id="btn' + burials.id + '"' +
+                ' class="collapsetitle1 collapsebutton1 fa fa-chevron-right fa-pull-right"></i>' +
                 '<div class="collapsetitle1">' + burialname + '</div>' +
                 '</a>' +
                 '</div>' +
@@ -509,8 +521,12 @@ function setSidebarContent(myjson) {
 
                 $('#desc_' + burialdiv).append(
                     '<div id="' + finddiv + '">' +
-                    '<a onclick="toggleButtons(' + finds.id + ')" for="collapse' + finddiv + '" class="entity entity subheading" data-toggle="collapse" aria-expanded="true" aria-controls="#collapse' + finddiv + '" data-parent="#' + finddiv + '" href="#collapse' + finddiv + '">' +
-                    '<i id="btn' + finds.id + '" class="collapsetitle2 collapsebutton2 fa fa-chevron-right fa-pull-right"></i>' +
+                    '<a onclick="toggleButtons(' + finds.id + ')" for="collapse' + finddiv + '" ' +
+                    'class="entity entity subheading" data-toggle="collapse" aria-expanded="true" ' +
+                    'aria-controls="#collapse' + finddiv + '" data-parent="#' + finddiv + '" ' +
+                    'href="#collapse' + finddiv + '">' +
+                    '<i id="btn' + finds.id + '" ' +
+                    'class="collapsetitle2 collapsebutton2 fa fa-chevron-right fa-pull-right"></i>' +
                     '<div class="collapsetitle2">' + findname + '</div>' +
                     '</a>' +
                     '</div>' +
@@ -548,7 +564,6 @@ function collapseAllOthers(collapseDiv) {
                 $('#btn' + oldcollapsediv).removeClass('fa-chevron-down').addClass('fa-chevron-right');
         }
     }
-
     oldcollapsediv = collapseDiv;
 }
 
@@ -556,6 +571,7 @@ function collapseAllOthers(collapseDiv) {
 //get current entity data and appent to modal
 // noinspection JSDuplicatedDeclaration
 function getModalData(parentDiv, currentfeature, parenttimespan) {
+    //console.log(currentfeature);
 
     if (currentfeature.type == "FeatureCollection") {
         var closebutton = '';
@@ -609,19 +625,14 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
             var dateToInsert = '';
         }
 
-
         if (currentfeature.properties.maintype.systemtype == 'feature') {
             var children = currentfeature.burials;
             var iconpath = '/static/images/icons/grave30px.png';
             var parentDiv = 'myModalContent';
             $('#myModalContent').empty();
-            //var closebutton = '<button type="button" class="close" onclick="this.blur()" data-dismiss="modal" aria-label="Close">' +
-            //                    '<span aria-hidden="true">&times;</span>' +
-            //                  '</button>';
             $(parentDiv).empty();
             globalentName = entName;
         }
-
 
         if (currentfeature.properties.maintype.systemtype == 'stratigraphic unit') {
             var children = currentfeature.finds;
@@ -631,7 +642,6 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         if (currentfeature.properties.maintype.systemtype == 'find') {
             var iconpath = '/static/images/icons/find.png';
         }
-
     }
 
     var enttypes = currentfeature.properties.types;
@@ -642,12 +652,13 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     }
     var entdims = currentfeature.properties.dimensions;
     var entmaterial = currentfeature.properties.material;
-
+    //console.log(entName);
     $('#' + parentDiv).append(
         '<div class="modal-header">' +
         '<h5 class="modal-title">' +
-        '<img src="' + iconpath + '" width="30" height="30" class="modaltitleicon" alt="my image">' + entName + '<div class="float-right" style="margin-top: 0.2em;" id="myModalPermalink' + entId + '"></div></h5>' +
-        closebutton +
+        '<img src="' + iconpath + '" width="30" height="30" class="modaltitleicon" alt="my image">' +
+        '' + entName + '<div class="float-right mt-1" id="myModalPermalink' +
+        '' + entId + '"></div></h5>' + closebutton +
         '</div>' +
         '<div class="modal-body">' +
         '<div class="container-fluid">' +
@@ -748,7 +759,9 @@ function setImages(entId, entfiles) {
             $('#myModalImagecontainer' + entId).empty();
             $.each(entfiles, function (f, files) {
                 $('#myModalImagecontainer' + entId).append(
-                    '<a href="' + files.file_name + '" data-featherlight><img src="' + files.file_name + '" class="modalimg" id="mymodalimg" alt="image"></a>'
+                    '<a href="' + files.file_name + '" data-featherlight> \n' +
+                    '<img src="' + files.file_name + '" class="modalimg" id="mymodalimg" alt="image">\n' +
+                    '</a>\n'
                 )
             });
         }
@@ -799,12 +812,9 @@ function setImages(entId, entfiles) {
                         '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="' + f + '"></li>'
                     );
                 }
-
             });
         }
-
     }
-
 
     //remove image column
     if (entfiles == undefined) {
@@ -812,7 +822,6 @@ function setImages(entId, entfiles) {
         $('#myModalImagecontainer' + entId).empty();
         $('#myModalData_' + entId).attr("class", "modalwithoutimage");
     }
-
 }
 
 //initiate modal
@@ -833,7 +842,10 @@ function modalset(id) {
             // Destroy Close Button (for subsequent opens)
             $('#myModal-close').remove();
             // Create the Close Button (this can be a link, an image etc.)
-            var link = '<btn id="myModal-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
+            var link =
+                '<btn id="myModal-close" title="close" ' +
+                'class="text-decoration-none btn btn-sm btn-secondary d-inline-block float-right">' +
+                '<i class="fas fa-times"></i></btn>';
             // Create Close Button
             $(".ui-dialog-title").css({'width': ''});
             $(this).parent().find(".ui-dialog-titlebar").append(link);
@@ -857,7 +869,10 @@ function modalsetsite() {
             // Destroy Close Button (for subsequent opens)
             $('#myModal-close').remove();
             // Create the Close Button (this can be a link, an image etc.)
-            var link = '<btn id="myModal-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
+            var link =
+                '<btn id="myModal-close" title="close" ' +
+                'class="text-decoration-none float-right btn btn-sm btn-secondary d-inline-block">' +
+                '<i class="fas fa-times"></i></btn>';
             // Create Close Button
             $(".ui-dialog-title").css({'width': ''});
             $(this).parent().find(".ui-dialog-titlebar").append(link);
@@ -875,15 +890,15 @@ function addFilterSearch() {
     LeafletDropdownButton.onAdd = function (map) {
         var div = L.DomUtil.create('div');
         div.innerHTML = '<div class="dropdown" id="sidebarclosed-menu">\n' +
-            '                <button class="btn btn-secondary btn-sm mapbutton" type="button" onclick="this.blur()"\n' +
+            '                <button class="btn btn-secondary btn-sm mapbutton" type="button" onclick="this.blur(); startsearch()"\n' +
             '                        id="dropdownMenuButtonMap" data-toggle="dropdown" title="Filter/Search/Visualise"\n' +
             '                        aria-haspopup="true"\n' +
             '                        aria-expanded="false">\n' +
             '                    <i class="fas fa-search"></i>\n' +
             '                </button>\n' +
-            '                <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonMap">\n' +
+            '                <div class="dropdown-menu d-none" aria-labelledby="dropdownMenuButtonMap">\n' +
             '                    <a class="dropdown-item searchbutton" onclick="startsearch()" href="#">Filter/Search</a>\n' +
-            '                    <a class="dropdown-item visbutton" onclick="startvis()" href="#">Visualisations</a>\n' +
+            '                    <a class="dropdown-item visbutton" onclick="startvis(false)" href="#">Visualisations</a>\n' +
             '                </div>\n' +
             '            </div>';
         return div;

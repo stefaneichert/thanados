@@ -80,3 +80,75 @@ SET
    'ohne Inv',
    'No Inv'
    ) WHERE id IN (SELECT child_id FROM thanados.entities);
+
+--check for entities without main type
+
+SELECT  f.*
+FROM model.entity f  WHERE f.system_type = 'find' AND id NOT IN
+(SELECT DISTINCT
+	l.domain_id
+	FROM model.link l JOIN thanados.typesforjson t ON l.range_id = t.id::INT WHERE t.name_path LIKE 'Find%' AND l.property_code = 'P2')
+UNION ALL
+SELECT  f.*
+FROM model.entity f  WHERE f.system_type = 'stratigraphic unit' AND id NOT IN
+(SELECT DISTINCT
+	l.domain_id
+	FROM model.link l JOIN thanados.typesforjson t ON l.range_id = t.id::INT WHERE t.name_path LIKE 'Stratigra%' AND l.property_code = 'P2')
+UNION ALL
+SELECT  f.*
+FROM model.entity f  WHERE f.system_type = 'feature' AND id NOT IN
+(SELECT DISTINCT
+	l.domain_id
+	FROM model.link l JOIN thanados.typesforjson t ON l.range_id = t.id::INT WHERE t.name_path LIKE 'Feature%' AND l.property_code = 'P2')
+ORDER BY system_type, id;
+
+-- check for files without references and add reference of entity if available
+
+DROP TABLE IF EXISTS thanados.refFilesTmp;
+
+CREATE table thanados.refFilesTmp AS (
+SELECT
+	f.child_name,
+	f.child_id,
+	fi.id AS range_id,
+	fi.filename
+FROM thanados.finds f JOIN thanados.files fi ON f.child_id = fi.parent_id WHERE source ISNULL);
+
+INSERT INTO thanados.refFilesTmp
+	SELECT
+	f.child_name,
+	f.child_id,
+	fi.id AS range_id,
+	fi.filename
+FROM thanados.burials f JOIN thanados.files fi ON f.child_id = fi.parent_id WHERE source ISNULL;
+
+INSERT INTO thanados.refFilesTmp
+	SELECT
+	f.child_name,
+	f.child_id,
+	fi.id AS range_id,
+	fi.filename
+FROM thanados.graves f JOIN thanados.files fi ON f.child_id = fi.parent_id WHERE source ISNULL;
+
+INSERT INTO thanados.refFilesTmp
+	SELECT
+	f.child_name,
+	f.child_id,
+	fi.id AS range_id,
+	fi.filename
+FROM thanados.sites f JOIN thanados.files fi ON f.child_id = fi.parent_id WHERE source ISNULL
+
+
+
+INSERT INTO model.link (range_id, domain_id, property_code, description)
+
+SELECT 	f.range_id,
+	r.id AS domain_id,
+	'P67' AS property_code,
+	r.reference AS description
+
+FROM thanados.reffilestmp f JOIN thanados.reference r ON r.parent_id = f.child_id;
+
+DROP TABLE IF EXISTS thanados.refFilesTmp;
+
+
