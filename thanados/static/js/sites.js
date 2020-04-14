@@ -19,6 +19,7 @@ $(document).ready(function () {
     map = L.map('map', {
         fullscreenControl: true,
         zoom: 18,
+        maxZoom: 18,
         zoomControl: false,
         layers: [landscape]
     }).setView([51.505, -0.09], 13);
