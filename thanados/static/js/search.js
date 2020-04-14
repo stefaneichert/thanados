@@ -2,6 +2,7 @@ $(document).ready(function () {
     //$(".sortable").sortable();
     //$(".sortable").disableSelection();
     maximumHeight = ($(window).height() - $('#mynavbar').height())
+    containerheight = ($(window).height() - $('#mynavbar').height() - 15)
     $('#mycontent').css('max-height', (maximumHeight - 15) + 'px');
     local = false;
     mymodalwith = ($(window).width());
@@ -558,8 +559,8 @@ function setdatatable(data, tablePosition) {
             {
                 data: "name",
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                    if(oData.file === null) $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.maintype + " ' target='_blank'>" + oData.name + "</a>");
-                    if(oData.file !== null) $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.maintype + " ' target='_blank'>" + oData.name + "</a>" +
+                    if (oData.file === null) $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.maintype + " ' target='_blank'>" + oData.name + "</a>");
+                    if (oData.file !== null) $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.maintype + " ' target='_blank'>" + oData.name + "</a>" +
                         "<a class='btn-xs float-right' rel='popover' data-img='" + oData.file + "'><i class='fas fa-image'></i></a>"); //create links in rows
                 }
             },
@@ -831,12 +832,12 @@ function applyButton() {
 }
 
 
+//style polygons
 myStyle = {
-    "color": "rgba(0,96,180,0.88)",
+    "color": "#007bd9",
     "weight": 1,
     "fillOpacity": 0.5,
-    "radius": 10
-    //"opacity": 0.4
+    "fillColor": "#007bd9"
 };
 
 myStyleSquare = {};
