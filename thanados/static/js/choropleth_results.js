@@ -1,116 +1,137 @@
-
-
-function startvis() {
+function startvis(search) {
+    //appendSearch(1);
+    $('#myvisformCSV').empty();
     $('#myvisform').empty();
-    appendSearch(1);
-    $("#visdialog").dialog({
-        width: mymodalwith,
-        height: 450,
-        open: function () {
-            // Destroy Close Button (for subsequent opens)
-            $('#visdialog-close').remove();
-            // Create the Close Button (this can be a link, an image etc.)
-            var link = '<btn id="visdialog-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
-            // Create Close Button
-            $(".ui-dialog-title").css({'width': ''});
-            $(this).parent().find(".ui-dialog-titlebar").append(link);
-            // Add close event handler to link
-            $('#visdialog-close').on('click', function () {
-                $("#visdialog").dialog('close');
-            });
-        }
-    });
+    if ($('#dialog').hasClass("ui-dialog-content")) {
+        if (search !== true && ($('#dialog').dialog('isOpen') === true)) $("#dialog").dialog('close');
+    }
+
+    if (search) {
+        visform = $('#myvisformCSV');
+    }
+
+    if (search !== true) {
+
+        visform = $('#myvisform');
+
+        $("#visdialog").dialog({
+            width: mymodalwith,
+            height: 450,
+            open: function () {
+                // Destroy Close Button (for subsequent opens)
+                $('#visdialog-close').remove();
+                // Create the Close Button (this can be a link, an image etc.)
+                var link = '<btn id="visdialog-close" title="close" class="btn btn-sm btn-secondary d-inline-block" style="float:right;text-decoration:none;"><i class="fas fa-times"></i></btn>';
+                // Create Close Button
+                $(".ui-dialog-title").css({'width': ''});
+                $(this).parent().find(".ui-dialog-titlebar").append(link);
+                // Add close event handler to link
+                $('#visdialog-close').on('click', function () {
+                    $("#visdialog").dialog('close');
+                });
+            }
+        });
+    }
     visproperty = 'myprop';
     colorstart = "#ffffff";
     colorend = "#ff0000";
-    appendvis('vis');
+    appendvis('vis', search);
 }
 
-function appendvis(iter) { //append vis form to dialog
-    $('#myvisform').append(
-        //selection for vis level: grave, burial or find
-        '<div id="VisSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
-        '<div class="input-group-prepend">' +
-        '<label class="input-group-text" for="VisSelect_' + iter + '">1. </label>' +
-        '</div>' +
-        '<select class="custom-select empty" id="VisSelect_' + iter + '">' +
-        '<option selected disabled>Select Level...</option>' +
-        '<option value="gravedim">Graves</option>' +
-        '<option value="burialdim">Burials</option>' +
-        '<option value="findcount">No. of finds per grave</option>' +
-        '<option value="sex">Sex</option>' +
-        '<option value="age">Age</option>' +
-        '</select>' +
-        '</div>');
-    //after main level is selected:
-    $('#VisSelect_' + iter).on('change', function () {
-        visappendLevel = $('#VisSelect_' + iter + ' option:selected').val(); //set level as variable
-        $('#VisSelect_' + iter).prop('disabled', true); //disble former selection field
-        $('#VisSelect_' + iter + '_parent').append(//add reset button on first iteration
-            '<div class="input-group-append">' +
-            '<button class="btn btn-secondary btn-sm" type="button" id="resetvisbutton" onclick="startvis()" title="Reset">' +
-            '<i class="fas fa-sync-alt"></i>' +
-            '</button>' +
-            '</div>'
-        );
-        if (visappendLevel !== 'findcount' && visappendLevel !== 'sex' && visappendLevel !== 'age') {
-            $('#myvisform').append(
-                //selection for property to choose: maintype, types, dimensions, material or timespan
-                '<div id="PropSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="PropSelect_' + iter + '">2. </label>' +
-                '</div>' +
-                '<select class="custom-select empty" id="PropSelect_' + iter + '">' +
-                '<option selected disabled>Select property...</option>' +
-                '<option value="Height">Depth</option>' +
-                '<option value="Length">Length</option>' +
-                '<option value="Width">Width</option>' +
-                '<option value="Degrees">Orientation</option>' +
-                '<option value="Azimuth">Azimuth</option>' +
-                '</select>' +
+function appendvis(iter, search) { //append vis form to dialog
+    if (search !== true) {
+        visform.append(
+            //selection for vis level: grave, burial or find
+            '<div id="VisSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
+            '<div class="input-group-prepend">' +
+            '<label class="input-group-text" for="VisSelect_' + iter + '">1. </label>' +
+            '</div>' +
+            '<select class="custom-select empty" id="VisSelect_' + iter + '">' +
+            '<option selected disabled>Select Level...</option>' +
+            '<option value="gravedim">Graves</option>' +
+            '<option value="burialdim">Burials</option>' +
+            '<option value="findcount">No. of finds per grave</option>' +
+            '<option value="sex">Sex</option>' +
+            '<option value="age">Age</option>' +
+            '</select>' +
+            '</div>');
+        //after main level is selected:
+        $('#VisSelect_' + iter).on('change', function () {
+            visappendLevel = $('#VisSelect_' + iter + ' option:selected').val(); //set level as variable
+            $('#VisSelect_' + iter).prop('disabled', true); //disble former selection field
+            $('#VisSelect_' + iter + '_parent').append(//add reset button on first iteration
+                '<div class="input-group-append">' +
+                '<button class="btn btn-secondary btn-sm" type="button" id="resetvisbutton" onclick="startvis(false)" title="Reset">' +
+                '<i class="fas fa-sync-alt"></i>' +
+                '</button>' +
                 '</div>'
             );
-        }
-        if (visappendLevel == 'age') {
-            $('#myvisform').append(
-                //selection for property to choose: maintype, types, dimensions, material or timespan
-                '<div id="PropSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="PropSelect_' + iter + '">2. </label>' +
-                '</div>' +
-                '<select class="custom-select empty" id="PropSelect_' + iter + '">' +
-                '<option selected disabled>Select property...</option>' +
-                '<option value="min">Minimum</option>' +
-                '<option value="max">Maximum</option>' +
-                '<option value="average">Average</option>' +
-                '</select>' +
-                '</div>'
-            );
-        }
-        $('#PropSelect_' + iter).on('change', function () {
-            $('#PropSelect_' + iter).prop('disabled', true);
-            visproperty = $('#PropSelect_' + iter + ' option:selected').val(); //set property as variable
-            mylegendtitle = $('#PropSelect_' + iter + ' option:selected').text(); //set property as variable
-            appendvisbuttons();
-        });
-        switch (visappendLevel) {
-            case 'findcount':
-                mylegendtitle = "No. of finds in grave";
+            if (visappendLevel !== 'findcount' && visappendLevel !== 'sex' && visappendLevel !== 'age') {
+                visform.append(
+                    //selection for property to choose: maintype, types, dimensions, material or timespan
+                    '<div id="PropSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
+                    '<div class="input-group-prepend">' +
+                    '<label class="input-group-text" for="PropSelect_' + iter + '">2. </label>' +
+                    '</div>' +
+                    '<select class="custom-select empty" id="PropSelect_' + iter + '">' +
+                    '<option selected disabled>Select property...</option>' +
+                    '<option value="Height">Depth</option>' +
+                    '<option value="Length">Length</option>' +
+                    '<option value="Width">Width</option>' +
+                    '<option value="Degrees">Orientation</option>' +
+                    '<option value="Azimuth">Azimuth</option>' +
+                    '</select>' +
+                    '</div>'
+                );
+            }
+            if (visappendLevel == 'age') {
+                visform.append(
+                    //selection for property to choose: maintype, types, dimensions, material or timespan
+                    '<div id="PropSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +
+                    '<div class="input-group-prepend">' +
+                    '<label class="input-group-text" for="PropSelect_' + iter + '">2. </label>' +
+                    '</div>' +
+                    '<select class="custom-select empty" id="PropSelect_' + iter + '">' +
+                    '<option selected disabled>Select property...</option>' +
+                    '<option value="min">Minimum</option>' +
+                    '<option value="max">Maximum</option>' +
+                    '<option value="average">Average</option>' +
+                    '</select>' +
+                    '</div>'
+                );
+            }
+            $('#PropSelect_' + iter).on('change', function () {
+                $('#PropSelect_' + iter).prop('disabled', true);
+                visproperty = $('#PropSelect_' + iter + ' option:selected').val(); //set property as variable
+                mylegendtitle = $('#PropSelect_' + iter + ' option:selected').text(); //set property as variable
+                currentCreateLegend = mylegendtitle;
                 appendvisbuttons();
-                break;
-            case 'sex':
-                mylegendtitle = "Sex of buried individuals";
-                appendsexbuttons();
-                break;
-            case 'age':
-                mylegendtitle = "Age at death estimation";
-                break;
-        }
-    });
+            });
+            switch (visappendLevel) {
+                case 'findcount':
+                    currentCreateLegend = "No. of finds in grave";
+                    appendvisbuttons();
+                    break;
+                case 'sex':
+                    currentCreateLegend = "Sex of buried individuals";
+                    appendsexbuttons();
+                    break;
+                case 'age':
+                    currentCreateLegend = "Age at death estimation";
+                    break;
+            }
+        })
+    }
+    if (search) {
+        visappendLevel = 'value';
+        mylegendtitle = '';
+        currentCreateLegend = mylegendtitle;
+        appendvisbuttons();
+    }
 }
 
 function appendvisbuttons(iter) {
-    $('#myvisform').append(
+    visform.append(
         '<div class="myoptions input-group input-group-sm mb-3">' +
         '<div class="input-group-prepend">' +
         '<label class="input-group-text" for="colorrange">Color range</label>' +
@@ -124,12 +145,12 @@ function appendvisbuttons(iter) {
         '<div class="input-group-prepend">' +
         '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
         '</div>' +
-        '<input class="form-control" id="legendtitle" type="text" value="' + mylegendtitle + '">' +
-        '<div class="input-group-append">' +
-        '<div class="input-group-text" title="Show legend">' +
-        '<input id="showlegend" type="checkbox" aria-label="Checkbox for showing map" checked>' +
-        '</div>' +
-        '</div>' +
+        '<input class="form-control legendtext" id="legendtitle" type="text" value="' + currentCreateLegend + '">' +
+        //'<div class="input-group-append">' +
+        //'<div class="input-group-text" title="Show legend">' +
+        //'<input id="showlegend" type="checkbox" aria-label="Checkbox for showing map" checked>' +
+        //'</div>' +
+        //'</div>' +
         '</div>' +
         '<div class="myoptions input-group input-group-sm mb-3">' +
         '<div class="input-group-prepend">' +
@@ -156,14 +177,15 @@ function appendvisbuttons(iter) {
         '<option value="k">k-means</option>' +
         '</select>' +
         '</div>' +
-        '<button class="btn btn-secondary btn-sm visbutton" type="button" id="AdvOptBtn" onclick="toggleOpt()" title="Advanced Options">' +
+        '<button class="btn btn-secondary btn-sm visbutton" type="button" id="AdvOptBtn" onclick="toggleOpt()" title="Advanced options for gradient color">' +
         '<i class="fas fa-ellipsis-h"></i>' +
         '</button>' +
-        '<button class="btn btn-secondary btn-sm visbutton" type="button" id="VisResultBtn" onclick="finishvis()" title="Show on map">' +
+        '<button class="btn btn-secondary btn-sm visbutton" type="button" id="VisResultBtn" onclick="finishvis()" title="Show on map with gradient color">' +
         '<i class="fas fa-map-marked-alt"></i>' +
         '</button>'
     );
     toggleOpt();
+
 
     var firstInput = document.getElementById("colorstart");
     var firstColor = firstInput.value;
@@ -183,7 +205,7 @@ function appendvisbuttons(iter) {
             $('#steps').val(2);
     });
     $('#legendtitle').on('input change', function () {
-        mylegendtitle = $('#legendtitle').val();
+        currentCreateLegend = $('#legendtitle').val();
     });
     myopacity = 10;
     $('#opacity').on('input change', function () {
@@ -219,20 +241,19 @@ function appendvisbuttons(iter) {
 }
 
 function appendsexbuttons(iter) {
-    $('#myvisform').append(
+    visform.append(
         '<div class="myoptions input-group input-group-sm mb-3">' +
         '<div class="myoptions input-group input-group-sm mb-3">' +
         '<div class="input-group-prepend">' +
         '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
         '</div>' +
-        '<input class="form-control" id="legendtitle" type="text" value="' + mylegendtitle + '">' +
-        '<div class="input-group-append">' +
-        '<div class="input-group-text" title="Show legend">' +
-        '<input id="showlegend" type="checkbox" aria-label="Checkbox for showing map" checked>' +
+        '<input class="form-control legendtext" id="legendtitle" type="text" value="' + currentCreateLegend + '">' +
+        //'<div class="input-group-append">' +
+        //'<div class="input-group-text" title="Show legend">' +
+        //'<input id="showlegend" type="checkbox" aria-label="Checkbox for showing map" checked>' +
+        //'</div>' +
+        //'</div>' +
         '</div>' +
-        '</div>' +
-        '</div>' +
-
         '<div class="input-group-prepend">' +
         '<label class="input-group-text" for="male">Male:</label>' +
         '</div>' +
@@ -249,10 +270,10 @@ function appendsexbuttons(iter) {
         '<span class="input-group-text input-group-middle">Border width: </span>' +
         '<input class="form-control" id="borderwidth" type="number" value="0" min="0">' +
         '</div>' +
-        '<button class="btn btn-secondary btn-sm visbutton" type="button" id="AdvOptBtn" onclick="toggleOpt()" title="Advanced Options">' +
+        '<button class="btn btn-secondary btn-sm visbutton toremovebtn" type="button" id="AdvOptBtn" onclick="toggleOpt()" title="Advanced styling options">' +
         '<i class="fas fa-ellipsis-h"></i>' +
         '</button>' +
-        '<button class="btn btn-secondary btn-sm visbutton" type="button" id="VisResultBtn" onclick="finishvis()" title="Show on map">' +
+        '<button class="btn btn-secondary btn-sm visbutton toremovebtn" type="button" id="VisResultBtn" onclick="finishvis()" title="Show on map">' +
         '<i class="fas fa-map-marked-alt"></i>' +
         '</button>'
     );
@@ -272,7 +293,7 @@ function appendsexbuttons(iter) {
         colorend = lastInput.value;
     }, false);
     $('#legendtitle').on('input change', function () {
-        mylegendtitle = $('#legendtitle').val();
+        currentCreateLegend = $('#legendtitle').val();
     });
     myopacity = 10;
     $('#opacity').on('input change', function () {
@@ -303,16 +324,16 @@ function appendsexbuttons(iter) {
 }
 
 function toggleOpt() {
-    $('.myoptions').toggle();
+    //$('.myoptions').toggle();
 }
 
 function finishvis() {
-    mylegend = !!document.getElementById('showlegend').checked;
+    mylegend = true; //!!document.getElementById('showlegend').checked;
 
 
     myfinalopacity = (100 - myopacity) / 100;
-    if (visappendLevel !== 'sex') getChoroplethJson(visproperty, visappendLevel, mylegendtitle, mysteps, mymode, [colorstart, colorend], mybordercolor, myborderwidth, myfinalopacity, mylegend);
-    if (visappendLevel == 'sex') getChoroplethJson(visproperty, visappendLevel, mylegendtitle, 0, 'na', [colorstart, colorend], mybordercolor, myborderwidth, myfinalopacity, mylegend);
+    if (visappendLevel !== 'sex') getChoroplethJson(visproperty, visappendLevel, currentCreateLegend, mysteps, mymode, [colorstart, colorend], mybordercolor, myborderwidth, myfinalopacity, mylegend);
+    if (visappendLevel == 'sex') getChoroplethJson(visproperty, visappendLevel, currentCreateLegend, 0, 'na', [colorstart, colorend], mybordercolor, myborderwidth, myfinalopacity, mylegend);
 }
 
 function getChoroplethJson(visproperty, visappendLevel, title, mysteps, mymode, mycolor, myborder, myborderwidth, myfinalopacity, mylegend) {
@@ -448,10 +469,57 @@ function getChoroplethJson(visproperty, visappendLevel, title, mysteps, mymode, 
         })
     }
 
+    if (visappendLevel == 'value') {
+        var CSVresultIds = ValueResultsChoropleth(CSVresultJSON);
+        $.each(mypolyjson.features, function (i, feature) {
+            var currentId = feature.id;
+            insertfeature = feature;
+            $.each(CSVresultIds, function (i, dataset) {
+                if (dataset.id === currentId) {
+                    jQuery.extend(insertfeature.properties, {chorovalue: dataset.value});
+                    mychorojson.features.push(insertfeature);
+                }
+            })
+        });
+        currentCreateLegend = GlobalSelectedNodeName;
+    }
 
-    if (visappendLevel !== 'sex') setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth, myfinalopacity, mylegend);
-    if (visappendLevel == 'sex') setSexJson(title, colorstart, colorend, myborder, myborderwidth, myfinalopacity, mylegend);
+    mychorojson = JSON.parse(JSON.stringify(mychorojson).replace(/'/g, ""));
+    if (visappendLevel !== 'sex') setChoropleth(currentCreateLegend, mysteps, mymode, mycolor, myborder, myborderwidth, myfinalopacity, mylegend);
+    if (visappendLevel == 'sex') setSexJson(currentCreateLegend, colorstart, colorend, myborder, myborderwidth, myfinalopacity, mylegend);
 }
+
+//get only one value if search result is displayed as choropleth
+function ValueResultsChoropleth(data) {
+    graveList = [];
+    $.each(data, function (i, feature) {
+        //console.log(feature);
+        var insertValue = {
+            'id': feature.graveID,
+            'value': feature.value,
+            'category': feature.searchResult
+        }
+        graveList.push(insertValue);
+    })
+
+    var flags = [], output = [], l = graveList.length, i;
+    for (i = 0; i < l; i++) {
+        if (flags[graveList[i].id]) continue;
+        flags[graveList[i].id] = true;
+        output.push({
+            'id': graveList[i].id,
+            'value': parseFloat(graveList[i].value),
+            'category': graveList[i].category
+        });
+    }
+    //console.log(graveList.length); console.log (output.length);
+    /*if (graveList.length !== output.length) console.log(
+        'Please not that there are ' + graveList.length + ' results in ' + output.length + ' graves. ' +
+        'For each grave only one value of these is considered for the gradient color mapping. ' +
+        'If the mapping result is not sufficient you can narrow your search to get one unique value for each grave.');
+    return (output)*/
+}
+
 
 function style(feature) {
     if ("male" == feature.properties.chorovalue) {
@@ -476,56 +544,39 @@ function setSexJson(title, colorstart, colorend, myborder, myborderwidth, myfina
         map.removeLayer(choroplethLayer);
 
     choroplethLayer = L.geoJSON(mychorojson, {
+        shapetype: 'colorPoly',
+        legendTitle: title,
+        layername: 'choroplethLayer',
         style: style
     }).addTo(map);
 
-    if (typeof (legend) !== 'undefined')
-        $('.legendtoremove').remove();
-    legend = L.control({position: 'bottomright'})
-    legend.onAdd = function (map) {
-        var div = L.DomUtil.create('div', 'info legend legendtoremove')
+    var currentColorpoly = '<ul><li style="padding-top: 8px">Male:</li><li onclick="InfoAlert()" style="cursor: pointer; max-height: 20px; margin-top: 4px; display: block; float: right; min-width: 60px; background-color: ' + hexToRgbA(colorstart, myfinalopacity) + '; border: ' + myborderwidth + 'px solid ' + myborder + '">&nbsp;</li></ul>' +
+        '<ul><li style="padding-top: 8px">Female:</li><li onclick="InfoAlert()" style="cursor: pointer; max-height: 20px; margin-top: 4px; display: block; float: right; min-width: 60px; background-color: ' + hexToRgbA(colorend, myfinalopacity) + '; border: ' + myborderwidth + 'px solid ' + myborder + '">&nbsp;</li></ul>';
 
-        // Add min & max
-        div.innerHTML = '<div><div align="center">' + title + '</div>' +
-            '<ul><li style="padding-top: 8px">Male:</li><li style="margin-top: 4px; display: block; float: right; min-width: 60px; background-color: ' + colorstart + '">&nbsp;</li></ul>' +
-            '<ul><li style="padding-top: 8px">Female:</li><li style="margin-top: 4px; display: block; float: right; min-width: 60px; background-color: ' + colorend + '">&nbsp;</li></ul>';
-        return div;
-    }
-    if (mylegend)
-        legend.addTo(map)
-
-
-    overlays = {
-        "Graves": graves,
-        "Search results": resultpolys,
-        "Search result markers": resultpoints,
-        "Visualisations": choroplethLayer
-    };
-    map.removeControl(baseControl);
-    baseControl = L.control.layers(baseLayers, overlays).addTo(map);
-
-    map.on('overlayadd', function (eventLayer) {
-        if (eventLayer.name === 'choroplethLayer') {
-            map.addControl(legend);
-        }
-    });
-
-    map.on('overlayremove', function (eventLayer) {
-        if (eventLayer.name === 'choroplethLayer') {
-            map.removeControl(legend);
-        }
-    });
+    createLegend(map, choroplethLayer, currentColorpoly);
+    orderlayer(myselector);
 }
 
 
 function setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth, myfinalopacity, mylegend) {
-    if (typeof (choroplethLayer) !== 'undefined')
-        map.removeLayer(choroplethLayer);
+    if (mylegend) {
+        currentLegend = currentCreateLegend;
+        //console.log('first creation')
+    }
+    if (typeof (choroplethLayer) !== 'undefined') map.removeLayer(choroplethLayer);
     choroplethLayer = L.choropleth(mychorojson, {
+        shapetype: 'choropoly',
+        legendTitle: title,
+        layername: 'choroplethLayer',
         valueProperty: 'chorovalue', // which property in the features to use
         scale: mycolor, // chroma.js scale - include as many as you like
         steps: mysteps, // number of breaks or steps in range
         mode: mymode, // q for quantile, e for equidistant, k for k-means
+        polygonstyle: {
+            color: myborder, // border color
+            weight: myborderwidth,
+            fillOpacity: myfinalopacity
+        },
         style: {
             color: myborder, // border color
             weight: myborderwidth,
@@ -533,48 +584,52 @@ function setChoropleth(title, mysteps, mymode, mycolor, myborder, myborderwidth,
         },
     }).addTo(map);
 
-    if (typeof (legend) !== 'undefined')
-        $('.legendtoremove').remove();
-    legend = L.control({position: 'bottomright'})
-    legend.onAdd = function (map) {
-        var div = L.DomUtil.create('div', 'info legend legendtoremove')
-        var limits = choroplethLayer.options.limits
-        var colors = choroplethLayer.options.colors
-        var labels = []
 
-        // Add min & max
-        div.innerHTML = '<div class="labels"><div align="center">' + title + '</div><div class="min">' + limits[0] + '</div> \
-			<div class="max">' + limits[limits.length - 1] + '</div></div>'
+    var div = document.createElement('div');
+    var limits = choroplethLayer.options.limits
+    var colors = choroplethLayer.options.colors
+    var labels = []
 
-        limits.forEach(function (limit, index) {
-            labels.push('<li style="background-color: ' + colors[index] + '"></li>')
-        })
+    // Add min & max
+    //div.innerHTML = '<div class="labels"></div>'
 
-        div.innerHTML += '<ul>' + labels.join('') + '</ul>'
-        return div
-    }
-    if (mylegend)
-        legend.addTo(map)
+    limits.forEach(function (limit, index) {
+        labels.push('<li style="background-color: ' + colors[index] + '"></li>')
+    })
 
-    overlays = {
-        "Graves": graves,
-        "Search results": resultpolys,
-        "Search result markers": resultpoints,
-        "Visualisations": choroplethLayer,
-    };
-    map.removeControl(baseControl);
-    baseControl = L.control.layers(baseLayers, overlays).addTo(map);
-
-    map.on('overlayadd', function (eventLayer) {
-        if (eventLayer.name === 'choroplethLayer') {
-            map.addControl(legend);
-        }
-    });
-
-    map.on('overlayremove', function (eventLayer) {
-        if (eventLayer.name === 'choroplethLayer') {
-            map.removeControl(legend);
-        }
-    });
-
+    div.innerHTML += '<ul class="mt-2" onclick="InfoAlert()"><span style="display: table; margin: auto; cursor: pointer;"><li style="width: auto; margin-right: 9px">' + limits[0] + '</li>' + labels.join('') + '<li style="width: auto; margin-left: 9px">' + limits[limits.length - 1] + '</li></span></ul>'
+    //return div
+    createLegend(map, choroplethLayer, div);
+    orderlayer(myselector);
 }
+
+function InfoAlert(text) {
+    /*$('#map').append('<div style="z-index: 50000; font-size: 1.3em;" class="alert alert-primary alert-dismissible fade show" role="alert">\n' +
+        '' + text + '\n' +
+        '  <button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+        '    <span aria-hidden="true">&times;</span>\n' +
+        '  </button>\n' +
+        '</div>')*/
+    $('.toast').remove();
+    $('#map').append('<div class="toast" style="position: absolute; bottom: 50%; left: 40%; z-index: 50000; background-color: rgb(255, 255, 255);"\n' +
+        'data-autohide="false" role="alert" aria-live="assertive" aria-atomic="true">\n' +
+        '  <div class="ui-widget-header toast-header">\n' +
+        '    <span class="mr-auto">Info</span>\n' +
+        '    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">\n' +
+        '      <span aria-hidden="true">&times;</span>\n' +
+        '    </button>\n' +
+        '  </div>\n' +
+        '  <div class="toast-body ui-dialog-content">\n' +
+        ' This is a predefined visualisation that cannot be restyled after adding it to the map. You can style the layer on adding it. ' +
+        'If you want to do more complex visualisations/stylings of your layers, you can use the <a style=\'cursor: pointer; color: blue\' onclick=\'startsearch(); removeToast()\'><b> filter/search </b></a> function and then ' +
+        'style the search result via clicking the layer in the legend.' +
+        '  </div>\n' +
+        '</div>');
+
+    $('.toast').toast('show');
+}
+
+function removeToast() {
+    $('.toast').toast('hide');
+}
+

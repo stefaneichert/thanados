@@ -168,7 +168,7 @@ $('#submitBtn').on('click', function (e) {
 });
 
 $(document).on('change', "input[type|=\'checkbox\']", function () {
-    console.log('check');
+    //console.log('check');
     var table = $('#sitelist').DataTable();
     rows_selected = table.column(0).checkboxes.selected();
     CurrentSelection = [];
@@ -176,7 +176,7 @@ $(document).on('change', "input[type|=\'checkbox\']", function () {
     $.each(rows_selected, function (index, rowId) {
         CurrentSelection.push(rowId)
     });
-    console.log(CurrentSelection);
+    //console.log(CurrentSelection);
     $.each(sitelist, function (i, site) {
         if ($.inArray(site.id, CurrentSelection) != -1) {
             CurrentSites.push(site.name);

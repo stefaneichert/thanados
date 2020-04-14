@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+
     <div id="container">
         <div id="sidebar" class="hidden-xs hidden-sm">
             <div class="sidebar-wrapper">
@@ -36,6 +37,7 @@
 
         <div id="dialog" title="Filter/Search">
             <form id="mysearchform"></form>
+            <div id="infoalert"></div>
         </div>
 
         <div class="modal fade" id="CSVmodal" tabindex="-1" role="dialog"
@@ -65,62 +67,30 @@
                             </thead>
                         </table>
                     </div>
-                    <div class="modal-footer costum-header-bg">
+                    <div class="modal-footer costum-header-bg resultlistfooter">
+                        <form id="myvisformCSV"></form>
+                        <button type="button" class="btn btn-primary"
+                                onclick="exportToCSV(CSVresultExport)"
+                                title="Download result as spreadsheet data (CSV - Comma separated Values)">
+                            Export CSV
+                        </button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
                         </button>
-                        <button type="button" class="btn btn-primary" onclick="exportToCSV(CSVresultExport)" title="Download result as spreadsheet data (CSV - Comma separated Values)">Export CSV</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="styledialog" title="Styling Options for graves">
-            <form id="mystyleform">
-                <div class="mystyleoptions input-group input-group-sm mb-3">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text" for="stylecolor">Fill color: </label>
-                    </div>
-                    <input class="form-control" id="stylecolor" style="max-width: 70px" type="color"
-                           value="#000dff">
-                    <span class="input-group-text input-group-middle">Opacity (%): </span>
-                    <label for="mystyleopacity"></label><input class="form-control"
-                                                               id="mystyleopacity" type="range"
-                                                               value="10" min="0" max="100">
-                    <label for="mystyleopacityvalue"></label><input class="form-control"
-                                                                    id="mystyleopacityvalue"
-                                                                    type="number" value="10" min="0"
-                                                                    max="100"
-                                                                    style="max-width: 60px">
-                </div>
-                <div class="mystyleoptions input-group input-group-sm mb-3">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text" for="stylebordercolor">Border
-                            color: </label>
-                    </div>
-                    <label for="stylecolorborder"></label><input class="form-control"
-                                                                 id="stylecolorborder"
-                                                                 style="max-width: 70px"
-                                                                 type="color"
-                                                                 value="#000000">
-                    <span class="input-group-text input-group-middle">Border width: </span>
-                    <label for="styleborderwidth"></label><input class="form-control"
-                                                                 id="styleborderwidth" type="number"
-                                                                 value="0" min="0">
-                </div>
-                <button class="btn btn-sm btn-secondary btn-sm float-right" type="button"
-                        id="applyStyle"
-                        onclick="applyButton()" title="Apply">Apply
-                </button>
-            </form>
-        </div>
 
         <div id="myModal" title="mygrave">
             <div id="myModalContent" style="padding-bottom: 2em" class="modal-content"></div>
         </div>
 
         <div id="visdialog" title="Visualisations">
-            <form id="myvisform"></form>
+            <form id="myvisform" class="myvisform"></form>
         </div>
+
+        <div id="infodialog" title="Info"></div>
 
         <div id="mytreeModal" title="Select category">
             <div>

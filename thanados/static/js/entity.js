@@ -1,6 +1,21 @@
 getBasemaps();
 sitename = jsonmysite.name;
 
+descriptionSummary = {
+    graves: jsonmysite.features.length,
+    burials: 0,
+    finds: 0,
+}
+
+$.each(jsonmysite.features, function (i, feature) {
+    $.each(feature.burials, function (i, burial) {
+        descriptionSummary.burials += 1;
+        $.each(burial.finds, function (i, feature) {
+            descriptionSummary.finds += 1;
+        })
+    })
+})
+
 $('#mybreadcrumb').append(
     '<nav aria-label="breadcrumb">' +
     '<ol id="mybreadcrumbs" class="breadcrumb">' +
@@ -14,6 +29,27 @@ if (systemtype == 'place') {
     mycitation = '"' + sitename + '".';
     myjson = jsonmysite;
 }
+
+window.addEventListener('load', function () {
+    var myTrunc = $(".shrinkable")
+    var truncHeight = $(myTrunc).height();
+    if (truncHeight > 250) {
+        $(myTrunc).shave(250);
+    } else {
+        $('.truncBtn').empty()
+    }
+
+    $('.truncBtn').click(function (e) {
+        var truncHeight = $(this).parent().find('.shrinkable').height();
+        if (truncHeight > 250) {
+            $(".shrinkable").shave(250);
+            $(this).html('Show more')
+        } else {
+            $(".shrinkable").shave(999999);
+            $(this).html('Show less')
+        }
+    });
+})
 
 
 if (systemtype == 'feature') {
@@ -181,7 +217,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div class="row mb-5">' +
         '<div id="myData_' + entId + '" class="col-md">' +
         '<div class="row">' +
-        '<h4 style="margin-bottom: 1em; margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '" title="Name of entity">' + entName + '</h4>' +
+        '<h4 style="margin-bottom: 1em; margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '" title="Name of entity">' + entName + '&nbsp;</h4>' +
         '<div style="margin: 0.8em 0.8em 0.8em auto;">' +
         '<button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-secondary" title="Download data as GeoJSON"><i class="fas fa-download"></i></button>' +
@@ -190,8 +226,8 @@ function getEntityData(parentName, parentId, currentfeature) {
         '</div>' +
         '<div id="mytype_' + entId + '" class="modalrowitem" title="' + typepath + '">' + entType + '</div>' +
         '<div id="mytimespan' + entId + '" class="modalrowitem" title="Timespan/daterange of entity">' + dateToInsert + '</div>' +
-        '<div id="myDescr' + entId + '" title="Description of entity">' + entDesc + '</div>' +
-        '<div id="myTypescontainer' + entId + '"></div>' +
+        '<div id="myDescr' + entId + '" title="Description of entity"><span class="shrinkable">' + entDesc + '</span></div><a class="truncBtn" onclick="truncId=\'#myDescr' + entId + '\'" href="#">Show more</a>' +
+        '<div class="mt-5" id="myTypescontainer' + entId + '"></div>' +
         '<div id="myDimensionscontainer' + entId + '"></div>' +
         '<div id="myMaterialcontainer' + entId + '"></div>' +
         '<div id="myParentcontainer' + entId + '"></div>' +
@@ -202,22 +238,21 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myChildrencontainer' + entId + '">' +
         '<nav>' +
         '<div class="nav nav-tabs" id="nav-tab" role="tablist">' +
-        '<a class="nav-item nav-link active" id="nav-table-tab' + entId + '" data-toggle="tab" href="#nav-table' + entId + '" role="tab" aria-controls="nav-table' + entId + '" aria-selected="true">Table</a>' +
-        '<a class="nav-item nav-link" id="nav-pills-tab' + entId + '" data-toggle="tab" href="#nav-pills' + entId + '" role="tab" aria-controls="nav-pills' + entId + '" aria-selected="false">Simple</a>' +
-        '<a class="nav-item nav-link" id="nav-catalog-tab" data-toggle="tab" href="#nav-catalog" role="tab" aria-controls="nav-catalog" aria-selected="false">Catalog</a>' +
+        '<a class="nav-item nav-link active" id="nav-table-tab' + entId + '" data-toggle="tab" href="#nav-table' + entId + '" role="tab" aria-controls="nav-table' + entId + '" aria-selected="true">List</a>' +
+        '<a class="nav-item nav-link d-none" id="nav-pills-tab' + entId + '" data-toggle="tab" href="#nav-pills' + entId + '" role="tab" aria-controls="nav-pills' + entId + '" aria-selected="false">Simple</a>' +
+        '<a class="nav-item nav-link" id="nav-catalogue-tab" data-toggle="tab" href="#nav-catalogue" role="tab" aria-controls="nav-catalogue" aria-selected="false">Catalogue</a>' +
         '</div>' +
         '</nav>' +
         '<div class="tab-content pl-2 pr-2 pt-4" id="nav-tabContent">' +
         '<div class="tab-pane fade show active" id="nav-table' + entId + '" role="tabpanel" aria-labelledby="nav-table-tab' + entId + '"></div>' +
         '<div class="tab-pane fade" id="nav-pills' + entId + '" role="tabpanel" aria-labelledby="nav-pills-tab' + entId + '"></div>' +
-        '<div class="tab-pane fade" id="nav-catalog" role="tabpanel" aria-labelledby="nav-catalog-tab' + entId + '"></div>' +
+        '<div class="tab-pane fade" id="nav-catalogue" role="tabpanel" aria-labelledby="nav-catalogue-tab' + entId + '"></div>' +
         '</div>' +
         '</div>' +
         '<div id="myMetadatacontainer' + entId + '" class="pt-5"></div>' +
         '</div>' +
         '</div>'
     )
-    ;
 
     if (dateToInsert == '') {
         $('#mytimespan' + entId).attr("class", "");
@@ -542,14 +577,14 @@ function getEntityData(parentName, parentId, currentfeature) {
 
 
     myStyle = {
-        "color": "rgba(0,123,217,0.75)",
-        "weight": 1.5,
+        "color": "#007BD9",
+        "weight": 1,
         "fillOpacity": 0.8
     };
 
     myStyleSquare = {
-        "color": "rgba(0,123,217,0.75)",
-        "weight": 1.5,
+        "color": "#007BD9",
+        "weight": 1,
         "fillOpacity": 0.5,
         "dashArray": [4, 4]
     };
@@ -629,11 +664,12 @@ function getEntityData(parentName, parentId, currentfeature) {
 
         if (setJson(jsonmysite)) {
             mymap.fitBounds(graves.getBounds());
-            if ((mymap.getZoom()) > 20) mymap.setZoom(20);
+            if ((mymap.getZoom()) > 18) mymap.setZoom(18);
         } else {
             var latlng = [jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]];
             var marker = L.marker(latlng).addTo(mymap);
             centerpoint = latlng;
+            mymap.setZoom(18);
             mymap.panTo(centerpoint);
         }
 
@@ -695,6 +731,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         }).addTo(mymap);
 
     attributionChange();
+
 }
 
 
@@ -778,9 +815,9 @@ function setImages(entId, entfiles) {
         $('#myImagecontainer' + entId).remove()
     }
     var lazyLoadInstance = new LazyLoad({
-                    elements_selector: ".lazy"
-                });
-                lazyLoadInstance.update();
+        elements_selector: ".lazy"
+    });
+    lazyLoadInstance.update();
 }
 
 function toggleSubunits() {
@@ -817,13 +854,13 @@ L.extend(myjson, {//add necessary properties from json
 //add title to breadcrumb items
 $('.breadcrumb-item').prop('title', 'Path of the entity. Click to navigate');
 
-//create recursive catalog of all subunits
-function setcatalog(currentchildren, parentDiv, iter) {
-    if (iter == 1) $('#nav-catalog').append('<div id="mycatalog"></div>');
+//create recursive catalogue of all subunits
+function setcatalogue(currentchildren, parentDiv, iter) {
+    if (iter == 1) $('#nav-catalogue').append('<div id="mycatalogue"></div>');
     iter += 1;
     $.each(currentchildren, function (i, currentfeature) {
         var entId = currentfeature.id;
-        var entName = currentfeature.properties.name;
+        var entName = '<a href="../entity/' + entId + '" title="Permalink to this entity">' + currentfeature.properties.name + '</a>';
         var entDesc = currentfeature.properties.description;
         if (typeof entDesc == 'undefined') {
             var entDesc = '';
@@ -841,7 +878,6 @@ function setcatalog(currentchildren, parentDiv, iter) {
         if (typeof tsbegin == 'undefined') {
             var dateToInsert = '';
         }
-
 
 
         if (currentfeature.type == 'Feature' && i > 0) $('#' + parentDiv).append('<h4 class="border-top pt-4 mt-4">' + entName + '</h4>');
@@ -924,28 +960,37 @@ function setcatalog(currentchildren, parentDiv, iter) {
         });
 
         if (typeof (currentfeature.burials) != 'undefined') {
-            setcatalog(currentfeature.burials, parentDiv + '_' + entId, iter);
+            setcatalogue(currentfeature.burials, parentDiv + '_' + entId, iter);
         }
 
 
         if (typeof (currentfeature.finds) != 'undefined') {
-            setcatalog(currentfeature.finds, parentDiv + '_' + entId, iter);
+            setcatalogue(currentfeature.finds, parentDiv + '_' + entId, iter);
         }
 
 
     });
 }
 
-catalogtrue = false;
+cataloguetrue = false;
 
-$('#nav-catalog-tab').click(function (e) {
-    if (catalogtrue == false) {
-        setcatalog(children, 'mycatalog', 1);
+$('#nav-catalogue-tab').click(function (e) {
+    if (cataloguetrue == false) {
+        setcatalogue(children, 'mycatalogue', 1);
         var myLazyLoad = new LazyLoad({
             container: document.getElementById('mycontent')
         });
     }
-    catalogtrue = true;
+    cataloguetrue = true;
 })
 
 $('#myattr').toggle();
+
+eval('DescSummary = $(\'#myDescr' + jsonmysite.site_id + '\')')
+$(DescSummary).prepend(
+    '<div style="margin-top: 0.5em;">' +
+    '<b>Graves/Features:</b> ' + descriptionSummary.graves + '<br>' +
+    '<b>Burials/Stratigraphic Units: </b>' + descriptionSummary.burials + '<br>' +
+    '<b>Finds:</b> ' + descriptionSummary.finds + '<br><br>' +
+    '</div>'
+);

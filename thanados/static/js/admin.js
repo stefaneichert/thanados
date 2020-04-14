@@ -35,6 +35,15 @@ $(document).ready(function () {
         );
         setAlert();
     });
+    $("#FileRefBtn").click(function () {
+        // disable button
+        $('.sql_button').prop("disabled", true);
+        // add spinner to button
+        $(this).html(
+            `<span class="spinner-border spinner-border-sm mr-3" role="status" aria-hidden="true"></span>...in progress`
+        );
+        setAlert();
+    });
 });
 
 function setAlert() {
