@@ -932,3 +932,7 @@ input[type=color] {
     padding: 0 !important;
     border: none !important;
 }
+
+a {
+    word-break: break-all;
+}

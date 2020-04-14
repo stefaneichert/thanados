@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+
     <div id="containerPermalink">
         <div id="mybreadcrumb"></div>
         <div id="mycontent"></div>
@@ -28,9 +29,6 @@
         systemtype = "{{ system_type }}";
         var jsonmysite = {{ mysitejson|tojson }};
     </script>
-    <link href="/static/vendor/node_modules/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
-    <script src="/static/vendor/node_modules/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="/static/vendor/node_modules/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
     <script src="/static/js/entity.js"></script>
 {% endblock %}

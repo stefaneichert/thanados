@@ -30,6 +30,27 @@ if (systemtype == 'place') {
     myjson = jsonmysite;
 }
 
+window.addEventListener('load', function () {
+    var myTrunc = $(".shrinkable")
+    var truncHeight = $(myTrunc).height();
+    if (truncHeight > 250) {
+        $(myTrunc).shave(250);
+    } else {
+        $('.truncBtn').empty()
+    }
+
+    $('.truncBtn').click(function (e) {
+        var truncHeight = $(this).parent().find('.shrinkable').height();
+        if (truncHeight > 250) {
+            $(".shrinkable").shave(250);
+            $(this).html('Show more')
+        } else {
+            $(".shrinkable").shave(999999);
+            $(this).html('Show less')
+        }
+    });
+})
+
 
 if (systemtype == 'feature') {
     $.each(jsonmysite.features, function (f, feature) {
@@ -196,7 +217,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div class="row mb-5">' +
         '<div id="myData_' + entId + '" class="col-md">' +
         '<div class="row">' +
-        '<h4 style="margin-bottom: 1em; margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '" title="Name of entity">' + entName + '</h4>' +
+        '<h4 style="margin-bottom: 1em; margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '" title="Name of entity">' + entName + '&nbsp;</h4>' +
         '<div style="margin: 0.8em 0.8em 0.8em auto;">' +
         '<button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-secondary" title="Download data as GeoJSON"><i class="fas fa-download"></i></button>' +
@@ -205,8 +226,8 @@ function getEntityData(parentName, parentId, currentfeature) {
         '</div>' +
         '<div id="mytype_' + entId + '" class="modalrowitem" title="' + typepath + '">' + entType + '</div>' +
         '<div id="mytimespan' + entId + '" class="modalrowitem" title="Timespan/daterange of entity">' + dateToInsert + '</div>' +
-        '<div id="myDescr' + entId + '" title="Description of entity">' + entDesc + '</div>' +
-        '<div id="myTypescontainer' + entId + '"></div>' +
+        '<div id="myDescr' + entId + '" title="Description of entity"><span class="shrinkable">' + entDesc + '</span></div><a class="truncBtn" onclick="truncId=\'#myDescr' + entId + '\'" href="#">Show more</a>' +
+        '<div class="mt-5" id="myTypescontainer' + entId + '"></div>' +
         '<div id="myDimensionscontainer' + entId + '"></div>' +
         '<div id="myMaterialcontainer' + entId + '"></div>' +
         '<div id="myParentcontainer' + entId + '"></div>' +
@@ -232,7 +253,6 @@ function getEntityData(parentName, parentId, currentfeature) {
         '</div>' +
         '</div>'
     )
-    ;
 
     if (dateToInsert == '') {
         $('#mytimespan' + entId).attr("class", "");
@@ -711,6 +731,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         }).addTo(mymap);
 
     attributionChange();
+
 }
 
 
@@ -839,7 +860,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
     iter += 1;
     $.each(currentchildren, function (i, currentfeature) {
         var entId = currentfeature.id;
-        var entName = '<a href="../entity/' + entId + '" title="Permalink to this entity">'+ currentfeature.properties.name +'</a>';
+        var entName = '<a href="../entity/' + entId + '" title="Permalink to this entity">' + currentfeature.properties.name + '</a>';
         var entDesc = currentfeature.properties.description;
         if (typeof entDesc == 'undefined') {
             var entDesc = '';
@@ -965,4 +986,11 @@ $('#nav-catalogue-tab').click(function (e) {
 
 $('#myattr').toggle();
 
-eval('$(\'#myDescr' + jsonmysite.site_id +'\').prepend(\'Graves/Features: ' + descriptionSummary.graves + '<br>Burials/Stratigraphic Units: ' + descriptionSummary.burials + '<br>Finds: ' + descriptionSummary.finds +'<br><br>\')')
+eval('DescSummary = $(\'#myDescr' + jsonmysite.site_id + '\')')
+$(DescSummary).prepend(
+    '<div style="margin-top: 0.5em;">' +
+    '<b>Graves/Features:</b> ' + descriptionSummary.graves + '<br>' +
+    '<b>Burials/Stratigraphic Units: </b>' + descriptionSummary.burials + '<br>' +
+    '<b>Finds:</b> ' + descriptionSummary.finds + '<br><br>' +
+    '</div>'
+);
