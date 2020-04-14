@@ -936,3 +936,15 @@ input[type=color] {
 a {
     word-break: break-all;
 }
+
+.back-to-top {
+    cursor: pointer;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    opacity: 0.5;
+    display: none;
+    font-size: 1rem;
+}
+
+

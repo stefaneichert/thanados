@@ -467,7 +467,7 @@ function setSidebarContent(myjson) {
             ' data-parent="#accordion1" href="#collapse' + gravediv + '">\n' +
             '<i id="btn' + features.id + '"' +
             ' class="collapsetitle collapsebutton fa fa-chevron-right fa-pull-left"></i>' +
-            '<div class="collapsetitle">' + gravename +
+            '<div title="' + features.properties.name + '"  class="collapsetitle text-truncate">' + gravename +
             '</div>\n' +
             '</a>\n' +
             '<button type="button" class="gravebutton btn btn-secondary btn-xs"' +
@@ -500,7 +500,7 @@ function setSidebarContent(myjson) {
                 ' href="#collapse' + burialdiv + '">' +
                 '<i id="btn' + burials.id + '"' +
                 ' class="collapsetitle1 collapsebutton1 fa fa-chevron-right fa-pull-right"></i>' +
-                '<div class="collapsetitle1">' + burialname + '</div>' +
+                '<div class="collapsetitle1 text-truncate">' + burialname + '</div>' +
                 '</a>' +
                 '</div>' +
                 '<div id="collapse' + burialdiv + '" class="panel-collapse collapse">' +
@@ -527,7 +527,7 @@ function setSidebarContent(myjson) {
                     'href="#collapse' + finddiv + '">' +
                     '<i id="btn' + finds.id + '" ' +
                     'class="collapsetitle2 collapsebutton2 fa fa-chevron-right fa-pull-right"></i>' +
-                    '<div class="collapsetitle2">' + findname + '</div>' +
+                    '<div class="collapsetitle2 text-truncate">' + findname + '</div>' +
                     '</a>' +
                     '</div>' +
                     '<div id="collapse' + finddiv + '" class="panel-collapse collapse">' +
