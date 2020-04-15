@@ -241,7 +241,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div class="container-fluid">' +
         '<div class="row mb-5">' +
         '<div id="myData_' + entId + '" class="col-xl">' +
-        '<div class="row mb-2">' +
+        '<div class="row mb-3">' +
         '<h4 style="margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '" title="Name of entity">' + entName + '&nbsp;</h4>' +
         '<div style="margin-top: 0.6em; margin-left: 1em; padding-bottom: 0.6em;">' +
         '<button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>' +
@@ -413,7 +413,7 @@ function getEntityData(parentName, parentId, currentfeature) {
 
     if (typeof (currentfeature.properties.externalreference) !== 'undefined') {
         $('#myMetadatacontainer' + entId).append(
-            '<p><h6>External references</h6></p>' +
+            '<p><h6 class="mt-5">External references</h6></p>' +
             '<table class="table table-sm table-hover">' +
             '<thead class="thead-light">' +
             '<tr>' +
@@ -457,7 +457,7 @@ function getEntityData(parentName, parentId, currentfeature) {
 
     if (typeof (files) !== 'undefined') {
         $('#myMetadatacontainer' + entId).append(
-            '<p><h6>Files</h6></p>' +
+            '<p><h6 class="mt-5">Files</h6></p>' +
             '<table class="table table-sm table-hover">' +
             '<thead class="thead-light">' +
             '<tr>' +

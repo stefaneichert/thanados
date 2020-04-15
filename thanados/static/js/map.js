@@ -25,6 +25,7 @@ $(document).ready(function () {
     $('body').css('max-height', windowheight - 56 + 'px');
     mapwidth = ($('#map').width());
     if (mapwidth < 600) animateSidebar(true);
+    if ($(window).width() < 500) $('#SidebarButton').remove();
     mymodalwith = ($(window).width());
     if (mymodalwith > 500) mymodalwith = 500;
     $('.ui-dialog').css('max-width', mymodalwith + 'px');
