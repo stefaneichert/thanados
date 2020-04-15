@@ -1,3 +1,24 @@
+$(document).ready(function(){
+     $('#mycontent').scroll(function () {
+            if ($(this).scrollTop() > 50) {
+                $('#back-to-top').fadeIn();
+            } else {
+                $('#back-to-top').fadeOut();
+            }
+        });
+        // scroll body to 0px on click
+        $('#back-to-top').click(function () {
+            //$('#back-to-top').tooltip('hide');
+            $('#mycontent').animate({
+                scrollTop: 0
+            }, 200);
+            return false;
+        });
+
+         //$('#back-to-top').tooltip('show');
+
+});
+
 getBasemaps();
 sitename = jsonmysite.name;
 
@@ -49,6 +70,10 @@ window.addEventListener('load', function () {
             $(this).html('Show less')
         }
     });
+    //carouselwidth = $(window).width()/3;
+    //console.log(carouselwidth)
+    //$('.maxImg').css('max-width', carouselwidth)
+
 })
 
 
@@ -215,10 +240,10 @@ function getEntityData(parentName, parentId, currentfeature) {
     $('#mycontent').append(
         '<div class="container-fluid">' +
         '<div class="row mb-5">' +
-        '<div id="myData_' + entId + '" class="col-md">' +
-        '<div class="row">' +
-        '<h4 style="margin-bottom: 1em; margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '" title="Name of entity">' + entName + '&nbsp;</h4>' +
-        '<div style="margin: 0.8em 0.8em 0.8em auto;">' +
+        '<div id="myData_' + entId + '" class="col-xl">' +
+        '<div class="row mb-3">' +
+        '<h4 style="margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '" title="Name of entity">' + entName + '&nbsp;</h4>' +
+        '<div style="margin-top: 0.6em; margin-left: 1em; padding-bottom: 0.6em;">' +
         '<button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-secondary" title="Download data as GeoJSON"><i class="fas fa-download"></i></button>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" class="btn btn-sm btn-secondary" title="Open detailed map of this site">Map</button>' +
@@ -232,8 +257,8 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myMaterialcontainer' + entId + '"></div>' +
         '<div id="myParentcontainer' + entId + '"></div>' +
         '</div>' +
-        '<div id="myImagecontainer' + entId + '" class="col-md-auto" style="margin-top: 4em" ></div>' +
-        '<div id="myMapcontainer" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" title="Click to open detailed map" class="col-md" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; cursor: pointer"></div>' +
+        '<div id="myImagecontainer' + entId + '" class="maxImg col-xl-auto" style="margin-top: 4em" ></div>' +
+        '<div id="myMapcontainer" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" title="Click to open detailed map" class="col-xl" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; cursor: pointer"></div>' +
         '</div>' +
         '<div id="myChildrencontainer' + entId + '">' +
         '<nav>' +
@@ -388,7 +413,7 @@ function getEntityData(parentName, parentId, currentfeature) {
 
     if (typeof (currentfeature.properties.externalreference) !== 'undefined') {
         $('#myMetadatacontainer' + entId).append(
-            '<p><h6>External references</h6></p>' +
+            '<p><h6 class="mt-5">External references</h6></p>' +
             '<table class="table table-sm table-hover">' +
             '<thead class="thead-light">' +
             '<tr>' +
@@ -418,7 +443,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         $('#myexttablebody').append(
             '<tr>' +
             '<th scope="row">' + (t + 1) + '</th>' +
-            '<td><a href="' + url + '">' + url + '</a></td>' +
+            '<td><a style="word-break: break-all;" href="' + url + '">' + url + '</a></td>' +
             '<td>' + name + '</td>' +
             '<td>' + description + '</td>' +
             '</tr>');
@@ -432,7 +457,7 @@ function getEntityData(parentName, parentId, currentfeature) {
 
     if (typeof (files) !== 'undefined') {
         $('#myMetadatacontainer' + entId).append(
-            '<p><h6>Files</h6></p>' +
+            '<p><h6 class="mt-5">Files</h6></p>' +
             '<table class="table table-sm table-hover">' +
             '<thead class="thead-light">' +
             '<tr>' +
@@ -466,7 +491,7 @@ function getEntityData(parentName, parentId, currentfeature) {
             '<tr>' +
             '<th scope="row">' + (t + 1) + '</th>' +
             '<td>' + file.id + '</td>' +
-            '<td><a href="' + file.file_name + '">' + file.name + '</a></td>' +
+            '<td><a style="word-break: break-all;" href="' + file.file_name + '">' + file.name + '</a></td>' +
             '<td>' + source + '</td>' +
             '<td>' + reference + '</td>' +
             '<td>' + license + '</td>' +
@@ -956,7 +981,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             var myImgSource = '';
             if (typeof (file.source) != 'undefined') myImgSource = file.source;
             if ((typeof (file.source) != 'undefined') && (typeof (file.reference) != 'undefined')) myImgSource = file.source + ' ' + file.reference;
-            $('#myModalImagecontainer' + entId).append('<div class="col-lg-4"><a href="' + file.file_name + '" data-featherlight><img class="img-fluid border mt-2" src="/static/images/icons/loading.gif" data-src="' + file.file_name + '" title="' + myImgSource + '" alt=""></a></div>');
+            $('#myModalImagecontainer' + entId).append('<div class="col-lg-4"><a href="' + file.file_name + '" data-featherlight><img style="max-height: 300px" class="img-fluid border mt-2" src="/static/images/icons/loading.gif" data-src="' + file.file_name + '" title="' + myImgSource + '" alt=""></a></div>');
         });
 
         if (typeof (currentfeature.burials) != 'undefined') {
