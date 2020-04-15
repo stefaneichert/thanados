@@ -933,10 +933,6 @@ input[type=color] {
     border: none !important;
 }
 
-a {
-    word-break: break-all;
-}
-
 .back-to-top {
     cursor: pointer;
     position: fixed;
@@ -946,5 +942,7 @@ a {
     display: none;
     font-size: 1rem;
 }
-
+.sitepermalink:hover {
+    color: #0056b3!important;
+}
 

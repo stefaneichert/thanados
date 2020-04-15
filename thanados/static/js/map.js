@@ -14,6 +14,38 @@ $(document).ready(function () {
         $('#styledialog').find('.active').removeClass('active');
         $(this).addClass('active');
     })
+
+    navheight = ($('#mynavbar').height());
+    containerheight = ($('#container').height());
+    headingheight = (($('#mysidebarheading').height()) + ($('#mysidebarmenu').height()));
+    newListHeight = ($('#sidebar').height());
+    $('#mypanel').css('max-height', newListHeight - headingheight - 65 + 'px');
+    containerheight = ($('#container').height());
+    windowheight = ($(window).height());
+    $('body').css('max-height', windowheight - 56 + 'px');
+    mapwidth = ($('#map').width());
+    if (mapwidth < 600) animateSidebar(true);
+    mymodalwith = ($(window).width());
+    if (mymodalwith > 500) mymodalwith = 500;
+    $('.ui-dialog').css('max-width', mymodalwith + 'px');
+    $('#mytreeModal').css('max-width', ($(window).width()) + 'px');
+    $('.legend').css('max-height', (containerheight - 159))
+
+});
+
+$(window).resize(function () {
+    navheight = ($('#mynavbar').height());
+    containerheight = ($('#container').height());
+    headingheight = (($('#mysidebarheading').height()) + ($('#mysidebarmenu').height()));
+    newListHeight = ($('#sidebar').height());
+    $('#mypanel').css('max-height', newListHeight - headingheight - 5 + 'px');
+    containerheight = ($('#container').height());
+    windowheight = ($(window).height());
+    $('body').css('max-height', windowheight - 56 + 'px');
+    mymodalwith = ($(window).width());
+    if (mymodalwith > 500) mymodalwith = 500;
+    $('.ui-dialog').css('max-width', mymodalwith + 'px');
+    $('#mytreeModal').css('max-width', ($(window).width()) + 'px');
 });
 
 //set map and sidebar content//
@@ -34,8 +66,37 @@ function pointFilter(feature) {
 
 function setmap(myjson) {
     //set sidebar to current json
-    if (myjson.features[0].id !== 0) setSidebarContent(myjson);
+    if (myjson.features[0].id !== 0) {
+        setSidebarContent(myjson);
+    } else {
+        $('#accordion1').html(
+            '<div title="' + myjson.properties.maintype.path +'"style="display: block; padding: 1em"><b>Type: </b>' +
+            myjson.properties.maintype.name
+            + '<a class="float-right sitepermalink" style="color: #696969" href="../entity/' + myjson.site_id + '" title="Permalink to this entity"><h6><i class="fas fa-link"></i></h6></a></div>'
 
+        );
+        if (typeof(myjson.properties.timespan) !== 'undefined') {
+            $('#accordion1').append(
+                '<div title="Timespan"style="display: block; padding: 0 1em;"><b>Dating: </b>'+
+                myjson.properties.timespan.begin_from + ' to ' + myjson.properties.timespan.end_to +
+                '</div>'
+            )
+        }
+
+        if (typeof(myjson.properties.description) !== 'undefined') {
+        $('#accordion1').append(
+            '<div style="display: block; padding: 0.5em 1em;">' +
+            myjson.properties.description
+            + '</div>'
+        )}
+        $('#accordion1').append(
+            '<div style="display: inline-block; vertical-align: bottom; padding: 1em 0.5em 0.1em 1em;">' +
+            'No graves available'
+            + '</div><i title="For this site there are no graves available. This might result ' +
+            'for example from missing documentation."' +
+            'style="font-size: 1.3em; color: #696969" class="fas fa-info-circle"></i>'
+        )
+    }
 
     //define map
     map = L.map('map', {
@@ -81,8 +142,8 @@ function setmap(myjson) {
     choroOptions = {
         "steps": 5,
         "mode": "e",
-        "scale": ["#ffffff","#ff0000"],
-        "valuemode" : 'count',
+        "scale": ["#ffffff", "#ff0000"],
+        "valuemode": 'count',
         "polygonstyle": {
             "color": "#000000",
             "weight": 0,
@@ -150,8 +211,8 @@ function setmap(myjson) {
             } else {
                 var popupLine =
                     '<a id="' + myjson.site_id + '" onclick="modalsetsite()" href="#">' +
-                    '<p><b>' + feature.properties.name + ' </b>' +
-                    '<br>(' + myjson.properties.maintype.name + ')</p></a>';
+                    '<b>' + feature.properties.name + ' </b></a>' +
+                    '<br>(' + myjson.properties.maintype.name + ')';
                 var marker = L.marker(latlng).bindPopup(popupLine).addTo(map);
                 centerpoint = latlng;
                 markerset = true;
@@ -171,21 +232,20 @@ function setmap(myjson) {
         properties: myjson.properties,
         site_id: myjson.site_id
     });
-    if (markerset) {
-        map.panTo(centerpoint);
-        map.setZoom(20);
+
+    if (setJson(myjson)) {
+        map.fitBounds(graves.getBounds());
     } else {
-        if (setJson(myjson)) map.fitBounds(graves.getBounds());
-        else {
-            var popupLine =
-                '<a id="' + myjson.site_id + '" onclick="modalsetsite()" href="#"><p>' +
-                '<b>' + myjson.name + ' </b><br>(' + myjson.properties.maintype.name + ')</p></a>';
-            var latlng = [myjson.properties.center.coordinates[1], myjson.properties.center.coordinates[0]];
-            var marker = L.marker(latlng).bindPopup(popupLine).addTo(map);
-            centerpoint = latlng;
-            map.panTo(centerpoint);
-        }
+        var popupLine =
+            '<a id="' + myjson.site_id + '" onclick="modalsetsite()" href="#">' +
+            '<b>' + myjson.name + ' </b></a><br>(' + myjson.properties.maintype.name + ')';
+        var latlng = [myjson.properties.center.coordinates[1], myjson.properties.center.coordinates[0]];
+        var marker = L.marker(latlng).bindPopup(popupLine).addTo(map);
+        centerpoint = latlng;
+        console.log('hallo marker')
+        map.panTo(centerpoint);
     }
+
 
     //set zoom
     myzoom = (map.getZoom());
@@ -404,43 +464,10 @@ function animateSidebar(withzoom) {
     });
 }
 
-$(window).resize(function () {
-    navheight = ($('#mynavbar').height());
-    containerheight = ($('#container').height());
-    headingheight = (($('#mysidebarheading').height()) + ($('#mysidebarmenu').height()));
-    newListHeight = ($('#sidebar').height());
-    $('#mypanel').css('max-height', newListHeight - headingheight - 5 + 'px');
-    containerheight = ($('#container').height());
-    windowheight = ($(window).height());
-    $('body').css('max-height', windowheight - 56 + 'px');
-    mymodalwith = ($(window).width());
-    if (mymodalwith > 500) mymodalwith = 500;
-    $('.ui-dialog').css('max-width', mymodalwith + 'px');
-    $('#mytreeModal').css('max-width', ($(window).width()) + 'px');
-});
-
-$(document).ready(function () {
-    navheight = ($('#mynavbar').height());
-    containerheight = ($('#container').height());
-    headingheight = (($('#mysidebarheading').height()) + ($('#mysidebarmenu').height()));
-    newListHeight = ($('#sidebar').height());
-    $('#mypanel').css('max-height', newListHeight - headingheight - 65 + 'px');
-    containerheight = ($('#container').height());
-    windowheight = ($(window).height());
-    $('body').css('max-height', windowheight - 56 + 'px');
-    mapwidth = ($('#map').width());
-    if (mapwidth < 600) animateSidebar(true);
-    mymodalwith = ($(window).width());
-    if (mymodalwith > 500) mymodalwith = 500;
-    $('.ui-dialog').css('max-width', mymodalwith + 'px');
-    $('#mytreeModal').css('max-width', ($(window).width()) + 'px');
-    $('.legend').css('max-height', (containerheight - 159))
-
-});
-
 //sidebar content
 //set sidebarcontent to current json
 function setSidebarContent(myjson) {
+
     $.each(myjson.features, function (i, features) {
         gravediv = 'g' + features.id;
         var gravename = features.properties.name;

@@ -11,11 +11,14 @@ $(document).on('change', "input[type|=\'text\']", function () {
 function setJson(data) {
     countGeom = 0
     $.each(data.features, function (i, feature) {
-        if (typeof (feature.geometry) != 'undefined') {
+        if (typeof (feature.geometry) !== 'undefined' && feature.id !== 0) {
             countGeom += 1;
         }
     })
-    if (countGeom === 0) return false;
+    if (countGeom === 0) {
+        markerset = true;
+        return false;
+    }
     if (countGeom > 0) return true;
 }
 
