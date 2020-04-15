@@ -241,9 +241,9 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div class="container-fluid">' +
         '<div class="row mb-5">' +
         '<div id="myData_' + entId + '" class="col-xl">' +
-        '<div class="row">' +
-        '<h4 style="margin-bottom: 1em; margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '" title="Name of entity">' + entName + '&nbsp;</h4>' +
-        '<div style="margin: 0.8em 0.8em 0.8em auto;">' +
+        '<div class="row mb-2">' +
+        '<h4 style="margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '" title="Name of entity">' + entName + '&nbsp;</h4>' +
+        '<div style="margin-top: 0.6em; margin-left: 1em; padding-bottom: 0.6em;">' +
         '<button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-secondary" title="Download data as GeoJSON"><i class="fas fa-download"></i></button>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" class="btn btn-sm btn-secondary" title="Open detailed map of this site">Map</button>' +
@@ -981,7 +981,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             var myImgSource = '';
             if (typeof (file.source) != 'undefined') myImgSource = file.source;
             if ((typeof (file.source) != 'undefined') && (typeof (file.reference) != 'undefined')) myImgSource = file.source + ' ' + file.reference;
-            $('#myModalImagecontainer' + entId).append('<div class="col-xl-auto"><a href="' + file.file_name + '" data-featherlight><img class="img-fluid border mt-2" src="/static/images/icons/loading.gif" data-src="' + file.file_name + '" title="' + myImgSource + '" alt=""></a></div>');
+            $('#myModalImagecontainer' + entId).append('<div class="col-lg-4"><a href="' + file.file_name + '" data-featherlight><img style="max-height: 300px" class="img-fluid border mt-2" src="/static/images/icons/loading.gif" data-src="' + file.file_name + '" title="' + myImgSource + '" alt=""></a></div>');
         });
 
         if (typeof (currentfeature.burials) != 'undefined') {
