@@ -185,9 +185,10 @@ function setmap(myjson) {
         'title="click to open layer options" ' +
         'style="background-color: ' + hexToRgbA(myStyle.color, myStyle.fillOpacity) + '; ' +
         'border: ' + myStyle.weight + 'px solid ' + myStyle.color + '">&nbsp;</div>';
+    if(setJson(myjson)) {;
     createLegend(map, graves, currentGraves);
     graves.addTo(map);
-    legendlayers.push(graves);
+    legendlayers.push(graves);}
 
     //if geometry is point create a rectangle around that point
     pointgraves = L.geoJSON(myjson, {
