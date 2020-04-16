@@ -5,6 +5,11 @@ $(window).resize(function () {
 
 });
 
+$.each(sitelist, function (e, data) {
+if (data.description !== null) data.description = ((data.description).replace(/'/g, ""));
+});
+
+
 AccRemove();
 
 
