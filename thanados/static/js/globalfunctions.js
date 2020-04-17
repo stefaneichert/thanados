@@ -642,14 +642,17 @@ function openStyleDialog(layerType) {
 
             myChorolegendtitle = currentLegend;
             myChorosteps = choroOptions.steps;
+            mysearchpointradius = parseInt(choroOptions.radius);
+            mysearchpointminradius = parseInt(choroOptions.minradius);
             myChoromode = choroOptions.mode;
             myValueMode = choroOptions.valuemode;
             myChorocolor = choroOptions.scale;
             myChoroborder = choroOptions.polygonstyle.color;
             myChoroborderwidth = choroOptions.polygonstyle.weight;
-            myChorofinalopacity = choroOptions.polygonstyle.fillOpacity;
+            myChoroopacity = 100 - choroOptions.polygonstyle.fillOpacity * 100;
             myChorolegendvar = true;
             myChorolegend = false;
+            myChoroPntMode = choroOptions.choroPntMode;
 
             var styledialog = '<form id="mystyleform">\n' +
                 '<h5 class="mt-1 mb-3"> Gradient color layer options</h5>' +
@@ -672,8 +675,8 @@ function openStyleDialog(layerType) {
                 '<div class="input-group-prepend">' +
                 '<label class="input-group-text" for="ChoroOpacity">Opacity (%): </label>' +
                 '</div>' +
-                '<input class="form-control" id="ChoroOpacity" type="range" value="' + myChorofinalopacity + '" min="0" max="100">' +
-                '<input class="form-control" id="ChoroOpacityvalue" type="number" value="' + myChorofinalopacity + '" min="0" max="100" style="max-width: 60px">' +
+                '<input class="form-control" id="ChoroOpacity" type="range" value="' + myChoroopacity + '" min="0" max="100">' +
+                '<input class="form-control" id="ChoroOpacityvalue" type="number" value="' + myChoroopacity + '" min="0" max="100" style="max-width: 60px">' +
                 '</div>' +
                 '<div class="myoptions input-group input-group-sm mb-3">' +
                 '<div class="input-group-prepend">' +
@@ -682,8 +685,20 @@ function openStyleDialog(layerType) {
                 '<input class="form-control" id="ChoroColorborder" style="max-width: 70px" type="color" value="' + myChoroborder + '">' +
                 '<span class="input-group-text input-group-middle">Border width: </span>' +
                 '<input class="form-control" id="ChoroBorderwidth" type="number" value="' + myChoroborderwidth + '" min="0">' +
-                '<span title="Radius for point result" class="pointBtn input-group-text input-group-middle">Radius: </span>' +
-                '<input title="Radius for point result" class="pointBtn form-control" id="Searchsearchpointradius" type="number" value="8" min="1">' +
+                '</div>' +
+
+                '<div class="myoptions input-group input-group-sm mb-3">' +
+                '<div class="input-group-prepend">' +
+                '<label class="input-group-text" for="gradselect">Point:</label>' +
+                '</div>' +
+                '<select class="custom-select empty" id="gradselect">' +
+                '<option value="0">single size</option>' +
+                '<option value="1">gradient size</option>' +
+                '</select>' +
+                '<span id="radius" class="input-group-text input-group-middle">Radius: </span>' +
+                '<input class="d-none pointBtn form-control" id="minRadius" type="number" value="' + mysearchpointminradius + '" min="1">' +
+                '<input class="input-group-addon pointBtn form-control" id="Searchsearchpointradius" type="number" value="' + mysearchpointradius + '" min="1">' +
+
                 '</div>' +
                 '<div id="MethodSelect_parent" class="myoptions input-group input-group-sm mb-3">' +
                 '<div class="input-group-prepend">' +
@@ -736,6 +751,14 @@ function openStyleDialog(layerType) {
             $("#styleContent").empty();
             $("#styleContent").html(styledialog);
             $('#MethodSelect').val(myChoromode);
+            $('#gradselect').val(myChoroPntMode);
+            if (myChoroPntMode == 1) {
+                    $('#minRadius').removeClass('d-none');
+                    $('#radius').html('Radius min/max:')
+                } else {
+                    $('#minRadius').addClass('d-none');
+                    $('#radius').html('Radius:')
+                };
 
             if (layertypes.gradientcolor) {
                 $('#valueOption').removeClass('d-none');
@@ -757,12 +780,14 @@ function openStyleDialog(layerType) {
             var firstColor = firstInput.value;
             firstInput.addEventListener("input", function () {
                 colorstart = firstInput.value;
+                myChorocolor[0] = colorstart;
             }, false);
 
             var lastInput = document.getElementById("colorend");
             var lastColor = lastInput.value;
             lastInput.addEventListener("input", function () {
                 colorend = lastInput.value;
+                myChorocolor[1] = colorend;
             }, false);
             myChorosteps = $('#chorosteps').val();
             $('#chorosteps').on('input change', function () {
@@ -800,19 +825,31 @@ function openStyleDialog(layerType) {
                     $('#ChoroBorderwidth').val(0);
             });
 
-            mysearchpointradius = $('#Searchsearchpointradius').val()
-            if (mysearchpointradius == '') {
-                mysearchpointradius = 8;
-                $('#Searchsearchpointradius').val(8);
-            }
             $('#Searchsearchpointradius').on('input change', function () {
                 mysearchpointradius = $('#Searchsearchpointradius').val();
-                if (mysearchpointradius < 0)
-                    $('#Searchsearchpointradius').val(0);
+                if (parseInt(mysearchpointradius) < 1) $('#Searchsearchpointradius').val(1);
+                if (parseInt(mysearchpointradius) <= parseInt(mysearchpointminradius) && myChoroPntMode == 1) $('#Searchsearchpointradius').val(parseInt(parseInt(mysearchpointminradius)) + 1);
+            });
+
+            $('#minRadius').on('input change', function () {
+                mysearchpointminradius = $('#minRadius').val();
+                if (parseInt(mysearchpointminradius) < 1) $('#minRadius').val(1);
+                if (parseInt(mysearchpointminradius) >= parseInt(mysearchpointradius)) $('#minRadius').val(parseInt(parseInt(mysearchpointradius) -1));
             });
 
             $('#MethodSelect').on('change', function () {
                 myChoromode = $('#MethodSelect option:selected').val();
+            });
+
+            $('#gradselect').on('change', function () {
+                myChoroPntMode = $('#gradselect option:selected').val();
+                if (myChoroPntMode == 1) {
+                    $('#minRadius').removeClass('d-none');
+                    $('#radius').html('Radius min/max:')
+                } else {
+                    $('#minRadius').addClass('d-none');
+                    $('#radius').html('Radius:')
+                }
             });
 
             $('#ValueSelect').on('change', function () {
@@ -1746,8 +1783,8 @@ function setSearchInfo(data, CSV, first) {
 }
 
 function setChoroplethJSON(data, value) {
+    var numbers = [];
     $.each(data.features, function (i, feature) {
-        //console.log(feature.search.searchResults[0].value);
         if (value === 'value') {
             feature.properties.chorovalue = parseFloat(feature.search.searchResults[0].value);
         }
@@ -1763,7 +1800,24 @@ function setChoroplethJSON(data, value) {
         if (value === 'middle') {
             feature.properties.chorovalue = ((parseFloat(feature.search.searchResults[0].value[0]) + parseFloat(feature.search.searchResults[0].value[1])) / 2)
         }
+        numbers.push(feature.properties.chorovalue)
+        feature.properties.radius = feature.properties.chorovalue;
     });
+    var numbers = numbers,
+        ratio = Math.max.apply(Math, numbers) / parseInt(parseInt(mysearchpointradius) - parseInt(mysearchpointminradius)),
+        l = numbers.length,
+        i;
+
+    for (i = 0; i < l; i++) {
+        currentNumber = i;
+        numbers[i] = Math.round(numbers[i] / ratio);
+        numberValue = numbers[i]
+        $.each(data.features, function (i, feature) {
+            if (i === currentNumber) feature.properties.radius = parseInt(parseInt(numberValue) + parseInt(mysearchpointminradius));
+        })
+    }
+
+    console.log(numbers);
     return data;
 }
 
