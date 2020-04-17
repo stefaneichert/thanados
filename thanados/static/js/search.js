@@ -72,7 +72,7 @@ function addSearch() {
         '            </button>\n' +
         '        </h5>\n' +
         '    </div>' +
-        '    <div id="collapseList' + Iter + '" style="display: none" class="collapse show" aria-labelledby="headingb' + Iter + '">\n' +
+        '    <div data-map="map' + Iter + '" id="collapseList' + Iter + '" style="display: none" class="resultCard collapse show" aria-labelledby="headingb' + Iter + '">\n' +
         '        <div class="card-body row">' +
         '          <div class="col-lg">' +
         '            <table id="myResultlist' + Iter + '" class="display table table-striped table-bordered w-100">' +
@@ -121,6 +121,15 @@ function addSearch() {
         '</div>\n' +
         '</div>\n' +
         '</div>');
+
+    $(".resultCard").mouseleave(function () {
+        var thismap = ($(this).data('map'))
+        console.log(thismap);
+        if (typeof(hovermarker) !== undefined) {
+                hovermarker.removeFrom(eval(thismap))
+        }
+    })
+
     $(".myResetbutton").click(function f() {
         $("#Query" + this.value).remove();
         $("#AddSearch").removeClass('d-none');
@@ -559,8 +568,8 @@ function setdatatable(data, tablePosition) {
             {
                 data: "name",
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                    if (oData.file === null) $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.maintype + " ' target='_blank'>" + oData.name + "</a>");
-                    if (oData.file !== null) $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.maintype + " ' target='_blank'>" + oData.name + "</a>" +
+                    if (oData.file === null) $(nTd).html("<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + Iter + ")' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.maintype + " ' target='_blank'>" + oData.name + "</a>");
+                    if (oData.file !== null) $(nTd).html("<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + Iter + ")' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.maintype + " ' target='_blank'>" + oData.name + "</a>" +
                         "<a class='btn-xs float-right' rel='popover' data-img='" + oData.file + "'><i class='fas fa-image'></i></a>"); //create links in rows
                 }
             },
