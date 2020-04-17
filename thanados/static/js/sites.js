@@ -12,7 +12,6 @@ if (data.description !== null) data.description = ((data.description).replace(/'
 
 AccRemove();
 
-
 $(document).ready(function () {
     maximumHeight = ($(window).height() - $('#mynavbar').height())
     $('#mycontent').css('max-height', (maximumHeight - 10) + 'px');
@@ -42,6 +41,9 @@ $(document).ready(function () {
     clustermarkers = L.markerClusterGroup();
     heat = L.heatLayer(heatmarkers, {radius: 25, minOpacity: 0.5, blur: 30});
     //var ciLayer = L.canvasIconLayer({}).addTo(map);
+    //layergroup for highlighting on popup hover
+    hoverMarkers = new L.LayerGroup();
+    hoverMarkers.addTo(map);
 
     if ((sitelist).length > 100) {
         clustermarkers.addTo(map)
@@ -94,7 +96,7 @@ $(document).ready(function () {
             {
                 data: "name",
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                    $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" + "<a href='/map/" + oData.id + "' title='open map' class='btn-xs float-right'><i class=\"fas fa-map-marked-alt\"></i></a>"); //create links in rows
+                    $(nTd).html("<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + ")' class='hovermarker' data-type='" + oData.type + "' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" + "<a href='/map/" + oData.id + "' title='open map' class='btn-xs float-right'><i class=\"fas fa-map-marked-alt\"></i></a>"); //create links in rows
                 }
             },
             {
@@ -116,6 +118,7 @@ $(document).ready(function () {
             {data: 'graves'}
         ],
     });
+
 //add markers to map and zoom to content
     mymarkers.addTo(markergroup);
     heatmarkers = JSON.parse(JSON.stringify(heatmarkers).replace(/"/g, ''));
@@ -207,7 +210,6 @@ $(document).ready(function () {
         heatmarkers = JSON.parse(JSON.stringify(heatmarkers).replace(/"/g, ''));
         heat.setLatLngs(heatmarkers);
         if (resultLenght.length > 0) map.fitBounds(mymarkers.getBounds());
-
     });
 })
 ;

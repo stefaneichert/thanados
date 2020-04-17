@@ -751,8 +751,6 @@ function openStyleDialog(layerType) {
             if (layertypes.gradientcount === false) $('#countOption').addClass('d-none');
 
 
-
-
             colorstart = myChorocolor[0];
             colorend = myChorocolor[1];
             var firstInput = document.getElementById("colorstart");
@@ -1687,11 +1685,12 @@ function setSearchInfo(data, CSV, first) {
                     chorovalue = parseFloat(dataset.value);
                     data.properties.layertypes.gradientcolor = true;
                 } else {
-                    if (dataset.Search === "timespan"){
+                    if (dataset.Search === "timespan") {
                         chorovalue = [dataset.earliestBegin, dataset.latestEnd];
                         data.properties.layertypes.gradientcolorTimespan = true;
                     } else {
-                    chorovalue = null}
+                        chorovalue = null
+                    }
                 }
                 searchResult = dataset.searchResult;
                 $.each(data.properties.statistics, function (i, stat) {
@@ -1762,7 +1761,7 @@ function setChoroplethJSON(data, value) {
             feature.properties.chorovalue = parseFloat(feature.search.searchResults[0].value[1])
         }
         if (value === 'middle') {
-            feature.properties.chorovalue = ((parseFloat(feature.search.searchResults[0].value[0]) + parseFloat(feature.search.searchResults[0].value[1]))/2)
+            feature.properties.chorovalue = ((parseFloat(feature.search.searchResults[0].value[0]) + parseFloat(feature.search.searchResults[0].value[1])) / 2)
         }
     });
     return data;
@@ -1793,3 +1792,26 @@ function copyLayer() {
     currentLegend = currentLegend + ' (copy)';
     finishQuery('poly', finalSearchResultIds, CSVresult, true, null)
 }
+
+function hoverMarker(linkid, currentmap) {
+    var thismap = eval(currentmap)
+    var mythis = document.getElementById(linkid)
+    var latlng = ($(mythis).data('latlng'))
+    if (typeof (hovermarker) !== 'undefined') hovermarker.removeFrom(thismap);
+    hovermarker = L.marker(latlng, {icon: hovericon}).addTo(thismap);
+    if (window.location.href.indexOf("sites") > -1) {
+        hovermarker.bindPopup('<a href="' + mythis.href + '" title="' + mythis.title + '"><b>' + mythis.innerHTML + '</b></a><br><br>' + $(mythis).data('type'));
+    }
+    hovermarker._bringToFront();
+    if (thismap.getBounds().contains(latlng) === false) {
+        console.log('false');
+        thismap.panTo(latlng);
+    }
+}
+
+hovericon = L.icon({
+    iconUrl: "/static/images/icons/marker-icon.png",
+    shadowUrl: "/static/images/icons/marker-shadow.png",
+    iconAnchor: [12, 41],
+    popupAnchor: [0, -34]
+});
