@@ -142,13 +142,16 @@ function setmap(myjson) {
 
     choroOptions = {
         "steps": 5,
+        "radius": 8,
+        "minradius": 5,
+        "choroPntMode": 0,
         "mode": "e",
         "scale": ["#ffffff", "#ff0000"],
         "valuemode": 'count',
         "polygonstyle": {
             "color": "#000000",
             "weight": 0,
-            "fillOpacity": 10
+            "fillOpacity": 0.9
         }
     };
 

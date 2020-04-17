@@ -434,6 +434,9 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
         fillcolor = chroma.random().hex();
         mysearchbordercolor = '#000000';
         mysearchborderwidth = 1;
+        choroOptions.radius = 8;
+        choroOptions.minradius = 5;
+        choroOptions.choroPntMode = 0;
         var layer_id = makeid(3)
         //console.log(layer_id);
         while (layerIds.includes(layer_id)) {
@@ -707,24 +710,37 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
             },
             shapetype: 'choropoly',
             legendTitle: currentLegend,
+            radius: mysearchpointradius,
+            minradius: mysearchpointminradius,
             layername: layer_id,
             valueProperty: 'chorovalue', // which property in the features to use
             scale: myChorocolor, // chroma.js scale - include as many as you like
             steps: myChorosteps, // number of breaks or steps in range
             mode: myChoromode, // q for quantile, e for equidistant, k for k-means
+            choroPntMode: myChoroPntMode, // 0 for single size, 1 for gradient size
             valuemode: myValueMode, // count, value, begin, middle, end
             polygonstyle: {
                 color: myChoroborder, // border color
                 weight: myChoroborderwidth,
                 fillOpacity: myChorofinalopacity
             },
-            style: {
-                color: myChoroborder, // border color
-                weight: myChoroborderwidth,
-                fillOpacity: myChorofinalopacity,
-                radius: mysearchpointradius
+            style: function (feature) {
+                if (myChoroPntMode == 1) {
+                    return {
+                        color: myChoroborder, // border color
+                        weight: myChoroborderwidth,
+                        fillOpacity: myChorofinalopacity,
+                        radius: feature.properties.radius
+                    }
+                } else {
+                    return {
+                        color: myChoroborder, // border color
+                        weight: myChoroborderwidth,
+                        fillOpacity: myChorofinalopacity,
+                        radius: mysearchpointradius
+                    }
+                }
             },
-
         })
 
         eval(layer_id + ' = $.extend(true, {}, choroplethLayer)');
