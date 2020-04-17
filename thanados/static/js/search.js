@@ -72,7 +72,7 @@ function addSearch() {
         '            </button>\n' +
         '        </h5>\n' +
         '    </div>' +
-        '    <div id="collapseList' + Iter + '" style="display: none" class="collapse show" aria-labelledby="headingb' + Iter + '">\n' +
+        '    <div data-map="map' + Iter + '" id="collapseList' + Iter + '" style="display: none" class="resultCard collapse show" aria-labelledby="headingb' + Iter + '">\n' +
         '        <div class="card-body row">' +
         '          <div class="col-lg">' +
         '            <table id="myResultlist' + Iter + '" class="display table table-striped table-bordered w-100">' +
@@ -121,6 +121,15 @@ function addSearch() {
         '</div>\n' +
         '</div>\n' +
         '</div>');
+
+    $(".resultCard").mouseleave(function () {
+        var thismap = ($(this).data('map'))
+        console.log(thismap);
+        if (typeof(hovermarker) !== undefined) {
+                hovermarker.removeFrom(eval(thismap))
+        }
+    })
+
     $(".myResetbutton").click(function f() {
         $("#Query" + this.value).remove();
         $("#AddSearch").removeClass('d-none');
