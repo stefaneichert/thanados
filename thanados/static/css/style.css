@@ -946,3 +946,7 @@ input[type=color] {
     color: #0056b3!important;
 }
 
+input {
+    min-width: 35px!important;
+}
+

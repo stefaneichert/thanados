@@ -418,7 +418,7 @@ function openStyleDialog(layerType) {
         dialogClass: 'layerdialog',
         width: mymodalwith,
         minHeight: 450,
-        position: {my: "left+20 top+20", at: "left top", of: "body"}, //$('#container')},
+        position: dialogPosition, //$('#container')},
         //height: 450,
         open: function () {
             // Destroy Close Button (for subsequent opens)

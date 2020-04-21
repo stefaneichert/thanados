@@ -17,6 +17,7 @@ function startsearch() {
     $("#dialog").dialog({
         width: mymodalwith,
         height: 450,
+        position: {my: "center", at: "center", of: "body"},
         open: function () {
             // Destroy Close Button (for subsequent opens)
             $('#dialog-close').remove();

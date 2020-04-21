@@ -28,6 +28,8 @@ $(document).ready(function () {
     if ($(window).width() < 500) $('#SidebarButton').remove();
     mymodalwith = ($(window).width());
     if (mymodalwith > 500) mymodalwith = 500;
+    if (($(window).width()) > 550) dialogPosition = {my: "left+20 top+20", at: "left top", of: "body"}
+    if (($(window).width()) <= 550) dialogPosition = {my: "left top", at: "left top", of: "body"}
     $('.ui-dialog').css('max-width', mymodalwith + 'px');
     $('#mytreeModal').css('max-width', ($(window).width()) + 'px');
     $('.legend').css('max-height', (containerheight - 159))
@@ -45,6 +47,8 @@ $(window).resize(function () {
     $('body').css('max-height', windowheight - 56 + 'px');
     mymodalwith = ($(window).width());
     if (mymodalwith > 500) mymodalwith = 500;
+    if (($(window).width()) > 550) dialogPosition = {my: "left+20 top+20", at: "left top", of: "body"}
+    if (($(window).width()) <= 550) dialogPosition = {my: "left top", at: "left top", of: "body"}
     $('.ui-dialog').css('max-width', mymodalwith + 'px');
     $('#mytreeModal').css('max-width', ($(window).width()) + 'px');
 });
