@@ -7,37 +7,41 @@
         <!-- Sidebar  -->
         <nav id="sidebar">
             <div class="sidebar-header">
-                <h3>Content</h3>
+                <h3>Manual Content</h3>
                 <strong><i class="fas fa-list"></i></strong>
             </div>
 
             <ul class="list-unstyled components">
 
                 <li>
-                    <a href="#introSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                    <a href="#introduction">
                         <!--<i class="fas fa-info-circle"></i>-->
                         Introduction
                     </a>
-                    <ul class="collapse list-unstyled" id="introSubmenu">
-                        <li>
-                            <a href="#getStart">Getting started</a>
-                        </li>
-                        <li>
-                            <a href="#cemSelect">Cemetery selection</a>
-                        </li>
-                    </ul>
                 </li>
                 <li>
-                    <a href="#catalSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                    <a href="#cemSelect">
+                        <i class="fas fa-cross"></i>
+                        Cemetery selection
+                    </a>
+                </li>
+                <li>
+                    <a href="#catalogue">
                         <i class="far fa-folder-open"></i>
                         Catalogue
                     </a>
-                    <ul class="collapse list-unstyled" id="catalSubmenu">
+                </li>
+                <li>
+                    <a href="#searchSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas fa-search"></i>
+                        Search
+                    </a>
+                    <ul class="collapse list-unstyled" id="searchSubmenu">
                         <li>
-                            <a href="#catalSearch">Search</a>
+                            <a href="#search">Filter</a>
                         </li>
                         <li>
-                            <a href="#catalExport">Export</a>
+                            <a href="#searchExport">Export</a>
                         </li>
                     </ul>
                 </li>
@@ -48,7 +52,7 @@
                     </a>
                     <ul class="collapse list-unstyled" id="mapSubmenu">
                         <li>
-                            <a href="#mapNavigation">Navigation</a>
+                            <a href="#maps">Navigation</a>
                         </li>
                         <li>
                             <a href="#mapSearch">Search</a>
@@ -59,32 +63,10 @@
                     </ul>
                 </li>
                 <li>
-                    <a href="#searchSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                        <i class="fas fa-search"></i>
-                        Intersite search
-                    </a>
-                    <ul class="collapse list-unstyled" id="searchSubmenu">
-                        <li>
-                            <a href="#searchCategories">Search categories</a>
-                        </li>
-                        <li>
-                            <a href="#searchExport">Export</a>
-                        </li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="#chartSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                    <a href="#charts">
                         <i class="fas fa-chart-bar"></i>
                         Charts
                     </a>
-                    <ul class="collapse list-unstyled" id="chartSubmenu">
-                        <li>
-                            <a href="#chartFilter">Filter</a>
-                        </li>
-                        <li>
-                            <a href="#chartExport">Export</a>
-                        </li>
-                    </ul>
                 </li>
             </ul>
 
@@ -108,17 +90,20 @@
 
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="nav navbar-nav ml-auto">
-                            <li class="nav-item active">
-                                <a class="nav-link" href="#">Page</a>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#cemSelect"><i class="fas fa-cross"></i></a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">Page</a>
+                                <a class="nav-link" href="#catalogue"><i class="far fa-folder-open"></i></a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">Page</a>
+                                <a class="nav-link" href="#search"><i class="fas fa-search"></i></a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">Page</a>
+                                <a class="nav-link" href="#maps"><i class="fas fa-map-marked-alt"></i></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#charts"><i class="fas fa-chart-bar"></i></a>
                             </li>
                         </ul>
                     </div>
@@ -126,16 +111,18 @@
             </nav>
 
             <div id="mycontent">
-        <h2 class="my-heading container">Manual</h2>
+                <h2 class="my-heading container">Manual</h2>
 
-    </div>
-            <h2 id="introduction">Introduction</h2>
+            </div>
+            <h3 id="introduction">Introduction</h3>
             <p>Here comes the introduction.</p>
-            <h3 id="getStart">Getting started</h3>
-            <h3 id="cemSelect">Cemetery selection</h3>
             <div class="line"></div>
 
-            <h2 id="catalSearch">Catalogue</h2>
+            <h3 id="cemSelect">Cemetery selection</h3>
+            <p>Here comes the cemetery selection.</p>
+            <div class="line"></div>
+
+            <h3 id="catalogue">Catalogue</h3>
             <p>
                 With <b> "Sites" </b> in the top menu you can select the respective cemetery and browse its catalogue
                 data along with a static map, images, bibliography
@@ -156,27 +143,7 @@
                 metadata</p>
             <div class="line"></div>
 
-            <h2 id="maps">Maps</h2>
-            <p>
-                By opening the map in the cemetery page you can access a detailed and interactive map of the burials.
-                Here you will find the plot of the graveyard with each grave. You can click the graves to access further
-                information or use the sidebar to navigate between them. If you click the info
-                <i class="fas fa-info"></i> button in the sidebar respectively the grave in the map you can access
-                detailed info about the grave and its contents. There you will find a description along with
-                classifications, dimensions, images etc. For accessing the permanent link of the respective object
-                (cemetery, grave, skeleton or find), you can select the "Permalink" reference in the detailed view.
-                The sidebar can be turned on and off by selecting <i class="fa fa-chevron-left"></i> or
-                <i class="fa fa-chevron-right"></i>.
-                The map allows for various background layers which you can select by clicking the top right menu button
-                in the map. Here you can also toggle the layers to be shown: graves, search results and visualisations.
-                If you want to change the order of these layers, just turn them off and on again. The last one to be
-                turned on will be the top layer. For downloading the map as image simply click the download button in
-                the right top corner underneath the layer control.</p>
-            <img class="border aboutimage" src="/static/images/about/map.jpg">
-            <p class="text-center font-italic">Screenshot: map view of a cemetery with info window</p>
-            <div class="line"></div>
-
-            <h2 id="search">Intersite search</h2>
+            <h3 id="search">Search</h3>
             <p>
                 By clicking the <b> "Menu" </b> button in the sidebar, or if the sidebar is closed,
                 <i class="fas fa-bars"></i> in the map, you can search for various properties of the graves, skeletons
@@ -239,7 +206,25 @@
                 with custom color</p>
             <div class="line"></div>
 
-            <h2 id="visualisations">Visualisations</h2>
+            <h3 id="maps">Maps</h3>
+            <p>
+                By opening the map in the cemetery page you can access a detailed and interactive map of the burials.
+                Here you will find the plot of the graveyard with each grave. You can click the graves to access further
+                information or use the sidebar to navigate between them. If you click the info
+                <i class="fas fa-info"></i> button in the sidebar respectively the grave in the map you can access
+                detailed info about the grave and its contents. There you will find a description along with
+                classifications, dimensions, images etc. For accessing the permanent link of the respective object
+                (cemetery, grave, skeleton or find), you can select the "Permalink" reference in the detailed view.
+                The sidebar can be turned on and off by selecting <i class="fa fa-chevron-left"></i> or
+                <i class="fa fa-chevron-right"></i>.
+                The map allows for various background layers which you can select by clicking the top right menu button
+                in the map. Here you can also toggle the layers to be shown: graves, search results and visualisations.
+                If you want to change the order of these layers, just turn them off and on again. The last one to be
+                turned on will be the top layer. For downloading the map as image simply click the download button in
+                the right top corner underneath the layer control.</p>
+            <img class="border aboutimage" src="/static/images/about/map.jpg">
+            <p class="text-center font-italic">Screenshot: map view of a cemetery with info window</p>
+
             <p>
                 Like with the filter/search function you can also create <b> choropleth visualisations </b> and display
                 them on the map. This works with most properties that have a certain value and with categories like
@@ -257,13 +242,14 @@
             <div class="line"></div>
 
             <h3 id="charts">Charts</h3>
-                    <p>
-                        In the menu bar with "Charts" you can access various pre-defined charts respectively plots of certain
-                        attributes of the cemeteries. You can toggle options like absolute values or percentage by clicking the top
-                        right buttons in the plots. Also you can turn datasets on or off by clicking the legend entries. If you
-                        hover the pointer over a certain plot element additional information is shown. </p>
-                        <img class="border aboutimage" src="/static/images/about/charts.jpg">
-                    <p class="text-center font-italic">Screenshot: Charts and plots of various burial data</p>
+            <p>
+                In the menu bar with "Charts" you can access various pre-defined charts respectively plots of certain
+                attributes of the cemeteries. You can toggle options like absolute values or percentage by clicking the
+                top
+                right buttons in the plots. Also you can turn datasets on or off by clicking the legend entries. If you
+                hover the pointer over a certain plot element additional information is shown. </p>
+            <img class="border aboutimage" src="/static/images/about/charts.jpg">
+            <p class="text-center font-italic">Screenshot: Charts and plots of various burial data</p>
             <div class="line"></div>
             <br>
 
