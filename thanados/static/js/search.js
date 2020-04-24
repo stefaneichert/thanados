@@ -10,6 +10,8 @@ $(document).ready(function () {
     Queryclass = 'nix';
     ComboSearchString = 'no';
     getBasemaps();
+    if (($(window).width()) > 550) dialogPosition = {my: "left+20 top+20", at: "left top", of: "body"}
+    if (($(window).width()) <= 550) dialogPosition = {my: "left top", at: "left top", of: "body"}
 });
 
 $(window).resize(function () {
@@ -20,6 +22,8 @@ $(window).resize(function () {
     local = false;
     mymodalwith = ($(window).width());
     if (mymodalwith > 500) mymodalwith = 500;
+    if (($(window).width()) > 550) dialogPosition = {my: "left+20 top+20", at: "left top", of: "body"}
+    if (($(window).width()) <= 550) dialogPosition = {my: "left top", at: "left top", of: "body"}
 });
 
 $('#AddSearch').click(function () {
