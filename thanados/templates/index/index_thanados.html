@@ -1,10 +1,25 @@
 {% extends "layout.html" %}
 {% block content %}
     <div id="container1">
-        <h2 class="my-heading container"><img class="logo-heading" src="/static/images/logos/THANADOS_Logo_RGB.png">
+        <h2 class="my-heading container"><img class="logo-heading"
+                                              src="/static/images/logos/THANADOS_Logo_RGB.png">
         </h2>
-        <h2 class="my-heading container">The Anthropological and Archaeological Database of Sepultures</h2>
+        <h2 class="my-heading container">The Anthropological and Archaeological Database of
+            Sepultures</h2>
 
+        <div id="map" style="height: 20rem"></div>
+        <div id="counters" class="row bg-dark text-center pt-3 navbar-dark"></div>
+        <div class="container with-margin">
+            <p class="lead text-muted" style="margin-top: 2em; margin-bottom: 2em">
+                THANADOS is a Digital Humanities research project on archaeologically and
+                anthropologically investigated
+                burials.
+                <br><br>
+                It aims at developing a web application for the digital dissemination of the
+                respective data. With this
+                application you can:
+            </p>
+        </div>
         <div class="album py-5" style="background-color: #f2f2f2">
             <div class="container">
 
@@ -12,12 +27,12 @@
 
                     <div class="col-md-4">
                         <div class="card mb-4 box-shadow">
-                            <a href="{{ url_for('entity_view', object_id=50505) }}50505">
+                            <a href="/entity/50505">
                                 <div>
                                     <img class="card-img-top" src="/static/images/home/Thunau.jpg"
-                                         title="Click to open example catalogue of Thunau Obere Holzwiese. Image: after Nowotny 2018">
+                                         title="Click to open example catalog of Thunau Obere Holzwiese. Image: after Nowotny 2018">
                                     <div class="overlay">
-                                        <p>Example catalogue</p>
+                                        <p>Example Catalog</p>
                                     </div>
                                 </div>
                             </a>
@@ -56,61 +71,71 @@
             </div>
         </div>
 
-        <div class="container with-margin">
-            <p class="lead text-muted" style="margin-top: 2em; margin-bottom: 2em">
-                THANADOS is a Digital Humanities research project on archaeologically and anthropologically investigated
-                burials.
-                <br><br>
-                It aims at developing a web application for the digital dissemination of the respective data. With this
-                application you can:
-            </p>
-        </div>
+
         <div style="background-color: #f2f2f2">
             <ul class="list-group container with-margin p-3">
-                <li class="lead text-muted mylist"> explore the digital catalogues of cemeteries</li>
-                <li class="lead text-muted mylist"> navigate through interactive maps of the respective sites</li>
-                <li class="lead text-muted mylist"> query and search burial data from graves, human remains and finds
+                <li class="lead text-muted mylist"> explore the digital catalogues of cemeteries
+                </li>
+                <li class="lead text-muted mylist"> navigate through interactive maps of the
+                    respective sites
+                </li>
+                <li class="lead text-muted mylist"> query and search burial data from graves, human
+                    remains and finds
                 </li>
                 <li class="lead text-muted mylist"> visualise the results on maps</li>
-                <li class="lead text-muted mylist"> analyse interactive charts of the cemeteries' data</li>
+                <li class="lead text-muted mylist"> analyse interactive charts of the cemeteries'
+                    data
+                </li>
                 <li class="lead text-muted mylist"> download the data for further analyses</li>
             </ul>
         </div>
         <div class="container with-margin">
             <p class="lead text-muted" style="margin-top: 2em; margin-bottom: 2em">
-                It started in June 2019. The region under study is present day Austria and the period we are dealing
-                with are the Early Middle Ages (600 until 1100 AD). Currently it is work in progress and for now only
-                selected and processed sites are available online. By the end of the project in 2021 this website will
-                provide an online repository of all hitherto published Early Medieval cemeteries from the area of
-                present day Austria. Please check in again soon to see more examples and watch the project's progress.
+                It started in June 2019. The region under study is present day Austria and the
+                period we are dealing
+                with are the Early Middle Ages (600 until 1100 AD). Currently it is work in progress
+                and for now only
+                selected and processed sites are available online. By the end of the project in 2021
+                this website will
+                provide an online repository of all hitherto published Early Medieval cemeteries
+                from the area of
+                present day Austria. Please check in again soon to see more examples and watch the
+                project's progress.
                 <br><br>
                 If you want to learn more please take a look at the <a
                     href="/about">About</a> section.
             </p>
             <h7 class="text-muted">Screenshots:</h7>
-            <div id="carouselExampleIndicators" style="margin-bottom: 4em; border: 1px solid rgba(0, 0, 0, 0.125)"
+            <div id="carouselExampleIndicators"
+                 style="margin-bottom: 4em; border: 1px solid rgba(0, 0, 0, 0.125)"
                  class="carousel slide" data-ride="carousel">
                 <ol class="carousel-indicators">
-                    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                    <li data-target="#carouselExampleIndicators" data-slide-to="0"
+                        class="active"></li>
                     <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
                     <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
                 </ol>
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img class="d-block w-100" src="/static/images/home/slide1.jpg" alt="First slide">
+                        <img class="d-block w-100" src="/static/images/home/slide1.jpg"
+                             alt="First slide">
                     </div>
                     <div class="carousel-item">
-                        <img class="d-block w-100" src="/static/images/home/slide2.jpg" alt="Second slide">
+                        <img class="d-block w-100" src="/static/images/home/slide2.jpg"
+                             alt="Second slide">
                     </div>
                     <div class="carousel-item">
-                        <img class="d-block w-100" src="/static/images/home/slide3.jpg" alt="Third slide">
+                        <img class="d-block w-100" src="/static/images/home/slide3.jpg"
+                             alt="Third slide">
                     </div>
                 </div>
-                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button"
+                   data-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="sr-only">Previous</span>
                 </a>
-                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button"
+                   data-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="sr-only">Next</span>
                 </a>
@@ -133,5 +158,7 @@
             </div>
         </footer>
     </div>
+     <script>    sitelist = {{ sitelist|tojson }};    </script>
+     <script>    entitycount = {{ entitycount|safe }};    </script>
     <script src="/static/js/index.js"></script>
 {% endblock %}

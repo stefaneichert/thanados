@@ -858,12 +858,8 @@ function toggleSubunits() {
     $('.subunits').toggle();
 }
 
-today = new Date();
-dd = String(today.getDate()).padStart(2, '0');
-mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-yyyy = today.getFullYear();
+today = today();
 
-today = yyyy + '/' + mm + '/' + dd;
 if (typeof (mycitation2) == 'undefined') {
     mycitation2 = '';
     mycitation1 = mycitation1.substring(0, mycitation1.length - 8);

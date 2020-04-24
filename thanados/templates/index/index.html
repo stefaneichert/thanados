@@ -18,7 +18,8 @@
         <div style="background-color: #f2f2f2">
             <ul class="list-group container with-margin p-3">
                 <li class="lead text-muted mylist"> explore the digital catalogues of cemeteries</li>
-                <li class="lead text-muted mylist"> navigate through interactive maps of the respective sites</li>
+                <li class="lead text-muted mylist"> navigate through interactive
+                    <map name=""></map>s of the respective sites</li>
                 <li class="lead text-muted mylist"> query and search burial data from graves, human remains and finds
                 </li>
                 <li class="lead text-muted mylist"> visualise the results on maps</li>
@@ -71,5 +72,6 @@
             </div>
         </footer>
     </div>
+     <script>    sitelist = {{ sitelist|tojson }};    </script>
     <script src="/static/js/index.js"></script>
 {% endblock %}
