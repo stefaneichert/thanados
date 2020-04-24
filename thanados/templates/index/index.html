@@ -5,7 +5,8 @@
         </h2>
         <h2 class="my-heading container">The Anthropological and Archaeological Database of Sepultures</h2>
 
-
+        <div id="map" style="height: 20rem"></div>
+        <div id="counters" class="row bg-dark text-center pt-3 navbar-dark"></div>
         <div class="container with-margin">
             <p class="lead text-muted" style="margin-top: 2em; margin-bottom: 2em">
                 THANADOS is a Digital Humanities research project on archaeologically and anthropologically investigated
@@ -72,6 +73,7 @@
             </div>
         </footer>
     </div>
-     <script>    sitelist = {{ sitelist|tojson }};    </script>
+    <script>    sitelist = {{ sitelist|tojson }};    </script>
+    <script>    entitycount = {{ entitycount|safe }};    </script>
     <script src="/static/js/index.js"></script>
 {% endblock %}

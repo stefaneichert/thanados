@@ -28,4 +28,4 @@ def index():
     g.cursor.execute(sql)
     counts = g.cursor.fetchone()
 
-    return render_template("/index/index_thanados.html", sitelist=site_list[0].sitelist, entitycount=counts[0])
+    return render_template("/index/index.html", sitelist=site_list[0].sitelist, entitycount=counts[0])
