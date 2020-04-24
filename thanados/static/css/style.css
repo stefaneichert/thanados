@@ -942,6 +942,7 @@ input[type=color] {
     opacity: 0.5;
     display: none;
     font-size: 1rem;
+    z-index: 2000!important;
 }
 .sitepermalink:hover {
     color: #0056b3!important;
@@ -969,6 +970,8 @@ input {
 #counters {
     color: #eeee;
     background-color: #777777;
+    margin-left: 0!important;
+    margin-right: 0!important;
 }
 
 .statistic-counter {

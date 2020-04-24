@@ -1,3 +1,20 @@
+$(document).ready(function () {
+    $('#mycontent').scroll(function () {
+        if ($(this).scrollTop() > 50) {
+            $('#back-to-top').fadeIn();
+        } else {
+            $('#back-to-top').fadeOut();
+        }
+    });
+    // scroll body to 0px on click
+    $('#back-to-top').click(function () {
+        //$('#back-to-top').tooltip('hide');
+        $('#mycontent').animate({
+            scrollTop: 0
+        }, 200);
+        return false;
+    });
+})
 $(document).on('change', "input[type|=\'text\']", function () {
     if ($(this).hasClass('legendtext')) {
         currentLegend = this.value;
@@ -753,12 +770,12 @@ function openStyleDialog(layerType) {
             $('#MethodSelect').val(myChoromode);
             $('#gradselect').val(myChoroPntMode);
             if (myChoroPntMode == 1) {
-                    $('#minRadius').removeClass('d-none');
-                    $('#radius').html('Radius min/max:')
-                } else {
-                    $('#minRadius').addClass('d-none');
-                    $('#radius').html('Radius:')
-                }
+                $('#minRadius').removeClass('d-none');
+                $('#radius').html('Radius min/max:')
+            } else {
+                $('#minRadius').addClass('d-none');
+                $('#radius').html('Radius:')
+            }
 
             if (layertypes.gradientcolor) {
                 $('#valueOption').removeClass('d-none');
@@ -834,7 +851,7 @@ function openStyleDialog(layerType) {
             $('#minRadius').on('input change', function () {
                 mysearchpointminradius = $('#minRadius').val();
                 if (parseInt(mysearchpointminradius) < 1) $('#minRadius').val(1);
-                if (parseInt(mysearchpointminradius) >= parseInt(mysearchpointradius)) $('#minRadius').val(parseInt(parseInt(mysearchpointradius) -1));
+                if (parseInt(mysearchpointminradius) >= parseInt(mysearchpointradius)) $('#minRadius').val(parseInt(parseInt(mysearchpointradius) - 1));
             });
 
             $('#MethodSelect').on('change', function () {
@@ -1871,11 +1888,11 @@ hovericon = L.icon({
 });
 
 function today() {
-var today = new Date();
-var dd = String(today.getDate()).padStart(2, '0');
-var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-var yyyy = today.getFullYear();
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
 
-today = yyyy + '/' + mm + '/' + dd;
-return(today)
+    today = yyyy + '/' + mm + '/' + dd;
+    return (today)
 }
