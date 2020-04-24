@@ -758,7 +758,7 @@ function openStyleDialog(layerType) {
                 } else {
                     $('#minRadius').addClass('d-none');
                     $('#radius').html('Radius:')
-                };
+                }
 
             if (layertypes.gradientcolor) {
                 $('#valueOption').removeClass('d-none');

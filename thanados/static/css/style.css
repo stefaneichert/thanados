@@ -501,6 +501,7 @@ a.ui-button:active,
     font-size: 0.875rem;
     padding: 0 0.75rem;
     height: 31px;
+    background-color: #f2f2f2;
 }
 
 .input-group-text:first-child {
@@ -870,7 +871,7 @@ input[type=color] {
     font-size: 0.875rem!important;
     height: 34px;
     color: #495057 !important;
-    background-color: #e9ecef;
+    background-color: #f2f2f2;
     border-bottom: none !important;
 }
 .infobtns {
@@ -967,8 +968,17 @@ input {
 
 #counters {
     color: #eeee;
+    background-color: #777777;
 }
 
 .statistic-counter {
     margin-bottom: 0.2rem;
+}
+
+.custom-select:disabled {
+    background-color: #f2f2f2;
+}
+
+.form-control:disabled, .form-control[readonly] {
+    background-color: #f2f2f2;
 }

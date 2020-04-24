@@ -1,5 +1,26 @@
-maximumHeight = (($(window).height() - $('#mynavbar').height()));
-$('#container1').css('max-height', (maximumHeight - 13) + 'px');
+$(document).ready(function () {
+    maximumHeight = (($(window).height() - $('#mynavbar').height()));
+    $('#container1').css('max-height', (maximumHeight - 13) + 'px');
+
+    $('#container1').scroll(function () {
+        if ($(this).scrollTop() > 50) {
+            $('#back-to-top').fadeIn();
+        } else {
+            $('#back-to-top').fadeOut();
+        }
+    });
+    // scroll body to 0px on click
+    $('#back-to-top').click(function () {
+        //$('#back-to-top').tooltip('hide');
+        $('#container1').animate({
+            scrollTop: 0
+        }, 200);
+        return false;
+    });
+
+    //$('#back-to-top').tooltip('show');
+
+});
 
 $(window).resize(function () {
     maximumHeight = (($(window).height() - $('#mynavbar').height()));
