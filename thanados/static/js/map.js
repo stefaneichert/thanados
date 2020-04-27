@@ -77,7 +77,8 @@ function setmap(myjson) {
         $('#accordion1').html(
             '<div title="' + myjson.properties.maintype.path +'"style="display: block; padding: 1em"><b>Type: </b>' +
             myjson.properties.maintype.name
-            + '<a class="float-right sitepermalink" style="color: #696969" href="../entity/' + myjson.site_id + '" title="Permalink to this entity"><h6><i class="fas fa-link"></i></h6></a></div>'
+            + '<a class="float-right ml-2 sitepermalink" style="color: #696969" href="../entity/' + myjson.site_id + '" title="Permalink to this entity"><h6><i class="fas fa-link"></i></h6></a>'+
+              '<a title="Link to backend" class="backendlink d-none float-right" href="'+ openAtlasUrl + entId +'" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a></div>'
 
         );
         if (typeof(myjson.properties.timespan) !== 'undefined') {
@@ -715,7 +716,8 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     );
 
     $('#myModalPermalink' + entId).append(
-        '<a href="../entity/' + entId + '" title="Permalink to this entity"><h6><i class="fas fa-link"></i></h6></a>'
+        '<a href="../entity/' + entId + '" title="Permalink to this entity" class="float-right ml-2"><h6><i class="fas fa-link"></i></h6></a>' +
+        '<a title="Link to backend" class="backendlink d-none" href="'+ openAtlasUrl + entId +'" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a>'
     );
 
     if (dateToInsert == '') {
@@ -902,6 +904,7 @@ function modalset(id) {
         }
     });
     $("#myModal").scrollTop("0");
+    if (loginTrue) $('.backendlink').removeClass('d-none')
 }
 
 function modalsetsite() {
@@ -929,6 +932,7 @@ function modalsetsite() {
         }
     });
     $("#myModal").scrollTop("0");
+    if (loginTrue) $('.backendlink').removeClass('d-none')
 }
 
 function addFilterSearch() {

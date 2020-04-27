@@ -122,7 +122,12 @@ $(document).ready(function () {
 //add markers to map and zoom to content
     mymarkers.addTo(markergroup);
     heatmarkers = JSON.parse(JSON.stringify(heatmarkers).replace(/"/g, ''));
-    map.fitBounds(mymarkers.getBounds());
+    var bounds = mymarkers.getBounds();
+    bounds._northEast.lat = bounds._northEast.lat + 0.1;
+    bounds._northEast.lng = bounds._northEast.lng + 0.1;
+    bounds._southWest.lat = bounds._southWest.lat - 0.1;
+    bounds._southWest.lng = bounds._southWest.lng - 0.1;
+    map.fitBounds(bounds);
     heat.setLatLngs(heatmarkers);
 
     $(function () {

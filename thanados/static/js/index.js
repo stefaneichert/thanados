@@ -99,7 +99,7 @@ if ($('#map').length) {
     bounds._northEast.lat = bounds._northEast.lat + 0.1;
     bounds._northEast.lng = bounds._northEast.lng + 0.1;
     bounds._southWest.lat = bounds._southWest.lat - 0.1;
-    bounds._southWest.lng = bounds._southWest.lng - 0.4;
+    bounds._southWest.lng = bounds._southWest.lng - 0.1;
     map.fitBounds(bounds);
     //map.setZoom((map.getZoom() - 1));
     attributionChange();

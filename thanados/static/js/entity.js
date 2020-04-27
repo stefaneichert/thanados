@@ -246,6 +246,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div style="margin-top: 0.6em; margin-left: 1em; padding-bottom: 0.6em;">' +
         '<button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-secondary" title="Download data as GeoJSON"><i class="fas fa-download"></i></button>' +
+        '<a style="margin-left: 0.1em" onclick="this.blur();" href="' + openAtlasUrl + entId + '" target="_blank" class="backendlink d-none btn btn-sm btn-secondary" title="Backend link"><i class="fas fa-database"></i></a>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" class="btn btn-sm btn-secondary" title="Open detailed map of this site">Map</button>' +
         '</div>' +
         '</div>' +
@@ -561,11 +562,13 @@ function getEntityData(parentName, parentId, currentfeature) {
             data: mychildrenlist,
             "pagingType": "numbers",
             "scrollX": true,
+            drawCallback: function () { if (loginTrue) $('.backendlink').removeClass('d-none')},
             columns: [
                 {
                     data: "name",
                     "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                        $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a> "); //create links in rows
+                        $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" +
+                        '<a title="Link to backend" class="backendlink d-none" href="'+ openAtlasUrl + oData.id +'" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a>'); //create links in rows
                     }
                 },
                 {
@@ -583,6 +586,9 @@ function getEntityData(parentName, parentId, currentfeature) {
         if (systemtype == "stratigraphic unit") table.column(4).visible(false);
     } else {
         $('#nav-tab').toggle();
+    }
+    if (loginTrue) {
+        $('.backendlink').removeClass('d-none')
     }
 
 
@@ -881,7 +887,9 @@ function setcatalogue(currentchildren, parentDiv, iter) {
     iter += 1;
     $.each(currentchildren, function (i, currentfeature) {
         var entId = currentfeature.id;
-        var entName = '<a href="../entity/' + entId + '" title="Permalink to this entity">' + currentfeature.properties.name + '</a>';
+        var entName =
+            '<a href="../entity/' + entId + '" title="Permalink to this entity">' + currentfeature.properties.name + '</a>' +
+            '<a title="Link to backend" class="backendlink d-none" href="'+ openAtlasUrl + entId +'" target="_blank""><i class="ml-4 text-secondary fas fa-database"></i></a>';
         var entDesc = currentfeature.properties.description;
         if (typeof entDesc == 'undefined') {
             var entDesc = '';
@@ -991,6 +999,9 @@ function setcatalogue(currentchildren, parentDiv, iter) {
 
 
     });
+    if (loginTrue) {
+        $('.backendlink').removeClass('d-none')
+    }
 }
 
 cataloguetrue = false;
