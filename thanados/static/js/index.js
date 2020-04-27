@@ -82,17 +82,16 @@ if ($('#map').length) {
 
     heatmarkers = []
     mymarkers = new L.featureGroup([]).addTo(map);
-    gravescount = 0
 
     $.each(sitelist, function (e, dataset) {
-        var marker = L.circleMarker([((dataset.lon)), ((dataset.lat))], {
+        marker = L.circleMarker([((dataset.lon)), ((dataset.lat))], {
             radius: 7,
             weight: 0,
-            fillOpacity: 0.8,
+            fillOpacity: 0,
             fillColor: "#ff3636"
-        }).addTo(mymarkers).bindPopup('<a href="/entity/' + dataset.id + '" title="' + dataset.description + '"><b>' + dataset.name + '</b></a><br><br>' + dataset.type);
+        }).bindPopup('<a href="/entity/' + dataset.id + '" title="' + dataset.description + '"><b>' + dataset.name + '</b></a><br><br>' + dataset.type);
         heatmarkers.push([dataset.lon, dataset.lat]);
-        gravescount += parseInt(dataset.graves);
+        marker.addTo(mymarkers);
     })
 
     //heat = L.heatLayer(heatmarkers, {radius: 40, minOpacity: 0.2, blur: 40}).addTo(map);
@@ -104,7 +103,24 @@ if ($('#map').length) {
     map.fitBounds(bounds);
     //map.setZoom((map.getZoom() - 1));
     attributionChange();
+
+    $.each($('.leaflet-interactive'), function(i, el){
+    var time = (1000/sitelist.length);
+    setTimeout(function(){
+       $(el).animate({
+        'fillOpacity': 0.7
+       }, 50);
+    },time + ( i * time ));
+
+});
+
 } else {
     console.log('no map on index')
+}
+
+function markerwait() {
+    setTimeout( function () {
+
+    }, 250)
 }
 
