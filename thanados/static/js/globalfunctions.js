@@ -1896,3 +1896,11 @@ function today() {
     today = yyyy + '/' + mm + '/' + dd;
     return (today)
 }
+
+//captions  for lightbox images
+$.featherlight.prototype.afterContent = function () {
+    var caption = this.$currentTarget.find('img').attr('title');
+    if (caption) caption = "Image after: " + caption;
+    this.$instance.find('.caption').remove();
+    $('<div style="max-width: fit-content; font-size: 0.875em" class="caption text-muted">').text(caption).appendTo(this.$instance.find('.featherlight-content'));
+}
