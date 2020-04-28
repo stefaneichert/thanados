@@ -9,6 +9,7 @@
 #sidebarCollapse {
     cursor: pointer;
     position: fixed;
+    top: 61px;
     opacity: 0.3;
     font-size: 1rem;
     height: 4em;

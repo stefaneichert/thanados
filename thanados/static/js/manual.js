@@ -35,7 +35,6 @@ function collapsebutton() {
         $('#toggleIcon').addClass('fa-chevron-right');
     }
     $('#sidebarCollapse').css({
-        top: maximumHeight/2,
         left: buttonpos
     });
 }
