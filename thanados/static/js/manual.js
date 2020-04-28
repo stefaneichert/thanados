@@ -1,7 +1,14 @@
-    maximumHeight = ((($(window).height() - $('#mynavbar').height()) - $('#mysubmenu').height()));
-    $('#mycontent').css('max-height', (maximumHeight - 27) + 'px');
+$(document).ready(function () {
+    maximumHeight = ($(window).height() - $('#mynavbar').height());
+    $('#mycontent').css('max-height', (maximumHeight) + 'px');
+    $('.wrapper').css('height', (maximumHeight) + 'px');
+    $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+});
 
-    $(window).resize(function () {
-        maximumHeight = ((($(window).height() - $('#mynavbar').height()) - $('#mysubmenu').height()));
-        $('#mycontent').css('max-height', (maximumHeight - 27) + 'px');
-    });
+$(window).resize(function () {
+    maximumHeight = ($(window).height() - $('#mynavbar').height());
+    $('#mycontent').css('max-height', (maximumHeight) + 'px');
+    $('.wrapper').css('height', (maximumHeight) + 'px');
+});
