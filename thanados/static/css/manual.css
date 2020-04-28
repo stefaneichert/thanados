@@ -2,6 +2,26 @@
     DEMO STYLE
 */
 
+#mycontent > h3 {
+    padding-top: 1em;
+}
+
+#sidebarCollapse {
+    cursor: pointer;
+    position: fixed;
+    opacity: 0.5;
+    font-size: 1rem;
+    height: 4em;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    border: none;
+    z-index: 2000!important;
+}
+
+#toggleIcon {
+    position: relative;
+    top: 1em;
+}
 
 a,
 a:hover,
@@ -69,7 +89,7 @@ span {
 #sidebar.active ul li a {
     padding: 20px 10px;
     text-align: center;
-    font-size: 0.85em;
+    font-size: 0.7em;
 }
 
 #sidebar.active ul li a i {
@@ -155,17 +175,6 @@ ul.CTAs a {
     display: block;
     border-radius: 5px;
     margin-bottom: 5px;
-}
-
-a.download {
-    background: #fff;
-    color: #7386D5;
-}
-
-a.article,
-a.article:hover {
-    background: #6d7fcc !important;
-    color: #fff !important;
 }
 
 /* ---------------------------------------------------
