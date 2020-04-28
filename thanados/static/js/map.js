@@ -78,7 +78,7 @@ function setmap(myjson) {
             '<div title="' + myjson.properties.maintype.path +'"style="display: block; padding: 1em"><b>Type: </b>' +
             myjson.properties.maintype.name
             + '<a class="float-right ml-2 sitepermalink" style="color: #696969" href="../entity/' + myjson.site_id + '" title="Permalink to this entity"><h6><i class="fas fa-link"></i></h6></a>'+
-              '<a title="Link to backend" class="backendlink d-none float-right" href="'+ openAtlasUrl + entId +'" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a></div>'
+              '<a title="Link to backend" class="backendlink d-none float-right" href="'+ openAtlasUrl + myjson.site_id + '" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a></div>'
 
         );
         if (typeof(myjson.properties.timespan) !== 'undefined') {
