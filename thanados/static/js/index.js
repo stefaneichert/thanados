@@ -104,22 +104,43 @@ if ($('#map').length) {
     //map.setZoom((map.getZoom() - 1));
     attributionChange();
 
-    $.each($('.leaflet-interactive'), function(i, el){
-    var time = (1000/sitelist.length);
-    setTimeout(function(){
-       $(el).animate({
-        'fillOpacity': 0.7
-       }, 50);
-    },time + ( i * time ));
 
-});
+    if (sitelist.length > 15) {
+    zoom = map.getZoom() / 10 - 0.3;
+    if (zoom > 1) zoom = 1;
+    if (zoom < 0.1) zoom = 0.1;
+    map.on('zoomend', function () {
+        zoom = map.getZoom() / 10 - 0.3;
+        if (zoom > 1) zoom = 1;
+        if (zoom < 0.1) zoom = 0.1;
+        $.each($('.leaflet-interactive'), function (i, el) {
+            $(el).animate({
+                'fillOpacity': zoom
+            }, 50);
+        })
+        console.log(zoom)
+    });
+    } else zoom = 0.7
+
+    console.log(zoom)
+
+
+    $.each($('.leaflet-interactive'), function (i, el) {
+        var time = (1000 / sitelist.length);
+        setTimeout(function () {
+            $(el).animate({
+                'fillOpacity': zoom
+            }, 50);
+        }, time + (i * time));
+
+    });
 
 } else {
     console.log('no map on index')
 }
 
 function markerwait() {
-    setTimeout( function () {
+    setTimeout(function () {
 
     }, 250)
 }
