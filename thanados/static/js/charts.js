@@ -1,8 +1,3 @@
-$(document).ready(function () {
-    $(".sortable").sortable();
-    $(".sortable").disableSelection();
-});
-
 //prepare charts/plots and data
 mysite_ids = site_ids;
 if (site_ids.length > 20) {
@@ -226,8 +221,8 @@ function setcharts() {
     depthchart = new Chart(ctx, depthconfig);
 
 // orientation of graves: Data contains site and no of graves of a orientation interval of 20°
-    var myorientationdata = setChartData(orientation_data, false, true, false);
-    var orientationconfig = {
+    myorientationdata = setChartData(orientation_data, false, true, false);
+    orientationconfig = {
         // The type of chart we want to create
         type: 'bar',
         // The data for our dataset
@@ -263,8 +258,8 @@ function setcharts() {
 
 
 // Azimuth of graves: Data contains site and no of graves of an Azimuth interval of 20°
-    var myazimuthdata = setChartData(azimuth_data, false, true, false);
-    var azimuthconfig = {
+    myazimuthdata = setChartData(azimuth_data, false, true, false);
+    azimuthconfig = {
         // The type of chart we want to create
         type: 'bar',
         // The data for our dataset
@@ -299,8 +294,8 @@ function setcharts() {
     azimuthchart = new Chart(ctx, azimuthconfig)
 
 //sex of individuals: Data contains site and no of skeletons with male, female or undefined sex
-    var mysexdata = setChartData(sex_data, true, true, false, false);
-    var sexconfig = {
+    mysexdata = setChartData(sex_data, true, true, false, false);
+    sexconfig = {
         // The type of chart we want to create
         type: 'bar',
         // The data for our dataset
@@ -464,7 +459,7 @@ function setcharts() {
     if (typeof (burialtypeschart) != 'undefined') burialtypeschart.destroy();
     burialtypeschart = new Chart(ctx, burialtypesconfig)
 
-    var ageconfig = {
+    ageconfig = {
         type: 'violin',
         data: setage(age_data),
         options: {
@@ -745,11 +740,15 @@ function setChartData(originalData, axesswitch, percentageset, zeroslice, prepar
 $(window).resize(function () {
     var windowheight = ($(window).height());
     $('#mycontent').css('max-height', windowheight - 56 + 'px');
+    $('#bigchart-container').css('height', (windowheight*73/100));
 });
 
 $(document).ready(function () {
+    $(".sortable").sortable();
+    $(".sortable").disableSelection();
     var windowheight = ($(window).height());
     $('#mycontent').css('max-height', windowheight - 56 + 'px');
+    $('#bigchart-container').css('height', (windowheight*73/100));
 });
 
 function filterList(data) {
@@ -764,3 +763,27 @@ $('#collapseFilter').on('shown.bs.collapse', function () {
     var table = $('#sitelist').DataTable();
     table.draw();
 })
+
+function enlargeChart(currentConfig) {
+    $('.modal-title').text(currentTitle);
+    $('.modal').modal();
+    if (typeof(bigchart) !== 'undefined') bigchart.destroy();
+    var ctx = document.getElementById('bigchart-container').getContext('2d');
+    bigchart = new Chart(ctx, currentConfig)
+    console.log(percScript);
+    console.log(absScript);
+    $(function(){
+    percScript = percScript.substring(percScript.indexOf(",") + 1);
+    percScript = 'updateChart(bigchart,' + percScript;
+    console.log(percScript);
+    absScript = absScript.substring(absScript.indexOf(",") + 1);
+    absScript = 'updateChart(bigchart,' + absScript;
+    console.log(absScript);
+    $('#percBtn').click(function () {
+    eval(percScript)
+    });
+    $('#absBtn').click(function () {
+    eval(absScript)
+    });
+});
+}
