@@ -94,11 +94,15 @@ $(document).ready(function () {
         data: sitelist,
         "pagingType": "numbers",
         "scrollX": true,
+        drawCallback: function () { if (loginTrue) $('.backendlink').removeClass('d-none')},
         columns: [
             {
                 data: "name",
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                    $(nTd).html("<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + ")' class='hovermarker' data-type='" + oData.type + "' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" + "<a href='/map/" + oData.id + "' title='open map' class='btn-xs float-right'><i class=\"fas fa-map-marked-alt\"></i></a>"); //create links in rows
+                    $(nTd).html(
+                        "<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + ")' class='hovermarker' data-type='" + oData.type + "' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" +
+                        '<a title="Link to backend" class="backendlink d-none" href="'+ openAtlasUrl + oData.id +'" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a>' +
+                        "<a href='/map/" + oData.id + "' title='open map' class='btn-xs float-right'><i class=\"fas fa-map-marked-alt\"></i></a>"); //create links in rows
                 }
             },
             {
@@ -125,10 +129,10 @@ $(document).ready(function () {
     mymarkers.addTo(markergroup);
     heatmarkers = JSON.parse(JSON.stringify(heatmarkers).replace(/"/g, ''));
     var bounds = mymarkers.getBounds();
-    bounds._northEast.lat = bounds._northEast.lat + 0.1;
-    bounds._northEast.lng = bounds._northEast.lng + 0.1;
-    bounds._southWest.lat = bounds._southWest.lat - 0.1;
-    bounds._southWest.lng = bounds._southWest.lng - 0.1;
+    bounds._northEast.lat = bounds._northEast.lat + 0.2;
+    bounds._northEast.lng = bounds._northEast.lng + 0.2;
+    bounds._southWest.lat = bounds._southWest.lat - 0.2;
+    bounds._southWest.lng = bounds._southWest.lng - 0.2;
     map.fitBounds(bounds);
     heat.setLatLngs(heatmarkers);
 
