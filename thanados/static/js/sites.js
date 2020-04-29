@@ -2,6 +2,7 @@ $(window).resize(function () {
     maximumHeight = ($(window).height() - $('#mynavbar').height());
     $('#mycontent').css('max-height', (maximumHeight - 10) + 'px');
     $('#map').css('height', (maximumHeight - 200) + 'px');
+    map.invalidateSize();
 
 });
 
@@ -17,6 +18,7 @@ $(document).ready(function () {
     $('#mycontent').css('max-height', (maximumHeight - 10) + 'px');
     $('#map').css('height', (maximumHeight - 200) + 'px');
     getBasemaps();
+
     //$('#siteModal').modal('show');
 
 //define basemaps
@@ -122,7 +124,12 @@ $(document).ready(function () {
 //add markers to map and zoom to content
     mymarkers.addTo(markergroup);
     heatmarkers = JSON.parse(JSON.stringify(heatmarkers).replace(/"/g, ''));
-    map.fitBounds(mymarkers.getBounds());
+    var bounds = mymarkers.getBounds();
+    bounds._northEast.lat = bounds._northEast.lat + 0.1;
+    bounds._northEast.lng = bounds._northEast.lng + 0.1;
+    bounds._southWest.lat = bounds._southWest.lat - 0.1;
+    bounds._southWest.lng = bounds._southWest.lng - 0.1;
+    map.fitBounds(bounds);
     heat.setLatLngs(heatmarkers);
 
     $(function () {
@@ -133,13 +140,13 @@ $(document).ready(function () {
             values: [minbegin, maxbegin],
             slide: function (event, ui) {
                 var table = $('#sitelist').DataTable();
-                $("#amount").val(ui.values[0] + " and " + ui.values[1]);
+                $("#amount").text("Begin between " + ui.values[0] + " and " + ui.values[1]);
                 $("#min").val(ui.values[0]);
                 $("#max").val(ui.values[1]);
                 table.draw();
             }
         });
-        $("#amount").val($("#slider-range").slider("values", 0) +
+        $("#amount").text("Begin between " + $("#slider-range").slider("values", 0) +
             " and " + $("#slider-range").slider("values", 1));
     });
 
@@ -151,13 +158,13 @@ $(document).ready(function () {
             values: [minend, maxend],
             slide: function (event, ui) {
                 var table = $('#sitelist').DataTable();
-                $("#amount2").val(ui.values[0] + " and " + ui.values[1]);
+                $("#amount2").text("End between " + ui.values[0] + " and " + ui.values[1]);
                 $("#min1").val(ui.values[0]);
                 $("#max1").val(ui.values[1]);
                 table.draw();
             }
         });
-        $("#amount2").val($("#slider-range2").slider("values", 0) +
+        $("#amount2").text("End between " + $("#slider-range2").slider("values", 0) +
             " and " + $("#slider-range2").slider("values", 1));
     });
 
@@ -211,5 +218,6 @@ $(document).ready(function () {
         heat.setLatLngs(heatmarkers);
         if (resultLenght.length > 0) map.fitBounds(mymarkers.getBounds());
     });
+    map.invalidateSize();
 })
 ;

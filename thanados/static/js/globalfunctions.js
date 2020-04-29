@@ -1,3 +1,20 @@
+$(document).ready(function () {
+    $('#mycontent').scroll(function () {
+        if ($(this).scrollTop() > 50) {
+            $('#back-to-top').fadeIn();
+        } else {
+            $('#back-to-top').fadeOut();
+        }
+    });
+    // scroll body to 0px on click
+    $('#back-to-top').click(function () {
+        //$('#back-to-top').tooltip('hide');
+        $('#mycontent').animate({
+            scrollTop: 0
+        }, 200);
+        return false;
+    });
+})
 $(document).on('change', "input[type|=\'text\']", function () {
     if ($(this).hasClass('legendtext')) {
         currentLegend = this.value;
@@ -418,7 +435,7 @@ function openStyleDialog(layerType) {
         dialogClass: 'layerdialog',
         width: mymodalwith,
         minHeight: 450,
-        position: {my: "left+20 top+20", at: "left top", of: "body"}, //$('#container')},
+        position: dialogPosition, //$('#container')},
         //height: 450,
         open: function () {
             // Destroy Close Button (for subsequent opens)
@@ -753,12 +770,12 @@ function openStyleDialog(layerType) {
             $('#MethodSelect').val(myChoromode);
             $('#gradselect').val(myChoroPntMode);
             if (myChoroPntMode == 1) {
-                    $('#minRadius').removeClass('d-none');
-                    $('#radius').html('Radius min/max:')
-                } else {
-                    $('#minRadius').addClass('d-none');
-                    $('#radius').html('Radius:')
-                };
+                $('#minRadius').removeClass('d-none');
+                $('#radius').html('Radius min/max:')
+            } else {
+                $('#minRadius').addClass('d-none');
+                $('#radius').html('Radius:')
+            }
 
             if (layertypes.gradientcolor) {
                 $('#valueOption').removeClass('d-none');
@@ -834,7 +851,7 @@ function openStyleDialog(layerType) {
             $('#minRadius').on('input change', function () {
                 mysearchpointminradius = $('#minRadius').val();
                 if (parseInt(mysearchpointminradius) < 1) $('#minRadius').val(1);
-                if (parseInt(mysearchpointminradius) >= parseInt(mysearchpointradius)) $('#minRadius').val(parseInt(parseInt(mysearchpointradius) -1));
+                if (parseInt(mysearchpointminradius) >= parseInt(mysearchpointradius)) $('#minRadius').val(parseInt(parseInt(mysearchpointradius) - 1));
             });
 
             $('#MethodSelect').on('change', function () {
@@ -1869,3 +1886,21 @@ hovericon = L.icon({
     iconAnchor: [12, 41],
     popupAnchor: [0, -34]
 });
+
+function today() {
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+
+    today = yyyy + '/' + mm + '/' + dd;
+    return (today)
+}
+
+//captions  for lightbox images
+$.featherlight.prototype.afterContent = function () {
+    var caption = this.$currentTarget.find('img').attr('title');
+    if (caption) caption = "Image after: " + caption;
+    this.$instance.find('.caption').remove();
+    $('<div style="max-width: fit-content; font-size: 0.875em" class="caption text-muted">').text(caption).appendTo(this.$instance.find('.featherlight-content'));
+}
