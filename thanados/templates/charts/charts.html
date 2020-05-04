@@ -37,7 +37,7 @@
                                         <label for="amount">Begin between</label>
                                         <input type="text" id="amount" readonly style="border:0;">
                                         <div id="slider-range"></div>
-                                                                            </div>
+                                    </div>
                                     <div class="col">
                                         <label for="amount2">End between</label>
                                         <input type="text" id="amount2" readonly style="border:0;">
@@ -89,7 +89,8 @@
                 <div class="card" id="card_depth-chart">
                     <div class="card-header" id="headingOne">
                         <h5 class="mb-0">
-                            <button class="btn btn-link title-btn" type="button" data-toggle="collapse"
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
                                     data-target="#collapseOne" aria-expanded="true"
                                     aria-controls="collapseOne">
                                 Depth of graves
@@ -131,7 +132,8 @@
                 <div class="card" id="card_sexchart">
                     <div class="card-header" id="headingThree">
                         <h5 class="mb-0">
-                            <button class="btn btn-link title-btn" type="button" data-toggle="collapse"
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
                                     data-target="#collapseThree" aria-expanded="true"
                                     aria-controls="collapseThree">
                                 Sex of indiviuals
@@ -173,7 +175,8 @@
                 <div class="card" id="card_orientationchart">
                     <div class="card-header" id="headingTwo">
                         <h5 class="mb-0">
-                            <button class="btn btn-link title-btn" type="button" data-toggle="collapse"
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
                                     data-target="#collapseTwo" aria-expanded="true"
                                     aria-controls="collapseTwo">
                                 Orientation of skeletons
@@ -215,7 +218,8 @@
                 <div class="card" id="card_azimuthchart">
                     <div class="card-header" id="headingTwo">
                         <h5 class="mb-0">
-                            <button class="btn btn-link title-btn" type="button" data-toggle="collapse"
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
                                     data-target="#collapseAzi" aria-expanded="true"
                                     aria-controls="collapseAzi">
                                 Azimuth of gravepits
@@ -259,10 +263,21 @@
                 <div class="card" id="card_age-chart">
                     <div class="card-header" id="headingFour">
                         <h5 class="mb-0">
-                            <button class="btn btn-link title-btn" type="button" data-toggle="collapse"
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
                                     data-target="#collapseFour" aria-expanded="true"
                                     aria-controls="collapseFour">
                                 Age at death
+                            </button>
+                            <button id="card_age-chart_enlarge"
+                                    class="btn btn-sm btn-secondary fa-pull-right enlargeBtn"
+                                    title="enlarge" style="margin-left: 0.5em"
+                                    onclick="
+                                    percScript= '';
+                                    absScript = '';
+                                    currentTitle = ($( this ).siblings('.title-btn').text());
+                                    enlargeChart(ageconfig)">
+                                <i class="fas fa-expand-alt"></i>
                             </button>
                             <button id="boxplot" class="btn btn-sm btn-secondary fa-pull-right"
                                     title="Boxplot">
@@ -289,7 +304,8 @@
                 <div class="card" id="card_gravetypes">
                     <div class="card-header" id="headingFive">
                         <h5 class="mb-0">
-                            <button class="btn btn-link title-btn" type="button" data-toggle="collapse"
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
                                     data-target="#collapseFive" aria-expanded="true"
                                     aria-controls="collapseFive">
                                 Types of graves
@@ -331,7 +347,8 @@
                 <div class="card" id="card_graveconstr-chart">
                     <div class="card-header" id="headingSix">
                         <h5 class="mb-0">
-                            <button class="btn btn-link title-btn" type="button" data-toggle="collapse"
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
                                     data-target="#collapseSix" aria-expanded="true"
                                     aria-controls="collapseSix">
                                 Grave Construction
@@ -374,7 +391,8 @@
                 <div class="card" id="card_findtypeschart">
                     <div class="card-header" id="headingSeven">
                         <h5 class="mb-0">
-                            <button class="btn btn-link title-btn" type="button" data-toggle="collapse"
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
                                     data-target="#collapseSeven" aria-expanded="true"
                                     aria-controls="collapseSeven">
                                 Types of finds
@@ -416,7 +434,8 @@
                 <div class="card" id="card_burialtypes">
                     <div class="card-header" id="headingEight">
                         <h5 class="mb-0">
-                            <button class="btn btn-link title-btn" type="button" data-toggle="collapse"
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
                                     data-target="#collapseEight" aria-expanded="true"
                                     aria-controls="collapseEight">
                                 Burial types
@@ -432,13 +451,13 @@
                                 <i class="fas fa-expand-alt"></i>
                             </button>
                             <button id="burialtypes-chart_percentage"
-                                    class="btn btn-sm btn-secondary fa-pull-right"
+                                    class="absBtn btn btn-sm btn-secondary fa-pull-right"
                                     title="percentage" style="margin-left: 0.5em"
                                     onclick="updateChart(burialtypeschart, setChartData(burialtypes, true, true, false, true), true)">
                                 %
                             </button>
                             <button id="burialtypes-chart_absolute"
-                                    class="btn btn-sm btn-secondary fa-pull-right"
+                                    class="absBtn btn btn-sm btn-secondary fa-pull-right"
                                     title="absolute"
                                     onclick="updateChart(burialtypeschart, setChartData(burialtypes, true, false, false, true), false)">
                                 &Sigma;
@@ -460,16 +479,32 @@
                 <div class="modal-content">
                     <div class="modal-header custom-header-bg">
                         <h5 class="modal-title">Chart</h5>
-                        <button id="percBtn"
-                                class="btn btn-sm btn-secondary fa-pull-right"
-                                title="percentage" style="margin-left: 0.5em">
-                            %
-                        </button>
+
                         <button id="absBtn"
-                                class="btn btn-sm btn-secondary fa-pull-right"
+                                class="mr-2 absBtn btn btn-sm btn-secondary fa-pull-right"
                                 title="absolute">
                             &Sigma;
                         </button>
+
+                        <button id="percBtn"
+                                class="absBtn btn btn-sm btn-secondary fa-pull-right"
+                                title="percentage">
+                            %
+                        </button>
+
+                        <button class="mr-2  boxBtn btn btn-sm btn-secondary fa-pull-right"
+                                title="Violin plot"
+                                style="margin-right: 0.5em"
+                                onclick="change('violin', 'bigchart', 'bigchart-container', ageconfig);">
+                            Violin
+                        </button>
+
+                        <button class="boxBtn btn btn-sm btn-secondary fa-pull-right"
+                                title="Boxplot"
+                                onclick="change('boxplot', 'bigchart', 'bigchart-container', ageconfig);">
+                            Boxplot
+                        </button>
+
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -478,7 +513,7 @@
                         <canvas id="bigchart-container" class="chartcontainer"></canvas>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary">Save changes</button>
+                        <button type="button" onclick="exportChartToImg('bigchart-container')" class="btn btn-primary">Export</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
                         </button>
                     </div>

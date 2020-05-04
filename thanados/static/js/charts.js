@@ -478,16 +478,35 @@ function setcharts() {
             },
         }
     };
+    ageconfigBoxplot = {
+        type: 'boxplot',
+        data: setage(age_data),
+        options: {
+            responsive: true,
+            legend: {
+                position: 'top',
+            },
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'age'
+                    }
+                }]
+            },
+        }
+    };
     var ctx = document.getElementById('age-chart').getContext('2d');
     if (typeof (agechart) != 'undefined') agechart.destroy();
-    agechart = new Chart(ctx, ageconfig);
+    agechart = new Chart(ctx, JSON.parse(JSON.stringify(ageconfig)));
 
     $("#violin").click(function () {
         change('violin', 'agechart', 'age-chart', ageconfig);
     });
 
     $("#boxplot").click(function () {
-        change('boxplot', 'agechart', 'age-chart', ageconfig);
+        change('boxplot', 'agechart', 'age-chart', ageconfigBoxplot);
     });
 
 }
@@ -561,18 +580,14 @@ function setage(data) {
 
 //changetype of chart
 function change(newType, chartvar, canvasid, config) {
-    //var chartvar = new Chart (ctx, config);
+    eval(chartvar +'.destroy()');
+    delete eval.chartvar;
+    console.log(eval.chartvar);
     var ctx = document.getElementById(canvasid).getContext("2d");
-
-    // Remove the old chart and all its event handles
-    if (eval.chartvar) {
-        eval.chartvar.destroy();
-    }
-
     // Chart.js modifies the object you pass in. Pass a copy of the object so we can use the original object later
     var temp = jQuery.extend(true, {}, config);
     temp.type = newType;
-    eval.chartvar = new Chart(ctx, temp);
+    eval(chartvar + ' = new Chart(ctx, temp)');
 }
 
 //remove trailing zeros from data with intervals after highest values of site with highest values
@@ -740,7 +755,7 @@ function setChartData(originalData, axesswitch, percentageset, zeroslice, prepar
 $(window).resize(function () {
     var windowheight = ($(window).height());
     $('#mycontent').css('max-height', windowheight - 56 + 'px');
-    $('#bigchart-container').css('height', (windowheight*73/100));
+    $('#bigchart-container').css('height', (windowheight * 73 / 100));
 });
 
 $(document).ready(function () {
@@ -748,7 +763,7 @@ $(document).ready(function () {
     $(".sortable").disableSelection();
     var windowheight = ($(window).height());
     $('#mycontent').css('max-height', windowheight - 56 + 'px');
-    $('#bigchart-container').css('height', (windowheight*73/100));
+    $('#bigchart-container').css('height', (windowheight * 73 / 100));
 });
 
 function filterList(data) {
@@ -765,25 +780,27 @@ $('#collapseFilter').on('shown.bs.collapse', function () {
 })
 
 function enlargeChart(currentConfig) {
+    $('.boxBtn').addClass('d-none')
+    $('.absBtn').addClass('d-none')
     $('.modal-title').text(currentTitle);
     $('.modal').modal();
-    if (typeof(bigchart) !== 'undefined') bigchart.destroy();
+    if (typeof (bigchart) !== 'undefined') {bigchart.destroy(); delete bigchart}
     var ctx = document.getElementById('bigchart-container').getContext('2d');
-    bigchart = new Chart(ctx, currentConfig)
-    console.log(percScript);
-    console.log(absScript);
-    $(function(){
-    percScript = percScript.substring(percScript.indexOf(",") + 1);
-    percScript = 'updateChart(bigchart,' + percScript;
-    console.log(percScript);
-    absScript = absScript.substring(absScript.indexOf(",") + 1);
-    absScript = 'updateChart(bigchart,' + absScript;
-    console.log(absScript);
-    $('#percBtn').click(function () {
-    eval(percScript)
-    });
-    $('#absBtn').click(function () {
-    eval(absScript)
-    });
-});
+    bigchart = new Chart(ctx, currentConfig);
+    if (percScript !== '') {
+        $('.absBtn').removeClass('d-none')
+        percScript = percScript.substring(percScript.indexOf(",") + 1);
+        percScript = 'updateChart(bigchart,' + percScript;
+        absScript = absScript.substring(absScript.indexOf(",") + 1);
+        absScript = 'updateChart(bigchart,' + absScript;
+        $('#percBtn').click(function () {
+            eval(percScript)
+        });
+        $('#absBtn').click(function () {
+            eval(absScript)
+        });
+    } else {
+        $('.boxBtn').removeClass('d-none');
+        $('.absBtn').addClass('d-none');
+    }
 }

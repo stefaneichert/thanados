@@ -125,6 +125,21 @@ function exportToJsonFile(data) {
     }
 }
 
+function exportChartToImg(canvas) {
+        var canvas = document.getElementById(canvas);
+        var file = canvas.toDataURL("image/png");
+        var a = document.createElement("a"),
+            url = canvas.toDataURL("image/png");
+        a.href = url;
+        a.download = 'ThanadosChart.png';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
+}
+
 function toCSV(json) {
     //console.log('toCSV')
     var csv = "";
