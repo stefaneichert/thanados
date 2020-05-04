@@ -32,7 +32,7 @@
                         <div class="col">
                             <table id="sitelist" class="display table table-striped table-bordered"
                                    width="100%">
-                                <div class="row">
+                                <div class="row mb-2">
                                     <div class="col">
                                         <label for="amount">Begin between</label>
                                         <input type="text" id="amount" readonly style="border:0;">
@@ -513,7 +513,8 @@
                         <canvas id="bigchart-container" class="chartcontainer"></canvas>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" onclick="exportChartToImg('bigchart-container')" class="btn btn-primary">Export</button>
+                        <button type="button" onclick="exportChartToImg('bigchart-container', 'jpg')" title="Download chart as .jpg file" class="btn btn-primary"><i class="fas fa-file-download"></i>&nbsp; jpg</button>
+                        <button type="button" onclick="exportChartToImg('bigchart-container', 'png')" title="Download chart as .png file with transparent background" class="btn btn-primary"><i class="fas fa-file-download"></i>&nbsp; png</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
                         </button>
                     </div>

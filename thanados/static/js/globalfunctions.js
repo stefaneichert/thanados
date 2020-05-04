@@ -125,19 +125,40 @@ function exportToJsonFile(data) {
     }
 }
 
-function exportChartToImg(canvas) {
-        var canvas = document.getElementById(canvas);
-        var file = canvas.toDataURL("image/png");
-        var a = document.createElement("a"),
-            url = canvas.toDataURL("image/png");
-        a.href = url;
-        a.download = 'ThanadosChart.png';
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(function () {
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        }, 0);
+function exportChartToImg(canvas, filetype) {
+
+    //create a dummy CANVAS
+    if (filetype === 'png') {
+        destinationCanvas = document.getElementById(canvas);
+        var url = destinationCanvas.toDataURL("image/png");
+
+    } else {
+        var srcCanvas = document.getElementById(canvas);
+        destinationCanvas = document.createElement("canvas");
+        destinationCanvas.width = srcCanvas.width;
+        destinationCanvas.height = srcCanvas.height;
+
+        destCtx = destinationCanvas.getContext('2d');
+
+//create a rectangle with the desired color
+        destCtx.fillStyle = "#FFFFFF";
+        destCtx.fillRect(0, 0, srcCanvas.width, srcCanvas.height);
+
+//draw the original canvas onto the destination canvas
+        destCtx.drawImage(srcCanvas, 0, 0);
+        var url = destinationCanvas.toDataURL("image/jpeg", 1.0);
+
+    }
+
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = 'ThanadosChart.' + filetype;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }, 0);
 }
 
 function toCSV(json) {
