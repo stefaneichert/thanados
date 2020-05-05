@@ -775,6 +775,7 @@ function setImages(entId, entfiles) {
             $.each(entfiles, function (f, files) {
                 var myImgSource = '';
                 if (typeof (files.source) != 'undefined') myImgSource = files.source;
+                if (typeof (files.source) == 'undefined') myImgSource = "unknown source";
                 if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
                 $('#myImagecontainer' + entId).append(
                     '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" id="mymodalimg" alt="' + myImgSource + '"></a>'
@@ -790,11 +791,13 @@ function setImages(entId, entfiles) {
             var firstimageObj = entfiles[0];
             var myImgSource1 = '';
             if (typeof (firstimageObj.source) != 'undefined') myImgSource1 = firstimageObj.source;
+            if (typeof (firstimageObj.source) == 'undefined') myImgSource1 = "unknown source";
             if ((typeof (firstimageObj.source) != 'undefined') && (typeof (firstimageObj.reference) != 'undefined')) myImgSource1 = firstimageObj.source + ' ' + firstimageObj.reference;
             secondimage = entfiles[1].file_name;
             var secondimageObj = entfiles[1];
             var myImgSource2 = '';
             if (typeof (secondimageObj.source) != 'undefined') myImgSource2 = secondimageObj.source;
+            if (typeof (secondimageObj.source) == 'undefined') myImgSource2 = "unknown source";
             if ((typeof (secondimageObj.source) != 'undefined') && (typeof (secondimageObj.reference) != 'undefined')) myImgSource2 = secondimageObj.source + ' ' + secondimageObj.reference;
             //create carousel and apppend first two images
             $('#myImagecontainer' + entId).append(
@@ -829,6 +832,7 @@ function setImages(entId, entfiles) {
 
                     var myImgSource = '';
                     if (typeof (files.source) != 'undefined') myImgSource = files.source;
+                    if (typeof (files.source) == 'undefined') myImgSource = "unknown source";
                     if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
                     $('#mycarouselimages' + entId).append(
                         '<div class="carousel-item">' +
@@ -984,6 +988,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
         $.each(currentfeature.files, function (f, file) {
             var myImgSource = '';
             if (typeof (file.source) != 'undefined') myImgSource = file.source;
+            if (typeof (file.source) == 'undefined') myImgSource = "unknown source";
             if ((typeof (file.source) != 'undefined') && (typeof (file.reference) != 'undefined')) myImgSource = file.source + ' ' + file.reference;
             $('#myModalImagecontainer' + entId).append('<div class="col-lg-4"><a href="' + file.file_name + '" data-featherlight><img style="max-height: 300px" class="img-fluid border mt-2" src="/static/images/icons/loading.gif" data-src="' + file.file_name + '" title="' + myImgSource + '" alt=""></a></div>');
         });
