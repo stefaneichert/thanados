@@ -7,7 +7,6 @@ from thanados.models.entity import Data
 @app.route('/charts')
 # @login_required
 def charts():
-    site_ids = Data.get_site_ids()
     depth = Data.get_depth()
     constr = Data.get_type_data('grave', 'Grave Constr%')
     gravetypes = Data.get_type_data('grave', 'Feature%')
@@ -68,4 +67,4 @@ SELECT '{"types": [' || string_agg (jsonstring, ', ') || ']}' AS mydata FROM
                            gravetypes_json=gravetypes[0], construction=constr[0],
                            burial_types=burialtype[0], find_types=finds[0].mydata, age=age[0],
                            orientation_data=orientation[0].orientation, sex_data=sex[0].sex,
-                           grave_shape=graveshape[0], site_ids=site_ids, sitelist=site_list[0].sitelist)
+                           grave_shape=graveshape[0], sitelist=site_list[0].sitelist)

@@ -1,4 +1,12 @@
 //prepare charts/plots and data
+//remove sites without graves
+site_ids = [];
+mysite_ids = []
+
+$.each(sitelist, function (i, dataset)
+{if (dataset.graves) site_ids.push(dataset.id)}
+)
+
 mysite_ids = site_ids;
 if (site_ids.length > 20) {
     mysite_ids = [];
