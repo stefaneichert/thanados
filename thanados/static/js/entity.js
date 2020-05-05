@@ -168,7 +168,8 @@ if (systemtype == 'find') {
 }
 
 
-mycitation1 = ' From: Stefan Eichert et al., THANADOS: ' + window.location + '<br> After: ';
+mycitation1 = ' From: Stefan Eichert et al., THANADOS: ' + window.location + '<br>' +
+    'Licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a><br> After: ';
 
 
 function getEntityData(parentName, parentId, currentfeature) {
