@@ -78,19 +78,19 @@
             <ul class="navbar-nav mr-auto">
                 {#% if current_user.is_authenticated %#}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('sites') }}">Sites</a>
+                    <a id="nav-sites" class="nav-link" href="{{ url_for('sites') }}">Sites</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('charts') }}">Charts</a>
+                    <a id="nav-charts" class="nav-link" href="{{ url_for('charts') }}">Charts</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('search') }}">Search</a>
+                    <a id="nav-search" class="nav-link" href="{{ url_for('search') }}">Search</a>
                 </li>
                 <li class="nav-item" style="margin-right: 2em">
-                    <a class="nav-link" href="{{ url_for('about') }}">About</a>
+                    <a id="nav-about" class="nav-link" href="{{ url_for('about') }}">About</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('manual') }}"><i title="Help/Manual"
+                    <a id="nav-manual" class="nav-link" href="{{ url_for('manual') }}"><i title="Help/Manual"
                                                                           class="fas fa-question"></i></a>
                 </li>
                 <!-- <li class="nav-item">

@@ -2,8 +2,14 @@
     DEMO STYLE
 */
 
-#mycontent > h3 {
-    padding-top: 1em;
+h3, h4 {
+    padding-top: 0.5em;
+}
+
+.manualbox {
+    margin-bottom: 1em;
+    padding: 0.5em 2em 0.5em 2em;
+    background: #f2f2f2;
 }
 
 #sidebarCollapse {
@@ -16,7 +22,7 @@
     border-bottom-left-radius: 0;
     border-top-left-radius: 0;
     border: none;
-    z-index: 2000!important;
+    z-index: 2000 !important;
 }
 
 #toggleIcon {
@@ -190,6 +196,7 @@ ul.CTAs a {
         min-width: 100px;
         max-width: 100px;
     }
+
     .sidebar-header {
         display: none;
     }

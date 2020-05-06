@@ -767,6 +767,7 @@ $(window).resize(function () {
 });
 
 $(document).ready(function () {
+    $('#nav-charts').addClass('activePage')
     $(".sortable").sortable();
     $(".sortable").disableSelection();
     var windowheight = ($(window).height());

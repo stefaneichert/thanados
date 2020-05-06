@@ -989,3 +989,8 @@ input {
 .modal-xxl > .modal-dialog {
     max-width: 96% !important;
 }
+
+.activePage {
+    color: #e3e3e3!important;
+    font-weight: bold;
+}
