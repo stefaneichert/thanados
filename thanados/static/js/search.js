@@ -1,3 +1,5 @@
+$('#nav-search').addClass('activePage')
+
 $(document).ready(function () {
     //$(".sortable").sortable();
     //$(".sortable").disableSelection();

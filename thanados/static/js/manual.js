@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    $('#nav-manual').addClass('activePage')
     maximumHeight = ($(window).height() - $('#mynavbar').height());
     $('#mycontent').css('height', (maximumHeight - 15) + 'px');
     $('.wrapper').css('height', (maximumHeight) + 'px');

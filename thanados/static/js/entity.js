@@ -1,21 +1,21 @@
-$(document).ready(function(){
-     $('#mycontent').scroll(function () {
-            if ($(this).scrollTop() > 50) {
-                $('#back-to-top').fadeIn();
-            } else {
-                $('#back-to-top').fadeOut();
-            }
-        });
-        // scroll body to 0px on click
-        $('#back-to-top').click(function () {
-            //$('#back-to-top').tooltip('hide');
-            $('#mycontent').animate({
-                scrollTop: 0
-            }, 200);
-            return false;
-        });
+$(document).ready(function () {
+    $('#mycontent').scroll(function () {
+        if ($(this).scrollTop() > 50) {
+            $('#back-to-top').fadeIn();
+        } else {
+            $('#back-to-top').fadeOut();
+        }
+    });
+    // scroll body to 0px on click
+    $('#back-to-top').click(function () {
+        //$('#back-to-top').tooltip('hide');
+        $('#mycontent').animate({
+            scrollTop: 0
+        }, 200);
+        return false;
+    });
 
-         //$('#back-to-top').tooltip('show');
+    //$('#back-to-top').tooltip('show');
 
 });
 
@@ -29,6 +29,7 @@ descriptionSummary = {
 }
 
 $.each(jsonmysite.features, function (i, feature) {
+    if (feature.id === 0) descriptionSummary.graves = 0;
     $.each(feature.burials, function (i, burial) {
         descriptionSummary.burials += 1;
         $.each(burial.finds, function (i, feature) {
@@ -36,6 +37,7 @@ $.each(jsonmysite.features, function (i, feature) {
         })
     })
 })
+
 
 $('#mybreadcrumb').append(
     '<nav aria-label="breadcrumb">' +
@@ -168,7 +170,8 @@ if (systemtype == 'find') {
 }
 
 
-mycitation1 = ' From: Stefan Eichert et al., THANADOS: ' + window.location + '<br> After: ';
+mycitation1 = ' From: Stefan Eichert et al., THANADOS: ' + window.location + '<br>' +
+    'Licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a><br> After: ';
 
 
 function getEntityData(parentName, parentId, currentfeature) {
@@ -341,75 +344,85 @@ function getEntityData(parentName, parentId, currentfeature) {
 
     $('#myMetadatacontainer' + entId).empty();
     $('#myMetadatacontainer' + entId).append(
-        '<p><h6>Sources</h6></p>' +
+        '<div id="mainRef" class="mt-5"><p><h6>Main source</h6></p>' +
         '<table class="table table-sm table-hover">' +
         '<thead class="thead-light">' +
         '<tr>' +
-        '<th scope="col">#</th>' +
         '<th scope="col">Title</th>' +
         '<th scope="col">Page</th>' +
         '</tr>' +
         '</thead>' +
-        '<tbody id="mytablebody">'
+        '<tbody id="mytablebody"></tbody></table></div>' +
+
+        '<div id="furtherRefs" class="mt-5"><p><h6>Bibliography</h6></p>' +
+        '<table class="table table-sm table-hover">' +
+        '<thead class="thead-light">' +
+        '<tr>' +
+        '<th scope="col">Title</th>' +
+        '<th scope="col">Page</th>' +
+        '</tr>' +
+        '</thead>' +
+        '<tbody id="mybibbody"></tbody></table></div>'
     );
 
+    furtherRefs = 0;
+    singleref = false;
+    mainref = false;
+    mainrefthere = false;
+
     if (typeof (currentfeature.properties.references) !== 'undefined') {
-        $.each(currentfeature.properties.references, function (t, ref) {
-            if (typeof (ref.title) !== 'undefined') {
-                title = ref.title;
-                citeme = title;
-            } else {
-                title = '';
-                citeme = 'unknown source';
-            }
-            if (typeof (ref.reference) !== 'undefined') {
-                page = ref.reference
-                citeme = citeme + ' ' + page + '.';
-            } else
-                page = '';
-
-            $('#mytablebody').append(
-                '<tr>' +
-                '<th scope="row">' + (t + 1) + '</th>' +
-                '<td>' + title + '</td>' +
-                '<td>' + page + '</td>' +
-                '</tr>');
-            if (t == 0) {
-                mycitation2 = citeme
-            } else {
-                mycitation2 += '. ' + citeme
-            }
-
-        });
+        currentfeature = currentfeature
     } else {
-        $.each(jsonmysite.properties.references, function (t, ref) {
-            if (typeof (ref.title) !== 'undefined') {
-                title = ref.title;
-                citeme = title;
-            } else {
-                title = '';
-                citeme = 'unknown source';
-            }
-            if (typeof (ref.reference) !== 'undefined') {
-                page = ref.reference;
-                citeme = citeme + ' ' + page;
-            } else {
-                page = '';
-            }
+        currentfeature.properties = jsonmysite.properties
+    }
+
+
+    singleref = false;
+
+    if (currentfeature.properties.references.length === 1) singleref = true;
+
+    $.each(currentfeature.properties.references, function (t, ref) {
+        if (typeof (ref.title) !== 'undefined') {
+            title = ref.title;
+            citeme = title;
+        } else {
+            title = '';
+            citeme = 'unknown source';
+        }
+        if (typeof (ref.reference) !== 'undefined') {
+            page = ref.reference.replace("##main", "");
+            citeme = citeme + ' ' + page + '.';
+        } else
+            page = '';
+        mainref = false;
+        if (typeof (ref.reference) !== 'undefined' && ref.reference.includes('##main') || singleref) {
+            mainref = true;
+            mainrefthere = true;
+        }
+
+        if (mainref) {
             $('#mytablebody').append(
                 '<tr>' +
-                '<th scope="row">' + (t + 1) + '</th>' +
                 '<td>' + title + '</td>' +
                 '<td>' + page + '</td>' +
                 '</tr>');
-            if (t == 0) {
+            if (typeof (mycitation2) == 'undefined') {
                 mycitation2 = citeme
             } else {
                 mycitation2 += '. ' + citeme
             }
+        } else {
+            $('#mybibbody').append(
+                '<tr>' +
+                '<td>' + title + '</td>' +
+                '<td>' + page + '</td>' +
+                '</tr>');
+            furtherRefs += 1;
+        }
+    })
 
-        });
-    }
+    if (furtherRefs === 0) $('#furtherRefs').toggle();
+    if (singleref === false && mainrefthere === false) $('#mainRef').toggle();
 
 
     if (typeof (currentfeature.properties.externalreference) !== 'undefined') {
@@ -562,13 +575,15 @@ function getEntityData(parentName, parentId, currentfeature) {
             data: mychildrenlist,
             "pagingType": "numbers",
             "scrollX": true,
-            drawCallback: function () { if (loginTrue) $('.backendlink').removeClass('d-none')},
+            drawCallback: function () {
+                if (loginTrue) $('.backendlink').removeClass('d-none')
+            },
             columns: [
                 {
                     data: "name",
                     "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                         $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" +
-                        '<a title="Link to backend" class="backendlink d-none" href="'+ openAtlasUrl + oData.id +'" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a>'); //create links in rows
+                            '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + oData.id + '" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a>'); //create links in rows
                     }
                 },
                 {
@@ -775,6 +790,7 @@ function setImages(entId, entfiles) {
             $.each(entfiles, function (f, files) {
                 var myImgSource = '';
                 if (typeof (files.source) != 'undefined') myImgSource = files.source;
+                if (typeof (files.source) == 'undefined') myImgSource = "unknown source";
                 if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
                 $('#myImagecontainer' + entId).append(
                     '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" id="mymodalimg" alt="' + myImgSource + '"></a>'
@@ -790,11 +806,13 @@ function setImages(entId, entfiles) {
             var firstimageObj = entfiles[0];
             var myImgSource1 = '';
             if (typeof (firstimageObj.source) != 'undefined') myImgSource1 = firstimageObj.source;
+            if (typeof (firstimageObj.source) == 'undefined') myImgSource1 = "unknown source";
             if ((typeof (firstimageObj.source) != 'undefined') && (typeof (firstimageObj.reference) != 'undefined')) myImgSource1 = firstimageObj.source + ' ' + firstimageObj.reference;
             secondimage = entfiles[1].file_name;
             var secondimageObj = entfiles[1];
             var myImgSource2 = '';
             if (typeof (secondimageObj.source) != 'undefined') myImgSource2 = secondimageObj.source;
+            if (typeof (secondimageObj.source) == 'undefined') myImgSource2 = "unknown source";
             if ((typeof (secondimageObj.source) != 'undefined') && (typeof (secondimageObj.reference) != 'undefined')) myImgSource2 = secondimageObj.source + ' ' + secondimageObj.reference;
             //create carousel and apppend first two images
             $('#myImagecontainer' + entId).append(
@@ -829,6 +847,7 @@ function setImages(entId, entfiles) {
 
                     var myImgSource = '';
                     if (typeof (files.source) != 'undefined') myImgSource = files.source;
+                    if (typeof (files.source) == 'undefined') myImgSource = "unknown source";
                     if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
                     $('#mycarouselimages' + entId).append(
                         '<div class="carousel-item">' +
@@ -889,7 +908,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
         var entId = currentfeature.id;
         var entName =
             '<a href="../entity/' + entId + '" title="Permalink to this entity">' + currentfeature.properties.name + '</a>' +
-            '<a title="Link to backend" class="backendlink d-none" href="'+ openAtlasUrl + entId +'" target="_blank""><i class="ml-4 text-secondary fas fa-database"></i></a>';
+            '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + entId + '" target="_blank""><i class="ml-4 text-secondary fas fa-database"></i></a>';
         var entDesc = currentfeature.properties.description;
         if (typeof entDesc == 'undefined') {
             var entDesc = '';
@@ -984,6 +1003,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
         $.each(currentfeature.files, function (f, file) {
             var myImgSource = '';
             if (typeof (file.source) != 'undefined') myImgSource = file.source;
+            if (typeof (file.source) == 'undefined') myImgSource = "unknown source";
             if ((typeof (file.source) != 'undefined') && (typeof (file.reference) != 'undefined')) myImgSource = file.source + ' ' + file.reference;
             $('#myModalImagecontainer' + entId).append('<div class="col-lg-4"><a href="' + file.file_name + '" data-featherlight><img style="max-height: 300px" class="img-fluid border mt-2" src="/static/images/icons/loading.gif" data-src="' + file.file_name + '" title="' + myImgSource + '" alt=""></a></div>');
         });

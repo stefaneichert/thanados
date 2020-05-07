@@ -985,3 +985,17 @@ input {
 .form-control:disabled, .form-control[readonly] {
     background-color: #f2f2f2;
 }
+
+.modal-xxl > .modal-dialog {
+    max-width: 96% !important;
+}
+
+.activePage {
+    color: #e3e3e3!important;
+    font-weight: bold;
+}
+
+/*
+#mytablebody td, #mybibbody td {
+    background: #f2f2f2;
+}*/
