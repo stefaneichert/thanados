@@ -1,3 +1,4 @@
+$('#nav-charts').addClass('activePage')
 //prepare charts/plots and data
 //remove sites without graves
 site_ids = [];
@@ -767,7 +768,6 @@ $(window).resize(function () {
 });
 
 $(document).ready(function () {
-    $('#nav-charts').addClass('activePage')
     $(".sortable").sortable();
     $(".sortable").disableSelection();
     var windowheight = ($(window).height());

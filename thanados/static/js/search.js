@@ -1,5 +1,6 @@
+$('#nav-search').addClass('activePage')
+
 $(document).ready(function () {
-    $('#nav-search').addClass('activePage')
     //$(".sortable").sortable();
     //$(".sortable").disableSelection();
     maximumHeight = ($(window).height() - $('#mynavbar').height())
