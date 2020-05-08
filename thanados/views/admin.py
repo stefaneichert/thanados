@@ -1814,6 +1814,9 @@ SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child
 --Remove point geometries from stratigraphic units and finds
 DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup WHERE system_type NOT IN ('feature', 'place'));
 
+-- remove point coordinates from graves for selected sites
+DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup where parent_id IN (45625, 45179, 46747, 46267, 45143, 50577, 46313, 50571, 46243, 46397, 49255, 46249, 46403, 47571, 45631, 46427));  
+
 --remove point geom if polygon geom exists
 DROP TABLE IF EXISTS thanados.giscleanup;
 CREATE TABLE thanados.giscleanup AS
