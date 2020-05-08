@@ -1,3 +1,5 @@
+ $('#nav-sites').addClass('activePage')
+
 $(window).resize(function () {
     maximumHeight = ($(window).height() - $('#mynavbar').height());
     $('#mycontent').css('max-height', (maximumHeight - 10) + 'px');
@@ -14,7 +16,6 @@ if (data.description !== null) data.description = ((data.description).replace(/'
 AccRemove();
 
 $(document).ready(function () {
-    $('#nav-sites').addClass('activePage')
     maximumHeight = ($(window).height() - $('#mynavbar').height())
     $('#mycontent').css('max-height', (maximumHeight - 10) + 'px');
     $('#map').css('height', (maximumHeight - 200) + 'px');
