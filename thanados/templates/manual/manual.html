@@ -11,7 +11,7 @@
         <nav id="sidebar">
 
             <div class="sidebar-header">
-                <h3>Content</h3>
+                <h3>Manual</h3>
             </div>
 
             <ul class="list-unstyled components">
@@ -41,10 +41,10 @@
                     </a>
                     <ul class="collapse list-unstyled" id="viewSubmenu">
                         <li>
-                            <a href="#catalogue">Catalogue</a>
+                            <a href="#subunits">List of Subunits</a>
                         </li>
                         <li>
-                            <a href="#subunits">List of Subunits</a>
+                            <a href="#catalogue">Catalogue</a>
                         </li>
                         <li>
                             <a href="#metadata">Metadata</a>
@@ -61,37 +61,13 @@
                     </a>
                     <ul class="collapse list-unstyled" id="mapSubmenu">
                         <li>
-                            <a href="#maps">Navigation</a>
+                            <a href="#mapNavigation">Navigation</a>
                         </li>
                         <li>
                             <a href="#mapSearch">Search</a>
                         </li>
                         <li>
                             <a href="#mapLayers">Layers</a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li>
-                    <a href="#searchSubmenu"
-                       onclick="document.getElementById('search').scrollIntoView()"
-                       data-toggle="collapse" aria-expanded="false"
-                       class="dropdown-toggle">
-                        <i class="fas fa-search"></i>
-                        Search
-                    </a>
-                    <ul class="collapse list-unstyled" id="searchSubmenu">
-                        <li>
-                            <a href="#search">Search categories</a>
-                        </li>
-                        <li>
-                            <a href="#resultmap">Resultmap</a>
-                        </li>
-                        <li>
-                            <a href="#combine">Combine searches</a>
-                        </li>
-                        <li>
-                            <a href="#searchExport">Export</a>
                         </li>
                     </ul>
                 </li>
@@ -104,14 +80,38 @@
                 </li>
 
                 <li>
-                    <a href="#citation">
+                    <a href="#searchSubmenu"
+                       onclick="document.getElementById('search').scrollIntoView()"
+                       data-toggle="collapse" aria-expanded="false"
+                       class="dropdown-toggle">
+                        <i class="fas fa-search"></i>
+                        Search
+                    </a>
+                    <ul class="collapse list-unstyled" id="searchSubmenu">
+                        <li>
+                            <a href="#searchCategories">Search categories</a>
+                        </li>
+                        <li>
+                            <a href="#searchResults">Resultmap</a>
+                        </li>
+                        <li>
+                            <a href="#searchCombined">Combined search</a>
+                        </li>
+                        <li>
+                            <a href="#searchExport">Export</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="#license">
                         <i class="fas fa-quote-right"></i>
                         License/Citation
                     </a>
                 </li>
 
                 <li>
-                    <a href="#model">
+                    <a href="#datamodel">
                         <i class="fas fa-sitemap"></i>
                         Data Model
                     </a>
@@ -123,26 +123,13 @@
 
         <!-- Page Content  -->
         <div id="mycontent">
-            <h2 class="my-heading container">Manual</h2>
 
             <div class="pt-3" id="introduction">
                 <div class="manualbox">
                     <h3>Introduction</h3>
-                    <p>Here comes the introduction.Here comes the introduction.Here comes the
-                        introduction.Here comes the introduction.Here comes the introduction.Here
-                        comes
-                        the
-                        introduction.Here comes the introduction.Here comes the introduction.Here
-                        comes
-                        the
-                        introduction.Here comes the introduction.Here comes the introduction.Here
-                        comes
-                        the
-                        introduction.Here comes the introduction.Here comes the introduction.Here
-                        comes
-                        the
-                        introduction.Here
-                        comes the introduction.</p>
+                    <p>
+
+                    </p>
                 </div>
             </div>
 
@@ -150,26 +137,79 @@
                 <div class="manualbox">
                     <h3 id="sites">Sites</h3>
                     <p>
-                    explain site selection
-                        with list (filter/search + timeslider)
-                        selection of site details or map
-                        selection in map
+                        On the “Sites” page you can search the entire database and select a specific site for more
+                        information. The page offers different ways of site selection/filtering. Either by directly
+                        entering
+                        the name of a site into the <b>search field</b>, by adjusting the “begin” and “end” of the
+                        respective sites
+                        with the <b>time sliders</b> to filter the site list for a certain time span or by searching the
+                        <b>map</b>
+                        geographically for sites in a specific area.
+                        <br>
+                        In the first two instances, the map will automatically zoom to the extent of the filtered sites
+                        and the respective site can be chosen in the site list, either by opening the <a
+                            href="#entity"><b>detailed site view</b></a> with a click on the <b>site name</b> or
+                        by opening the <a href="#maps"><b>site map</b></a> directly with a click on
+                        the map icon <i class="fas fa-map-marked-alt"></i>. By moving the cursor over a site name in the
+                        list, the respective marker <i class="fas fa-map-marker-alt"></i> on the map will turn red.
+                        <br>
+                        By using the map search, you can move the cursor over the markers
+                        <i class="fas fa-map-marker-alt"></i> on the map and a tooltip will show
+                        you the site name. A click on the tooltip will also bring you to the respective
+                        <a href="#entity"><b>detailed site view</b></a>.
+                        <br>
+                        Furthermore, you also can sort the site list either by <b>name</b>, <b>type</b>, <b>begin</b> or
+                        <b>end</b> time or
+                        by number of <b>graves</b> to search the database for specific characteristics.
+                        <br>
+
                     </p>
                 </div>
                 <div class="pt-3" id="entity">
                     <div class="manualbox">
 
                         <h3>Detailed View</h3>
-                        <p>Here comes the detailed view.</p>
+                        <p>Here you get a structured overview of the respective entity, including descriptions,
+                            classifications, spatial and chronological position along with subunits and further
+                            metadata (e.g. bibliographical sources, external references etc.). Moving the cursor over a
+                            certain element will open a tooltip with further explanations.
+                            The detailed view of a certain entity (e.g. cemeteries, graves, burials or finds) is divided
+                            into several components. After the main information on the entity (e.g. name, image,
+                            map, type, dating, properties, dimentions etc.) the subunits can either be viewed in a <a
+                                    href="#subunits"><b>list</b></a> or a <a href="#catalogue"><b>catalogue</b></a>.
+                        </p>
+
+                        <h4 id="subunits">List of Subunits</h4>
+                        <p>
+                            The <b>list</b> of subunits organises all respective entities (e.g. graves, burials or
+                            finds) of a
+                            superior unit in a table, much like the site list on the "Sites" page, with the
+                            information on <b>name</b>, <b>type</b>, <b>begin</b> and <b>end</b> date as well as
+                            number of <b>finds</b>, allowing again to sort the list by any of those characteristics.
+                            By clicking on the respective <b>entity name</b> you will be directed to the
+                            <a href="#entity"><b>detailed view</b></a> of the chosen entity.
+                        </p>
 
                         <h4 id="catalogue">Catalogue</h4>
-                        <p>Here comes the cemetery selection.</p>
-
-                        <h4 id="subunits">Subunits</h4>
-                        <p>Here come the subunits.</p>
+                        <p>
+                            By selecting the <b>catalogue</b> tab, the view changes to a catalogue view which lists not
+                            only the next but all subunits, contained in the parent unit, with their relevant metadata,
+                            down to the find-level. From here, again the <a href="#entity"><b>detailed view</b></a>
+                            of the respective unit can be accessed by clicking on the <b>entity name</b>.
+                        </p>
 
                         <h4 id="metadata">Metadata</h4>
-                        <p>Here comes metadata.</p>
+                        <p>
+                            Besides these data on actual archaeological entities also metadata are stored and each
+                            entity, where aplicable, is linked to the respective <b>sources</b>, <b>external
+                            references</b>, acompanying <b>files</b> and to the license that applies to the
+                            respective digital object. Wherever possible, THANADOS provides its content under a Creative
+                            Commons licence (CC BY-SA 4.0: https://creativecommons.org/licenses/by-sa/4.0/). Of course,
+                            if for certain objects another copyright applies this is documented in the database and
+                            shown in the frontend.
+                            The frontend provides persistent URLs for each entity respectively its representation in the
+                            browser.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -177,14 +217,34 @@
                 <div class="manualbox">
                     <h3>Maps</h3>
                     <p>
-                        By opening the map in the cemetery page you can access a detailed and
-                        interactive
-                        map of the burials.
-                        Here you will find the plot of the graveyard with each grave.</p>
 
-                    <h4 id="mapsearch">Search</h4>
-                        <p>Here comes search info.</p>
+                    </p>
 
+                    <h4 id="mapNavigation">Navigation</h4>
+                    <p>
+
+                    </p>
+
+                    <h4 id="mapSearch">Search</h4>
+                    <p>
+
+                    </p>
+
+                    <h4 id="mapLayers">Layers</h4>
+                    <p>
+
+                    </p>
+
+                </div>
+            </div>
+
+            <div class="pt-3" id="charts">
+                <div class="manualbox">
+
+                    <h3>Charts</h3>
+                    <p>
+                        
+                    </p>
                 </div>
             </div>
 
@@ -194,169 +254,27 @@
                     <p>
 
                     </p>
-                </div>
-            </div>
 
-            <div class="pt-3" id="charts">
-                <div class="manualbox">
-
-                    <h3>Charts</h3>
+                    <h4 id="searchCategories">Search categories</h4>
                     <p>
-                        In the menu bar with "Charts" you can access various pre-defined charts
-                        respectively
-                        plots of certain
-                        attributes of the cemeteries. You can toggle options like absolute values or
-                        percentage by clicking the
-                        top
-                        right buttons in the plots. Also you can turn datasets on or off by clicking
-                        the
-                        legend entries. If you
-                        hover the pointer over a certain plot element additional information is
-                        shown.
-                        In
-                        the menu bar with "Charts" you can access various pre-defined charts
-                        respectively
-                        plots of certain
-                        attributes of the cemeteries. You can toggle options like absolute values or
-                        percentage by clicking the
-                        top
-                        right buttons in the plots. Also you can turn datasets on or off by clicking
-                        the
-                        legend entries. If you
-                        hover the pointer over a certain plot element additional information is
-                        shown.
-                        In
-                        the menu bar with "Charts" you can access various pre-defined charts
-                        respectively
-                        plots of certain
-                        attributes of the cemeteries. You can toggle options like absolute values or
-                        percentage by clicking the
-                        top
-                        right buttons in the plots. Also you can turn datasets on or off by clicking
-                        the
-                        legend entries. If you
-                        hover the pointer over a certain plot element additional information is
-                        shown.
-                        In
-                        the menu bar with "Charts" you can access various pre-defined charts
-                        respectively
-                        plots of certain
-                        attributes of the cemeteries. You can toggle options like absolute values or
-                        percentage by clicking the
-                        top
-                        right buttons in the plots. Also you can turn datasets on or off by clicking
-                        the
-                        legend entries. If you
-                        hover the pointer over a certain plot element additional information is
-                        shown.
-                        In
-                        the menu bar with "Charts" you can access various pre-defined charts
-                        respectively
-                        plots of certain
-                        attributes of the cemeteries. You can toggle options like absolute values or
-                        percentage by clicking the
-                        top
-                        right buttons in the plots. Also you can turn datasets on or off by clicking
-                        the
-                        legend entries. If you
-                        hover the pointer over a certain plot element additional information is
-                        shown.
-                        In
-                        the menu bar with "Charts" you can access various pre-defined charts
-                        respectively
-                        plots of certain
-                        attributes of the cemeteries. You can toggle options like absolute values or
-                        percentage by clicking the
-                        top
-                        right buttons in the plots. Also you can turn datasets on or off by clicking
-                        the
-                        legend entries. If you
-                        hover the pointer over a certain plot element additional information is
-                        shown.
-                        In
-                        the menu bar with "Charts" you can access various pre-defined charts
-                        respectively
-                        plots of certain
-                        attributes of the cemeteries. You can toggle options like absolute values or
-                        percentage by clicking the
-                        top
-                        right buttons in the plots. Also you can turn datasets on or off by clicking
-                        the
-                        legend entries. If you
-                        hover the pointer over a certain plot element additional information is
-                        shown.
-                        In
-                        the menu bar with "Charts" you can access various pre-defined charts
-                        respectively
-                        plots of certain
-                        attributes of the cemeteries. You can toggle options like absolute values or
-                        percentage by clicking the
-                        top
-                        right buttons in the plots. Also you can turn datasets on or off by clicking
-                        the
-                        legend entries. If you
-                        hover the pointer over a certain plot element additional information is
-                        shown.
-                        In
-                        the menu bar with "Charts" you can access various pre-defined charts
-                        respectively
-                        plots of certain
-                        attributes of the cemeteries. You can toggle options like absolute values or
-                        percentage by clicking the
-                        top
-                        right buttons in the plots. Also you can turn datasets on or off by clicking
-                        the
-                        legend entries. If you
-                        hover the pointer over a certain plot element additional information is
-                        shown.
-                        In
-                        the menu bar with "Charts" you can access various pre-defined charts
-                        respectively
-                        plots of certain
-                        attributes of the cemeteries. You can toggle options like absolute values or
-                        percentage by clicking the
-                        top
-                        right buttons in the plots. Also you can turn datasets on or off by clicking
-                        the
-                        legend entries. If you
-                        hover the pointer over a certain plot element additional information is
-                        shown.
-                        In
-                        the menu bar with "Charts" you can access various pre-defined charts
-                        respectively
-                        plots of certain
-                        attributes of the cemeteries. You can toggle options like absolute values or
-                        percentage by clicking the
-                        top
-                        right buttons in the plots. Also you can turn datasets on or off by clicking
-                        the
-                        legend entries. If you
-                        hover the pointer over a certain plot element additional information is
-                        shown.
-                        In
-                        the menu bar with "Charts" you can access various pre-defined charts
-                        respectively
-                        plots of certain
-                        attributes of the cemeteries. You can toggle options like absolute values or
-                        percentage by clicking the
-                        top
-                        right buttons in the plots. Also you can turn datasets on or off by clicking
-                        the
-                        legend entries. If you
-                        hover the pointer over a certain plot element additional information is
-                        shown.
-                        In
-                        the menu bar with "Charts" you can access various pre-defined charts
-                        respectively
-                        plots of certain
-                        attributes of the cemeteries. You can toggle options like absolute values or
-                        percentage by clicking the
-                        top
-                        right buttons in the plots. Also you can turn datasets on or off by clicking
-                        the
-                        legend entries. If you
-                        hover the pointer over a certain plot element additional information is
-                        shown. </p>
+
+                    </p>
+
+                    <h4 id="searchResults">Resultmap</h4>
+                    <p>
+
+                    </p>
+
+                    <h4 id="searchCombined">Combined search</h4>
+                    <p>
+
+                    </p>
+
+                    <h4 id="searchExport">Export</h4>
+                    <p>
+
+                    </p>
+
                 </div>
             </div>
 
@@ -375,8 +293,25 @@
 
                     <h3>Data Model</h3>
                     <p>
-
+                        The THANADOS data is structured in a four level hirarchy (site, grave, burial and
+                        find). The site respectively the <b>cemetery</b> itself is the superior unit and works as a data
+                        container for all subunits.
+                        On the second level the observed archaeological features the <b>graves</b> are dealt with. They
+                        are again a data container for information on connected stratigraphic units, in our case the
+                        <b>burials</b>, which are in turn a container for further data on
+                        physical objects, here the individual <b>finds</b>, assigned to the respective burials.
+                        All those entities, whether sites, graves, burials or finds are of course associated with
+                        certain
+                        other information, thus, they can each be opened as <a href="#entity"><b>detailed view</b></a>
+                        page, all structured in the same way, as explained above.
                     </p>
+
+                    <img src="/static/images/about/hierarchy.jpg" class="img-fluid mx-auto d-block" alt="hierarchy">
+                    <p class="text-center font-italic">Hierarchy of cemetery data</p>
+
+                    <img src="/static/images/about/model.jpg" class="img-fluid mx-auto d-block" alt="data model">
+                    <p class="text-center font-italic">Data model</p>
+
                 </div>
             </div>
         </div>
