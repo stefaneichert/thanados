@@ -767,8 +767,10 @@ $(window).resize(function () {
 });
 
 $(document).ready(function () {
+    if ($(window).width() > 1000) {
     $(".sortable").sortable();
     $(".sortable").disableSelection();
+    }
     var windowheight = ($(window).height());
     $('#mycontent').css('max-height', windowheight - 56 + 'px');
     $('#bigchart-container').css('height', (windowheight * 73 / 100));
