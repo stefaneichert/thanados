@@ -133,7 +133,7 @@ function addSearch() {
 
     $(".resultCard").mouseleave(function () {
         var thismap = ($(this).data('map'))
-        console.log(thismap);
+        //console.log(thismap);
         if (typeof(hovermarker) !== 'undefined') {
                 hovermarker.removeFrom(eval(thismap))
         }

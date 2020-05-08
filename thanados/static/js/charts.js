@@ -169,6 +169,7 @@ $('#submitBtn').on('click', function (e) {
     $('#collapseFilter').collapse();
     changeArrows();
     setTimeout(setcharts, 200);
+    setSiteSelection();
 });
 
 $(document).on('change', "input[type|=\'checkbox\']", function () {
@@ -816,14 +817,28 @@ function enlargeChart(currentConfig) {
 }
 
 function getCitation () {
-    SourceSites ='';
-    $.each(sitelist, function (i, dataset)
-{if (mysite_ids.includes(dataset.id)) {SourceSites += dataset.name + ', '}}
-)
-    SourceSites = SourceSites.substr(0, (SourceSites.length-2));
+    updateSourceSites();
     mysource = '"' + JSON.stringify(currentTitle.replace(/(\r\n|\n|\r)/gm, "")).replace('"', '').replace('"', '').replace(/^\s+|\s+$/g, '') + '". For Sites: ' + SourceSites + '.<br>' + mycitation1.replace("After:","");
     mysource = mysource.replace(/(\r\n|\n|\r)/gm, "");
     $('#mycitation').empty();
     $('#mycitation').html('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');
     $('#citeModal').modal();
 }
+
+function updateSourceSites() {
+    SourceSites ='';
+    $.each(sitelist, function (i, dataset)
+{if (mysite_ids.includes(dataset.id)) {SourceSites += dataset.name + ', '}}
+)
+    SourceSites = SourceSites.substr(0, (SourceSites.length-2));
+}
+
+function setSiteSelection () {
+    updateSourceSites();
+    $('#selectedSites').html(
+        '(currently ' + mysite_ids.length + '/' + site_ids.length + ')'
+    )
+}
+
+setSiteSelection();
+$('#mySelectedSites').text(SourceSites);

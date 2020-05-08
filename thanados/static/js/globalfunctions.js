@@ -1920,7 +1920,6 @@ function hoverMarker(linkid, currentmap) {
     }
     hovermarker._bringToFront();
     if (thismap.getBounds().contains(latlng) === false) {
-        console.log('false');
         thismap.panTo(latlng);
     }
 }
