@@ -249,8 +249,8 @@ function searchDimMat(criteria, appendLevel, Iter, val1, val2) {
             dimText = $('#DimensionSelect_' + Iter + ' option:selected').html();
             currentLegendTitle = currentLegendTitle + ' > ' + dimText + ': ' + val1 + ' - ' + val2;
             currentCreateLegend = appendLevelName + ' > ' + dimText + ': ' + val1 + ' - ' + val2;
-            console.log(criteria);
-            console.log(currentCreateLegend);
+            //console.log(criteria);
+            //console.log(currentCreateLegend);
         }
         jsonquery(dimId, appendLevel, criteria, val1, val2);
         $('#dimMatResult_' + Iter).val(uniqueSearchResult.length + ' matches in ' + searchResult.length + ' graves');
@@ -281,7 +281,7 @@ function searchTime(criteria, appendLevel, Iter, val1, val2) {
 }
 
 function appendPlus(Iter) {
-    console.log(Iter);
+    //console.log(Iter);
     Globaliter = Iter + 1;
     var features = false;
     if (Iter > 1) {
@@ -787,7 +787,7 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
     if (type === 'chart') {
 
         var chartmarkers = [];
-        console.log(mysearchpointradius);
+        //console.log(mysearchpointradius);
 
         $.each(jsonresultPoints.features, function (i, feature) {
             var options = {

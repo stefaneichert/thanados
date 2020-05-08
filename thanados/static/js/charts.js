@@ -9,10 +9,10 @@ $.each(sitelist, function (i, dataset)
 )
 
 mysite_ids = site_ids;
-if (site_ids.length > 20) {
+if (site_ids.length > 10) {
     mysite_ids = [];
     $.each(site_ids, function (i, dataset) {
-        if (i < 20) mysite_ids.push(site_ids[i]);
+        if (i < 10) mysite_ids.push(site_ids[i]);
     })
 }
 
@@ -169,6 +169,7 @@ $('#submitBtn').on('click', function (e) {
     $('#collapseFilter').collapse();
     changeArrows();
     setTimeout(setcharts, 200);
+    setSiteSelection();
 });
 
 $(document).on('change', "input[type|=\'checkbox\']", function () {
@@ -591,7 +592,6 @@ function setage(data) {
 function change(newType, chartvar, canvasid, config) {
     eval(chartvar +'.destroy()');
     delete eval.chartvar;
-    console.log(eval.chartvar);
     var ctx = document.getElementById(canvasid).getContext("2d");
     // Chart.js modifies the object you pass in. Pass a copy of the object so we can use the original object later
     var temp = jQuery.extend(true, {}, config);
@@ -768,8 +768,10 @@ $(window).resize(function () {
 });
 
 $(document).ready(function () {
+    if ($(window).width() > 1000) {
     $(".sortable").sortable();
     $(".sortable").disableSelection();
+    }
     var windowheight = ($(window).height());
     $('#mycontent').css('max-height', windowheight - 56 + 'px');
     $('#bigchart-container').css('height', (windowheight * 73 / 100));
@@ -792,7 +794,7 @@ function enlargeChart(currentConfig) {
     $('.boxBtn').addClass('d-none')
     $('.absBtn').addClass('d-none')
     $('.modal-title').text(currentTitle);
-    $('.modal').modal();
+    $('#chart-xl').modal();
     if (typeof (bigchart) !== 'undefined') {bigchart.destroy(); delete bigchart}
     var ctx = document.getElementById('bigchart-container').getContext('2d');
     bigchart = new Chart(ctx, currentConfig);
@@ -813,3 +815,30 @@ function enlargeChart(currentConfig) {
         $('.absBtn').addClass('d-none');
     }
 }
+
+function getCitation () {
+    updateSourceSites();
+    mysource = '"' + JSON.stringify(currentTitle.replace(/(\r\n|\n|\r)/gm, "")).replace('"', '').replace('"', '').replace(/^\s+|\s+$/g, '') + '". For Sites: ' + SourceSites + '.<br>' + mycitation1.replace("After:","");
+    mysource = mysource.replace(/(\r\n|\n|\r)/gm, "");
+    $('#mycitation').empty();
+    $('#mycitation').html('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');
+    $('#citeModal').modal();
+}
+
+function updateSourceSites() {
+    SourceSites ='';
+    $.each(sitelist, function (i, dataset)
+{if (mysite_ids.includes(dataset.id)) {SourceSites += dataset.name + ', '}}
+)
+    SourceSites = SourceSites.substr(0, (SourceSites.length-2));
+}
+
+function setSiteSelection () {
+    updateSourceSites();
+    $('#selectedSites').html(
+        '(currently ' + mysite_ids.length + '/' + site_ids.length + ')'
+    )
+}
+
+setSiteSelection();
+$('#mySelectedSites').text(SourceSites);
