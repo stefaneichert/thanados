@@ -281,7 +281,6 @@ function setmap(myjson) {
         var latlng = [myjson.properties.center.coordinates[1], myjson.properties.center.coordinates[0]];
         var marker = L.marker(latlng).bindPopup(popupLine).addTo(map);
         centerpoint = latlng;
-        console.log('hallo marker')
         map.panTo(centerpoint);
     }
 
@@ -310,6 +309,21 @@ function setmap(myjson) {
             },
             title: 'toggle sidebar',
             icon: 'fas fa-exchange-alt'
+        }]
+    }).addTo(map);
+
+    L.easyButton({
+        id: 'CiteMeButton',  // an id for the generated button
+        position: 'topleft',      // inherited from L.Control -- the corner it goes in
+        type: 'replace',          // set to animate when you're comfy with css
+        leafletClasses: true,     // use leaflet classes to style the button?
+        states: [{                 // specify different icons and responses for your button
+            stateName: 'citeme',
+            onClick: function (button, map) {
+                getCitation();
+            },
+            title: 'how to cite this/copyright',
+            icon: 'fas fa-quote-right'
         }]
     }).addTo(map);
 
@@ -819,7 +833,6 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
 function setImages(entId, entfiles) {
 
     if (entfiles !== undefined) {
-        console.log(entfiles)
 
         //append one image without slides
         if (entfiles.length == 1) {
@@ -989,4 +1002,40 @@ function addFilterSearch() {
         return div;
     };
     LeafletDropdownButton.addTo(map)
+}
+
+function getCitation () {
+    singleref = false;
+    mycitation2 = '';
+    if (myjson.properties.references.length === 1) singleref = true;
+
+    $.each(myjson.properties.references, function (t, ref) {
+        if (typeof (ref.title) !== 'undefined') {
+            title = ref.title;
+            citeme = title;
+        } else {
+            title = '';
+            citeme = 'unknown source';
+        }
+        if (typeof (ref.reference) !== 'undefined') {
+            page = ref.reference.replace("##main", "");
+            citeme = citeme + ' ' + page + '.';
+        } else
+            page = '';
+        mainref = false;
+        if (typeof (ref.reference) !== 'undefined' && ref.reference.includes('##main') || singleref) {
+            mainref = true;
+            mainrefthere = true;
+        }
+
+        if (mainref) {
+                mycitation2 = citeme
+        }
+    })
+
+    mysource = '"' + myjson.name + '". ' + mycitation1 + mycitation2;
+    mysource = mysource.replace(/(\r\n|\n|\r)/gm, "");
+    $('#mycitation').empty();
+    $('#mycitation').html('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');
+    $('#citeModal').modal();
 }

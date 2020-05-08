@@ -473,7 +473,7 @@
                 </div>
             </div>
         </div>
-        <div class="modal modal-xxl" tabindex="-1" role="dialog">
+        <div id="chart-xl" class="modal modal-xxl" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header custom-header-bg">
@@ -514,6 +514,9 @@
                     <div class="modal-footer">
                         <button type="button" onclick="exportChartToImg('bigchart-container', 'jpg')" title="Download chart as .jpg file" class="btn btn-primary"><i class="fas fa-file-download"></i>&nbsp; jpg</button>
                         <button type="button" onclick="exportChartToImg('bigchart-container', 'png')" title="Download chart as .png file with transparent background" class="btn btn-primary"><i class="fas fa-file-download"></i>&nbsp; png</button>
+                        <button type="button" onclick="getCitation()" title="how to cite this" class="btn btn-secondary">
+                            <i class="fas fa-quote-right"></i>
+                        </button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
                         </button>
                     </div>

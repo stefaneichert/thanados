@@ -169,11 +169,6 @@ if (systemtype == 'find') {
     });
 }
 
-
-mycitation1 = ' From: Stefan Eichert et al., THANADOS: ' + window.location + '<br>' +
-    'Licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a><br> After: ';
-
-
 function getEntityData(parentName, parentId, currentfeature) {
     globalfeature = currentfeature;
     if (currentfeature.type == "FeatureCollection") {
@@ -890,7 +885,7 @@ if (typeof (mycitation2) == 'undefined') {
     mycitation1 = mycitation1.substring(0, mycitation1.length - 8);
 }
 
-mysource = (mycitation + mycitation1 + mycitation2 + ' [Accessed: ' + today + ']');
+mysource = (mycitation + mycitation1 + mycitation2);
 mysource = mysource.replace(/(\r\n|\n|\r)/gm, "");
 $('#mycitation').append('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');
 L.extend(myjson, {//add necessary properties from json

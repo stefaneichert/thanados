@@ -14,6 +14,15 @@ $(document).ready(function () {
         }, 200);
         return false;
     });
+
+    $(document).on('show.bs.modal', '.modal', function (event) {
+        var zIndex = 1040 + (10 * $('.modal:visible').length);
+        $(this).css('z-index', zIndex);
+        setTimeout(function () {
+            $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+        }, 0);
+    });
+
 })
 $(document).on('change', "input[type|=\'text\']", function () {
     if ($(this).hasClass('legendtext')) {
@@ -1940,3 +1949,6 @@ $.featherlight.prototype.afterContent = function () {
     this.$instance.find('.caption').remove();
     $('<div style="max-width: fit-content; font-size: 0.875em" class="caption text-muted">').text(caption).appendTo(this.$instance.find('.featherlight-content'));
 }
+
+mycitation1 = ' From: Stefan Eichert et al., THANADOS: <a href="' + window.location + '">' + window.location + '</a> [Accessed: ' + today() + ']<br>' +
+    'Licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a><br> After: ';
