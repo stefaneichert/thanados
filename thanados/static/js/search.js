@@ -646,7 +646,7 @@ function setmymap(markers, heatmarkers) {
     eval('markers' + Iter + '= markers;')
 
 
-    eval('map' + Iter + ' = L.map(\'map\' + Iter, {fullscreenControl: true, zoomControl: false, layers: [landscape' + Iter + ']}).fitBounds(markers.getBounds());')
+    eval('map' + Iter + ' = L.map(\'map\' + Iter, {fullscreenControl: true, maxZoom: 20, zoomControl: false, layers: [landscape' + Iter + ']}).fitBounds(markers.getBounds());')
 
     clustermarkers.addTo((eval('map' + Iter)));
 
