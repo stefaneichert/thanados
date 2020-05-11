@@ -16,14 +16,6 @@
 
             <ul class="list-unstyled components">
 
-
-                <li>
-                    <a href="#introduction">
-                        <i class="fas fa-info"></i>
-                        Introduction
-                    </a>
-                </li>
-
                 <li>
                     <a href="#sites">
                         <i class="fas fa-map-marker-alt"></i>
@@ -124,44 +116,34 @@
         <!-- Page Content  -->
         <div id="mycontent">
 
-            <div class="pt-3" id="introduction">
-                <div class="manualbox">
-                    <h3>Introduction</h3>
-                    <p>
-
-                    </p>
-                </div>
-            </div>
-
             <div class="pt-3" id="sites">
                 <div class="manualbox">
                     <h3 id="sites">Sites</h3>
                     <p>
-                        On the “Sites” page you can search the entire database and select a specific site for more
-                        information. The page offers different ways of site selection/filtering. Either by directly
-                        entering
-                        the name of a site into the <b>search field</b>, by adjusting the “begin” and “end” of the
-                        respective sites
-                        with the <b>time sliders</b> to filter the site list for a certain time span or by searching the
-                        <b>map</b>
-                        geographically for sites in a specific area.
-                        <br>
-                        In the first two instances, the map will automatically zoom to the extent of the filtered sites
-                        and the respective site can be chosen in the site list, either by opening the <a
-                            href="#entity"><b>detailed site view</b></a> with a click on the <b>site name</b> or
-                        by opening the <a href="#maps"><b>site map</b></a> directly with a click on
-                        the map icon <i class="fas fa-map-marked-alt"></i>. By moving the cursor over a site name in the
-                        list, the respective marker <i class="fas fa-map-marker-alt"></i> on the map will turn red.
-                        <br>
-                        By using the map search, you can move the cursor over the markers
-                        <i class="fas fa-map-marker-alt"></i> on the map and a tooltip will show
-                        you the site name. A click on the tooltip will also bring you to the respective
-                        <a href="#entity"><b>detailed site view</b></a>.
-                        <br>
-                        Furthermore, you also can sort the site list either by <b>name</b>, <b>type</b>, <b>begin</b> or
-                        <b>end</b> time or
-                        by number of <b>graves</b> to search the database for specific characteristics.
-                        <br>
+                        Select a specific site/cemetery:</p>
+
+
+                    <img class="border aboutimage" src="static/images/manual/sites.gif" alt="Site Selection">
+                    <p>
+                        Clicking the name in the list gets you to the <a href="#entity">detailed site view</a>.<br><br>
+
+                        The map <i class="text-primary fas fa-map-marked-alt"></i> icon gets you to the <a href="#maps"> cartographic
+                        representation of the site</a>.<br><br>
+
+                        Moving the cursor over the name in the list will highlight a map marker on the site's position and show a description of the
+                        site in a tooltip.<br><br>
+
+                        You can filter the list by entering text (E.g. names or categories) into the <b>search field</b> and by adjusting the
+                        “begin” and “end” timespans of the respective sites with the <b>time sliders</b><br><br>
+
+                        On the map the sites are shown as well and can be selected by clicking on the respective markers.<br>
+                        With the top right button of the map you can select between markers, clustered markers and a density representation of the
+                        sites.<br><br>
+
+                        Furthermore, you also can sort the site list alphabetically by <b>name</b>, <b>type</b>, <b>begin</b> or
+                        <b>end</b> time as well as by the count of <b>graves</b><br><br>
+
+                        The list length can be adjusted at the top and you can select the list pages at the bottom of the list.
 
                     </p>
                 </div>
@@ -169,14 +151,27 @@
                     <div class="manualbox">
 
                         <h3>Detailed View</h3>
-                        <p>Here you get a structured overview of the respective entity, including descriptions,
-                            classifications, spatial and chronological position along with subunits and further
-                            metadata (e.g. bibliographical sources, external references etc.). Moving the cursor over a
-                            certain element will open a tooltip with further explanations.
-                            The detailed view of a certain entity (e.g. cemeteries, graves, burials or finds) is divided
-                            into several components. After the main information on the entity (e.g. name, image,
-                            map, type, dating, properties, dimentions etc.) the subunits can either be viewed in a <a
-                                    href="#subunits"><b>list</b></a> or a <a href="#catalogue"><b>catalogue</b></a>.
+                        <p> Each entity (cemetery, grave, burial, find - see <a href="#datamodel"> data model </a>)
+                            in the database has its own detailed page. This page can be accessed from throughout the whole application either by
+                            clicking the entity's link in the respective lists or the link icon <i class="fas fa-link"></i> (e.g from within the map
+                            view).
+                            Here you get a structured overview including descriptions, classifications, spatial and chronological position along with
+                            subunits and further metadata (e.g. bibliographical sources, external references etc.). Moving the cursor over a
+                            certain element will display a tooltip with further explanations.
+                        </p>
+                        <img class="border aboutimage" src="static/images/manual/subunits.gif" alt="Subunits">
+                        <p>
+                            The <i class="fas fa-quote-right"></i> button displays information on the copyright respectively a recommendation on how
+                            to cite this page.<br><br>
+                            The <i class="fas fa-download"></i> button saves a GeoJSON file of the entity to your computer.<br><br>
+                            The <b> Map </b> button opens the map of the cemetery containing the entity.
+                            <br><br>
+                            If available, images of the entity are shown next to the description. In case there is more than one image there are
+                            slider buttons to navigate.
+                            <br><br>
+                            A static map with the entity's position and the site's location on a mini map is shown next to it. Clicking into the map
+                            also opens the detailed and interactive cemetery map.
+
                         </p>
 
                         <h4 id="subunits">List of Subunits</h4>
@@ -187,24 +182,28 @@
                             information on <b>name</b>, <b>type</b>, <b>begin</b> and <b>end</b> date as well as
                             number of <b>finds</b>, allowing again to sort the list by any of those characteristics.
                             By clicking on the respective <b>entity name</b> you will be directed to the
-                            <a href="#entity"><b>detailed view</b></a> of the chosen entity.
+                            <a href="#entity">detailed view</a> of the chosen entity.
                         </p>
 
                         <h4 id="catalogue">Catalogue</h4>
                         <p>
                             By selecting the <b>catalogue</b> tab, the view changes to a catalogue view which lists not
-                            only the next but all subunits, contained in the parent unit, with their relevant metadata,
-                            down to the find-level. From here, again the <a href="#entity"><b>detailed view</b></a>
+                            only the next but all subunits, contained in the parent unit down to the find-level. From here, again the <a
+                                href="#entity">detailed view</a>
                             of the respective unit can be accessed by clicking on the <b>entity name</b>.
                         </p>
 
                         <h4 id="metadata">Metadata</h4>
                         <p>
                             Besides these data on actual archaeological entities also metadata are stored and each
-                            entity, where aplicable, is linked to the respective <b>sources</b>, <b>external
-                            references</b>, acompanying <b>files</b> and to the license that applies to the
-                            respective digital object. Wherever possible, THANADOS provides its content under a Creative
-                            Commons licence (CC BY-SA 4.0: https://creativecommons.org/licenses/by-sa/4.0/). Of course,
+                            entity, where applicable, is linked to the respective <b>sources</b>, <b>external
+                            references</b>, accompanying <b>files</b> and to the license that applies to the
+                            respective digital object.
+                        </p>
+                        <img class="border aboutimage" src="static/images/manual/metadata.jpg" alt="Metadata">
+                        <p>
+                            Wherever possible, THANADOS provides its content under a <a href="http://creativecommons.org/licenses/by/4.0/"> Creative
+                            Commons Attribution 4.0 International License</a>. Of course,
                             if for certain objects another copyright applies this is documented in the database and
                             shown in the frontend.
                             The frontend provides persistent URLs for each entity respectively its representation in the
@@ -243,7 +242,7 @@
 
                     <h3>Charts</h3>
                     <p>
-                        
+
                     </p>
                 </div>
             </div>
@@ -302,7 +301,7 @@
                         physical objects, here the individual <b>finds</b>, assigned to the respective burials.
                         All those entities, whether sites, graves, burials or finds are of course associated with
                         certain
-                        other information, thus, they can each be opened as <a href="#entity"><b>detailed view</b></a>
+                        other information, thus, they can each be opened as <a href="#entity">detailed view</a>
                         page, all structured in the same way, as explained above.
                     </p>
 

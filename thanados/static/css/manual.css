@@ -38,11 +38,23 @@ a:focus {
     transition: all 0.3s;
 }
 
-.line {
-    width: 100%;
-    height: 1px;
-    border-bottom: 1px dashed #ddd;
-    margin: 40px 0;
+.manualbox > p > a {
+    color: #007bff;
+}
+
+.manualbox > p > a:hover {
+    color: #003db3;
+    text-decoration: underline;
+}
+
+.manualbox > p {
+    color: #6c757d;
+}
+
+.manualbox > img {
+    margin-right: auto !important;
+    margin-left: auto !important;
+    display: block;
 }
 
 i,
@@ -105,7 +117,7 @@ span {
 }
 
 #sidebar .sidebar-header {
-    padding: 20px 0px 0px 20px;
+    padding: 20px 0 0 20px;
     background: #f2f2f2;
 }
 
@@ -166,7 +178,7 @@ ul.CTAs a {
 }
 
 .aboutimage {
-    margin: 0.5em;
+    margin: 0 0 1em 0 !important;
 }
 
 /* ---------------------------------------------------
