@@ -1,16 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
 
-    <link href="/static/vendor/node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css"
-          rel="stylesheet">
-    <script src="/static/vendor/node_modules/datatables.net/js/jquery.dataTables.js"></script>
-    <script src="/static/vendor/node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
-    <link href="/static/vendor/node_modules/jquery-datatables-checkboxes/css/dataTables.checkboxes.css"
-          rel="stylesheet">
-    <script src="/static/vendor/node_modules/jquery-datatables-checkboxes/js/dataTables.checkboxes.min.js"></script>
-    <link href="/static/css/style.css" rel="stylesheet">
-
-
     <div id="mycontent" style="overflow-y: auto">
         <div id="myFilter" class="card" style="margin: 2em">
             <div class="card-header" id="headingFilter">
@@ -47,7 +37,7 @@
                                    width="100%">
                                 <thead>
                                 <tr>
-                                    <th></th>
+                                    <th><input id="selectall" type="checkbox"></th>
                                     <th>Name</th>
                                     <th>Type</th>
                                     <th>Begin</th>
