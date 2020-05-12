@@ -61,7 +61,7 @@ table = $('#sitelist').DataTable({
         {
             data: "id",
             "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                $(nTd).html('<input class="siteselector" type="checkbox" value="' + oData.id + '">');
+                $(nTd).html('<input class="siteselector" type="checkbox" id="' + oData.id +'" value="' + oData.id + '"><label for="' + oData.id +'"></label>');
             },
             "orderDataType": "dom-checkbox",
         },
@@ -196,7 +196,6 @@ $(document).on('change', '.siteselector', function () {
         CurrentSelection.push(parseInt(this.value));
     } else {
         CurrentSelection = removeItemAll(CurrentSelection, parseInt(this.value))
-        console.log(CurrentSelection);
     }
     setSiteInfo()
 });

@@ -1,6 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
 
+    <link href="/static/css/charts.css" rel="stylesheet">
+
     <div id="mycontent" style="overflow-y: auto">
         <div id="myFilter" class="card" style="margin: 2em">
             <div class="card-header" id="headingFilter">
@@ -37,7 +39,7 @@
                                    width="100%">
                                 <thead>
                                 <tr>
-                                    <th><input id="selectall" type="checkbox"></th>
+                                    <th><input id="selectall" type="checkbox"><label for="selectall"></label></th>
                                     <th>Name</th>
                                     <th>Type</th>
                                     <th>Begin</th>
@@ -50,7 +52,7 @@
                     </div>
                     <div class="row mt-3">
                         <div class="col input-group">
-                            <textarea readonly id="mySelectedSites" class="form-control"
+                            <textarea readonly id="mySelectedSites" style="background: #f8f9fa" class="form-control"
                                       aria-label="Selected sites"
                                       placeholder="Selected sites"></textarea>
                             <div class="input-group-append">
