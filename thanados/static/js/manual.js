@@ -1,5 +1,9 @@
 window.onload = function () {
     gifs = Gifffer();
+    $('.imagebox button').on('focus', function () {
+        console.log('hallo')
+    })
+
 
 }
 
@@ -44,6 +48,7 @@ function collapsebutton() {
         left: buttonpos
     });
 }
+
 
 
 

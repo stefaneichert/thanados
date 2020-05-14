@@ -3,18 +3,30 @@ $('#nav-charts').addClass('activePage')
 //remove sites without graves
 site_ids = [];
 mysite_ids = []
+maxGraves = []
 
 $.each(sitelist, function (i, dataset) {
-        if (dataset.graves) site_ids.push(dataset.id)
+        if (dataset.graves) {
+            site_ids.push(dataset.id);
+            maxGraves.push(parseInt(dataset.graves));
+        }
     }
 )
+
+maxGraves.sort(function(a, b) {
+  return a - b;
+});
+maxGraves = maxGraves.slice(maxGraves.length-10);
 
 mysite_ids = site_ids;
 if (site_ids.length > 10) {
     mysite_ids = [];
-    $.each(site_ids, function (i, dataset) {
-        if (i < 10) mysite_ids.push(site_ids[i]);
+    $.each(sitelist, function (i, dataset) {
+        if (dataset.graves >= maxGraves[0]) mysite_ids.push(dataset.id);
     })
+    if (mysite_ids.length > 10) {
+        mysite_ids = mysite_ids.slice(mysite_ids.length-10)
+    }
 }
 CurrentSelection = mysite_ids;
 
@@ -88,7 +100,7 @@ table = $('#sitelist').DataTable({
             targets: 0
         },
     ],
-    'order': [[1, 'asc']],
+    'order': [[5, 'desc']],
     drawCallback: function () {
         checkTheBoxes();
     }
@@ -890,3 +902,5 @@ function setSiteSelection() {
 
 setSiteSelection();
 $('#mySelectedSites').text(SourceSites);
+
+setSiteInfo();
