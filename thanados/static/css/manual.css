@@ -46,6 +46,10 @@ a:focus {
     outline: none;
 }
 
+.manualbox > p > .btn-sm:hover {
+    background-color: #696969!important;
+}
+
 .manualbox > p > a:hover {
     color: #003db3;
     text-decoration: underline;
@@ -66,7 +70,7 @@ a:focus {
     max-width: 800px;
 }
 
-.manualbox canvas, .manualbox img {
+.manualbox canvas, .manualbox > img {
     border: 1px solid #dee2e6 !important;
 }
 
