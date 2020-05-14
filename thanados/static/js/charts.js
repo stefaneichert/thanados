@@ -311,7 +311,7 @@ function setcharts() {
             },
             plugins: {
                 colorschemes: {
-                    scheme: 'tableau.Tableau10'
+                    scheme: 'tableau.Tableau20'
                 }
             }
         }
@@ -348,7 +348,7 @@ function setcharts() {
             },
             plugins: {
                 colorschemes: {
-                    scheme: 'tableau.Tableau10'
+                    scheme: 'tableau.Tableau20'
                 }
             }
         }
@@ -415,7 +415,7 @@ function setcharts() {
             },
             plugins: {
                 colorschemes: {
-                    scheme: 'tableau.Tableau10'
+                    scheme: 'tableau.Tableau20'
                 }
             }
         }
@@ -448,7 +448,7 @@ function setcharts() {
             },
             plugins: {
                 colorschemes: {
-                    scheme: 'tableau.Tableau10'
+                    scheme: 'tableau.Tableau20'
                 }
             }
         }
@@ -514,7 +514,7 @@ function setcharts() {
             },
             plugins: {
                 colorschemes: {
-                    scheme: 'tableau.Tableau10'
+                    scheme: 'tableau.Tableau20'
                 }
             }
         }
