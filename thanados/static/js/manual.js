@@ -1,3 +1,8 @@
+window.onload = function () {
+    gifs = Gifffer();
+
+}
+
 $(document).ready(function () {
     $('#nav-manual').addClass('activePage')
     maximumHeight = ($(window).height() - $('#mynavbar').height());
@@ -39,3 +44,6 @@ function collapsebutton() {
         left: buttonpos
     });
 }
+
+
+
