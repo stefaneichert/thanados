@@ -69,10 +69,42 @@
                 </li>
 
                 <li>
-                    <a href="#charts">
+                    <a href="#chartsSubmenu"
+                       onclick="document.getElementById('charts').scrollIntoView()"
+                       data-toggle="collapse" aria-expanded="false"
+                       class="dropdown-toggle">
                         <i class="fas fa-chart-bar"></i>
                         Charts
                     </a>
+                    <ul class="collapse list-unstyled" id="chartsSubmenu">
+                        <li>
+                            <a href="#chartsDepth">Depth of graves</a>
+                        </li>
+                        <li>
+                            <a href="#chartsSex">Sex of individuals</a>
+                        </li>
+                        <li>
+                            <a href="#chartsOrientation">Orientation of skeletons</a>
+                        </li>
+                        <li>
+                            <a href="#chartsAzimuth">Azimuth of gravepits</a>
+                        </li>
+                        <li>
+                            <a href="#chartsAge">Age at death</a>
+                        </li>
+                        <li>
+                            <a href="#chartsFeatures">Types of features</a>
+                        </li>
+                        <li>
+                            <a href="#chartsConstruction">Grave construction</a>
+                        </li>
+                        <li>
+                            <a href="#chartsFinds">Types of finds</a>
+                        </li>
+                        <li>
+                            <a href="#chartsBurials">Burial types</a>
+                        </li>
+                    </ul>
                 </li>
 
                 <li>
@@ -127,9 +159,9 @@
                         Select a specific site/cemetery:</p>
 
                     <div class="imagebox img-fluid">
-                    <img data-gifffer="static/images/manual/sites.gif" data-gifffer-width="100%">
+                        <img data-gifffer="static/images/manual/sites.gif" data-gifffer-width="100%">
                     </div>
-                        <p> Clicking the name in the list gets you to the <a href="#entity">detailed site view</a>.</p>
+                    <p> Clicking the name in the list gets you to the <a href="#entity">detailed site view</a>.</p>
                     <p> The map <i class="text-primary fas fa-map-marked-alt"></i> icon gets you to the detailed <a href="#maps">map</a> of the
                         cemetery.</p>
                     <p>Moving the cursor over the name in the list will highlight a map marker on the site's position and show a description of the
@@ -156,9 +188,9 @@
                             certain element will display a tooltip with further explanations.
                         </p>
                         <div class="imagebox img-fluid">
-                        <img data-gifffer="static/images/manual/subunits.gif" data-gifffer-width="100%" data-gifffer-height="auto">
+                            <img data-gifffer="static/images/manual/subunits.gif" data-gifffer-width="100%" data-gifffer-height="auto">
                         </div>
-                            <p>
+                        <p>
                             <i class="btn-secondary btn-sm fas fa-quote-right"></i> displays information on the copyright respectively a
                             recommendation on how
                             to cite this page.</p>
@@ -253,7 +285,8 @@
                         data. See <a href="#mapSearch"> Map Search</a> for further details.
                     </p>
                     <p>
-                        <i class="btn-secondary btn-xs pr-2 pl-2"><img height="15px" src="static/images/icons/layers.png" alt=""></i> in the top left corner
+                        <i class="btn-secondary btn-xs pr-2 pl-2"><img height="15px" src="static/images/icons/layers.png" alt=""></i> in the top left
+                        corner
                         allows you to change the background map. By default a
                         landscape map based on OpenStreetMap by <a href="https://thunderforest.com" target="_blank">Thunderforest</a>
                         is active. Other options are satellite/aerial photographs from
@@ -280,7 +313,7 @@
                         all available images of the features and finds.
                     </p>
                     <div class="imagebox img-fluid">
-                    <img data-gifffer="static/images/manual/sidebar.gif" data-gifffer-width="100%" data-gifffer-height="auto">
+                        <img data-gifffer="static/images/manual/sidebar.gif" data-gifffer-width="100%" data-gifffer-height="auto">
                     </div>
 
                     <h4 id="mapSearch">Search</h4>
@@ -298,11 +331,204 @@
 
             <div class="pt-3" id="charts">
                 <div class="manualbox">
-
-                    <h3>Charts</h3>
+                    <h3 id="charts">Charts</h3>
                     <p>
-
+                        With THANADOS you can visualise certain attributes of the cemeteries with various pre-defined
+                        charts respectively plots.
                     </p>
+                    <div class="imagebox img-fluid">
+                        <img data-gifffer="static/images/manual/chartselect.gif" data-gifffer-width="100%" data-gifffer-height="auto">
+                    </div>
+                    <p>
+                        The <b>filter/select</b> menu on the top opens a list with all sites that contain at least one grave.
+                        Here you can select certain cemeteries by clicking on the respective switch to the left. By default ten cemeteries among
+                        those with the highest number of graves are selected.
+                        The switch in the header of the table turns all sites on/off.
+                    </p>
+                    <p>
+                        You can filter the list by entering text (E.g. names or categories) into the <b>search field</b>
+                        and by adjusting the “begin” and “end” timespans of the respective sites with the <b>time sliders</b>.
+                        Furthermore, you also can sort the site list by clicking the header. Please note that filtering the table (e.g by using the
+                        time sliders or search categories) will hide sites from the table even if they are selected. Hidden entries that are selected
+                        will stay selected until they are switched of.
+                    </p>
+                    <p>
+                        The list length can be adjusted at the top and you can select the list pages at the bottom of
+                        the list. The selected sites are listed in the box at the bottom. By clicking on the <b>apply</b>
+                        button charts based on data of these sites will be created.
+                    </p>
+
+                    <div class="imagebox img-fluid">
+                        <img data-gifffer="static/images/manual/ChartsFunctions.gif" data-gifffer-width="100%" data-gifffer-height="auto">
+                    </div>
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-expand-alt"></i> maximises the respective chart.
+                    </p>
+                    <p>
+                        You can turn datasets on or off by clicking the legend entries.
+                        If you hover the cursor over a certain plot element additional information is shown.
+                    </p>
+
+                    <p>
+                        <span class="btn-secondary btn-xs">Σ</span> visualises the data as absolute values.
+                    </p>
+                    <p>
+                        <span class="btn-secondary btn-xs">%</span> visualises the data with percentage values.
+                    </p>
+                    <p>
+                        <span class="btn-secondary btn-xs">Violin</span> visualises the data where applicable as violin
+                        plot.
+                    </p>
+                    <p>
+                        <span class="btn-secondary btn-xs">Boxplot</span> visualises the data where applicable as
+                        boxplot.
+                    </p>
+                    <p>
+                        For creating the charts THANADOS uses <a href="https://www.chartjs.org/" target="_blank">charts.js</a>.
+                        Boxplot and violin visualisations utilize the <a href="https://github.com/datavisyn/chartjs-chart-box-and-violin-plot"
+                                                                         target="_blank">
+                        Box and Violin Plot module</a>.
+                    </p>
+
+
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-download"></i> offers you to download the chart as
+                        <i class="fas fa-download"></i> <b>jpg</b> with white background respectively as <i class="fas fa-download"></i> <b>png</b>
+                        file with transparent background.
+                    </p>
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-quote-right"></i> displays information on the
+                        copyright respectively a recommendation on how to cite this chart.
+                    </p>
+
+                    <h4 id="chartsDepth">Depth of graves</h4>
+                    <p>
+                        Here the count of graves with a certain depth is visualised as bars in 20 centimeter steps.
+                        Each cemetery is assigned an automatically defined colour.
+                    </p>
+                    <img class="img-fluid" src="static/images/manual/chartsDepth.jpg" alt="Depth of graves">
+
+                    <h4 id="chartsSex">Sex of individuals</h4>
+                    <p>
+                        Here for each cemetery an individual column is created showing the number of female/male burials and burials with unknown sex.
+                    </p>
+                    <img class="img-fluid" src="static/images/manual/chartsSex.jpg" alt="Sex of individuals">
+
+                    <h4 id="chartsOrientation">Orientation of skeletons</h4>
+                    <p>
+                        Here the count of skeletons with a certain orientation is visualised as columns in 20 degree
+                        steps. The degrees refer to the orientation of the skeleton's axis (head to feet):
+                    </p>
+                    <ul>
+                        <li>north-south: 0°/360°</li>
+                        <li>east-west: 90°</li>
+                        <li>south-north: 180°</li>
+                        <li>west-east: 270°</li>
+                    </ul>
+                    <img class="img-fluid" src="static/images/manual/chartsOrientation.jpg" alt="Orientation of skeletons">
+
+                    <h4 id="chartsAzimuth">Azimuth of gravepits</h4>
+                    <p>
+                        Here the count of gravepits with a certain orientation is visualised as columns in 10 degree
+                        steps.
+                        The orientations are automatically calculated from the polygons of the gravepits.
+                        The degrees refer to the deviation of the grave from north. The smaller deviation angle is used for this purpose.
+                        Thus a deviation ranging from 0 to 180 degrees is given here.
+                        The azimuth is automatically calculated using PostGIS
+                        <a href="https://postgis.net/docs/ST_OrientedEnvelope.html" target="_blank">ST_OrientedEnvelope</a>
+                        in combination with
+                        <a href="https://postgis.net/docs/ST_ApproximateMedialAxis.html" target="_blank">ST_ApproximateMedialAxis</a>
+                        and
+                        <a href="https://postgis.net/docs/ST_Azimuth.html" target="_blank">ST_Azimuth</a>.
+                    </p>
+                    <ul>
+                        <li>north-south/south-north: 0°/180°</li>
+                        <li>east-west/west-east: 90°</li>
+                    </ul>
+                    <img class="img-fluid" src="static/images/manual/chartsAzimuth.jpg" alt="Azimuth of gravepits">
+
+                    <h4 id="chartsAge">Age at death</h4>
+                    <p>
+                        Here for each cemetery box-plots respectively violin plots are created respresenting the age at death distribution.
+                        The underlying data comes from categories given in the respective publications. The categories are mapped to the following
+                        values:
+                    </p>
+                    <ul>
+                        <li>Child: 0 until 13,9 years
+                            <ul>
+                                <li>Fetus: -0,75 until 0 years</li>
+                                <li>Neonatus: 0 until 0,25 years</li>
+                                <li>Infans I-II: 0 until 13,9 years
+                                    <ul>
+                                        <li>Infans I: 0 until 6,9 years</li>
+                                        <li>Infans II: 7 until 13,9 years</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>Juvenil: 14 until 19.9 years</li>
+                        <li>Juvenil-Early Adult: 14 until 24,9 years</li>
+                        <li>Early Adult: 18 until 25 years</li>
+                        <li>Grown up: 20 until 100 years
+                            <ul>
+                                <li>Adult: 20 until 39.9 years</li>
+                                <li>Adult-Matur: 20 until 59.9 years</li>
+                                <li>Matur 40: until 59.9 years</li>
+                                <li>Matur-Senil: 40 until 100 years</li>
+                                <li>Senil: 60 until 100 years</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p>
+                        Three columns are created for each cemetery. The minimum age is indicated in red, the average age in blue and the maximum age
+                        in orange. The values represent the first or last value of the age range as listed above, respectively the average between the
+                        two of them.
+                        Additionally, you can choose between displaying the data as violin plot or as a boxplot.
+                    </p>
+                    <img class="img-fluid" src="static/images/manual/chartsAge.jpg" alt="Age at death">
+
+                    <h4 id="chartsFeatures">Types of features</h4>
+                    <p>
+                        Here for each cemetery an individual column is created indicating the different types of features,
+                        usually the types of graves (e.g. single grave, grave with multiple burials, urn-burial),
+                        encountered at the chosen sites. The columns show the distribution
+                        of the different types for the respective cemetery, optionally in absolute or percentage values.
+                        Each feature type is assigned an automatically defined colour.
+                    </p>
+                    <img class="img-fluid" src="static/images/manual/chartsFeatures.jpg" alt="Types of features">
+
+                    <h4 id="chartsConstruction">Grave construction</h4>
+                    <p>
+                        Here for each cemetery an individual column is created indicating the different types of grave
+                        construction (e.g. stone placement, earth pit, wooden coffin, cut in rock), encountered at the
+                        chosen sites. The columns show the occurrence of the different types of construction for the
+                        respective cemetery, optionally in absolute or percentage values. These are not excluding criteria,
+                        a grave can be assigned several construction types, for example a grave cut into the rock with
+                        wooden coffin and stone placement.
+                        Each feature type is assigned an automatically defined colour.
+                    </p>
+                    <img class="img-fluid" src="static/images/manual/chartsConstruction.jpg" alt="Grave construction">
+
+                    <h4 id="chartsFinds">Types of finds</h4>
+                    <p>
+                        Here for each cemetery an individual column is created indicating the different types of finds
+                        (e.g. knife, pottery, riding equipment, weapon), encountered at the chosen sites. The columns
+                        show the occurrence of the different types of finds for the respective cemetery, optionally in
+                        absolute or percentage values. Each type of find is assigned an automatically defined colour.
+                    </p>
+                    <img class="img-fluid" src="static/images/manual/chartsFinds.jpg" alt="Types of finds">
+
+                    <h4 id="chartsBurials">Burial types</h4>
+                    <p>
+                        Here for each cemetery an individual column is created indicating the different types of burials
+                        or stratigraphic units that the features/graves are composed of
+                        (e.g. skeleton, cremation, bone deposition), encountered at the chosen sites. The columns
+                        show the occurrence of the different types of burials for the respective cemetery, optionally in
+                        absolute or percentage values. Each type of burial is assigned an automatically defined colour.
+                    </p>
+                    <img class="img-fluid" src="static/images/manual/chartsBurials.jpg" alt="Burial types">
+
+
                 </div>
             </div>
 
@@ -341,8 +567,33 @@
 
                     <h3>License / Citation</h3>
                     <p>
-
+                        Wherever possible, THANADOS provides its content under a
+                        <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">
+                            <b>Creative Commons License (CC BY-SA 4.0)</b>
+                        </a>
+                        To get the correct citation for the respective entity, a quotation icon <i
+                            class="fas fa-quote-right"></i> will show you how to cite the respective entity.
                     </p>
+                    <p>
+                        Please note that this licence applies only to the information respectively the
+                        dataset represented here.
+                        This data was derived from various sources that are documented in the metadata
+                        section of each entity. We recommend to cite them as well.
+                        Feel free to adapt the citation to your needs for the publishing medium you are
+                        using.
+                        When doing so, please make sure to follow the
+                        <a href="https://creativecommons.org/use-remix/" target="_blank">
+                            <b>Creative Commons attribution guidelines</b>
+                        </a>
+                    </p>
+                    <p>
+                        For digital objects that are displayed here from other sources (e.g. map tiles,
+                        images),
+                        other rights respectively licences might apply. For using them in your own work,
+                        make sure
+                        to possess the necessary rights and cite the original creators properly.
+                    </p>
+
                 </div>
             </div>
 

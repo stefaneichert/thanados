@@ -3,7 +3,8 @@
 */
 
 h3, h4 {
-    padding-top: 0.5em;
+    padding-top: 1.5em;
+    margin-bottom: 0.8em;
 }
 
 .manualbox {
@@ -56,7 +57,7 @@ a:focus {
     text-decoration: underline;
 }
 
-.manualbox > p {
+.manualbox p, .manualbox li  {
     color: #6c757d;
 }
 
@@ -71,7 +72,7 @@ a:focus {
     max-width: 800px;
 }
 
-.manualbox canvas, .manualbox .imagebox img {
+.manualbox canvas, .manualbox .imagebox img, .manualbox > img {
     border: 1px solid #dee2e6 !important;
 }
 
