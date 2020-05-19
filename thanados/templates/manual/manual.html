@@ -166,7 +166,7 @@
                         cemetery.</p>
                     <p>Moving the cursor over the name in the list will highlight a map marker on the site's position and show a description of the
                         site in a tooltip.</p>
-                    <p>You can filter the list by entering text (E.g. names or categories) into the <b>search field</b> and by adjusting the
+                    <p>You can filter the list by entering text (e.g. names or categories) into the <b>search field</b> and by adjusting the
                         “begin” and “end” timespans of the respective sites with the <b>time sliders</b></p>
                     <p>On the map the sites are shown as well and can be selected by clicking on the respective markers.<br>
                         With the top right button of the map you can select between markers, clustered markers and a density representation of the
@@ -327,7 +327,69 @@
 
                     <h4 id="mapLayers">Layers</h4>
                     <p>
+                        If you click in the legend on the respective layer, the <b>Layer options</b> will be opened in
+                        a separate window. From here you can adjust how the results are displayed. To the left side of the
+                        window, several icons for further options are listed:
+                    </p>
+                    <p>
+                        <i class="fas fa-info"></i> opens the <b>Layer overview</b> with <b>Info</b> on "Legend title",
+                        the underlying search "Parameters" and the total count of "Results". Furthermore, the detailed
+                        <b>Results</b> can also be viewed in a dropdown menu. Here you can also see further
+                        <b>Display possibilities</b>, e.g. "Single color", "Multiple color", "Gradient color" and "Chart
+                        markers".
+                    </p>
+                    <p>
+                        <i class="fas fa-map-marker-alt"></i> opens the <b>Single color layer options</b>. Here you can
+                        adjust the <b>Legend title</b> as well as the <b>Fill color</b>, the <b>Opacity</b>, the
+                        <b>Border color</b>, the <b>Border width</b> and the <b>Radius</b> (if you choose
+                        <i class="fas fa-map-marker"></i> <b>point layer</b> instead of
+                        <i class="fas fa-draw-polygon"></i> <b>polygon layer</b>).
+                        All results will be displayed in the same way.
+                    </p>
+                    <p>
+                        <i class="fas fa-palette"></i> opens the <b>Multiple color layer options</b>. Here you can
+                        adjust the <b>Legend title</b>, the <b>Opacity</b>, the <b>Border color</b>, the <b>Border width</b>
+                        and the <b>Radius</b> as well.
+                        Aditionally, however, you can set a specific colour for each distinguished category individually
+                        here, by clicking on the color field of the respective category.
+                    </p>
+                    <p>
+                        <i class="fas fa-swatchbook"></i> opens the <b>Gradient color layer options</b>. Here once again
+                        you can adjust <b>Legend title</b>, <b>Opacity</b>, <b>Border color</b> and <b>Border width</b>.
+                        Aditionally, you can also set a <b>Color range</b> between two chosen colours, by clicking on
+                        the color fields, and the number of colour <b>Steps</b> in between. In the field <b>Point</b>
+                        you can choose between "single size", which will display the points, if chosen, all with the
+                        same size according to the given <b>Radius</b>, or "gradient size", which will display the
+                        points with a gradually increasing size, according to the given <b>Radius min/max</b> and 
+                        corresponding to the colour gradient.
+                    </p>
+                    <p>
+                        a quotation icon <i class="fas fa-chart-pie"></i> will provide detailed information
+                    </p>
 
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-map-marked"></i> maximises the respective chart.
+                    </p>
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-list"></i> maximises the respective chart.
+                    </p>
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-save"></i> maximises the respective chart.
+                    </p>
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-clone"></i> maximises the respective chart.
+                    </p>
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-trash-alt"></i> maximises the respective chart.
+                    </p>
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-map-marker"></i> maximises the respective chart.
+                    </p>
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-draw-polygon"></i> maximises the respective chart.
+                    </p>
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-chart-pie"></i> maximises the respective chart.
                     </p>
 
                 </div>
@@ -350,7 +412,7 @@
                         The switch in the header of the table turns all sites on/off.
                     </p>
                     <p>
-                        You can filter the list by entering text (E.g. names or categories) into the <b>search field</b>
+                        You can filter the list by entering text (e.g. names or categories) into the <b>search field</b>
                         and by adjusting the “begin” and “end” timespans of the respective sites with the <b>time sliders</b>.
                         Furthermore, you also can sort the site list by clicking the header. Please note that filtering the table (e.g by using the
                         time sliders or search categories) will hide sites from the table even if they are selected. Hidden entries that are selected
@@ -436,8 +498,9 @@
                         Here the count of gravepits with a certain orientation is visualised as columns in 10 degree
                         steps.
                         The orientations are automatically calculated from the polygons of the gravepits.
-                        The degrees refer to the deviation of the grave from north. The smaller deviation angle is used for this purpose.
-                        Thus a deviation ranging from 0 to 180 degrees is given here.
+                        The degrees refer to the deviation of the grave from north. For this calculation only the orientation
+                        of the gravepit is regarded, not that of the burials inside.
+                        Thus only a deviation ranging from 0 to 180 degrees is given here.
                         The azimuth is automatically calculated using PostGIS
                         <a href="https://postgis.net/docs/ST_OrientedEnvelope.html" target="_blank">ST_OrientedEnvelope</a>
                         in combination with
@@ -453,25 +516,25 @@
 
                     <h4 id="chartsAge">Age at death</h4>
                     <p>
-                        Here for each cemetery box-plots respectively violin plots are created respresenting the age at death distribution.
+                        Here for each cemetery boxplots respectively violin plots are created respresenting the age at death distribution.
                         The underlying data comes from categories given in the respective publications. The categories are mapped to the following
                         values:
                     </p>
                     <ul>
-                        <li>Child: 0 until 13,9 years
+                        <li>Child: 0 until 13.9 years
                             <ul>
-                                <li>Fetus: -0,75 until 0 years</li>
-                                <li>Neonatus: 0 until 0,25 years</li>
-                                <li>Infans I-II: 0 until 13,9 years
+                                <li>Fetus: -0.75 until 0 years</li>
+                                <li>Neonatus: 0 until 0.25 years</li>
+                                <li>Infans I-II: 0 until 13.9 years
                                     <ul>
-                                        <li>Infans I: 0 until 6,9 years</li>
-                                        <li>Infans II: 7 until 13,9 years</li>
+                                        <li>Infans I: 0 until 6.9 years</li>
+                                        <li>Infans II: 7 until 13.9 years</li>
                                     </ul>
                                 </li>
                             </ul>
                         </li>
                         <li>Juvenil: 14 until 19.9 years</li>
-                        <li>Juvenil-Early Adult: 14 until 24,9 years</li>
+                        <li>Juvenil-Early Adult: 14 until 24.9 years</li>
                         <li>Early Adult: 18 until 25 years</li>
                         <li>Grown up: 20 until 100 years
                             <ul>

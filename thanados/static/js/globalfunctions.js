@@ -1267,7 +1267,7 @@ function openStyleDialog(layerType) {
                 '    <div class="card-header" id="headingThree">\n' +
                 '      <h7 class="mb-0">\n' +
                 '        <a href="#" class="btn infobtns btn-link" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoThree" aria-expanded="false" aria-controls="collapseInfoThree">\n' +
-                '           <i class="fas fa-chevron-right mr-2"></i>Display possibilites' +
+                '           <i class="fas fa-chevron-right mr-2"></i>Display possibilities' +
                 '        </a>\n' +
                 '      </h7>\n' +
                 '    </div>\n' +
