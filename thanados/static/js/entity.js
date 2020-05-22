@@ -288,7 +288,7 @@ function getEntityData(parentName, parentId, currentfeature) {
     $('#myTypescontainer' + entId).empty();
     $.each(currentfeature.properties.types, function (t, types) {
         if ($('#myTypescontainer' + entId).is(':empty')) {
-            $('#myTypescontainer' + entId).append('<p><h6>Properties</h6></p>');
+            $('#myTypescontainer' + entId).append('<p><h6>Properties:</h6></p>');
         }
 
         var classification = types.name;
@@ -303,7 +303,7 @@ function getEntityData(parentName, parentId, currentfeature) {
     $('#myDimensionscontainer' + entId).empty();
     $.each(currentfeature.properties.dimensions, function (d, dimensions) {
         if ($('#myDimensionscontainer' + entId).is(':empty')) {
-            $('#myDimensionscontainer' + entId).append('<p><h6>Dimensions</h6></p>');
+            $('#myDimensionscontainer' + entId).append('<p><h6>Dimensions:</h6></p>');
         }
 
         var dimension = dimensions.name;
@@ -318,7 +318,7 @@ function getEntityData(parentName, parentId, currentfeature) {
     $('#myMaterialcontainer' + entId).empty();
     $.each(currentfeature.properties.material, function (d, material) {
         if ($('#myMaterialcontainer' + entId).is(':empty')) {
-            $('#myMaterialcontainer' + entId).append('<p><h6>Material</h6></p>');
+            $('#myMaterialcontainer' + entId).append('<p><h6>Material:</h6></p>');
         }
 
         var materialname = material.name;
@@ -948,7 +948,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
         $('#myModalTypescontainer' + entId).empty();
         $.each(currentfeature.properties.types, function (t, types) {
             if ($('#myModalTypescontainer' + entId).is(':empty')) {
-                $('#myModalTypescontainer' + entId).append('<p><h6>Properties</h6></p>');
+                $('#myModalTypescontainer' + entId).append('<p><h6>Properties:</h6></p>');
             }
 
             var classification = types.name;
@@ -963,7 +963,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
         $('#myModalDimensionscontainer' + entId).empty();
         $.each(currentfeature.properties.dimensions, function (d, dimensions) {
             if ($('#myModalDimensionscontainer' + entId).is(':empty')) {
-                $('#myModalDimensionscontainer' + entId).append('<p><h6>Dimensions</h6></p>');
+                $('#myModalDimensionscontainer' + entId).append('<p><h6>Dimensions:</h6></p>');
             }
 
             var dimension = dimensions.name;
@@ -978,7 +978,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
         $('#myModalMaterialcontainer' + entId).empty();
         $.each(currentfeature.properties.material, function (d, material) {
             if ($('#myModalMaterialcontainer' + entId).is(':empty')) {
-                $('#myModalMaterialcontainer' + entId).append('<p><h6>Material</h6></p>');
+                $('#myModalMaterialcontainer' + entId).append('<p><h6>Material:</h6></p>');
             }
 
             var materialname = material.name;
