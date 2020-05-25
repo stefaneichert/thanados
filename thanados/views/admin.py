@@ -1963,7 +1963,7 @@ UPDATE thanados.idpath SET find_end_to = burial_end_to WHERE find_end_to > buria
 UPDATE thanados.idpath SET find_end_from = find_end_to WHERE find_end_from > find_end_to;
 */
 
--- remove contradictory timespans (subuits whith other timespan than super units)
+-- remove contradictory timespans (subunits whith other timespan than super units)
 /*
 UPDATE thanados.idpath SET grave_begin_from = site_begin_from;
 UPDATE thanados.idpath SET grave_begin_to = grave_begin_from;
