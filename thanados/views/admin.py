@@ -1816,9 +1816,70 @@ DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup WHERE syst
 
 -- remove point coordinates from graves for selected sites
 DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup where parent_id IN (
-    45625, 45179, 46747, 46267, 45143, 50577, 46313, 
-    50571, 46243, 46397, 49255, 46249, 46403, 47571, 
-    45631, 46427
+            47093, -- Althofen
+            46319, -- Atschalas
+            47079, -- Augsdorf
+            47831, -- Baardorf
+            45631, -- Baiersdorf
+            46385, -- Bleiburg Barracks
+            46295, -- Breitenstein
+            45615, -- Brückl
+            49177, -- Dellach - oldest house
+            49631, -- Dellach House No. 13
+            46409, -- Dellach House No. 38
+            45625, -- Dreulach
+            46325, -- Duel
+            46261, -- Dullach II
+            46301, -- Faak am See
+            46341, -- Faschendorf
+            49153, -- Feistritz an der Drau - Görz
+            45179, -- Feistritz Bleiburg
+            47571, -- Förk
+            45161, -- Friedlach
+            47883, -- Friesach Galgenbichl
+            45665, -- Friesach Olsa
+            46591, -- Gödersdorf
+            45143, -- Göriach
+            45675, -- Goritschach Brodnikkreuz
+            46747, -- Grafenstein
+            50565, -- Graßdorf
+            45797, -- Grassen
+            45837, -- Gratzerkogel
+            46307, -- Griffen
+            46267, -- Gurina
+            45723, -- Heiligenblut
+            47693, -- Hermagor
+            46313, -- Hochosterwitz
+            47713, -- Höflein
+            45867, -- Hundsdorf Rosental
+            45167, -- Kanzianiberg
+            45715, -- Kappel am Krappfeld
+            45463, -- Kathreinkogel
+            46359, -- Keutschach
+            46331, -- Kolbnitz
+            46371, -- Kosasmojach
+            46365, -- Köttmannsdorf
+            50577, -- Krainberg
+            45191, -- Lamprechtskogel
+            46255, -- Längdorf
+            45185, -- Launsdorf
+            47435, -- Lebmach
+            45423, -- Lendorf 1
+            45861, -- Lendorf 2
+            45651, -- Maria Rain
+            45197, -- Metschach
+            46421, -- Oberdorf
+            45843, -- Obermieger
+            45659, -- Plescherken
+            45761, -- Puch
+            50597, -- Pulst
+            45825, -- Puppitsch Obermühlbach
+            46415, -- Ratschitschach
+            50589, -- Reisberg
+            46753, -- Straßfried
+            45457, -- Tscheltschnigkogel
+            46275, -- Ulrichsberg I
+            46289 -- Ulrichsberg II
     ));  
 
 --remove point geom if polygon geom exists
@@ -1884,7 +1945,7 @@ FROM thanados.sites s LEFT JOIN model.entity m1 on s.child_id = m1.id
 	LEFT JOIN thanados.burials b ON g.child_id = b.parent_id LEFT JOIN model.entity m3 on b.child_id = m3.id
 	LEFT JOIN thanados.finds f ON b.child_id = f.parent_id LEFT JOIN model.entity m4 on f.child_id = m4.id );
 
-
+-- remove contradictory timespans (subuits older than begin of super unit respectively later end than super unit)
 UPDATE thanados.idpath SET grave_begin_from = site_begin_from WHERE grave_begin_from < site_begin_from;
 UPDATE thanados.idpath SET grave_begin_to = grave_begin_from WHERE grave_begin_to < grave_begin_from;
 UPDATE thanados.idpath SET grave_end_to = site_end_to WHERE grave_end_to > site_end_to;
@@ -1894,17 +1955,51 @@ UPDATE thanados.idpath SET burial_begin_to = burial_begin_from WHERE burial_begi
 UPDATE thanados.idpath SET burial_end_to = grave_end_to WHERE burial_end_to > grave_end_to;
 UPDATE thanados.idpath SET burial_end_from = burial_end_to WHERE burial_end_from > burial_end_to;
 
-UPDATE model.entity SET begin_from = grave_begin_from FROM (SELECT id, grave_begin_from FROM model.entity e JOIN thanados.idpath i ON id = grave_id WHERE begin_from != grave_begin_from) a WHERE a.id = model.entity.id;
-UPDATE model.entity SET begin_to = grave_begin_to FROM (SELECT id, grave_begin_to FROM model.entity e JOIN thanados.idpath i ON id = grave_id WHERE begin_to != grave_begin_to) a WHERE a.id = model.entity.id;
+-- finds are left because their timespan does not concern their deposition but their production/lifecicle
+/*
+UPDATE thanados.idpath SET find_begin_from = burial_begin_from WHERE find_begin_from < burial_begin_from;
+UPDATE thanados.idpath SET find_begin_to = find_begin_from WHERE find_begin_to < find_begin_from;
+UPDATE thanados.idpath SET find_end_to = burial_end_to WHERE find_end_to > burial_end_to;
+UPDATE thanados.idpath SET find_end_from = find_end_to WHERE find_end_from > find_end_to;
+*/
 
-UPDATE model.entity SET end_from = grave_end_from FROM (SELECT id, grave_end_from FROM model.entity e JOIN thanados.idpath i ON id = grave_id WHERE end_from != grave_end_from) a WHERE a.id = model.entity.id;
-UPDATE model.entity SET end_to = grave_end_to FROM (SELECT id, grave_end_to FROM model.entity e JOIN thanados.idpath i ON id = grave_id WHERE end_to != grave_end_to) a WHERE a.id = model.entity.id;
+-- remove contradictory timespans (subuits whith other timespan than super units)
+/*
+UPDATE thanados.idpath SET grave_begin_from = site_begin_from;
+UPDATE thanados.idpath SET grave_begin_to = grave_begin_from;
+UPDATE thanados.idpath SET grave_end_to = site_end_to;
+UPDATE thanados.idpath SET grave_end_from = grave_end_to;
+UPDATE thanados.idpath SET burial_begin_from = grave_begin_from;
+UPDATE thanados.idpath SET burial_begin_to = burial_begin_from;
+UPDATE thanados.idpath SET burial_end_to = grave_end_to;
+UPDATE thanados.idpath SET burial_end_from = burial_end_to;
+UPDATE thanados.idpath SET find_begin_from = burial_begin_from;
+UPDATE thanados.idpath SET find_begin_to = find_begin_from;
+UPDATE thanados.idpath SET find_end_to = burial_end_to;
+UPDATE thanados.idpath SET find_end_from = find_end_to;
+*/
 
-UPDATE model.entity SET begin_from = burial_begin_from FROM (SELECT id, burial_begin_from FROM model.entity e JOIN thanados.idpath i ON id = burial_id WHERE begin_from != burial_begin_from) a WHERE a.id = model.entity.id;
-UPDATE model.entity SET begin_to = burial_begin_to FROM (SELECT id, burial_begin_to FROM model.entity e JOIN thanados.idpath i ON id = burial_id WHERE begin_to != burial_begin_to) a WHERE a.id = model.entity.id;
 
-UPDATE model.entity SET end_from = burial_end_from FROM (SELECT id, burial_end_from FROM model.entity e JOIN thanados.idpath i ON id = burial_id WHERE end_from != burial_end_from) a WHERE a.id = model.entity.id;
-UPDATE model.entity SET end_to = burial_end_to FROM (SELECT id, burial_end_to FROM model.entity e JOIN thanados.idpath i ON id = burial_id WHERE end_to != burial_end_to) a WHERE a.id = model.entity.id;
+
+    UPDATE model.entity SET begin_from = grave_begin_from FROM (SELECT id, grave_begin_from FROM model.entity e JOIN thanados.idpath i ON id = grave_id WHERE begin_from != grave_begin_from) a WHERE a.id = model.entity.id;
+    UPDATE model.entity SET begin_to = grave_begin_to FROM (SELECT id, grave_begin_to FROM model.entity e JOIN thanados.idpath i ON id = grave_id WHERE begin_to != grave_begin_to) a WHERE a.id = model.entity.id;
+    
+    UPDATE model.entity SET end_from = grave_end_from FROM (SELECT id, grave_end_from FROM model.entity e JOIN thanados.idpath i ON id = grave_id WHERE end_from != grave_end_from) a WHERE a.id = model.entity.id;
+    UPDATE model.entity SET end_to = grave_end_to FROM (SELECT id, grave_end_to FROM model.entity e JOIN thanados.idpath i ON id = grave_id WHERE end_to != grave_end_to) a WHERE a.id = model.entity.id;
+    
+    UPDATE model.entity SET begin_from = burial_begin_from FROM (SELECT id, burial_begin_from FROM model.entity e JOIN thanados.idpath i ON id = burial_id WHERE begin_from != burial_begin_from) a WHERE a.id = model.entity.id;
+    UPDATE model.entity SET begin_to = burial_begin_to FROM (SELECT id, burial_begin_to FROM model.entity e JOIN thanados.idpath i ON id = burial_id WHERE begin_to != burial_begin_to) a WHERE a.id = model.entity.id;
+    
+    UPDATE model.entity SET end_from = burial_end_from FROM (SELECT id, burial_end_from FROM model.entity e JOIN thanados.idpath i ON id = burial_id WHERE end_from != burial_end_from) a WHERE a.id = model.entity.id;
+    UPDATE model.entity SET end_to = burial_end_to FROM (SELECT id, burial_end_to FROM model.entity e JOIN thanados.idpath i ON id = burial_id WHERE end_to != burial_end_to) a WHERE a.id = model.entity.id;
+    
+    /*
+    UPDATE model.entity SET begin_from = find_begin_from FROM (SELECT id, find_begin_from FROM model.entity e JOIN thanados.idpath i ON id = find_id WHERE begin_from != find_begin_from) a WHERE a.id = model.entity.id;
+    UPDATE model.entity SET begin_to = find_begin_to FROM (SELECT id, find_begin_to FROM model.entity e JOIN thanados.idpath i ON id = find_id WHERE begin_to != find_begin_to) a WHERE a.id = model.entity.id;
+    
+    UPDATE model.entity SET end_from = find_end_from FROM (SELECT id, find_end_from FROM model.entity e JOIN thanados.idpath i ON id = find_id WHERE end_from != find_end_from) a WHERE a.id = model.entity.id;
+    UPDATE model.entity SET end_to = find_end_to FROM (SELECT id, find_end_to FROM model.entity e JOIN thanados.idpath i ON id = find_id WHERE end_to != find_end_to) a WHERE a.id = model.entity.id;
+    */
     """
 
     g.cursor.execute(sql_6)

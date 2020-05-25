@@ -1,3 +1,12 @@
+window.onload = function () {
+    gifs = Gifffer();
+    $('.imagebox button').on('focus', function () {
+        console.log('hallo')
+    })
+
+
+}
+
 $(document).ready(function () {
     $('#nav-manual').addClass('activePage')
     maximumHeight = ($(window).height() - $('#mynavbar').height());
@@ -39,3 +48,7 @@ function collapsebutton() {
         left: buttonpos
     });
 }
+
+
+
+

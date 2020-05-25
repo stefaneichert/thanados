@@ -1223,11 +1223,11 @@ function openStyleDialog(layerType) {
                 '<h5 class="mt-1 mb-3">Layer overview</h5>' +
                 '  <div class="card card-first">\n' +
                 '    <div class="card-header" id="InfoLayername">\n' +
-                '      <h7 class="mb-0">\n' +
+                '      <h6 class="mb-0">\n' +
                 '        <a href="#" class="btn infobtns btn-link" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoOne" aria-expanded="true" aria-controls="collapseInfoOne">\n' +
                 '        <i class="fas fa-chevron-down mr-2"></i>Info\n' +
                 '        </a>\n' +
-                '      </h7>\n' +
+                '      </h6>\n' +
                 '    </div>\n' +
                 '    <div id="collapseInfoOne" class="collapse show" aria-labelledby="headingOne">\n' +
                 '      <div class="card-body" style="padding: 1.5em 0.7em 1.5em 0.7em;\n' +
@@ -1240,11 +1240,11 @@ function openStyleDialog(layerType) {
                 '  </div>\n' +
                 '  <div class="card card-middle">\n' +
                 '    <div class="card-header" id="headingTwo">\n' +
-                '      <h7 class="mb-0">\n' +
+                '      <h6 class="mb-0">\n' +
                 '        <a href="#" class="btn infobtns btn-link" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoTwo" aria-expanded="false" aria-controls="collapseInfoTwo">\n' +
                 '        <i class="fas fa-chevron-right mr-2"></i>Results\n' +
                 '        </a>\n' +
-                '      </h7>\n' +
+                '      </h6>\n' +
                 '    </div>\n' +
                 '    <div id="collapseInfoTwo" class="collapse" aria-labelledby="headingTwo">\n' +
                 '      <div class="card-body card-table" style="padding: 0 !important;\n' +
@@ -1265,27 +1265,27 @@ function openStyleDialog(layerType) {
                 '  </div>\n' +
                 '  <div class="card card-last">\n' +
                 '    <div class="card-header" id="headingThree">\n' +
-                '      <h7 class="mb-0">\n' +
+                '      <h6 class="mb-0">\n' +
                 '        <a href="#" class="btn infobtns btn-link" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoThree" aria-expanded="false" aria-controls="collapseInfoThree">\n' +
-                '           <i class="fas fa-chevron-right mr-2"></i>Display possibilites' +
+                '           <i class="fas fa-chevron-right mr-2"></i>Display possibilities' +
                 '        </a>\n' +
-                '      </h7>\n' +
+                '      </h6>\n' +
                 '    </div>\n' +
                 '    <div id="collapseInfoThree" class="collapse" aria-labelledby="headingThree">\n' +
                 '      <div class="card-body" style="padding: 1.5em 0.7em 1.5em 0.7em;\n' +
                 '    font-size: 0.9em;">\n' +
                 '<ul class="list-group">\n' +
-                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h7 align-items-center">\n' +
+                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h6 align-items-center">\n' +
                 '    Single color\n' +
                 '    <span class="ml-1 badge float-right badge-success badge-pill"><i class="fas fa-check"></i></span>\n' +
                 '  </li>\n' +
-                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h7 align-items-center">\n' +
+                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h6 align-items-center">\n' +
                 '    <span> Multiple color </span>' + multibadge +
                 '  </li>\n' +
-                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h7 align-items-center">\n' +
+                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h6 align-items-center">\n' +
                 '    <span> Gradient color </span>' + gradibadge + gradicountbadge +
                 '  </li>\n' +
-                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h7 align-items-center">\n' +
+                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h6 align-items-center">\n' +
                 '    <span> Chart markers </span>' + chartcountbadge +
                 '  </li>\n' +
                 '</ul>' +
@@ -1448,7 +1448,7 @@ function getBasemaps() {
     OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-            '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</div>'
+            '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</div>'
     });
 
     Stamen_Terrain = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}', {

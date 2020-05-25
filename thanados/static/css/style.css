@@ -444,7 +444,7 @@ body {
     z-index: 1001 !important;
 }
 
-ui-widget-overlay ui-front {
+.ui-widget-overlay .ui-front {
     z-index: 1000;
 }
 
@@ -565,7 +565,7 @@ a.ui-button:active,
 .ui-dialog {
     padding: 0;
     -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .ui-widget-header {
@@ -878,7 +878,7 @@ input[type=color] {
     font-size: 0.875rem!important;
 }
 
-#mystyleform > .card > .card-header > h7 > .btn {
+#mystyleform > .card > .card-header > h6 > .btn {
     color: #495057 !important;
 }
 
@@ -992,6 +992,18 @@ input {
 
 .activePage {
     color: #e3e3e3!important;
+    font-weight: bold;
+}
+
+.leaflet-control-attribution a {
+    text-decoration: none;
+    color: #0089bf!important;
+    font-weight: bold;
+}
+
+.leaflet-control-attribution a:hover {
+    text-decoration: none;
+    color: #005a82 !important;
     font-weight: bold;
 }
 
