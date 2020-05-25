@@ -995,6 +995,18 @@ input {
     font-weight: bold;
 }
 
+.leaflet-control-attribution a {
+    text-decoration: none;
+    color: #0089bf!important;
+    font-weight: bold;
+}
+
+.leaflet-control-attribution a:hover {
+    text-decoration: none;
+    color: #005a82 !important;
+    font-weight: bold;
+}
+
 /*
 #mytablebody td, #mybibbody td {
     background: #f2f2f2;
