@@ -52,6 +52,10 @@ a:focus {
     cursor: default;
 }
 
+.manualbox .btn-secondary {
+    min-width: 30px;
+}
+
 .manualbox > p > a:hover {
     color: #003db3;
     text-decoration: underline;
@@ -81,6 +85,11 @@ span {
     display: inline-block;
 }
 
+.manualbox ul {
+    background: #f9f9f9;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
 /* ---------------------------------------------------
     SIDEBAR STYLE
 ----------------------------------------------------- */

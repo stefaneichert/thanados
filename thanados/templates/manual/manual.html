@@ -117,13 +117,13 @@
                     </a>
                     <ul class="collapse list-unstyled" id="searchSubmenu">
                         <li>
-                            <a href="#searchResults">Resultmap</a>
+                            <a href="#searchResults">Results</a>
+                        </li>
+                        <li>
+                            <a href="#searchMap">Map</a>
                         </li>
                         <li>
                             <a href="#searchCombined">Combined search</a>
-                        </li>
-                        <li>
-                            <a href="#searchExport">Export</a>
                         </li>
                     </ul>
                 </li>
@@ -274,9 +274,9 @@
                         in the list on the <a href="#sites">sites</a> page.
                     </p>
                     <p>
-                        Technically these maps are based on <a href="https://leafletjs.com/"
-                                                               target="_blank">Leaflet</a> along
-                        with various plugins.
+                        Technically these maps are based on
+                        <a href="https://leafletjs.com/" target="_blank">Leaflet</a>
+                        along with various plugins.
                     </p>
                     <img class="img-fluid" src="static/images/manual/map.jpg" alt="Map">
                     <p>
@@ -343,7 +343,11 @@
                         highlighted on the map.
                     </p>
                     <p>
-                        The <i class="btn-secondary btn-sm fas fa-info"></i> button opens a detailed
+                        The <i class="btn-secondary btn-sm fas fa-info" style="min-width:
+                        0!important"></i>
+                        button
+                        opens a
+                        detailed
                         summary of the grave's catalogue entry along with all available images of
                         the features and finds.
                     </p>
@@ -583,11 +587,13 @@
                     </p>
 
                     <p>
-                        <span class="btn-secondary btn-xs">Σ</span> visualises the data as absolute
+                        <span class="btn-secondary btn-xs" style="padding-left: 10px;">Σ</span>
+                        visualises the data as absolute
                         values.
                     </p>
                     <p>
-                        <span class="btn-secondary btn-xs">%</span> visualises the data with
+                        <span class="btn-secondary btn-xs" style="padding-left: 9px;">%</span>
+                        visualises the data with
                         percentage values.
                     </p>
                     <p>
@@ -797,104 +803,247 @@
                 <div class="manualbox">
                     <h3 id="search">Search</h3>
                     <p>
-                    On the search page you can carry out searches within all cemeteries that
-                    are available in the database (intersite search).
-                </p>
-                <p>
-                    In the first step you can select the level on which you want to search:
-                </p>
-                <ul>
-                    <li><b>Cemeteries:</b> all properties connected to the cemetery (e.g.
-                        classification, timespan, evidence etc.)
-                    </li>
-                    <li><b>Graves:</b> all properties connected to a grave (e.g. length,
-                        height/depth, azimuth, grave construction etc.)
-                    </li>
-                    <li><b>Burials:</b> all properties connected to a burial (e.g.
-                        anthropology, sex, orientation of the skeleton)
-                    </li>
-                    <li><b>Finds:</b> all properties connected to the finds (e.g. types,
-                        material, dimensions, position of find in grave etc.)
-                    </li>
-                </ul>
-                <p>
-                    The next step lets you choose the criteria you want to search for:
-                </p>
-                <ul>
-                    <li><b>Maintype:</b> Filter for the main classification of the entity</li>
-                    <li><b>Properties:</b> All "type" like properties and attributes aside from
-                        the main type that are connected to the entity.
-                    </li>
-                    <li><b>Timespan:</b> Lets you define a time range filter with and earliest
-                        begin and latest end between which the entity has its chronological
-                        range
-                    </li>
-                    <li><b>Dimensions:</b> Filter for certain dimensions (minimum and maximum)
-                        that the respective entity has.
-                    </li>
-                    <li><b>Material:</b> Filter for certain materials that the entity consists
-                        of. You can also define a minimum and maximum (weight percentage) like
-                        between 90% and 100% copper that the respective entity should have.
-                    </li>
-                    <li><b>Value properties:</b> Filter for certain properties that are
-                        connected with a value. E.g. the property "maximum age" of
-                        an individual that ranges between two user defined values.
-                    </li>
-                </ul>
-                <div class="imagebox img-fluid">
-                    <img data-gifffer="static/images/manual/mapsearch.gif"
-                         data-gifffer-width="100%" data-gifffer-height="auto">
-                </div>
-                <p>
-                    If you select <b>maintype</b>, <b>properties</b>, <b>material</b> or <b>value
-                    properties</b> another dialog will open that allows you to select the
-                    respective category. This is achieved via a hierarchical property tree. You
-                    can expand the tree branches by clicking the triangle button left to the
-                    property name. Also you can enter the search term in the text box on top.
-                    Click on <b>select</b> once the desired node has been clicked. Selecting one
-                    property in the tree will also include all sub-properties of this very
-                    category in your search results. E.g. choosing "Attack Weapons" in the
-                    "maintype" selection for finds will also include all entries
-                    like "Swords", "Arrowheads" etc. for your search result.
-                </p>
-                <p>
-                    If you filter by <b>dimensions</b> you can select the respective dimension
-                    from a dropdown and then define the minimum and maximum values.
-                </p>
-                <p>
-                    If you filter by <b>timespan</b> you can define the minimum and maximum
-                    years (CE). For years before year 0 just prepend a minus " - " to the
-                    number.
-                </p>
-
-                <p>
-                    Once your search delivers results, this is displayed in the search dialog.
-                    Also if there are no results for your parameters.
-                    Now you can inspect the list of results
-                    <i class="btn-secondary btn-sm fas fa-list"></i> (where you can also
-                    download the results as CSV list file), add the search results as layer to
-                    the map <i class="btn-secondary btn-sm fas fa-map-marked"></i>,
-                    or add another combined search
-                    <i class="btn-secondary btn-sm fas fa-plus"></i>
-                    that will result in an intersection of the existing search results and your
-                    new parameters. You can also reset your search anytime by clicking
-                    <i class="btn-secondary btn-sm fas fa-sync-alt"></i>.
-                </p>
-                    <h4 id="searchResults">Resultmap</h4>
-                    <p>
-
+                        On the search page you can carry out searches within all cemeteries that
+                        are available in the database (intersite search).
                     </p>
+                    <p>
+                        In the first step you can select the level on which you want to search:
+                    </p>
+                    <ul>
+                        <li><b>Cemeteries:</b> all properties connected to the cemetery (e.g.
+                            classification, timespan, evidence etc.)
+                        </li>
+                        <li><b>Graves:</b> all properties connected to a grave (e.g. length,
+                            height/depth, azimuth, grave construction etc.)
+                        </li>
+                        <li><b>Burials:</b> all properties connected to a burial (e.g.
+                            anthropology, sex, orientation of the skeleton)
+                        </li>
+                        <li><b>Finds:</b> all properties connected to the finds (e.g. types,
+                            material, dimensions, position of find in grave etc.)
+                        </li>
+                    </ul>
+                    <p>
+                        The next step lets you choose the criteria you want to search for:
+                    </p>
+                    <ul>
+                        <li><b>Maintype:</b> Filter for the main classification of the entity</li>
+                        <li><b>Properties:</b> All "type" like properties and attributes aside from
+                            the main type that are connected to the entity.
+                        </li>
+                        <li><b>Timespan:</b> Lets you define a time range filter with and earliest
+                            begin and latest end between which the entity has its chronological
+                            range
+                        </li>
+                        <li><b>Dimensions:</b> Filter for certain dimensions (minimum and maximum)
+                            that the respective entity has.
+                        </li>
+                        <li><b>Material:</b> Filter for certain materials that the entity consists
+                            of. You can also define a minimum and maximum (weight percentage) like
+                            between 90% and 100% copper that the respective entity should have.
+                        </li>
+                        <li><b>Value properties:</b> Filter for certain properties that are
+                            connected with a value. E.g. the property "maximum age" of
+                            an individual that ranges between two user defined values.
+                        </li>
+                    </ul>
+                    <div class="imagebox img-fluid">
+                        <img data-gifffer="static/images/manual/search.gif"
+                             data-gifffer-width="100%" data-gifffer-height="auto">
+                    </div>
+                    <p>
+                        If you select <b>maintype</b>, <b>properties</b>, <b>material</b> or <b>value
+                        properties</b> another dialog will open that allows you to select the
+                        respective category. This is achieved via a hierarchical property tree. You
+                        can expand the tree branches by clicking the triangle button left to the
+                        property name. Also you can enter the search term in the text box on top.
+                        Click on <b>select</b> once the desired node has been clicked. Selecting one
+                        property in the tree will also include all sub-properties of this very
+                        category in your search results. E.g. choosing "Attack Weapons" in the
+                        "maintype" selection for finds will also include all entries
+                        like "Swords", "Arrowheads" etc. for your search result.
+                    </p>
+                    <p>
+                        If you filter by <b>dimensions</b> you can select the respective dimension
+                        from a dropdown and then define the minimum and maximum values.
+                    </p>
+                    <p>
+                        If you filter by <b>timespan</b> you can define the minimum and maximum
+                        years (CE). For years before year 0 just prepend a minus " - " to the
+                        number.
+                    </p>
+
+
+                    <h4 id="searchResults">Results</h4>
+                    <p>
+                        Once your search parameters are defined the search will start
+                        automatically and the results are shown in a list.
+                        If not if there are no results for your parameters, this is shown as
+                        information in the search form.
+                        The heading shows you the search parameters. If you want to remove this
+                        search from the window, just select the "Remove" option in the heading.
+                    </p>
+                    <div class="imagebox img-fluid">
+                        <img data-gifffer="static/images/manual/searchList.gif"
+                             data-gifffer-width="100%" data-gifffer-height="auto">
+                    </div>
+                    <p>
+                        The list shows you an overview of the results with the name of the entity
+                        in the first column. The <i class="fas fa-image"></i>
+                        icon shows you a preview image (if there is one available for this
+                        entity). Clicking the name will open the <a href="#entity">Detailed
+                        View</a> of this entity in a new tab.
+                    </p>
+                    <p>
+                        The second column lists the result for your search
+                        query. E.g. if you search for <b>Finds</b> with the <b>Maintype</b>
+                        "Attack Weapons" this column lists the type of weapon the respective
+                        entity has.
+                    </p>
+                    <p>
+                        If values are connected to your search parameters (e.g. if you search for
+                        the <b>Depth</b> of <b>Graves</b>) this value is listed in the next column.
+                    </p>
+                    <p>
+                        The last column shows you the context of the entity (e.g. the site where
+                        the respective grave was found or the burial to which the find is
+                        associated to.
+                    </p>
+                    <p>
+                        You can sort each column by clicking its header and filter the results by
+                        entering text or numbers in the "Search" box at the top right of the list.
+                    </p>
+
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-quote-right"></i> shows you a
+                        citation recommendation for your search data.
+                    </p>
+
+                    <h4 id="searchMap">Map</h4>
+                    <p>
+                        After your search results are calculated the sites in which they occur are
+                        shown automatically on a map in the search form. By default they are
+                        shown as coloured circles (clustered) with the number of results per site
+                        inscribed.
+                        The color ranges from green to orange depending on the count of results
+                        per site.
+                    </p>
+                    <p>
+                        If you click the circle (and if there is more than one result for this
+                        site) the circle will split up and show you each result as single circle.
+                        A tooltip will give you further information or, if you click the
+                        circle, open a popup with more details and a link to the <a
+                            href="#entity">Detailed View</a> of this entity.
+                    </p>
+
+                    <p>
+                        <i class="btn-secondary btn-xs pr-2 pl-2">
+                            <img height="15px" src="static/images/icons/layers.png" alt=""></i>
+                        in the top right corner allows you to change the background map. By
+                        default a landscape map based on OpenStreetMap by
+                        <a href="https://thunderforest.com" target="_blank">Thunderforest</a>
+                        is active. Other options are satellite/aerial photographs from
+                        <a href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9"
+                           target="_blank">Esri</a> and the standard
+                        <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>.
+                        You can also select/deselect between layers: the default (clustered) result
+                        circles and single symbol circles as well as a density
+                        (heatmap) visualisation of your results.
+                    </p>
+
+                    <p>
+                    <span class="btn-secondary btn-xs">
+                        <i class="fas fa-arrows-alt"
+                           style="transform:rotate(45deg); padding-left: 2px; font-size: 16px;"></i>
+                    </span>
+                        maximises the map to full screen.
+                    </p>
+
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-palette"></i> opens a dialog for
+                        styling options of the single symbol layer.
+                    </p>
+
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-download"></i> allows for
+                        downloading the search result either as
+                        <i class="btn-secondary btn-sm fas fa-list-alt"></i> CSV list or as
+                        <i class="btn-secondary btn-sm fas fa-map-marker-alt"></i> GeoJSON file
+                        that you can use in every common GIS software
+                    </p>
+
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-image"></i> allows you to download the
+                        map as image file either in A4 portrait or A4 landscape format. The image
+                        quality depends on your screen resolution. Please note that in some browsers
+                        the map background is not rendered completely on the first try.
+                        If your exported image shows blank parts please repeat the export.
+                        Currently only the map and its content are exported. If
+                        you need the legend as well as buttons and other map elements that are shown
+                        on your screen, you could create a screenshot. Also here the resolution of
+                        the image depends on your screen resolution.
+                    </p>
+
 
                     <h4 id="searchCombined">Combined search</h4>
                     <p>
-
+                        When your search is finished and the results are shown, in the right bottom
+                        corner of the search form the option for
+                        <span class="btn-secondary btn-xs">Combine Search</span>
+                        can be chosen to expand respectively narrow your search. After choosing one
+                        option a new search will start and depending on the option do the following:
                     </p>
-
-                    <h4 id="searchExport">Export</h4>
+                    <ul>
+                        <li>
+                            <b>And</b> takes the result as a base and searches for the new
+                            parameters in this dataset. This will be an intersection of both
+                            results:
+                            If you search on the find level both times, once for crescent shaped
+                            temple rings and then for finds that have at least 80% of copper as
+                            material this will result in all finds classified as crescent shaped
+                            temple ring (or subcategories of this) that are produced of 80%
+                            copper or more.
+                            When combining different search levels this intersection shows you,
+                            depending on the direction, either results from the lower level that
+                            were found in results of the higher level respectively results from
+                            the higher level that contain results from the lower level. E.g. if
+                            you take the result for "graves" with "multiple burials" and combine
+                            it with a search for "finds" that are "attack weapons" you will get
+                            all weapons that were found in graves with multiple burials.
+                            The other way round you would get all graves with multiple burials
+                            that contain weapons.
+                        </li>
+                        <li>
+                            <b>Or</b> takes the result as a base and adds the result for the new
+                            parameters to this dataset.
+                            This way you can for example search for different types of finds and
+                            combine them in one map. E.g. all occurences of finds with the
+                            maintypes "jewelry" along with all finds of the maintype "seax".
+                            You can also mix levels. E.g. search for certain finds and union them
+                            with the results for certain types of burials.
+                        </li>
+                        <li>
+                            <b>Not</b> excludes the first result from the new search. For example if
+                            your first result was a search for all finds with a maintype
+                            "jewelry" and your "not" search will be for all cemeteries that have
+                            the maintype "inhumation cemtery" this will result in all inhumation
+                            cemteries that do not contain jewelry finds.
+                            If your first search was on the cemetery level for the maintype of
+                            "churchyard" and your "not" search will be for burials that are
+                            classified with "sex" is "female" you will get all female burials
+                            that were not found in churchyards.
+                        </li>
+                    </ul>
                     <p>
-
+                        You can also combine an already combined search with a combined
+                        search with all possibilities described above.
                     </p>
-
+                    <p>
+                        At the bottom of the window, once one search is done, there is a
+                        <span class="btn-secondary btn-xs">New Search</span> button that will
+                        start a completely new search without combining it with existing
+                        searches.
+                    </p>
                 </div>
             </div>
 
@@ -905,7 +1054,7 @@
                     <p>
                         Wherever possible, THANADOS provides its content under a
                         <a href="http://creativecommons.org/licenses/by/4.0/"> Creative
-                            Commons Attribution 4.0 International License</a>
+                            Commons Attribution 4.0 International License</a>.
                         For a recommendation on how to cite the respective entity and detailed
                         information, a quotation icon <i
                             class="fas fa-quote-right"></i> will provide detailed information.
