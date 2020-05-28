@@ -189,13 +189,13 @@
                     <p>You can filter the list by entering text (e.g. names or categories) into the
                         <b>search field</b> and by adjusting the “begin” and “end” timespans of the
                         respective sites with the <b>time
-                            sliders</b></p>
+                            sliders</b>.</p>
                     <p>On the map the sites are shown as well and can be selected by clicking on the
                         respective markers.<br>
                         With the top right button of the map you can select between markers,
                         clustered markers and a density representation of the sites.</p>
                     <p>Furthermore, you also can sort the site list alphabetically by <b>name</b>,
-                        <b>type</b>, <b>begin</b> or <b>end</b> time as well as by the count of <b>graves</b>
+                        <b>type</b>, <b>begin</b> or <b>end</b> time as well as by the count of <b>graves</b>.
                     </p>
                     <p>The list length can be adjusted at the top and you can select the list pages
                         at the bottom of the list.</p>
@@ -211,7 +211,7 @@
                         page with a <b>permanent link</b>. This page can be accessed from
                         throughout the whole application either by clicking the entity's link in
                         the respective lists or the link icon
-                        <i class="fas fa-link"> </i> (e.g from within the map view).
+                        <i class="fas fa-link"> </i> (e.g. from within the map view).
                         Here you get a structured overview including descriptions,
                         classifications, spatial and chronological position along with
                         subunits and further metadata (e.g. bibliographical sources, external
@@ -249,7 +249,7 @@
                     <p>
                         The <b>list</b> of subunits organises all respective entities (e.g.
                         graves, burials or finds) of a superior unit in a table, much like the
-                        site list on the "Sites" page, with the information on <b>name</b>,
+                        site list on the <a href="#sites">sites</a> page, with the information on <b>name</b>,
                         <b>type</b>,
                         <b>begin</b> and <b>end</b> date as well as number of <b>finds</b>,
                         allowing again to sort the list by any of those characteristics. By
@@ -340,7 +340,7 @@
                     <p>
                         <i class="btn-secondary btn-xs pr-2 pl-2">
                             <img height="15px" src="static/images/icons/layers.png" alt=""></i>
-                        in the top left corner allows you to change the background map. By default a
+                        in the top right corner allows you to change the background map. By default a
                         landscape map based on OpenStreetMap by
                         <a href="https://thunderforest.com" target="_blank">Thunderforest</a>
                         is active. Other options are satellite/aerial photographs from
@@ -401,13 +401,13 @@
                         The next step lets you choose the criteria you want to search for:
                     </p>
                     <ul>
-                        <li><b>Maintype:</b> Filter for the main classification of the entity</li>
+                        <li><b>Maintype:</b> Filter for the main classification of the entity.</li>
                         <li><b>Properties:</b> All "type" like properties and attributes aside from
                             the main type that are connected to the entity.
                         </li>
-                        <li><b>Timespan:</b> Lets you define a time range filter with and earliest
+                        <li><b>Timespan:</b> Lets you define a time range filter with earliest
                             begin and latest end between which the entity has its chronological
-                            range
+                            range.
                         </li>
                         <li><b>Dimensions:</b> Filter for certain dimensions (minimum and maximum)
                             that the respective entity has.
@@ -489,22 +489,30 @@
                         <i class="fas fa-draw-polygon"></i> <b>polygon layer</b>).
                         All results will be displayed in the same way.
                     </p>
+                    <div class="imagebox img-fluid">
+                        <img data-gifffer="static/images/manual/layers1.gif"
+                             data-gifffer-width="100%" data-gifffer-height="auto">
+                    </div>
                     <p>
                         <i class="fas fa-palette"></i> opens the <b>Multiple color layer options</b>.
                         Here you can
                         adjust the <b>Legend title</b>, the <b>Opacity</b>, the <b>Border color</b>,
                         the <b>Border width</b>
                         and the <b>Radius</b> as well.
-                        Aditionally, however, you can set a specific colour for each distinguished
+                        Additionally, however, you can set a specific colour for each distinguished
                         category individually
                         here, by clicking on the color field of the respective category.
                     </p>
+                    <div class="imagebox img-fluid">
+                        <img data-gifffer="static/images/manual/layers2.gif"
+                             data-gifffer-width="100%" data-gifffer-height="auto">
+                    </div>
                     <p>
                         <i class="fas fa-swatchbook"></i> opens the <b>Gradient color layer
                         options</b>. Here once again
                         you can adjust <b>Legend title</b>, <b>Opacity</b>, <b>Border color</b> and
                         <b>Border width</b>.
-                        Aditionally, you can also set a <b>Color range</b> between two chosen
+                        Additionally, you can also set a <b>Color range</b> between two chosen
                         colours, by clicking on
                         the color fields, and the number of colour <b>Steps</b> in between. In the
                         field <b>Point</b>
@@ -516,40 +524,28 @@
                         min/max</b> and
                         corresponding to the colour gradient.
                     </p>
+                    <div class="imagebox img-fluid">
+                        <img data-gifffer="static/images/manual/layers3.gif"
+                             data-gifffer-width="100%" data-gifffer-height="auto">
+                    </div>
                     <p>
                         <i class="fas fa-chart-pie"></i> opens the <b>Chart Markers layer options</b>. Here
                         you can adjust <b>Legend title</b>, <b>Opacity</b>, <b>Radius</b> and <b>Border width</b>.
-                        Aditionally, you can also set the <b>Bar thickness</b> of the chart markers.
+                        Additionally, you can also set the <b>Bar thickness</b> of the chart markers.
                         Again, you can set a specific colour for each distinguished category individually
                         here, by clicking on the color field of the respective category.
                     </p>
+                    <div class="imagebox img-fluid">
+                        <img data-gifffer="static/images/manual/layers4.gif"
+                             data-gifffer-width="100%" data-gifffer-height="auto">
+                    </div>
                     <p>
                         To visualise the chosen options as described above on the map, the following buttons must be
                         clicked,
                         where applicable, shown to the bottom of the respective window:
                     </p>
 
-                    <p>
-                        <i class="btn-secondary btn-sm fas fa-map-marked"></i> will add the chosen layer to the map as
-                        well as to the legend.
-                    </p>
-                    <p>
-                        <i class="btn-secondary btn-sm fas fa-list"></i> opens a new window with a list of the search
-                        results. By clicking on the button <span class="btn-primary btn-xs">Export CSV</span> you can
-                        export the data as CSV file.
-                    </p>
-                    <p>
-                        <i class="btn-secondary btn-sm fas fa-save"></i> allows you to download the search results as
-                        geodata. In the dropdown menu you can choose between downloading the data as "Polygons"
-                        respectively as "Points".
-                    </p>
-                    <p>
-                        <i class="btn-secondary btn-sm fas fa-clone"></i> duplicates the layer and adds it to the map
-                        with a different colour.
-                    </p>
-                    <p>
-                        <i class="btn-secondary btn-sm fas fa-trash-alt"></i> deletes the respective layer from the map.
-                    </p>
+                    <div class="whitebox">
                     <p>
                         <i class="btn-secondary btn-sm fas fa-map-marker"></i> visualises the respective results as
                         point layer.
@@ -561,6 +557,38 @@
                     <p>
                         <i class="btn-secondary btn-sm fas fa-chart-pie"></i> visualises the respective results, where
                         applicable, as chart-marker layer.
+                    </p>
+                    </div>
+
+                    <br>
+                    <p>
+                        Additionally, you have the following options:
+                    </p>
+
+                    <div class="whitebox">
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-list"></i> opens a new window with a list of the search
+                        results. By clicking on the button <span class="btn-primary btn-xs">Export CSV</span> you can
+                        export the data as CSV list file.
+                    </p>
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-save"></i> allows you to download the search results as
+                        geodata. With the dropdown menu you can choose between downloading the data as "Polygons"
+                        respectively as "Points".
+                    </p>
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-clone"></i> duplicates the layer and adds it to the map
+                        a second time with a different colour.
+                    </p>
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-trash-alt"></i> deletes the respective layer from the map.
+                    </p>
+                    </div>
+
+                    <br>
+                    <p>
+                        Finally, you can use drag and drop to move the respective layers up or down in the legend
+                        to change their order.
                     </p>
 
                 </div>
@@ -592,7 +620,7 @@
                         and by adjusting the “begin” and “end” timespans of the respective sites
                         with the <b>time sliders</b>.
                         Furthermore, you also can sort the site list by clicking the header. Please
-                        note that filtering the table (e.g by using the
+                        note that filtering the table (e.g. by using the
                         time sliders or search categories) will hide sites from the table even if
                         they are selected. Hidden entries that are selected
                         will stay selected until they are switched of.
@@ -642,7 +670,7 @@
                     <p>
                         For creating the charts THANADOS uses <a href="https://www.chartjs.org/"
                                                                  target="_blank">charts.js</a>.
-                        Boxplot and violin visualisations utilize the <a
+                        Boxplot and violin visualisations utilise the <a
                             href="https://github.com/datavisyn/chartjs-chart-box-and-violin-plot"
                             target="_blank">
                         Box and Violin Plot module</a>.
@@ -725,7 +753,7 @@
                     <h4 id="chartsAge">Age at death</h4>
                     <p>
                         Here for each cemetery boxplots respectively violin plots are created
-                        respresenting the age at death distribution.
+                        representing the age at death distribution.
                         The underlying data comes from categories given in the respective
                         publications. The categories are mapped to the following
                         values:
@@ -861,13 +889,13 @@
                         The next step lets you choose the criteria you want to search for:
                     </p>
                     <ul>
-                        <li><b>Maintype:</b> Filter for the main classification of the entity</li>
+                        <li><b>Maintype:</b> Filter for the main classification of the entity.</li>
                         <li><b>Properties:</b> All "type" like properties and attributes aside from
                             the main type that are connected to the entity.
                         </li>
                         <li><b>Timespan:</b> Lets you define a time range filter with and earliest
                             begin and latest end between which the entity has its chronological
-                            range
+                            range.
                         </li>
                         <li><b>Dimensions:</b> Filter for certain dimensions (minimum and maximum)
                             that the respective entity has.
@@ -925,8 +953,8 @@
                         The list shows you an overview of the results with the name of the entity
                         in the first column. The <i class="fas fa-image"></i>
                         icon shows you a preview image (if there is one available for this
-                        entity). Clicking the name will open the <a href="#entity">Detailed
-                        View</a> of this entity in a new tab.
+                        entity). Clicking the name will open the <a href="#entity">detailed
+                        view</a> of this entity in a new tab.
                     </p>
                     <p>
                         The second column lists the result for your search
@@ -1006,7 +1034,7 @@
                         downloading the search result either as
                         <i class="btn-secondary btn-sm fas fa-list-alt"></i> CSV list or as
                         <i class="btn-secondary btn-sm fas fa-map-marker-alt"></i> GeoJSON file
-                        that you can use in every common GIS software
+                        that you can use in every common GIS software.
                     </p>
 
                     <p>
@@ -1054,8 +1082,8 @@
                             <b>Or</b> takes the result as a base and adds the result for the new
                             parameters to this dataset.
                             This way you can for example search for different types of finds and
-                            combine them in one map. E.g. all occurences of finds with the
-                            maintypes "jewelry" along with all finds of the maintype "seax".
+                            combine them in one map. E.g. all occurrences of finds with the
+                            main types "jewelry" along with all finds of the maintype "seax".
                             You can also mix levels. E.g. search for certain finds and union them
                             with the results for certain types of burials.
                         </li>
@@ -1063,8 +1091,8 @@
                             <b>Not</b> excludes the first result from the new search. For example if
                             your first result was a search for all finds with a maintype
                             "jewelry" and your "not" search will be for all cemeteries that have
-                            the maintype "inhumation cemtery" this will result in all inhumation
-                            cemteries that do not contain jewelry finds.
+                            the maintype "inhumation cemetery" this will result in all inhumation
+                            cemeteries that do not contain jewelry finds.
                             If your first search was on the cemetery level for the maintype of
                             "churchyard" and your "not" search will be for burials that are
                             classified with "sex" is "female" you will get all female burials
@@ -1108,8 +1136,7 @@
                         using.
                         When doing so, please make sure to follow the
                         <a href="https://creativecommons.org/use-remix/" target="_blank">
-                            Creative Commons attribution guidelines
-                        </a>
+                            Creative Commons attribution guidelines</a>.
                     </p>
                     <p>
                         For digital objects that are displayed here from other sources (e.g. map
@@ -1164,7 +1191,7 @@
                         want to learn more about the
                         backend data mappings see the
                         <a href="https://redmine.openatlas.eu/projects/uni/wiki/Model_and_concept"
-                           target="_blank">OpenAtlas documentation</a>
+                           target="_blank">OpenAtlas documentation</a>.
                     </p>
 
                 </div>

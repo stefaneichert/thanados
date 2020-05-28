@@ -48,7 +48,13 @@ a:focus {
 }
 
 .manualbox > p > .btn-secondary:hover {
-    background-color: #696969!important;
+    background-color: #696969 !important;
+    cursor: default;
+}
+
+.manualbox .btn-primary:hover {
+    background-color: #007bff;
+    border-color: #007bff;
     cursor: default;
 }
 
@@ -61,7 +67,7 @@ a:focus {
     text-decoration: underline;
 }
 
-.manualbox p, .manualbox li  {
+.manualbox p, .manualbox li {
     color: #6c757d;
 }
 
@@ -91,9 +97,15 @@ span {
     padding-bottom: 1em;
 }
 
+.whitebox {
+    background: #f9f9f9;
+    padding: 1em;
+}
+
 .manualbox ul li {
     margin-right: 1em;
 }
+
 /* ---------------------------------------------------
     SIDEBAR STYLE
 ----------------------------------------------------- */
