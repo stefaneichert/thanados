@@ -517,41 +517,50 @@
                         corresponding to the colour gradient.
                     </p>
                     <p>
-                        a quotation icon <i class="fas fa-chart-pie"></i> will provide detailed
-                        information
+                        <i class="fas fa-chart-pie"></i> opens the <b>Chart Markers layer options</b>. Here
+                        you can adjust <b>Legend title</b>, <b>Opacity</b>, <b>Radius</b> and <b>Border width</b>.
+                        Aditionally, you can also set the <b>Bar thickness</b> of the chart markers.
+                        Again, you can set a specific colour for each distinguished category individually
+                        here, by clicking on the color field of the respective category.
+                    </p>
+                    <p>
+                        To visualise the chosen options as described above on the map, the following buttons must be
+                        clicked,
+                        where applicable, shown to the bottom of the respective window:
                     </p>
 
                     <p>
-                        <i class="btn-secondary btn-sm fas fa-map-marked"></i> maximises the
-                        respective chart.
+                        <i class="btn-secondary btn-sm fas fa-map-marked"></i> will add the chosen layer to the map as
+                        well as to the legend.
                     </p>
                     <p>
-                        <i class="btn-secondary btn-sm fas fa-list"></i> maximises the respective
-                        chart.
+                        <i class="btn-secondary btn-sm fas fa-list"></i> opens a new window with a list of the search
+                        results. By clicking on the button <span class="btn-primary btn-xs">Export CSV</span> you can
+                        export the data as CSV file.
                     </p>
                     <p>
-                        <i class="btn-secondary btn-sm fas fa-save"></i> maximises the respective
-                        chart.
+                        <i class="btn-secondary btn-sm fas fa-save"></i> allows you to download the search results as
+                        geodata. In the dropdown menu you can choose between downloading the data as "Polygons"
+                        respectively as "Points".
                     </p>
                     <p>
-                        <i class="btn-secondary btn-sm fas fa-clone"></i> maximises the respective
-                        chart.
+                        <i class="btn-secondary btn-sm fas fa-clone"></i> duplicates the layer and adds it to the map
+                        with a different colour.
                     </p>
                     <p>
-                        <i class="btn-secondary btn-sm fas fa-trash-alt"></i> maximises the
-                        respective chart.
+                        <i class="btn-secondary btn-sm fas fa-trash-alt"></i> deletes the respective layer from the map.
                     </p>
                     <p>
-                        <i class="btn-secondary btn-sm fas fa-map-marker"></i> maximises the
-                        respective chart.
+                        <i class="btn-secondary btn-sm fas fa-map-marker"></i> visualises the respective results as
+                        point layer.
                     </p>
                     <p>
-                        <i class="btn-secondary btn-sm fas fa-draw-polygon"></i> maximises the
-                        respective chart.
+                        <i class="btn-secondary btn-sm fas fa-draw-polygon"></i> visualises the respective results as
+                        polygon layer.
                     </p>
                     <p>
-                        <i class="btn-secondary btn-sm fas fa-chart-pie"></i> maximises the
-                        respective chart.
+                        <i class="btn-secondary btn-sm fas fa-chart-pie"></i> visualises the respective results, where
+                        applicable, as chart-marker layer.
                     </p>
 
                 </div>
@@ -698,7 +707,8 @@
                         of the gravepit is regarded, not that of the burials inside.
                         Thus only a deviation ranging from 0 to 180 degrees is given here.
                         The azimuth is automatically calculated using PostGIS
-                        <a href="https://postgis.net/docs/ST_OrientedEnvelope.html" target="_blank">ST_OrientedEnvelope</a>
+                        <a href="https://postgis.net/docs/ST_OrientedEnvelope.html"
+                           target="_blank">ST_OrientedEnvelope</a>
                         in combination with
                         <a href="https://postgis.net/docs/ST_ApproximateMedialAxis.html"
                            target="_blank">ST_ApproximateMedialAxis</a>
