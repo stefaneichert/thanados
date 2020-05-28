@@ -142,6 +142,27 @@
                     </a>
                 </li>
 
+                <li>
+                    <a href="#exportSubmenu"
+                       onclick="document.getElementById('exportFormats').scrollIntoView()"
+                       data-toggle="collapse" aria-expanded="false"
+                       class="dropdown-toggle">
+                        <i class="fas fa-file-export"></i>
+                        Export
+                    </a>
+                    <ul class="collapse list-unstyled" id="exportSubmenu">
+                        <li>
+                            <a href="#csv">CSV</a>
+                        </li>
+                        <li>
+                            <a href="#geojson">GeoJSON</a>
+                        </li>
+                        <li>
+                            <a href="#images">Images</a>
+                        </li>
+                    </ul>
+                </li>
+
             </ul>
 
         </nav>
@@ -179,91 +200,94 @@
                     <p>The list length can be adjusted at the top and you can select the list pages
                         at the bottom of the list.</p>
                 </div>
-                <div class="pt-3" id="entity">
-                    <div class="manualbox">
+            </div>
 
-                        <h3>Detailed View</h3>
-                        <p> Each entity (cemetery, grave, burial, find - see <a href="#datamodel">data
-                            model</a> for further information) in the database has its own detailed
-                            page with a <b>permanent link</b>. This page can be accessed from
-                            throughout the whole application either by clicking the entity's link in
-                            the respective lists or the link icon
-                            <i class="fas fa-link"> </i> (e.g from within the map view).
-                            Here you get a structured overview including descriptions,
-                            classifications, spatial and chronological position along with
-                            subunits and further metadata (e.g. bibliographical sources, external
-                            references etc.). Moving the cursor over a certain element will display
-                            a tooltip with further explanations.
-                        </p>
-                        <div class="imagebox img-fluid">
-                            <img data-gifffer="static/images/manual/subunits.gif"
-                                 data-gifffer-width="100%" data-gifffer-height="auto">
-                        </div>
-                        <p>
-                            <i class="btn-secondary btn-sm fas fa-quote-right"></i> displays
-                            information on the copyright respectively a recommendation on how
-                            to cite this page.</p>
-                        <p>
-                            <i class="btn-secondary btn-sm fas fa-download"></i> saves a GeoJSON
-                            file of the entity to your computer.</p>
-                        <p>
-                            <span class="btn-secondary btn-xs">Map</span> opens the map of the
-                            cemetery containing the entity.
-                        </p>
-                        <p>
-                            If available, images of the entity are shown next to the description. In
-                            case there is more than one image there are slider buttons to navigate.
-                            Clicking the images opens them in a popup. The source of the image is
-                            shown as tooltip respectively in the popup.
-                        </p>
-                        <p>
-                            A static map with the entity's position and the site's location on a
-                            mini map is shown next to it. Clicking into the map also opens the
-                            detailed and interactive cemetery map.
-                        </p>
+            <div class="pt-3" id="entity">
+                <div class="manualbox">
 
-                        <h4 id="subunits">List of Subunits</h4>
-                        <p>
-                            The <b>list</b> of subunits organises all respective entities (e.g.
-                            graves, burials or finds) of a superior unit in a table, much like the
-                            site list on the "Sites" page, with the information on <b>name</b>, <b>type</b>,
-                            <b>begin</b> and <b>end</b> date as well as number of <b>finds</b>,
-                            allowing again to sort the list by any of those characteristics. By
-                            clicking on the respective <b>entity name</b> you will be directed to
-                            the <a href="#entity">detailed view</a> of the chosen entity.
-                        </p>
-
-                        <h4 id="catalogue">Catalogue</h4>
-                        <p>
-                            By selecting the <b>catalogue</b> tab, the view changes to a catalogue
-                            view which lists not only the next but all subunits, contained in the
-                            parent unit down to the find-level. From here, again the <a
-                                href="#entity">detailed view</a>
-                            of the respective unit can be accessed by clicking on the <b>entity
-                            name</b>.
-                        </p>
-
-                        <h4 id="metadata">Metadata</h4>
-                        <p>
-                            Besides these data on actual archaeological entities also metadata are
-                            stored and each entity, where applicable, is linked to the respective
-                            <b>sources</b>, <b>external references</b>, accompanying <b>files</b>
-                            and to the license that applies to the respective digital object.
-                        </p>
-                        <img class="img-fluid" src="static/images/manual/metadata.jpg"
-                             alt="Metadata">
-                        <p>
-                            Wherever possible, THANADOS provides its content under a <a
-                                href="http://creativecommons.org/licenses/by/4.0/"> Creative
-                            Commons Attribution 4.0 International License</a>. Of course,
-                            if for certain objects another copyright applies this is documented in
-                            the database and shown in the frontend.
-                            The frontend provides persistent URLs for each entity respectively its
-                            representation in the browser.
-                        </p>
+                    <h3>Detailed View</h3>
+                    <p> Each entity (cemetery, grave, burial, find - see <a href="#datamodel">data
+                        model</a> for further information) in the database has its own detailed
+                        page with a <b>permanent link</b>. This page can be accessed from
+                        throughout the whole application either by clicking the entity's link in
+                        the respective lists or the link icon
+                        <i class="fas fa-link"> </i> (e.g from within the map view).
+                        Here you get a structured overview including descriptions,
+                        classifications, spatial and chronological position along with
+                        subunits and further metadata (e.g. bibliographical sources, external
+                        references etc.). Moving the cursor over a certain element will display
+                        a tooltip with further explanations.
+                    </p>
+                    <div class="imagebox img-fluid">
+                        <img data-gifffer="static/images/manual/subunits.gif"
+                             data-gifffer-width="100%" data-gifffer-height="auto">
                     </div>
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-quote-right"></i> displays
+                        information on the copyright respectively a recommendation on how
+                        to cite this page.</p>
+                    <p>
+                        <i class="btn-secondary btn-sm fas fa-download"></i> saves a GeoJSON
+                        file of the entity to your computer.</p>
+                    <p>
+                        <span class="btn-secondary btn-xs">Map</span> opens the map of the
+                        cemetery containing the entity.
+                    </p>
+                    <p>
+                        If available, images of the entity are shown next to the description. In
+                        case there is more than one image there are slider buttons to navigate.
+                        Clicking the images opens them in a popup. The source of the image is
+                        shown as tooltip respectively in the popup.
+                    </p>
+                    <p>
+                        A static map with the entity's position and the site's location on a
+                        mini map is shown next to it. Clicking into the map also opens the
+                        detailed and interactive cemetery map.
+                    </p>
+
+                    <h4 id="subunits">List of Subunits</h4>
+                    <p>
+                        The <b>list</b> of subunits organises all respective entities (e.g.
+                        graves, burials or finds) of a superior unit in a table, much like the
+                        site list on the "Sites" page, with the information on <b>name</b>,
+                        <b>type</b>,
+                        <b>begin</b> and <b>end</b> date as well as number of <b>finds</b>,
+                        allowing again to sort the list by any of those characteristics. By
+                        clicking on the respective <b>entity name</b> you will be directed to
+                        the <a href="#entity">detailed view</a> of the chosen entity.
+                    </p>
+
+                    <h4 id="catalogue">Catalogue</h4>
+                    <p>
+                        By selecting the <b>catalogue</b> tab, the view changes to a catalogue
+                        view which lists not only the next but all subunits, contained in the
+                        parent unit down to the find-level. From here, again the <a
+                            href="#entity">detailed view</a>
+                        of the respective unit can be accessed by clicking on the <b>entity
+                        name</b>.
+                    </p>
+
+                    <h4 id="metadata">Metadata</h4>
+                    <p>
+                        Besides these data on actual archaeological entities also metadata are
+                        stored and each entity, where applicable, is linked to the respective
+                        <b>sources</b>, <b>external references</b>, accompanying <b>files</b>
+                        and to the license that applies to the respective digital object.
+                    </p>
+                    <img class="img-fluid" src="static/images/manual/metadata.jpg"
+                         alt="Metadata">
+                    <p>
+                        Wherever possible, THANADOS provides its content under a <a
+                            href="http://creativecommons.org/licenses/by/4.0/"> Creative
+                        Commons Attribution 4.0 International License</a>. Of course,
+                        if for certain objects another copyright applies this is documented in
+                        the database and shown in the frontend.
+                        The frontend provides persistent URLs for each entity respectively its
+                        representation in the browser.
+                    </p>
                 </div>
             </div>
+
             <div class="pt-3" id="maps">
                 <div class="manualbox">
                     <h3>Maps</h3>
@@ -933,9 +957,12 @@
                         site) the circle will split up and show you each result as single circle.
                         A tooltip will give you further information or, if you click the
                         circle, open a popup with more details and a link to the <a
-                            href="#entity">Detailed View</a> of this entity.
+                            href="#entity">detailed view</a> of this entity.
                     </p>
-
+                    <div class="imagebox img-fluid">
+                        <img data-gifffer="static/images/manual/searchMap.gif"
+                             data-gifffer-width="100%" data-gifffer-height="auto">
+                    </div>
                     <p>
                         <i class="btn-secondary btn-xs pr-2 pl-2">
                             <img height="15px" src="static/images/icons/layers.png" alt=""></i>
@@ -1132,6 +1159,100 @@
 
                 </div>
             </div>
+
+            <div class="pt-3" id="exportFormats">
+                <div class="manualbox">
+
+                    <h3>Export Formats</h3>
+                    <p>
+                        THANADOS allows for exporting the provided data in various open formats.
+                        This way they can be used for further analyses, visualisations and any
+                        kind of research in other (software) environments.
+                    </p>
+                    <p>
+                        Please consider the respective
+                        <a href="#license">copyright/license</a> and cite the source when using
+                        these data for your own work.
+                    </p>
+
+                    <h4 id="csv">CSV</h4>
+                    <p>
+                        CSV <a href="https://en.wikipedia.org/wiki/Comma-separated_values"
+                               target="_blank"> (Comma Separated Values) </a>
+                        is a file format used to save lists/tables. Within THANADOS you can
+                        export your search results either from the
+                        <a href="#mapSearch">search within a cemetery (intrasite)</a>
+                        or from the
+                        <a href="#searchMap">intersite search</a>
+                        as CSV files.
+                        They can be used e.g. in spreadsheet software like Microsoft Excel or
+                        LibreOffice Calc as well as in GIS or statistical software.
+                    </p>
+                    <p>
+                        Depending on your search parameters the following information is exported
+                        from an intrasite search:
+                    <ul>
+                        <li>Site name and site id</li>
+                        <li>Search result object name, id and classifications</li>
+                        <li>Search result category and path</li>
+                        <li>Search result value and unit (if search included values)</li>
+                        <li>Timespan of search result object</li>
+                        <li>Grave name, type and id</li>
+                        <li>Geometry of the containing grave as WKT
+                            <a href="https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry"
+                               target="_blank">(Well Known Text)</a>
+                            in WGS 84 decimal degrees (EPSG 4326)
+                        </li>
+                        <li>Easting and Northing of the containing grave's centerpoint in WGS
+                            84 decimal degrees
+                        </li>
+                    </ul>
+
+                    <p>
+                        Intersite search:
+                    <ul>
+                        <li>Search result object id, name and classifications</li>
+                        <li>Search result category name, id, values and path</li>
+                        <li>Context and context ids (Site, Grave, Burial)</li>
+                        <li>Easting and Northing of the containing site's centerpoint in WGS
+                            84 decimal degrees
+                        </li>
+                    </ul>
+
+                    <h4 id="geojson">GeoJSON</h4>
+                    <p>
+                        <a href="https://en.wikipedia.org/wiki/GeoJSON" target="_blank">GeoJSON</a>
+                        is an open standard format designed for representing simple geographical
+                        features, along with their non-spatial attributes. It is based on the
+                        JavaScript Object Notation (JSON).
+                        THANADOS' GeoJSONs can be used in common GIS software as well as in
+                        web-mapping environments etc.
+                        Their spatial reference system is WGS 84 (EPSG 4326).
+                    </p>
+                    <p>
+                        You can download GeoJSON files for spatial data from:
+                    <ul>
+                        <li>the <a href="#entity">detailed view</a> of each entity</li>
+                        <li>the <a href="#mapLayers">map layers</a> menu</li>
+                        <li>the <a href="#searchMap">intersite search</a> map</li>
+                    </ul>
+                    </p>
+
+
+                    <h4 id="images">Images</h4>
+                    <p>
+                        From within THANADOS it is possible to export various elements as image
+                        files:
+                    </p>
+                    <ul>
+                        <li>Single cemetery maps</li>
+                        <li>Search result maps</li>
+                        <li>Charts</li>
+                    </ul>
+
+                </div>
+            </div>
+
         </div>
     </div>
 

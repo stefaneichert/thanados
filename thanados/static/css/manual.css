@@ -39,7 +39,7 @@ a:focus {
     transition: all 0.3s;
 }
 
-.manualbox > p > a {
+.manualbox > p > a, .manualbox li > a {
     color: #007bff;
 }
 
@@ -56,7 +56,7 @@ a:focus {
     min-width: 30px;
 }
 
-.manualbox > p > a:hover {
+.manualbox > p > a:hover, .manualbox li > a:hover {
     color: #003db3;
     text-decoration: underline;
 }
@@ -89,6 +89,10 @@ span {
     background: #f9f9f9;
     padding-top: 1em;
     padding-bottom: 1em;
+}
+
+.manualbox ul li {
+    margin-right: 1em;
 }
 /* ---------------------------------------------------
     SIDEBAR STYLE
