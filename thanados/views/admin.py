@@ -1812,8 +1812,12 @@ DELETE FROM gis.point g WHERE g.id in (
 SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'place' ORDER BY g1.system_type, g1.child_id, g2.child_name);
 
 --Remove point geometries from stratigraphic units and finds
-DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup WHERE system_type NOT IN ('feature', 'place'));
+/*
+DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup WHERE system_type NOT IN (
+'feature', 'place'));
+*/
 
+/*
 -- remove point coordinates from graves for selected sites
 DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup where parent_id IN (
             47093, -- Althofen
@@ -1881,7 +1885,7 @@ DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup where pare
             46275, -- Ulrichsberg I
             46289 -- Ulrichsberg II
     ));  
-
+*/
 --remove point geom if polygon geom exists
 DROP TABLE IF EXISTS thanados.giscleanup;
 CREATE TABLE thanados.giscleanup AS
@@ -1963,7 +1967,7 @@ UPDATE thanados.idpath SET find_end_to = burial_end_to WHERE find_end_to > buria
 UPDATE thanados.idpath SET find_end_from = find_end_to WHERE find_end_from > find_end_to;
 */
 
--- remove contradictory timespans (subuits whith other timespan than super units)
+-- remove contradictory timespans (subunits whith other timespan than super units)
 /*
 UPDATE thanados.idpath SET grave_begin_from = site_begin_from;
 UPDATE thanados.idpath SET grave_begin_to = grave_begin_from;

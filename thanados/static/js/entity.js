@@ -238,7 +238,7 @@ function getEntityData(parentName, parentId, currentfeature) {
     $('#mycontent').append(
         '<div class="container-fluid">' +
         '<div class="row mb-5">' +
-        '<div id="myData_' + entId + '" class="col-xl">' +
+        '<div id="myData_' + entId + '" class="col-lg">' +
         '<div class="row mb-3">' +
         '<h4 style="margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '" title="Name of entity">' + entName + '&nbsp;</h4>' +
         '<div style="margin-top: 0.6em; margin-left: 1em; padding-bottom: 0.6em;">' +
@@ -256,8 +256,8 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myMaterialcontainer' + entId + '"></div>' +
         '<div id="myParentcontainer' + entId + '"></div>' +
         '</div>' +
-        '<div id="myImagecontainer' + entId + '" class="maxImg col-xl-auto" style="margin-top: 4em" ></div>' +
-        '<div id="myMapcontainer" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" title="Click to open detailed map" class="col-xl" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; cursor: pointer"></div>' +
+        '<div id="myImagecontainer' + entId + '" class="maxImg col-lg-auto" style="margin-top: 4em" ></div>' +
+        '<div id="myMapcontainer" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" title="Click to open detailed map" class="col-lg" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; cursor: pointer"></div>' +
         '</div>' +
         '<div id="myChildrencontainer' + entId + '">' +
         '<nav>' +

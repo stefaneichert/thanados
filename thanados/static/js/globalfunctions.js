@@ -436,7 +436,7 @@ function validateNumbers(val1, val2, criteria) { //validate numbers and continue
         return false;
     }
 
-    if (val1 > val2 && val2 !== '') {
+    if (parseFloat(val1) > parseFloat(val2) && val2 !== '') {
         //debug //     console.log('1: ' + val1 + ' - 2: ' + val2);
         alert('First value must be lower than second value');
         return false;
