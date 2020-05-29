@@ -39,7 +39,7 @@ a:focus {
     transition: all 0.3s;
 }
 
-.manualbox > p > a, .manualbox li > a {
+.manualbox > p > a, .manualbox li > a, .whitebox a {
     color: #007bff;
 }
 
@@ -62,7 +62,7 @@ a:focus {
     min-width: 30px;
 }
 
-.manualbox > p > a:hover, .manualbox li > a:hover {
+.manualbox > p > a:hover, .manualbox li > a:hover, .whitebox a:hover {
     color: #003db3;
     text-decoration: underline;
 }
@@ -104,6 +104,7 @@ span {
 
 .manualbox ul li {
     margin-right: 1em;
+    padding: 0.3em 0;
 }
 
 /* ---------------------------------------------------
