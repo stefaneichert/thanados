@@ -1,16 +1,34 @@
-$(document).ready(function () {
-    $(".sortable").sortable();
-    $(".sortable").disableSelection();
-});
-
+$('#nav-charts').addClass('activePage')
 //prepare charts/plots and data
+//remove sites without graves
+site_ids = [];
+mysite_ids = []
+maxGraves = []
+
+$.each(sitelist, function (i, dataset) {
+        if (dataset.graves) {
+            site_ids.push(dataset.id);
+            maxGraves.push(parseInt(dataset.graves));
+        }
+    }
+)
+
+maxGraves.sort(function(a, b) {
+  return a - b;
+});
+maxGraves = maxGraves.slice(maxGraves.length-10);
+
 mysite_ids = site_ids;
-if (site_ids.length > 20) {
+if (site_ids.length > 10) {
     mysite_ids = [];
-    $.each(site_ids, function (i, dataset) {
-        if (i < 20) mysite_ids.push(site_ids[i]);
+    $.each(sitelist, function (i, dataset) {
+        if (dataset.graves >= maxGraves[0]) mysite_ids.push(dataset.id);
     })
+    if (mysite_ids.length > 10) {
+        mysite_ids = mysite_ids.slice(mysite_ids.length-10)
+    }
 }
+CurrentSelection = mysite_ids;
 
 setcharts();
 
@@ -46,28 +64,18 @@ function changeArrows() {
 
 
 //set datatable
+
 table = $('#sitelist').DataTable({
     data: filterList(sitelist),
     "pagingType": "numbers",
     "scrollX": true,
-    'columnDefs': [
-        {
-            'targets': 0,
-            'checkboxes': {
-                'selectRow': true
-            }
-        },
-        {
-            orderable: false,
-            targets: 0
-        }],
-    'select': {
-        'style': 'multi'
-    },
-    'order': [[1, 'asc']],
     columns: [
         {
-            data: "id"
+            data: "id",
+            "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                $(nTd).html('<input class="siteselector" type="checkbox" id="' + oData.id +'" value="' + oData.id + '"><label for="' + oData.id +'"></label>');
+            },
+            "orderDataType": "dom-checkbox",
         },
         {
             data: "name",
@@ -86,7 +94,18 @@ table = $('#sitelist').DataTable({
         {data: 'end'},
         {data: 'graves'}
     ],
+    'columnDefs': [
+        {
+            orderable: true,
+            targets: 0
+        },
+    ],
+    'order': [[5, 'desc']],
+    drawCallback: function () {
+        checkTheBoxes();
+    }
 });
+
 
 $(function () {
     $("#slider-range").slider({
@@ -153,30 +172,60 @@ $.fn.dataTable.ext.search.push(
     }
 );
 
-$('#submitBtn').on('click', function (e) {
-    mysite_ids = [];
-    var rows_selected = table.column(0).checkboxes.selected();
-
-    // Iterate over all selected checkboxes
-    $.each(rows_selected, function (index, rowId) {
-        // Create a hidden element
-        mysite_ids.push(rowId);
+$.fn.dataTable.ext.order['dom-checkbox'] = function (settings, col) {
+    return this.api().column(col, {order: 'index'}).nodes().map(function (td, i) {
+        return $('input', td).prop('checked') ? '1' : '0';
     });
+}
+
+$('#submitBtn').on('click', function (e) {
+    mysite_ids = CurrentSelection;
     $('#collapseFilter').collapse();
     changeArrows();
     setTimeout(setcharts, 200);
+    setSiteSelection();
 });
 
-$(document).on('change', "input[type|=\'checkbox\']", function () {
-    //console.log('check');
-    var table = $('#sitelist').DataTable();
-    rows_selected = table.column(0).checkboxes.selected();
+$(document).on('change', '#selectall', function () {
     CurrentSelection = [];
     CurrentSites = [];
-    $.each(rows_selected, function (index, rowId) {
-        CurrentSelection.push(rowId)
-    });
-    //console.log(CurrentSelection);
+    if (this.checked) {
+        CurrentSelection = site_ids;
+        $('.siteselector').each(function () {
+            this.checked = true;
+        })
+    } else {
+        CurrentSelection = [];
+        $('.siteselector').each(function () {
+            this.checked = false;
+        })
+    }
+    setSiteInfo()
+})
+
+$(document).on('change', '.siteselector', function () {
+    if (this.checked) {
+        CurrentSelection.push(parseInt(this.value));
+    } else {
+        CurrentSelection = removeItemAll(CurrentSelection, parseInt(this.value))
+    }
+    setSiteInfo()
+});
+
+function removeItemAll(arr, value) {
+    var i = 0;
+    while (i < arr.length) {
+        if (arr[i] === value) {
+            arr.splice(i, 1);
+        } else {
+            ++i;
+        }
+    }
+    return arr;
+}
+
+function setSiteInfo() {
+    CurrentSites = [];
     $.each(sitelist, function (i, site) {
         if ($.inArray(site.id, CurrentSelection) != -1) {
             CurrentSites.push(site.name);
@@ -185,7 +234,17 @@ $(document).on('change', "input[type|=\'checkbox\']", function () {
     var textarea = document.getElementById("mySelectedSites");
     textarea.value = CurrentSites.join(", ");
     $('#submitBtn').html('Apply (' + CurrentSites.length + ')')
-});
+}
+
+function checkTheBoxes() {
+    $('.siteselector').each(function () {
+        if (CurrentSelection.includes(parseInt(this.value))) {
+            this.checked = true
+        } else {
+            this.checked = false
+        }
+    })
+}
 
 function setcharts() {
 
@@ -226,8 +285,8 @@ function setcharts() {
     depthchart = new Chart(ctx, depthconfig);
 
 // orientation of graves: Data contains site and no of graves of a orientation interval of 20°
-    var myorientationdata = setChartData(orientation_data, false, true, false);
-    var orientationconfig = {
+    myorientationdata = setChartData(orientation_data, false, true, false);
+    orientationconfig = {
         // The type of chart we want to create
         type: 'bar',
         // The data for our dataset
@@ -252,7 +311,7 @@ function setcharts() {
             },
             plugins: {
                 colorschemes: {
-                    scheme: 'tableau.Tableau10'
+                    scheme: 'tableau.Tableau20'
                 }
             }
         }
@@ -263,8 +322,8 @@ function setcharts() {
 
 
 // Azimuth of graves: Data contains site and no of graves of an Azimuth interval of 20°
-    var myazimuthdata = setChartData(azimuth_data, false, true, false);
-    var azimuthconfig = {
+    myazimuthdata = setChartData(azimuth_data, false, true, false);
+    azimuthconfig = {
         // The type of chart we want to create
         type: 'bar',
         // The data for our dataset
@@ -289,7 +348,7 @@ function setcharts() {
             },
             plugins: {
                 colorschemes: {
-                    scheme: 'tableau.Tableau10'
+                    scheme: 'tableau.Tableau20'
                 }
             }
         }
@@ -299,8 +358,8 @@ function setcharts() {
     azimuthchart = new Chart(ctx, azimuthconfig)
 
 //sex of individuals: Data contains site and no of skeletons with male, female or undefined sex
-    var mysexdata = setChartData(sex_data, true, true, false, false);
-    var sexconfig = {
+    mysexdata = setChartData(sex_data, true, true, false, false);
+    sexconfig = {
         // The type of chart we want to create
         type: 'bar',
         // The data for our dataset
@@ -356,7 +415,7 @@ function setcharts() {
             },
             plugins: {
                 colorschemes: {
-                    scheme: 'tableau.Tableau10'
+                    scheme: 'tableau.Tableau20'
                 }
             }
         }
@@ -389,7 +448,7 @@ function setcharts() {
             },
             plugins: {
                 colorschemes: {
-                    scheme: 'tableau.Tableau10'
+                    scheme: 'tableau.Tableau20'
                 }
             }
         }
@@ -455,7 +514,7 @@ function setcharts() {
             },
             plugins: {
                 colorschemes: {
-                    scheme: 'tableau.Tableau10'
+                    scheme: 'tableau.Tableau20'
                 }
             }
         }
@@ -464,8 +523,27 @@ function setcharts() {
     if (typeof (burialtypeschart) != 'undefined') burialtypeschart.destroy();
     burialtypeschart = new Chart(ctx, burialtypesconfig)
 
-    var ageconfig = {
+    ageconfig = {
         type: 'violin',
+        data: setage(age_data),
+        options: {
+            responsive: true,
+            legend: {
+                position: 'top',
+            },
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'age'
+                    }
+                }]
+            },
+        }
+    };
+    ageconfigBoxplot = {
+        type: 'boxplot',
         data: setage(age_data),
         options: {
             responsive: true,
@@ -485,14 +563,14 @@ function setcharts() {
     };
     var ctx = document.getElementById('age-chart').getContext('2d');
     if (typeof (agechart) != 'undefined') agechart.destroy();
-    agechart = new Chart(ctx, ageconfig);
+    agechart = new Chart(ctx, JSON.parse(JSON.stringify(ageconfig)));
 
     $("#violin").click(function () {
         change('violin', 'agechart', 'age-chart', ageconfig);
     });
 
     $("#boxplot").click(function () {
-        change('boxplot', 'agechart', 'age-chart', ageconfig);
+        change('boxplot', 'agechart', 'age-chart', ageconfigBoxplot);
     });
 
 }
@@ -566,18 +644,13 @@ function setage(data) {
 
 //changetype of chart
 function change(newType, chartvar, canvasid, config) {
-    //var chartvar = new Chart (ctx, config);
+    eval(chartvar + '.destroy()');
+    delete eval.chartvar;
     var ctx = document.getElementById(canvasid).getContext("2d");
-
-    // Remove the old chart and all its event handles
-    if (eval.chartvar) {
-        eval.chartvar.destroy();
-    }
-
     // Chart.js modifies the object you pass in. Pass a copy of the object so we can use the original object later
     var temp = jQuery.extend(true, {}, config);
     temp.type = newType;
-    eval.chartvar = new Chart(ctx, temp);
+    eval(chartvar + ' = new Chart(ctx, temp)');
 }
 
 //remove trailing zeros from data with intervals after highest values of site with highest values
@@ -745,11 +818,17 @@ function setChartData(originalData, axesswitch, percentageset, zeroslice, prepar
 $(window).resize(function () {
     var windowheight = ($(window).height());
     $('#mycontent').css('max-height', windowheight - 56 + 'px');
+    $('#bigchart-container').css('height', (windowheight * 73 / 100));
 });
 
 $(document).ready(function () {
+    if ($(window).width() > 1000) {
+        $(".sortable").sortable();
+        $(".sortable").disableSelection();
+    }
     var windowheight = ($(window).height());
     $('#mycontent').css('max-height', windowheight - 56 + 'px');
+    $('#bigchart-container').css('height', (windowheight * 73 / 100));
 });
 
 function filterList(data) {
@@ -764,3 +843,64 @@ $('#collapseFilter').on('shown.bs.collapse', function () {
     var table = $('#sitelist').DataTable();
     table.draw();
 })
+
+function enlargeChart(currentConfig) {
+    $('.boxBtn').addClass('d-none')
+    $('.absBtn').addClass('d-none')
+    $('.modal-title').text(currentTitle);
+    $('#chart-xl').modal();
+    if (typeof (bigchart) !== 'undefined') {
+        bigchart.destroy();
+        delete bigchart
+    }
+    var ctx = document.getElementById('bigchart-container').getContext('2d');
+    bigchart = new Chart(ctx, currentConfig);
+    if (percScript !== '') {
+        $('.absBtn').removeClass('d-none')
+        percScript = percScript.substring(percScript.indexOf(",") + 1);
+        percScript = 'updateChart(bigchart,' + percScript;
+        absScript = absScript.substring(absScript.indexOf(",") + 1);
+        absScript = 'updateChart(bigchart,' + absScript;
+        $('#percBtn').click(function () {
+            eval(percScript)
+        });
+        $('#absBtn').click(function () {
+            eval(absScript)
+        });
+    } else {
+        $('.boxBtn').removeClass('d-none');
+        $('.absBtn').addClass('d-none');
+    }
+}
+
+function getCitation() {
+    updateSourceSites();
+    mysource = '"' + JSON.stringify(currentTitle.replace(/(\r\n|\n|\r)/gm, "")).replace('"', '').replace('"', '').replace(/^\s+|\s+$/g, '') + '". For Sites: ' + SourceSites + '.<br>' + mycitation1.replace("After:", "");
+    mysource = mysource.replace(/(\r\n|\n|\r)/gm, "");
+    $('#mycitation').empty();
+    $('#mycitation').html('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');
+    $('#citeModal').modal();
+}
+
+function updateSourceSites() {
+    SourceSites = '';
+    $.each(sitelist, function (i, dataset) {
+            if (mysite_ids.includes(dataset.id)) {
+                SourceSites += dataset.name + ', '
+            }
+        }
+    )
+    SourceSites = SourceSites.substr(0, (SourceSites.length - 2));
+}
+
+function setSiteSelection() {
+    updateSourceSites();
+    $('#selectedSites').html(
+        '(currently ' + mysite_ids.length + '/' + site_ids.length + ')'
+    )
+}
+
+setSiteSelection();
+$('#mySelectedSites').text(SourceSites);
+
+setSiteInfo();

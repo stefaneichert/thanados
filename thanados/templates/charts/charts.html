@@ -1,51 +1,45 @@
 {% extends "layout.html" %}
 {% block content %}
 
-    <link href="/static/vendor/node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet">
-    <script src="/static/vendor/node_modules/datatables.net/js/jquery.dataTables.js"></script>
-    <script src="/static/vendor/node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
-    <link href="/static/vendor/node_modules/jquery-datatables-checkboxes/css/dataTables.checkboxes.css"
-          rel="stylesheet">
-    <script src="/static/vendor/node_modules/jquery-datatables-checkboxes/js/dataTables.checkboxes.min.js"></script>
-    <link href="/static/css/style.css" rel="stylesheet">
-
+    <link href="/static/css/charts.css" rel="stylesheet">
 
     <div id="mycontent" style="overflow-y: auto">
-        <h2 class="my-heading container">Charts</h2>
-
         <div id="myFilter" class="card" style="margin: 2em">
             <div class="card-header" id="headingFilter">
                 <h5 class="mb-0">
-                    <button id="filterBtn" class="btn btn-link collapsed" type="button" data-toggle="collapse"
+                    <button id="filterBtn" class="btn btn-link collapsed" type="button"
+                            data-toggle="collapse"
                             data-target="#collapseFilter" aria-expanded="true"
                             aria-controls="collapseFilter">
-                        Filter/select sites to be visualised as charts<i id="filterBtnArrow"
+                        Filter/select sites to be visualised as charts <span id="selectedSites"></span><i id="filterBtnArrow"
                                                                          class="ml-3 fas fa-chevron-right"></i>
                     </button>
+
                 </h5>
             </div>
             <div id="collapseFilter" class="collapse" aria-labelledby="headingFilter">
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <table id="sitelist" class="display table table-striped table-bordered" width="100%">
-                                <div class="row">
+
+                                <div class="row mb-2">
                                     <div class="col">
                                         <label for="amount">Begin between</label>
                                         <input type="text" id="amount" readonly style="border:0;">
                                         <div id="slider-range"></div>
-                                        </p>
                                     </div>
                                     <div class="col">
                                         <label for="amount2">End between</label>
                                         <input type="text" id="amount2" readonly style="border:0;">
                                         <div id="slider-range2"></div>
-                                        </p>
+
                                     </div>
                                 </div>
+                            <table id="sitelist" class="display table table-striped table-bordered"
+                                   width="100%">
                                 <thead>
                                 <tr>
-                                    <th></th>
+                                    <th><input id="selectall" type="checkbox"><label for="selectall"></label></th>
                                     <th>Name</th>
                                     <th>Type</th>
                                     <th>Begin</th>
@@ -58,7 +52,9 @@
                     </div>
                     <div class="row mt-3">
                         <div class="col input-group">
-                            <textarea readonly id="mySelectedSites" class="form-control" aria-label="Selected sites" placeholder="Selected sites"></textarea>
+                            <textarea readonly id="mySelectedSites" style="background: #f8f9fa" class="form-control"
+                                      aria-label="Selected sites"
+                                      placeholder="Selected sites"></textarea>
                             <div class="input-group-append">
                                 <button id="submitBtn" class="btn btn-sm btn-secondary float-right"
                                         data-toggle="collapse"
@@ -74,28 +70,41 @@
         </div>
 
         <div style="display: none">
-            <input type="text" id="min" name="min">
-            <input type="text" id="max" name="max">
-            <input type="text" id="min1" name="min">
-            <input type="text" id="max1" name="max">
+            <label for="min"></label><input type="text" id="min" name="min">
+            <label for="max"></label><input type="text" id="max" name="max">
+            <label for="min1"></label><input type="text" id="min1" name="min">
+            <label for="max1"></label><input type="text" id="max1" name="max">
         </div>
 
         <div class="row sortable" style="margin: 1em">
-            <div class="col col-lg-6 mymargin">
+            <div class="col-xl-6 mymargin">
                 <div class="card" id="card_depth-chart">
                     <div class="card-header" id="headingOne">
                         <h5 class="mb-0">
-                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
                                     data-target="#collapseOne" aria-expanded="true"
                                     aria-controls="collapseOne">
                                 Depth of graves
                             </button>
-                            <button id="depthchart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
+                            <button id="depthchart_enlarge"
+                                    class="btn btn-sm btn-secondary fa-pull-right enlargeBtn"
+                                    title="enlarge" style="margin-left: 0.5em"
+                                    onclick="
+                                    percScript=$('#depthchart_percentage').attr('onclick');
+                                    absScript = $('#depthchart_absolute').attr('onclick');
+                                    currentTitle = ($( this ).siblings('.title-btn').text());
+                                    enlargeChart(depthconfig)">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                            <button id="depthchart_percentage"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
                                     title="percentage" style="margin-left: 0.5em"
                                     onclick="updateChart(depthchart, setChartData(depth_data, false, true, true), true)">
                                 %
                             </button>
-                            <button id="depthchart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
+                            <button id="depthchart_absolute"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
                                     title="absolute"
                                     onclick="updateChart(depthchart, setChartData(depth_data, false, false, true), false)">
                                 &Sigma;
@@ -111,21 +120,34 @@
                     </div>
                 </div>
             </div>
-            <div class="col col-lg-6 mymargin">
+            <div class="col-xl-6 mymargin">
                 <div class="card" id="card_sexchart">
                     <div class="card-header" id="headingThree">
                         <h5 class="mb-0">
-                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
                                     data-target="#collapseThree" aria-expanded="true"
                                     aria-controls="collapseThree">
                                 Sex of indiviuals
                             </button>
-                            <button id="sexchart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
+                            <button id="sexchart_enlarge"
+                                    class="btn btn-sm btn-secondary fa-pull-right enlargeBtn"
+                                    title="enlarge" style="margin-left: 0.5em"
+                                    onclick="
+                                    currentTitle = ($( this ).siblings('.title-btn').text());
+                                    percScript=$('#sexchart_percentage').attr('onclick');
+                                    absScript = $('#sexchart_absolute').attr('onclick');
+                                    enlargeChart(sexconfig)">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                            <button id="sexchart_percentage"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
                                     title="percentage" style="margin-left: 0.5em"
                                     onclick="updateChart(sexchart, setChartData(sex_data, true, true, false), true)">
                                 %
                             </button>
-                            <button id="sexchart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
+                            <button id="sexchart_absolute"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
                                     title="absolute"
                                     onclick="updateChart(sexchart, setChartData(sex_data, true, false, false), false)">
                                 &Sigma;
@@ -141,21 +163,34 @@
                     </div>
                 </div>
             </div>
-            <div class="col col-lg-6 mymargin mymargin">
+            <div class="col-xl-6 mymargin mymargin">
                 <div class="card" id="card_orientationchart">
                     <div class="card-header" id="headingTwo">
                         <h5 class="mb-0">
-                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
                                     data-target="#collapseTwo" aria-expanded="true"
                                     aria-controls="collapseTwo">
                                 Orientation of skeletons
                             </button>
-                            <button id="orientationchart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
+                            <button id="orientationchart_enlarge"
+                                    class="btn btn-sm btn-secondary fa-pull-right enlargeBtn"
+                                    title="enlarge" style="margin-left: 0.5em"
+                                    onclick="
+                                    currentTitle = ($( this ).siblings('.title-btn').text());
+                                    percScript=$('#orientationchart_percentage').attr('onclick');
+                                    absScript = $('#orientationchart_absolute').attr('onclick');
+                                    enlargeChart(orientationconfig)">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                            <button id="orientationchart_percentage"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
                                     title="percentage" style="margin-left: 0.5em"
                                     onclick="updateChart(orientationchart, setChartData(orientation_data, false, true, false), true)">
                                 %
                             </button>
-                            <button id="orientationchart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
+                            <button id="orientationchart_absolute"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
                                     title="absolute"
                                     onclick="updateChart(orientationchart, setChartData(orientation_data, false, false, false), false)">
                                 &Sigma;
@@ -171,21 +206,35 @@
                     </div>
                 </div>
             </div>
-            <div class="col col-lg-6 mymargin mymargin">
+            <div class="col-xl-6 mymargin mymargin">
                 <div class="card" id="card_azimuthchart">
                     <div class="card-header" id="headingTwo">
                         <h5 class="mb-0">
-                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
                                     data-target="#collapseAzi" aria-expanded="true"
                                     aria-controls="collapseAzi">
                                 Azimuth of gravepits
                             </button>
-                            <button id="azimuthchart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
+                            <button id="azimuthchart_enlarge"
+                                    class="btn btn-sm btn-secondary fa-pull-right enlargeBtn"
+                                    title="enlarge" style="margin-left: 0.5em"
+                                    onclick="
+                                    currentTitle = ($( this ).siblings('.title-btn').text());
+                                    percScript=$('#azimuthchart_percentage').attr('onclick');
+                                    absScript = $('#azimuthchart_absolute').attr('onclick');
+                                    enlargeChart(azimuthconfig)">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+
+                            <button id="azimuthchart_percentage"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
                                     title="percentage" style="margin-left: 0.5em"
                                     onclick="updateChart(azimuthchart, setChartData(azimuth_data, false, true, false), true)">
                                 %
                             </button>
-                            <button id="azimuthchart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
+                            <button id="azimuthchart_absolute"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
                                     title="absolute"
                                     onclick="updateChart(azimuthchart, setChartData(azimuth_data, false, false, false), false)">
                                 &Sigma;
@@ -202,19 +251,32 @@
                 </div>
             </div>
 
-            <div class="col col-lg-6 mymargin">
+            <div class="col-xl-6 mymargin">
                 <div class="card" id="card_age-chart">
                     <div class="card-header" id="headingFour">
                         <h5 class="mb-0">
-                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
                                     data-target="#collapseFour" aria-expanded="true"
                                     aria-controls="collapseFour">
                                 Age at death
                             </button>
-                            <button id="boxplot" class="btn btn-sm btn-secondary fa-pull-right" title="Boxplot">
+                            <button id="card_age-chart_enlarge"
+                                    class="btn btn-sm btn-secondary fa-pull-right enlargeBtn"
+                                    title="enlarge" style="margin-left: 0.5em"
+                                    onclick="
+                                    percScript= '';
+                                    absScript = '';
+                                    currentTitle = ($( this ).siblings('.title-btn').text());
+                                    enlargeChart(ageconfig)">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                            <button id="boxplot" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="Boxplot">
                                 Boxplot
                             </button>
-                            <button id="violin" class="btn btn-sm btn-secondary fa-pull-right" title="Violin plot"
+                            <button id="violin" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="Violin plot"
                                     style="margin-right: 0.5em">
                                 Violin
                             </button>
@@ -230,21 +292,34 @@
                 </div>
             </div>
 
-            <div class="col col-lg-6 mymargin">
+            <div class="col-xl-6 mymargin">
                 <div class="card" id="card_gravetypes">
                     <div class="card-header" id="headingFive">
                         <h5 class="mb-0">
-                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
                                     data-target="#collapseFive" aria-expanded="true"
                                     aria-controls="collapseFive">
                                 Types of graves
                             </button>
-                            <button id="gravetypes-chart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
+                            <button id="gravetypes-chart_enlarge"
+                                    class="btn btn-sm btn-secondary fa-pull-right enlargeBtn"
+                                    title="enlarge" style="margin-left: 0.5em"
+                                    onclick="
+                                    percScript=$('#gravetypes-chart_percentage').attr('onclick');
+                                    absScript = $('#gravetypes-chart_absolute').attr('onclick');
+                                    currentTitle = ($( this ).siblings('.title-btn').text());
+                                    enlargeChart(gravetypesconfig)">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                            <button id="gravetypes-chart_percentage"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
                                     title="percentage" style="margin-left: 0.5em"
                                     onclick="updateChart(gravetypeschart, setChartData(gravetypes, true, true, false, true), true)">
                                 %
                             </button>
-                            <button id="gravetypes-chart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
+                            <button id="gravetypes-chart_absolute"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
                                     title="absolute"
                                     onclick="updateChart(gravetypeschart, setChartData(gravetypes, true, false, false, true), false)">
                                 &Sigma;
@@ -260,21 +335,34 @@
                     </div>
                 </div>
             </div>
-            <div class="col col-lg-6 mymargin">
+            <div class="col-xl-6 mymargin">
                 <div class="card" id="card_graveconstr-chart">
                     <div class="card-header" id="headingSix">
                         <h5 class="mb-0">
-                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
                                     data-target="#collapseSix" aria-expanded="true"
                                     aria-controls="collapseSix">
                                 Grave Construction
                             </button>
-                            <button id="graveconstr-chart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
+                            <button id="graveconstr-chart_enlarge"
+                                    class="btn btn-sm btn-secondary fa-pull-right enlargeBtn"
+                                    title="enlarge" style="margin-left: 0.5em"
+                                    onclick="
+                                    percScript=$('#graveconstr-chart_percentage').attr('onclick');
+                                    absScript = $('#graveconstr-chart_absolute').attr('onclick');
+                                    currentTitle = ($( this ).siblings('.title-btn').text());
+                                    enlargeChart(graveconstrconfig)">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                            <button id="graveconstr-chart_percentage"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
                                     title="percentage" style="margin-left: 0.5em"
                                     onclick="updateChart(graveconstrchart, setChartData(graveconstr, true, true, false, true), true)">
                                 %
                             </button>
-                            <button id="graveconstr-chart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
+                            <button id="graveconstr-chart_absolute"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
                                     title="absolute"
                                     onclick="updateChart(graveconstrchart, setChartData(graveconstr, true, false, false, true), false)">
                                 &Sigma;
@@ -291,21 +379,34 @@
                 </div>
             </div>
 
-            <div class="col col-lg-6 mymargin">
+            <div class="col-xl-6 mymargin">
                 <div class="card" id="card_findtypeschart">
                     <div class="card-header" id="headingSeven">
                         <h5 class="mb-0">
-                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
                                     data-target="#collapseSeven" aria-expanded="true"
                                     aria-controls="collapseSeven">
                                 Types of finds
                             </button>
-                            <button id="findtypeschart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
+                            <button id="findtypeschart_enlarge"
+                                    class="btn btn-sm btn-secondary fa-pull-right enlargeBtn"
+                                    title="enlarge" style="margin-left: 0.5em"
+                                    onclick="
+                                    percScript=$('#findtypeschart_percentage').attr('onclick');
+                                    absScript = $('#findtypeschart_absolute').attr('onclick');
+                                    currentTitle = ($( this ).siblings('.title-btn').text());
+                                    enlargeChart(findtypeschartconfig)">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                            <button id="findtypeschart_percentage"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
                                     title="percentage" style="margin-left: 0.5em"
                                     onclick="updateChart(findtypeschart, setChartData(finds_data, true, true, false, true), true)">
                                 %
                             </button>
-                            <button id="findtypeschart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
+                            <button id="findtypeschart_absolute"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
                                     title="absolute"
                                     onclick="updateChart(findtypeschart, setChartData(finds_data, true, false, false, true), false)">
                                 &Sigma;
@@ -321,21 +422,34 @@
                     </div>
                 </div>
             </div>
-            <div class="col col-lg-6 mymargin">
+            <div class="col-xl-6 mymargin">
                 <div class="card" id="card_burialtypes">
                     <div class="card-header" id="headingEight">
                         <h5 class="mb-0">
-                            <button class="btn btn-link" type="button" data-toggle="collapse"
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
                                     data-target="#collapseEight" aria-expanded="true"
                                     aria-controls="collapseEight">
                                 Burial types
                             </button>
-                            <button id="burialtypes-chart_percentage" class="btn btn-sm btn-secondary fa-pull-right"
+                            <button id="burialtypes-chart_enlarge"
+                                    class="btn btn-sm btn-secondary fa-pull-right enlargeBtn"
+                                    title="enlarge" style="margin-left: 0.5em"
+                                    onclick="
+                                    percScript=$('#burialtypes-chart_percentage').attr('onclick');
+                                    absScript = $('#burialtypes-chart_absolute').attr('onclick');
+                                    currentTitle = ($( this ).siblings('.title-btn').text());
+                                    enlargeChart(burialtypesconfig)">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                            <button id="burialtypes-chart_percentage"
+                                    class="absBtn btn btn-sm btn-secondary fa-pull-right"
                                     title="percentage" style="margin-left: 0.5em"
                                     onclick="updateChart(burialtypeschart, setChartData(burialtypes, true, true, false, true), true)">
                                 %
                             </button>
-                            <button id="burialtypes-chart_absolute" class="btn btn-sm btn-secondary fa-pull-right"
+                            <button id="burialtypes-chart_absolute"
+                                    class="absBtn btn btn-sm btn-secondary fa-pull-right"
                                     title="absolute"
                                     onclick="updateChart(burialtypeschart, setChartData(burialtypes, true, false, false, true), false)">
                                 &Sigma;
@@ -352,10 +466,59 @@
                 </div>
             </div>
         </div>
+        <div id="chart-xl" class="modal modal-xxl" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header custom-header-bg">
+                        <h5 class="modal-title">Chart</h5>
+
+                        <button id="absBtn"
+                                class="mr-2 absBtn btn btn-sm btn-secondary fa-pull-right"
+                                title="absolute">
+                            &Sigma;
+                        </button>
+
+                        <button id="percBtn"
+                                class="absBtn btn btn-sm btn-secondary fa-pull-right"
+                                title="percentage">
+                            %
+                        </button>
+
+                        <button class="mr-2  boxBtn btn btn-sm btn-secondary fa-pull-right"
+                                title="Violin plot"
+                                style="margin-right: 0.5em"
+                                onclick="change('violin', 'bigchart', 'bigchart-container', ageconfig);">
+                            Violin
+                        </button>
+
+                        <button class="boxBtn btn btn-sm btn-secondary fa-pull-right"
+                                title="Boxplot"
+                                onclick="change('boxplot', 'bigchart', 'bigchart-container', ageconfig);">
+                            Boxplot
+                        </button>
+
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <canvas id="bigchart-container" class="chartcontainer"></canvas>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" onclick="exportChartToImg('bigchart-container', 'jpg')" title="Download chart as .jpg file" class="btn btn-primary"><i class="fas fa-file-download"></i>&nbsp; jpg</button>
+                        <button type="button" onclick="exportChartToImg('bigchart-container', 'png')" title="Download chart as .png file with transparent background" class="btn btn-primary"><i class="fas fa-file-download"></i>&nbsp; png</button>
+                        <button type="button" onclick="getCitation()" title="how to cite this" class="btn btn-secondary">
+                            <i class="fas fa-quote-right"></i>
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <script>
         depth_data = {{ depth_data|tojson }};
-        site_ids = {{ site_ids|tojson }};
         sex_data = {{ sex_data|tojson }};
         age_data = {{ age|tojson }};
         orientation_data = {{ orientation_data|tojson }};

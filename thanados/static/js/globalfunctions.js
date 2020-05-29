@@ -1,3 +1,29 @@
+$(document).ready(function () {
+    $('#mycontent').scroll(function () {
+        if ($(this).scrollTop() > 50) {
+            $('#back-to-top').fadeIn();
+        } else {
+            $('#back-to-top').fadeOut();
+        }
+    });
+    // scroll body to 0px on click
+    $('#back-to-top').click(function () {
+        //$('#back-to-top').tooltip('hide');
+        $('#mycontent').animate({
+            scrollTop: 0
+        }, 200);
+        return false;
+    });
+
+    $(document).on('show.bs.modal', '.modal', function (event) {
+        var zIndex = 1040 + (10 * $('.modal:visible').length);
+        $(this).css('z-index', zIndex);
+        setTimeout(function () {
+            $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+        }, 0);
+    });
+
+})
 $(document).on('change', "input[type|=\'text\']", function () {
     if ($(this).hasClass('legendtext')) {
         currentLegend = this.value;
@@ -106,6 +132,42 @@ function exportToJsonFile(data) {
             window.URL.revokeObjectURL(url);
         }, 0);
     }
+}
+
+function exportChartToImg(canvas, filetype) {
+
+    //create a dummy CANVAS
+    if (filetype === 'png') {
+        destinationCanvas = document.getElementById(canvas);
+        var url = destinationCanvas.toDataURL("image/png");
+
+    } else {
+        var srcCanvas = document.getElementById(canvas);
+        destinationCanvas = document.createElement("canvas");
+        destinationCanvas.width = srcCanvas.width;
+        destinationCanvas.height = srcCanvas.height;
+
+        destCtx = destinationCanvas.getContext('2d');
+
+//create a rectangle with the desired color
+        destCtx.fillStyle = "#FFFFFF";
+        destCtx.fillRect(0, 0, srcCanvas.width, srcCanvas.height);
+
+//draw the original canvas onto the destination canvas
+        destCtx.drawImage(srcCanvas, 0, 0);
+        var url = destinationCanvas.toDataURL("image/jpeg", 1.0);
+
+    }
+
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = 'ThanadosChart.' + filetype;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }, 0);
 }
 
 function toCSV(json) {
@@ -374,7 +436,7 @@ function validateNumbers(val1, val2, criteria) { //validate numbers and continue
         return false;
     }
 
-    if (val1 > val2 && val2 !== '') {
+    if (parseFloat(val1) > parseFloat(val2) && val2 !== '') {
         //debug //     console.log('1: ' + val1 + ' - 2: ' + val2);
         alert('First value must be lower than second value');
         return false;
@@ -418,7 +480,7 @@ function openStyleDialog(layerType) {
         dialogClass: 'layerdialog',
         width: mymodalwith,
         minHeight: 450,
-        position: {my: "left+20 top+20", at: "left top", of: "body"}, //$('#container')},
+        position: dialogPosition, //$('#container')},
         //height: 450,
         open: function () {
             // Destroy Close Button (for subsequent opens)
@@ -753,12 +815,12 @@ function openStyleDialog(layerType) {
             $('#MethodSelect').val(myChoromode);
             $('#gradselect').val(myChoroPntMode);
             if (myChoroPntMode == 1) {
-                    $('#minRadius').removeClass('d-none');
-                    $('#radius').html('Radius min/max:')
-                } else {
-                    $('#minRadius').addClass('d-none');
-                    $('#radius').html('Radius:')
-                };
+                $('#minRadius').removeClass('d-none');
+                $('#radius').html('Radius min/max:')
+            } else {
+                $('#minRadius').addClass('d-none');
+                $('#radius').html('Radius:')
+            }
 
             if (layertypes.gradientcolor) {
                 $('#valueOption').removeClass('d-none');
@@ -834,7 +896,7 @@ function openStyleDialog(layerType) {
             $('#minRadius').on('input change', function () {
                 mysearchpointminradius = $('#minRadius').val();
                 if (parseInt(mysearchpointminradius) < 1) $('#minRadius').val(1);
-                if (parseInt(mysearchpointminradius) >= parseInt(mysearchpointradius)) $('#minRadius').val(parseInt(parseInt(mysearchpointradius) -1));
+                if (parseInt(mysearchpointminradius) >= parseInt(mysearchpointradius)) $('#minRadius').val(parseInt(parseInt(mysearchpointradius) - 1));
             });
 
             $('#MethodSelect').on('change', function () {
@@ -1161,11 +1223,11 @@ function openStyleDialog(layerType) {
                 '<h5 class="mt-1 mb-3">Layer overview</h5>' +
                 '  <div class="card card-first">\n' +
                 '    <div class="card-header" id="InfoLayername">\n' +
-                '      <h7 class="mb-0">\n' +
+                '      <h6 class="mb-0">\n' +
                 '        <a href="#" class="btn infobtns btn-link" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoOne" aria-expanded="true" aria-controls="collapseInfoOne">\n' +
                 '        <i class="fas fa-chevron-down mr-2"></i>Info\n' +
                 '        </a>\n' +
-                '      </h7>\n' +
+                '      </h6>\n' +
                 '    </div>\n' +
                 '    <div id="collapseInfoOne" class="collapse show" aria-labelledby="headingOne">\n' +
                 '      <div class="card-body" style="padding: 1.5em 0.7em 1.5em 0.7em;\n' +
@@ -1178,11 +1240,11 @@ function openStyleDialog(layerType) {
                 '  </div>\n' +
                 '  <div class="card card-middle">\n' +
                 '    <div class="card-header" id="headingTwo">\n' +
-                '      <h7 class="mb-0">\n' +
+                '      <h6 class="mb-0">\n' +
                 '        <a href="#" class="btn infobtns btn-link" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoTwo" aria-expanded="false" aria-controls="collapseInfoTwo">\n' +
                 '        <i class="fas fa-chevron-right mr-2"></i>Results\n' +
                 '        </a>\n' +
-                '      </h7>\n' +
+                '      </h6>\n' +
                 '    </div>\n' +
                 '    <div id="collapseInfoTwo" class="collapse" aria-labelledby="headingTwo">\n' +
                 '      <div class="card-body card-table" style="padding: 0 !important;\n' +
@@ -1203,27 +1265,27 @@ function openStyleDialog(layerType) {
                 '  </div>\n' +
                 '  <div class="card card-last">\n' +
                 '    <div class="card-header" id="headingThree">\n' +
-                '      <h7 class="mb-0">\n' +
+                '      <h6 class="mb-0">\n' +
                 '        <a href="#" class="btn infobtns btn-link" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoThree" aria-expanded="false" aria-controls="collapseInfoThree">\n' +
-                '           <i class="fas fa-chevron-right mr-2"></i>Display possibilites' +
+                '           <i class="fas fa-chevron-right mr-2"></i>Display possibilities' +
                 '        </a>\n' +
-                '      </h7>\n' +
+                '      </h6>\n' +
                 '    </div>\n' +
                 '    <div id="collapseInfoThree" class="collapse" aria-labelledby="headingThree">\n' +
                 '      <div class="card-body" style="padding: 1.5em 0.7em 1.5em 0.7em;\n' +
                 '    font-size: 0.9em;">\n' +
                 '<ul class="list-group">\n' +
-                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h7 align-items-center">\n' +
+                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h6 align-items-center">\n' +
                 '    Single color\n' +
                 '    <span class="ml-1 badge float-right badge-success badge-pill"><i class="fas fa-check"></i></span>\n' +
                 '  </li>\n' +
-                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h7 align-items-center">\n' +
+                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h6 align-items-center">\n' +
                 '    <span> Multiple color </span>' + multibadge +
                 '  </li>\n' +
-                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h7 align-items-center">\n' +
+                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h6 align-items-center">\n' +
                 '    <span> Gradient color </span>' + gradibadge + gradicountbadge +
                 '  </li>\n' +
-                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h7 align-items-center">\n' +
+                '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h6 align-items-center">\n' +
                 '    <span> Chart markers </span>' + chartcountbadge +
                 '  </li>\n' +
                 '</ul>' +
@@ -1386,7 +1448,7 @@ function getBasemaps() {
     OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-            '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</div>'
+            '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</div>'
     });
 
     Stamen_Terrain = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}', {
@@ -1858,7 +1920,6 @@ function hoverMarker(linkid, currentmap) {
     }
     hovermarker._bringToFront();
     if (thismap.getBounds().contains(latlng) === false) {
-        console.log('false');
         thismap.panTo(latlng);
     }
 }
@@ -1869,3 +1930,24 @@ hovericon = L.icon({
     iconAnchor: [12, 41],
     popupAnchor: [0, -34]
 });
+
+function today() {
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+
+    today = yyyy + '/' + mm + '/' + dd;
+    return (today)
+}
+
+//captions  for lightbox images
+$.featherlight.prototype.afterContent = function () {
+    var caption = this.$currentTarget.find('img').attr('title');
+    if (caption) caption = "Image after: " + caption;
+    this.$instance.find('.caption').remove();
+    $('<div style="max-width: fit-content; font-size: 0.875em" class="caption text-muted">').text(caption).appendTo(this.$instance.find('.featherlight-content'));
+}
+
+mycitation1 = ' From: Stefan Eichert et al., MEDCEM: <a href="' + window.location + '">' + window.location + '</a> [Accessed: ' + today() + ']<br>' +
+    'Licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a><br> After: ';

@@ -28,6 +28,23 @@ $(document).ready(function () {
     if ($(window).width() < 500) $('#SidebarButton').remove();
     mymodalwith = ($(window).width());
     if (mymodalwith > 500) mymodalwith = 500;
+    if (($(window).width()) > 550) dialogPosition = {
+        my: "left+20 top+20",
+        at: "left top",
+        of: "body"
+    }
+    if (($(window).width()) <= 550) dialogPosition = {my: "left top", at: "left top", of: "body"}
+
+    if (($(window).width()) > 550) {
+        modalHeight = (newListHeight - 188);
+        modalPosition = {my: 'right bottom', at: 'right bottom-19', of: window}
+    }
+
+    if (($(window).width()) <= 550) {
+        modalHeight = $(window).height() - 56;
+        modalPosition = {my: 'bottom', at: 'bottom', of: window}
+    }
+
     $('.ui-dialog').css('max-width', mymodalwith + 'px');
     $('#mytreeModal').css('max-width', ($(window).width()) + 'px');
     $('.legend').css('max-height', (containerheight - 159))
@@ -45,6 +62,21 @@ $(window).resize(function () {
     $('body').css('max-height', windowheight - 56 + 'px');
     mymodalwith = ($(window).width());
     if (mymodalwith > 500) mymodalwith = 500;
+    if (($(window).width()) > 550) dialogPosition = {
+        my: "left+20 top+20",
+        at: "left top",
+        of: "body"
+    }
+    if (($(window).width()) <= 550) dialogPosition = {my: "left top", at: "left top", of: "body"}
+    if (($(window).width()) > 550) {
+        modalHeight = (newListHeight - 188);
+        modalPosition = {my: 'right bottom', at: 'right bottom-19', of: window}
+    }
+
+    if (($(window).width()) <= 550) {
+        modalHeight = $(window).height() - 56;
+        modalPosition = {my: 'bottom', at: 'bottom', of: window}
+    }
     $('.ui-dialog').css('max-width', mymodalwith + 'px');
     $('#mytreeModal').css('max-width', ($(window).width()) + 'px');
 });
@@ -71,31 +103,32 @@ function setmap(myjson) {
         setSidebarContent(myjson);
     } else {
         $('#accordion1').html(
-            '<div title="' + myjson.properties.maintype.path +'"style="display: block; padding: 1em"><b>Type: </b>' +
+            '<div title="' + myjson.properties.maintype.path + '" style="display: block; padding: 1em"><b>Type: </b>' +
             myjson.properties.maintype.name
-            + '<a class="float-right sitepermalink" style="color: #696969" href="../entity/' + myjson.site_id + '" title="Permalink to this entity"><h6><i class="fas fa-link"></i></h6></a></div>'
-
+            + '<a class="float-right ml-2 sitepermalink" style="color: #696969" href="../entity/' + myjson.site_id + '" title="Permalink to this entity"><h6><i class="fas fa-link"></i></h6></a>' +
+            '<a title="Link to backend" class="backendlink d-none float-right" href="' + openAtlasUrl + myjson.site_id + '" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a></div>'
         );
-        if (typeof(myjson.properties.timespan) !== 'undefined') {
+        if (typeof (myjson.properties.timespan) !== 'undefined') {
             $('#accordion1').append(
-                '<div title="Timespan"style="display: block; padding: 0 1em;"><b>Dating: </b>'+
+                '<div title="Timespan" style="display: block; padding: 0 1em;"><b>Dating: </b>' +
                 myjson.properties.timespan.begin_from + ' to ' + myjson.properties.timespan.end_to +
                 '</div>'
             )
         }
 
-        if (typeof(myjson.properties.description) !== 'undefined') {
-        $('#accordion1').append(
-            '<div style="display: block; padding: 0.5em 1em;">' +
-            myjson.properties.description
-            + '</div>'
-        )}
+        if (typeof (myjson.properties.description) !== 'undefined') {
+            $('#accordion1').append(
+                '<div style="display: block; padding: 0.5em 1em;">' +
+                myjson.properties.description
+                + '</div>'
+            )
+        }
         $('#accordion1').append(
             '<div style="display: inline-block; vertical-align: bottom; padding: 1em 0.5em 0.1em 1em;">' +
             'No graves available'
             + '</div><i title="For this site there are no graves available. This might result ' +
             'for example from missing documentation."' +
-            'style="font-size: 1.3em; color: #696969" class="fas fa-info-circle"></i>'
+            ' style="font-size: 1.3em; color: #696969" class="fas fa-info-circle"></i>'
         )
     }
 
@@ -188,10 +221,11 @@ function setmap(myjson) {
         'title="click to open layer options" ' +
         'style="background-color: ' + hexToRgbA(myStyle.color, myStyle.fillOpacity) + '; ' +
         'border: ' + myStyle.weight + 'px solid ' + myStyle.color + '">&nbsp;</div>';
-    if(setJson(myjson)) {;
-    createLegend(map, graves, currentGraves);
-    graves.addTo(map);
-    legendlayers.push(graves);}
+    if (setJson(myjson)) {
+        createLegend(map, graves, currentGraves);
+        graves.addTo(map);
+        legendlayers.push(graves)
+    }
 
     //if geometry is point create a rectangle around that point
     pointgraves = L.geoJSON(myjson, {
@@ -247,7 +281,6 @@ function setmap(myjson) {
         var latlng = [myjson.properties.center.coordinates[1], myjson.properties.center.coordinates[0]];
         var marker = L.marker(latlng).bindPopup(popupLine).addTo(map);
         centerpoint = latlng;
-        console.log('hallo marker')
         map.panTo(centerpoint);
     }
 
@@ -276,6 +309,21 @@ function setmap(myjson) {
             },
             title: 'toggle sidebar',
             icon: 'fas fa-exchange-alt'
+        }]
+    }).addTo(map);
+
+    L.easyButton({
+        id: 'CiteMeButton',  // an id for the generated button
+        position: 'topleft',      // inherited from L.Control -- the corner it goes in
+        type: 'replace',          // set to animate when you're comfy with css
+        leafletClasses: true,     // use leaflet classes to style the button?
+        states: [{                 // specify different icons and responses for your button
+            stateName: 'citeme',
+            onClick: function (button, map) {
+                getCitation();
+            },
+            title: 'how to cite this/copyright',
+            icon: 'fas fa-quote-right'
         }]
     }).addTo(map);
 
@@ -711,7 +759,8 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     );
 
     $('#myModalPermalink' + entId).append(
-        '<a href="../entity/' + entId + '" title="Permalink to this entity"><h6><i class="fas fa-link"></i></h6></a>'
+        '<a href="../entity/' + entId + '" title="Permalink to this entity" class="float-right ml-2"><h6><i class="fas fa-link"></i></h6></a>' +
+        '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + entId + '" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a>'
     );
 
     if (dateToInsert == '') {
@@ -782,6 +831,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
 
 //set images in modal
 function setImages(entId, entfiles) {
+
     if (entfiles !== undefined) {
 
         //append one image without slides
@@ -789,10 +839,14 @@ function setImages(entId, entfiles) {
             $('#myModalImagecontainer' + entId).attr("class", "col-md-4 col-sm-6");
             $('#myModalData_' + entId).attr("class", "col-md-8 col-sm-6");
             $('#myModalImagecontainer' + entId).empty();
+
             $.each(entfiles, function (f, files) {
+                if (typeof (files.source) != 'undefined') myImgSource = files.source;
+                if (typeof (files.source) == 'undefined') myImgSource = 'unknown source';
+                if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
                 $('#myModalImagecontainer' + entId).append(
                     '<a href="' + files.file_name + '" data-featherlight> \n' +
-                    '<img src="' + files.file_name + '" class="modalimg" id="mymodalimg" alt="image">\n' +
+                    '<img src="' + files.file_name + '" title="' + myImgSource + '" class="modalimg" id="mymodalimg" alt="image">\n' +
                     '</a>\n'
                 )
             });
@@ -805,7 +859,14 @@ function setImages(entId, entfiles) {
             $('#myModalData_' + entId).attr("class", "col-md-8 col-sm-6");
             $('#myModalImagecontainer' + entId).empty();
             firstimage = entfiles[0].file_name;
+            if (typeof (entfiles[0].source) != 'undefined') myImgSource = entfiles[0].source;
+            if (typeof (entfiles[0].source) == 'undefined') myImgSource = "unknown source"
+            if ((typeof (entfiles[0].source) != 'undefined') && (typeof (entfiles[0].reference) != 'undefined')) myImgSource = entfiles[0].source + ' ' + entfiles[0].reference;
             secondimage = entfiles[1].file_name;
+            if (typeof (entfiles[1].source) != 'undefined') my2ndImgSource = entfiles[1].source;
+            if (typeof (entfiles[1].source) == 'undefined') my2ndImgSource = "unknown source";
+            if ((typeof (entfiles[1].source) != 'undefined') && (typeof (entfiles[1].reference) != 'undefined')) my2ndImgSource = entfiles[1].source + ' ' + entfiles[1].reference;
+
             //create carousel and apppend first two images
             $('#myModalImagecontainer' + entId).append(
                 '<div id="carouselExampleIndicators' + entId + '" class="carousel slide" data-ride="carousel" data-interval="false">' +
@@ -815,10 +876,10 @@ function setImages(entId, entfiles) {
                 '</ol>' +
                 '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
                 '<div class="carousel-item active">' +
-                '<a href="' + firstimage + '" data-featherlight><img class="d-block modalimg" src="' + firstimage + '" alt="image"></a>' +
+                '<a href="' + firstimage + '" data-featherlight><img title="' + myImgSource + '" class="d-block modalimg" src="' + firstimage + '" alt="image"></a>' +
                 '</div>' +
                 '<div class="carousel-item">' +
-                '<a href="' + secondimage + '" data-featherlight><img class="d-block modalimg" src="' + secondimage + '" alt="image"></a>' +
+                '<a href="' + secondimage + '" data-featherlight><img title="' + my2ndImgSource + '" class="d-block modalimg" src="' + secondimage + '" alt="image"></a>' +
                 '</div>' +
                 '</div>' +
                 '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
@@ -835,9 +896,12 @@ function setImages(entId, entfiles) {
             //append further images to carousel
             $.each(entfiles, function (f, files) {
                 if (f > 1) {
+                    if (typeof (files.source) != 'undefined') myImgSource = files.source;
+                    if (typeof (files.source) == 'undefined') myImgSource = 'unknown source';
+                    if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
                     $('#mycarouselimages' + entId).append(
                         '<div class="carousel-item">' +
-                        '<a href="' + files.file_name + '" data-featherlight><img class="d-block modalimg" src="' + files.file_name + '" alt="image"></a>' +
+                        '<a href="' + files.file_name + '" data-featherlight><img title="' + myImgSource + '" class="d-block modalimg" src="' + files.file_name + '" alt="image"></a>' +
                         '</div>'
                     );
                     $('#mymodalimageindicators' + entId).append(
@@ -867,9 +931,9 @@ function modalset(id) {
     collapseAllOthers(id);
     $("#myModal").dialog({
         width: mymodalwith,
-        height: (newListHeight - 188),
+        height: modalHeight,
         title: globalentName,
-        position: {my: 'right bottom', at: 'right bottom-19', of: window},
+        position: modalPosition,
         open: function () {
             // Destroy Close Button (for subsequent opens)
             $('#myModal-close').remove();
@@ -888,6 +952,7 @@ function modalset(id) {
         }
     });
     $("#myModal").scrollTop("0");
+    if (loginTrue) $('.backendlink').removeClass('d-none')
 }
 
 function modalsetsite() {
@@ -915,6 +980,7 @@ function modalsetsite() {
         }
     });
     $("#myModal").scrollTop("0");
+    if (loginTrue) $('.backendlink').removeClass('d-none')
 }
 
 function addFilterSearch() {
@@ -936,4 +1002,40 @@ function addFilterSearch() {
         return div;
     };
     LeafletDropdownButton.addTo(map)
+}
+
+function getCitation () {
+    singleref = false;
+    mycitation2 = '';
+    if (myjson.properties.references.length === 1) singleref = true;
+
+    $.each(myjson.properties.references, function (t, ref) {
+        if (typeof (ref.title) !== 'undefined') {
+            title = ref.title;
+            citeme = title;
+        } else {
+            title = '';
+            citeme = 'unknown source';
+        }
+        if (typeof (ref.reference) !== 'undefined') {
+            page = ref.reference.replace("##main", "");
+            citeme = citeme + ' ' + page + '.';
+        } else
+            page = '';
+        mainref = false;
+        if (typeof (ref.reference) !== 'undefined' && ref.reference.includes('##main') || singleref) {
+            mainref = true;
+            mainrefthere = true;
+        }
+
+        if (mainref) {
+                mycitation2 = citeme
+        }
+    })
+
+    mysource = '"' + myjson.name + '". ' + mycitation1 + mycitation2;
+    mysource = mysource.replace(/(\r\n|\n|\r)/gm, "");
+    $('#mycitation').empty();
+    $('#mycitation').html('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');
+    $('#citeModal').modal();
 }

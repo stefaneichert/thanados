@@ -1,3 +1,5 @@
+$('#nav-search').addClass('activePage')
+
 $(document).ready(function () {
     //$(".sortable").sortable();
     //$(".sortable").disableSelection();
@@ -10,6 +12,8 @@ $(document).ready(function () {
     Queryclass = 'nix';
     ComboSearchString = 'no';
     getBasemaps();
+    if (($(window).width()) > 550) dialogPosition = {my: "left+20 top+20", at: "left top", of: "body"}
+    if (($(window).width()) <= 550) dialogPosition = {my: "left top", at: "left top", of: "body"}
 });
 
 $(window).resize(function () {
@@ -20,6 +24,8 @@ $(window).resize(function () {
     local = false;
     mymodalwith = ($(window).width());
     if (mymodalwith > 500) mymodalwith = 500;
+    if (($(window).width()) > 550) dialogPosition = {my: "left+20 top+20", at: "left top", of: "body"}
+    if (($(window).width()) <= 550) dialogPosition = {my: "left top", at: "left top", of: "body"}
 });
 
 $('#AddSearch').click(function () {
@@ -91,7 +97,10 @@ function addSearch() {
         '            <div class="m-1 map" id="map' + Iter + '" style="height: 100%; min-height: 500px; min-width: 300px"></div>' +
         '        </div>' +
         '      </div>' +
-        '    <div class="float-right card-body">\n' +
+        '    <div class="float-right card-body btn-toolbar">\n' +
+        '           <button value="' + Iter + '" type="button" onclick="currentBtn = this.value; getCitation()" title="how to cite this" class="mr-2 btn btn-secondary combosearchdropdown">\n' +
+        '                            <i class="fas fa-quote-right"></i>\n' +
+        '           </button>'+
         '       <div class="dropdown">' +
         '           <button class="btn btn-secondary dropdown-toggle combosearchdropdown" type="button" id="dropdownMenuButton' + Iter + '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
         '               Combine search' +
@@ -124,8 +133,8 @@ function addSearch() {
 
     $(".resultCard").mouseleave(function () {
         var thismap = ($(this).data('map'))
-        console.log(thismap);
-        if (typeof(hovermarker) !== undefined) {
+        //console.log(thismap);
+        if (typeof(hovermarker) !== 'undefined') {
                 hovermarker.removeFrom(eval(thismap))
         }
     })
@@ -637,7 +646,7 @@ function setmymap(markers, heatmarkers) {
     eval('markers' + Iter + '= markers;')
 
 
-    eval('map' + Iter + ' = L.map(\'map\' + Iter, {fullscreenControl: true, zoomControl: false, layers: [landscape' + Iter + ']}).fitBounds(markers.getBounds());')
+    eval('map' + Iter + ' = L.map(\'map\' + Iter, {fullscreenControl: true, maxZoom: 20, zoomControl: false, layers: [landscape' + Iter + ']}).fitBounds(markers.getBounds());')
 
     clustermarkers.addTo((eval('map' + Iter)));
 
@@ -860,4 +869,13 @@ function combinate(operator) {
     Iter = (Iter + 1);
     ComboSearchString = $('#Heading' + oldIter).html();
     addSearch();
+}
+
+function getCitation() {
+    currentHeading = document.getElementById('Heading' + currentBtn);
+    Search = currentHeading.innerText;
+    mysource = Search.replace("Search", "Search result") + '.' + mycitation1.replace("After:", "");
+    $('#mycitation').empty();
+    $('#mycitation').html('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');
+    $('#citeModal').modal();
 }

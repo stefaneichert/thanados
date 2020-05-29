@@ -31,8 +31,6 @@
     <script src="/static/vendor/node_modules/leaflet-minimap/dist/Control.MiniMap.min.js"></script>
     <script src="/static/vendor/node_modules/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="/static/vendor/node_modules/vanilla-lazyload/dist/lazyload.min.js"></script>
-    <script src="/static/vendor/node_modules/dom-to-image/dist/dom-to-image.min.js"></script>
-    <script src="/static/vendor/node_modules/file-saver/dist/FileSaver.min.js"></script>
     <script src="/static/vendor/node_modules/leaflet-easyprint/dist/bundle.js"></script>
     <link rel="stylesheet"
           href="/static/vendor/node_modules/leaflet-easybutton/src/easy-button.css">
@@ -42,7 +40,6 @@
           rel="stylesheet">
     <script src="/static/vendor/node_modules/datatables.net/js/jquery.dataTables.js"></script>
     <script src="/static/vendor/node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
-    <script src="/static/vendor/node_modules/datatables.net-plugins/dataRender/ellipsis.js"></script>
     <script src="/static/js/globalfunctions.js"></script>
     <script src="/static/vendor/node_modules/chroma-js/chroma.min.js"></script>
     <script src="/static/vendor/node_modules/leaflet-dvf/dist/leaflet-dvf.markers.js"></script>
@@ -58,6 +55,7 @@
     <script src="/static/vendor/node_modules/shave/dist/jquery.shave.min.js"></script>
     <link href="/static/css/datatables.css" rel="stylesheet">
     <script> thunderforestAPIkey = "{{ thunderforest }}"</script>
+    <script> openAtlasUrl = "{{ openAtlasUrl }}"</script>
 </head>
 <body>
 
@@ -74,20 +72,21 @@
             <ul class="navbar-nav mr-auto">
                 {#% if current_user.is_authenticated %#}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('sites') }}">Sites</a>
+                    <a id="nav-sites" class="nav-link" href="{{ url_for('sites') }}">Sites</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('charts') }}">Charts</a>
+                    <a id="nav-charts" class="nav-link" href="{{ url_for('charts') }}">Charts</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('search') }}">Search</a>
+                    <a id="nav-search" class="nav-link" href="{{ url_for('search') }}">Search</a>
                 </li>
                 <li class="nav-item" style="margin-right: 2em">
-                    <a class="nav-link" href="{{ url_for('about') }}">About</a>
+                    <a id="nav-about" class="nav-link" href="{{ url_for('about') }}">About</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('manual') }}"><i title="Help/Manual"
-                                                                          class="fas fa-question"></i></a>
+                    <a id="nav-manual" class="nav-link" href="{{ url_for('manual') }}"><i
+                            title="Help/Manual"
+                            class="fas fa-question"></i></a>
                 </li>
                 <!-- <li class="nav-item">
                      <a class="nav-link" href="/logout">Logout</a>
@@ -106,29 +105,36 @@
     </div>
 </nav>
 
+<a id="back-to-top" href="#" class="btn btn-secondary btn-sm back-to-top" role="button"
+   title="Back to top" data-placement="left"><i class="fas fa-chevron-up"></i></a>
+
 <div id="styledialog" class="d-none" title="Layer options">
 
     <div class="row row-tabs">
-        <div class="col-sm-auto col-tab-left LayerOptionSelect" style="max-width: fit-content">
+        <div class="col-sm-auto col-tab-left LayerOptionSelect" style="max-width: max-content">
             <ul class="nav flex-column nav-tabs tabs-left" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link nav-display" title="Overview" id="info" href="#"><i
                             class="fas fa-info"></i></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-display" title="Single color layer settings" id="poly" href="#"><i
+                    <a class="nav-link nav-display" title="Single color layer settings" id="poly"
+                       href="#"><i
                             class="fas fa-map-marker-alt"></i></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-display" title="Multiple color layer settings" id="colorPoly" href="#"><i
+                    <a class="nav-link nav-display" title="Multiple color layer settings"
+                       id="colorPoly" href="#"><i
                             class="fas fas fa-palette"></i></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-display" title="Gradient color layer settings" id="choropoly" href="#"><i
+                    <a class="nav-link nav-display" title="Gradient color layer settings"
+                       id="choropoly" href="#"><i
                             class="fas fa-swatchbook"></i></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-display" title="Chart markers settings" id="chart" href="#"><i
+                    <a class="nav-link nav-display" title="Chart markers settings" id="chart"
+                       href="#"><i
                             class="fas fa-chart-pie"></i></a>
                 </li>
             </ul>
@@ -138,6 +144,58 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="citeModal" tabindex="-1" role="dialog"
+     aria-labelledby="How to cite this" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header custom-header-bg">
+                <h5 class="modal-title" id="citeModalLabel">How to cite this:</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="mycitation">
+            </div>
+            <div style="margin: 1em; padding: 1em; color: #495057; font-size: 0.7em;">
+                <a class="mb-2" rel="license" href="http://creativecommons.org/licenses/by/4.0/"
+                   target="_blank">
+                    <img alt="Creative Commons License" style="border-width:0"
+                         src="/static/images/icons/88x31.png"/>
+                </a>
+                <div class="mb-2 mt-4">
+                    This work is licensed under a
+                    <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"
+                       target="_blank">
+                        Creative Commons Attribution 4.0 International License
+                    </a>
+                </div>
+                <div class="mb-2">
+                    Please note that this licence applies only to the information respectively the
+                    dataset represented here.
+                    This data was derived from various sources that are documented in the metadata
+                    section of each entity. We recommend to cite them as well.
+                    Feel free to adapt the citation to your needs for the publishing medium you are
+                    using.
+                    When doing so, please make sure to follow the
+                    <a href="https://creativecommons.org/use-remix/" target="_blank">
+                        Creative Commons attribution guidelines
+                    </a>
+                </div>
+                <div>
+                    For digital objects that are displayed here from other sources (e.g. map tiles,
+                    images),
+                    other rights respectively licences might apply. For using them in your own work,
+                    make sure
+                    to possess the necessary rights and cite the original creators properly.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script> loginTrue = false </script>
+{% if current_user.is_authenticated %}
+    <script> loginTrue = true </script>
+{% endif %}
 
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}

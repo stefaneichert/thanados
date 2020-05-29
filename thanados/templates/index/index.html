@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+
     <div id="container1">
         <h2 class="my-heading container">Medieval Cemeteries at the Periphery of the Carolingian
             World</h2>
@@ -82,11 +83,15 @@
                 21st century against the background of digital humanities.<br>
                 It is part of the <a href="https://www.openatlas.eu/" target="_blank">OpenAtlas</a>
                 project and entirely
-                build upon open source technology. If you want to learn more please take a look at
+                build upon open source technology.
+                The technical framework of MEDCEM was a base for and is being actively developed
+                within the
+                <a href="https://thanados.net" target="_blank">THANADOS</a> project.
+                If you want to learn more please take a look at
                 the <a
                     href="/manual">Help</a> section.
             </p>
-            <h7>Screenshots:</h7>
+            <h6 class="text-muted">Screenshots:</h6>
             <div id="carouselExampleIndicators"
                  style="margin-bottom: 4em; border: 1px solid rgba(0, 0, 0, 0.125)"
                  class="carousel slide" data-ride="carousel">
@@ -123,7 +128,8 @@
             </div>
 
         </div>
-        <footer id="myfooter" style="background-color: #f8f9fa">
+
+        <footer id="myfooter">
             <div class="container"
                  style="flex-wrap: wrap; display: flex; align-items: center; justify-content: space-between">
                 <a href="https://opvvv.msmt.cz/" target="_blank"><img class="footerimg"
@@ -135,5 +141,7 @@
             </div>
         </footer>
     </div>
+    <script>    sitelist = {{ sitelist|tojson }};    </script>
+    <script>    entitycount = {{ entitycount|safe }};    </script>
     <script src="/static/js/index.js"></script>
 {% endblock %}

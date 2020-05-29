@@ -44,7 +44,7 @@
              aria-labelledby="CSVmodalLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
-                    <div class="modal-header costum-header-bg">
+                    <div class="modal-header custom-header-bg">
                         <h5 class="modal-title" id="CSVmodalLabel">Search result for: </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -67,12 +67,15 @@
                             </thead>
                         </table>
                     </div>
-                    <div class="modal-footer costum-header-bg resultlistfooter">
+                    <div class="modal-footer custom-header-bg resultlistfooter">
                         <form id="myvisformCSV"></form>
                         <button type="button" class="btn btn-primary"
                                 onclick="exportToCSV(CSVresultExport)"
                                 title="Download result as spreadsheet data (CSV - Comma separated Values)">
                             Export CSV
+                        </button>
+                        <button type="button" onclick="getCitation()" title="how to cite this" class="btn btn-secondary">
+                            <i class="fas fa-quote-right"></i>
                         </button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
                         </button>
