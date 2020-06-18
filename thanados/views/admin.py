@@ -6,13 +6,17 @@ from thanados import app
 from thanados.models.entity import Data
 
 
-@app.route('/admin/')
+@app.route('/admin/', )
 @login_required
 def admin():  # pragma: no cover
+
     if current_user.group not in ['admin']:
         abort(403)
-    return render_template('admin/index.html')
 
+    f = open("./instance/sitelist.txt", "r")
+    currentsitelist = (f.read())
+
+    return render_template('admin/index.html', currentsitelist=currentsitelist)
 
 @app.route('/admin/execute/')
 @login_required

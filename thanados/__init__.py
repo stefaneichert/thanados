@@ -12,7 +12,8 @@ app.config.from_pyfile('production.py')  # Load instance/INSTANCE_NAME.py
 thunderforest_API_key = app.config["THUNDERFOREST_API_KEY"]
 openatlas_url = app.config["OPENATLAS_URL"]
 
-from thanados.views import index, map, about, entity, charts, login, manual, sites, admin, search, ajax
+from thanados.views import index, map, about, entity, charts, login, manual, sites, admin, \
+    search, ajax, vocabulary
 
 
 def connect():

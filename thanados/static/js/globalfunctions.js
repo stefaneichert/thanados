@@ -6,6 +6,11 @@ $(document).ready(function () {
             $('#back-to-top').fadeOut();
         }
     });
+
+    $('body').click(function () {
+        $('.popover').popover('dispose')
+    })
+
     // scroll body to 0px on click
     $('#back-to-top').click(function () {
         //$('#back-to-top').tooltip('hide');
@@ -24,6 +29,7 @@ $(document).ready(function () {
     });
 
 })
+
 $(document).on('change', "input[type|=\'text\']", function () {
     if ($(this).hasClass('legendtext')) {
         currentLegend = this.value;
@@ -1712,6 +1718,22 @@ function makeid(length) {
     return result;
 }
 
+typeIdList = [];
+
+function makeTypeId(length) {
+    var result = 'type_';
+    var characters = '0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    if (typeIdList.includes(result)) {
+        var result = makeTypeId(5)
+    }
+    typeIdList.push(result);
+    return result;
+}
+
 function setSearchInfo(data, CSV, first) {
     //console.log('setSearchInfo');
 
@@ -1949,5 +1971,43 @@ $.featherlight.prototype.afterContent = function () {
     $('<div style="max-width: fit-content; font-size: 0.875em" class="caption text-muted">').text(caption).appendTo(this.$instance.find('.featherlight-content'));
 }
 
-mycitation1 = ' From: Stefan Eichert et al., THANADOS: <a href="' + window.location + '">' + window.location + '</a> [Accessed: ' + today() + ']<br>' +
+thisUrl = window.location.href;
+if (thisUrl.includes('#')) thisUrl = thisUrl.substring(0, thisUrl.indexOf('#'));
+
+mycitation1 = ' From: <a href="/about" target="_blank">Stefan Eichert et al., THANADOS:</a> <a' +
+    ' href="' + thisUrl + '">' + thisUrl + '</a> [Accessed: ' + today() + ']<br>' +
     'Licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a><br> After: ';
+
+//retrieve type data for popover
+function getTypeData(id, div) {
+    $.getJSON("/vocabulary/" + id + "/json", function (data) {
+        returnHtml = '<a title="' + data.path + '" href="/vocabulary/' + id + '" target="_blank">' + data.name + '</a>';
+        if (data.description) returnHtml = returnHtml + '<p class="mt-2 text-muted font-italic" >' + data.description + '</p>';
+        if (data.parent) returnHtml = returnHtml + '<p class="mt-2"> Subcategory of:' +
+            ' <a href="/vocabulary/' + data.parent + '" target="_blank">' + data.parent_name + '</a></p>';
+        if (data.topparent.name) returnHtml = returnHtml + '<span class="mt-2"> Hierarchy:' +
+            ' <a href="/vocabulary/' + data.topparent.id + '" target="_blank">' + data.topparent.name + '</a></span>';
+        if (data.topparent.description) returnHtml = returnHtml + '<br><span><i' +
+            ' class="text-muted">' + data.topparent.description + '</i></span>';
+        returnValue = returnHtml;
+        logHTML(returnValue, div)
+    });
+}
+
+function logHTML(value, div) {
+
+    div.popover({html: true, content: value, container: div.next()});
+    div.popover('show');
+    var btn = '<div> <button class="closePopover btn btn-xs mb-2 mt-2 btn-secondary float-right" onclick="$(this).popover(\'dispose\')">close</button></div>'
+    $(div).next().find('.popover-body').append(btn);
+
+
+}
+
+function initPopovers() {
+    $('.typebutton').click(function () {
+        popover_div = $(this);
+        var id = popover_div.data('value');
+        getTypeData(id, popover_div);
+    })
+}

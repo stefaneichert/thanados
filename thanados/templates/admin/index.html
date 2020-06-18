@@ -5,11 +5,13 @@
         <div class="row float-left">
             <div class="col">
                 <div class="card" style="max-width: 18rem; min-width: 200px">
-                    <img src="/static/images/admin/data-icon-png-13.jpg" class="card-img-top mt-4" alt="data_refresh"
+                    <img src="/static/images/admin/data-icon-png-13.jpg" class="card-img-top mt-4"
+                         alt="data_refresh"
                          style="width: 50%; margin: auto">
                     <div class="card-body">
                         <h5 class="card-title">Prepare Data</h5>
-                        <p class="card-text">Set/refresh data from the database and prepare it for the presentation
+                        <p class="card-text">Set/refresh data from the database and prepare it for
+                            the presentation
                             frontend.</p>
                         <a id="jsonPrepBtn" href="{{ url_for('jsonprepare_execute') }}"
                            class="sql_button btn btn-secondary m-auto" role="button">Go</a>
@@ -18,11 +20,13 @@
             </div>
             <div class="col">
                 <div class="card" style="max-width: 18rem; min-width: 200px">
-                    <img src="/static/images/admin/data-icon-png-13.jpg" class="card-img-top mt-4" alt="data_refresh"
+                    <img src="/static/images/admin/data-icon-png-13.jpg" class="card-img-top mt-4"
+                         alt="data_refresh"
                          style="width: 50%; margin: auto">
                     <div class="card-body">
                         <h5 class="card-title">Clean Geodata</h5>
-                        <p class="card-text">Perform a cleanup for your geodata. This removes redundant geometries from
+                        <p class="card-text">Perform a cleanup for your geodata. This removes
+                            redundant geometries from
                             subunits</p>
                         <a id="GeoCleanBtn" href="{{ url_for('geoclean_execute') }}"
                            class="sql_button btn btn-secondary m-auto" role="button">Go</a>
@@ -31,7 +35,8 @@
             </div>
             <div class="col">
                 <div class="card" style="max-width: 18rem; min-width: 200px">
-                    <img src="/static/images/admin/data-icon-png-13.jpg" class="card-img-top mt-4" alt="data_refresh"
+                    <img src="/static/images/admin/data-icon-png-13.jpg" class="card-img-top mt-4"
+                         alt="data_refresh"
                          style="width: 50%; margin: auto">
                     <div class="card-body">
                         <h5 class="card-title">Clean Timespan Data</h5>
@@ -44,11 +49,13 @@
             </div>
             <div class="col">
                 <div class="card" style="max-width: 18rem; min-width: 200px">
-                    <img src="/static/images/admin/data-icon-png-13.jpg" class="card-img-top mt-4" alt="data_refresh"
+                    <img src="/static/images/admin/data-icon-png-13.jpg" class="card-img-top mt-4"
+                         alt="data_refresh"
                          style="width: 50%; margin: auto">
                     <div class="card-body">
                         <h5 class="card-title">Fix file references</h5>
-                        <p class="card-text">If a file has no reference, set the reference of the respective entity as reference for the file</p>
+                        <p class="card-text">If a file has no reference, set the reference of the
+                            respective entity as reference for the file</p>
                         <a id="FileRefBtn" href="{{ url_for('fileref_execute') }}"
                            class="sql_button btn btn-secondary m-auto" role="button">Go</a>
                     </div>
@@ -56,6 +63,13 @@
             </div>
         </div>
     </div>
+    <label for="sitelist">Current Site Ids</label>
+    <textarea id="sitelist" type="text">{{ currentsitelist }}</textarea>
+
     <div class="m-5 alert alert-info" role="alert" id="infotext"></div>
     <script src="/static/js/admin.js"></script>
+    <script>
+        currentSites = {{ currentsitelist|safe }};
+        test_csrf_token = '{{ csrf_token() }}';
+    </script>
 {% endblock %}

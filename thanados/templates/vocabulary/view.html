@@ -1,0 +1,174 @@
+{% extends "layout.html" %}
+{% block content %}
+    <script src="/static/vendor/node_modules/bstreeview/dist/js/bstreeview.min.js"></script>
+    <link rel="stylesheet"
+          href="/static/vendor/node_modules/leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.css">
+    <script src="/static/vendor/node_modules/leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.js"></script>
+    <div class="breadcrumb" id="mybreadcrumbs">{{ topparent.type }}: {{ data.path }}</div>
+    <div id="mycontent">
+        <div class="container-fluid">
+            <div class="row hierarchy-card">
+                <div class="col-xl">
+
+                    <div class="card mb-3">
+                        <div class="card-header" id="typename">
+                             <span class="btn-link" data-toggle="collapse" data-target="#main"
+                                   aria-expanded="true" aria-controls="main">
+                                 {{ data.name }}
+                             </span>
+                        </div>
+                        <div class="card-body collapse show" id="main">
+
+                            {% if data.description %}
+                                <p class="card-text text-muted" id="typeDescription">
+                                    {{ data.description }}
+                                </p>
+                            {% endif %}
+                            <h6 class="card-subtitle mb-2">
+                                Hierarchy:
+                                <a href="/vocabulary/{{ topparent.id }}" class="card-link">
+                                    {{ topparent.name }}
+                                </a>
+                                {% if topparent.description and data.parent %}
+                                    <p class="card-text text-muted" id="topparentDescription">
+                                        <i> ({{ topparent.description }})
+                                        </i>
+                                    </p>
+                                {% endif %}
+                            </h6>
+                            <h6 class="card-subtitle mt-2 mb-2">
+                                Properties:
+                                <span class="text-muted">
+                                {{ topparent.type }}, {{ topparent.selection }}
+                                </span>
+                            </h6>
+                            <h6 class="card-subtitle mt-2 mb-2">
+                                Usage:
+                                <span class="text-muted" id="usage">
+                                </span>
+                            </h6>
+                            {% if data.parent %}
+                                <h6 class="card-subtitle mt-2 mb-2">
+                                    Subcategory of:
+                                    <a href="/vocabulary/{{ data.parent }}" class="card-link">
+                                        {{ data.parent_name }}
+                                    </a>
+                                </h6>
+                            {% endif %}
+                            {% if data.children %}
+                                <h6 class="card-subtitle mt-2 mb-2">
+                                    Subcategories:
+                                    <span class="text-muted">
+                                    {{ children }} ({{ children_recursive-1 }} - recursively)
+                                </span>
+                                </h6>
+                            {% endif %}
+                            {% if data.entities_recursive %}
+                                <h6 class="card-subtitle mt-2 mb-2">
+                                    Entities:
+                                    <span class="text-muted">
+                                    {{ data.entities|length }}
+                                        {% if data.entities|length !=
+                                        data.entities_recursive|length %}
+                                            ({{ data.entities_recursive|length }} -
+                                            including subcategories)
+                                        {% endif %}
+                                </span>
+                                </h6>
+                            {% endif %}
+                            {% if data.files %}
+                                <div class="row">
+
+                                        <div class="col">
+                                            <img class="card-img-bottom img-fluid"
+                                                 src="{{ data.files[0].file_name }}"
+                                                 alt="image"
+                                                 title="Depiction of this category"
+                                                 style="width:auto; max-height: 250px">
+                                        </div>
+
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <span class="btn-link" data-toggle="collapse" data-target="#tree"
+                                  aria-expanded="true" aria-controls="tree">
+                                Hierarchy
+                            </span>
+                        </div>
+                        <div class="card-body collapse show" id="tree">
+                            {% if data.parent %}
+                                <a style="margin-left: -0.5em" href="/vocabulary/{{ data.parent }}">
+                                    {{ data.parent_name }}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {% if data.entities_recursive %}
+                    <div class="col-xl">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <span class="btn-link" data-toggle="collapse"
+                                      data-target="#mapContainer"
+                                      aria-expanded="true" aria-controls="collapseOne">
+                                    Occurences
+                                </span>
+                            </div>
+                            <div id="mapContainer" class="collapse show">
+                                <div class="card-body" id="map"
+                                     style="height: 50vh; width: 100%"></div>
+                                <div class="card-footer text-muted" id="occurence"></div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+            </div>
+
+                <div class="card mb-2">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab"
+                                   href="#entities">Entities</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab"
+                                   href="#bibliography">Bibliography</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab"
+                                   href="#references">External references</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#images">Images</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body tab-content">
+                        <div class="tab-pane active" id="entities">Entities</div>
+                        <div class="tab-pane"id="bibliography">Bibliography</div>
+                        <div class="tab-pane"id="references">External References</div>
+                        <div class="tab-pane"id="images">Images</div>
+                    </div>
+
+                </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        data = {{ data|tojson }}
+            topparent = {{ topparent|tojson }}
+                tree =
+        {{ tree|tojson }}
+    </script>
+    <script src="/static/js/vocabulary.js"></script>
+{% endblock %}

@@ -47,7 +47,7 @@ class Data:
                      WHERE s.system_type = 'place' AND s.lat IS NOT NULL AND s.child_id IN  %(sites)s 
                      GROUP BY s.child_name, s.description, s.begin_from, s.end_to, s.child_id, s.typename, s.path, s.lat, s.lon
                      ORDER BY s.child_name);"""
-                     
+
         sql_sites2 = """
         UPDATE thanados.tmpsites SET (graves) = (SELECT graves FROM ( 
             SELECT              
@@ -85,6 +85,12 @@ class Data:
     def get_data(place_id):
         sql = 'SELECT data FROM thanados.tbl_thanados_data WHERE id = %(place_id)s AND id IN %(sites)s;'
         g.cursor.execute(sql, {'place_id': place_id, 'sites': Data.get_site_ids()})
+        return g.cursor.fetchall()
+
+    @staticmethod
+    def get_typedata(object_id):
+        sql = 'SELECT * FROM model.entity WHERE id = %(object_id)s;'
+        g.cursor.execute(sql, {'object_id': object_id})
         return g.cursor.fetchall()
 
     @staticmethod
