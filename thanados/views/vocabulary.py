@@ -241,7 +241,7 @@ def vocabulary_view(object_id: int, format_=None):
             for row in results:
                 currentnode = {'text': row.name,
                                'class': 'treenode',
-                               'href': '/vocabulary/%r' %row.id,
+                               'href': '/vocabulary/%r' % row.id,
                                'openNodeLinkOnNewTab': False}
                 node['nodes'].append(currentnode)
                 getchildren(row.id, currentnode)
@@ -257,6 +257,8 @@ def vocabulary_view(object_id: int, format_=None):
 
     if format_ == 'json':
         return json.dumps(data)
-    return render_template('vocabulary/view.html', object_id=object_id, data=data,
-                           children=len(output_children),
-                           children_recursive=len(entlist))
+
+    if object_id:
+        return render_template('vocabulary/view.html', object_id=object_id, data=data,
+                               children=len(output_children),
+                               children_recursive=len(entlist))
