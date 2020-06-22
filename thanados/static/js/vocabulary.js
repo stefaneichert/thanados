@@ -17,6 +17,7 @@ $(document).ready(function () {
 
     maximumHeight = (($(window).height() - $('#mynavbar').height()) - $('#mybreadcrumbs').height());
     $('#mycontent').css('max-height', (maximumHeight - 40) + 'px');
+    if (typeof (table) !== 'undefined') table.draw();
 
 });
 
@@ -28,8 +29,8 @@ $(window).resize(function () {
 
 getBasemaps();
 
-$.each(topparent.forms, function (e, form) {
-    if (e < topparent.forms.length - 1) {
+$.each(data.topparent.forms, function (e, form) {
+    if (e < data.topparent.forms.length - 1) {
         $('#usage').append(form + ', ')
     } else {
         $('#usage').append(form)
@@ -158,8 +159,87 @@ if (data.entities_recursive) {
 
 }
 
+//populate datatables
 
-$('#tree').bstreeview({data: tree});
+if (data.entities_recursive) {
+    table = $('#entities_tbl').DataTable({
+        data: setData(),
+        drawCallback: function () {
+            $('a[rel=popover]').popover({
+                html: true,
+                trigger: 'hover',
+                //placement: 'right',
+                container: $('body'),
+                content: function () {
+                    return '<img class="popover-img" src="' + $(this).data('img') + '" alt=""/>';
+                }
+            });
+        },
+        "pagingType": "numbers",
+        "lengthMenu": [10],
+        "bLengthChange": false,
+        "scrollX": true,
+
+        columns: [
+            {
+                data: "name",
+                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                    if (oData.file === null) $(nTd).html("<a id='" + oData.id + "' href='/entity/" + oData.id + "' title='" + oData.main_type + " ' target='_blank'>" + oData.name + "</a>");
+                    if (oData.file !== null) $(nTd).html("<a id='" + oData.id + "' href='/entity/" + oData.id + "' title='" + oData.main_type + " ' target='_blank'>" + oData.name + "</a>" +
+                        "<a class='btn-xs float-right' rel='popover' data-img='" + oData.file + "'><i class='fas fa-image'></i></a>"); //create links in rows
+                }
+            },
+            {
+                data: 'type',
+            },
+            {
+                data: 'context'
+            },
+            {
+                data: 'system_type'
+            }
+        ],
+    });
+
+    if (data.entities) {
+        console.log(data.entities.length + ' - ' + data.entities_recursive.length)
+        if (data.entities.length !== data.entities_recursive.length) {
+            $('#entities').prepend('<h6><span id="exact">' + data.entities.length + ' exact matches </span><input id="entSwitch" type="checkbox"><label for="entSwitch"></label><span id="incl" class="text-muted">' + data.entities_recursive.length + ' including subcategories</span></h6>')
+        } else {
+            $('#entities').prepend('<h6 class="text-muted">' + $('#occurence').text() + '</h6>')
+        }
+    } else {
+        $('#entities').prepend('<h6 class="text-muted">' + $('#occurence').text() + '</h6>')
+    }
+
+}
+
+$(document).on('change', '#entSwitch', function () {
+    if (this.checked) {
+        $('#entities_tbl').dataTable().fnClearTable();
+        $('#entities_tbl').dataTable().fnAddData(data.entities_recursive);
+    } else {
+        $('#entities_tbl').dataTable().fnClearTable();
+        $('#entities_tbl').dataTable().fnAddData(data.entities);
+
+    }
+    $('#exact, #incl').toggleClass('text-muted');
+});
+
+
+$('#tree').bstreeview({data: data.tree});
 $('.toptreenode')
+
+function setData() {
+    if (data.entities) {
+        if (data.entities.length !== data.entities_recursive.length) {
+            return data.entities
+        } else {
+            return data.entities_recursive
+        }
+    } else {
+        return data.entities_recursive
+    }
+}
 
 

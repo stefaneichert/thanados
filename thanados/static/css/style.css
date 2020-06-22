@@ -1067,11 +1067,48 @@ input {
 }
 
 .popover {
-    -webkit-box-shadow: 5px 5px 3px 0px rgba(0, 0, 0, 0.3);
-    -moz-box-shadow: 5px 5px 3px 0px rgba(0, 0, 0, 0.3);
-    box-shadow: 5px 5px 3px 0px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .closePopover {
     margin-right: -0.3em;
 }
+
+
+#images p, #ImgOne p {
+    font-size: 0.875rem;
+    margin: 0.6rem;
+    text-align: center;
+}
+
+#ImgOne {
+    margin: 0.8rem
+}
+
+
+@media (min-width: 576px) {
+  .card-columns {
+    column-count: 2;
+  }
+}
+
+@media (min-width: 768px) {
+  .card-columns {
+    column-count: 3;
+  }
+}
+
+@media (min-width: 992px) {
+  .card-columns {
+    column-count: 4;
+  }
+}
+
+@media (min-width: 1200px) {
+  .card-columns {
+    column-count: 5;
+  }
+}
+

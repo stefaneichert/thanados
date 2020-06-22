@@ -258,5 +258,5 @@ def vocabulary_view(object_id: int, format_=None):
     if format_ == 'json':
         return json.dumps(data)
     return render_template('vocabulary/view.html', object_id=object_id, data=data,
-                           topparent=topparent, children=len(output_children),
-                           children_recursive=len(entlist), tree=tree)
+                           children=len(output_children),
+                           children_recursive=len(entlist))
