@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    $('#nav-vocabulary').addClass('activePage')
     $('#mycontent').scroll(function () {
         if ($(this).scrollTop() > 50) {
             $('#back-to-top').fadeIn();

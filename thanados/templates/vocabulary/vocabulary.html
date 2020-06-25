@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+    <script src="/static/vendor/node_modules/bstreeview/dist/js/bstreeview.min.js"></script>
+
+    <div id="mycontent">
+        <div class="container-fluid">
+
+            <div class="card mb-2">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="treeTabs">
+                    </ul>
+                </div>
+                <div class="card-body tab-content" id="treePanes">
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        tree = {{ tree|tojson }};
+        tabsToCreate = {{ tabsToCreate|tojson }}
+    </script>
+    <script src="/static/js/vocabulary_index.js"></script>
+
+
+
+{% endblock %}

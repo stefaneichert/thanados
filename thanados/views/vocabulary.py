@@ -4,10 +4,69 @@ from thanados import app
 from thanados.models.entity import Data
 
 
+@app.route('/vocabulary/')
+def vocabulary():
+    hierarchytypes = app.config["HIERARCHY_TYPES"];
+    systemtypes = app.config["SYSTEM_TYPES"];
+    customtypes = app.config["CUSTOM_TYPES"];
+    valuetypes = app.config["VALUE_TYPES"];
+    parenttree = []
+
+    def makeparents(typelist, typeClass):
+        for id in typelist:
+
+            sql_tree = """
+                                    SELECT name, id FROM thanados.types_all WHERE id = %(id)s ORDER BY name
+                                """
+            g.cursor.execute(sql_tree, {'id': id})
+            results = g.cursor.fetchone()
+            if results:
+                node = {
+                    'text': results.name,
+                    'id': results.id,
+                    'type': typeClass,
+                    'class': 'treenode'
+                }
+                maketree(id, node, typeClass)
+            parenttree.append(node)
+
+    def maketree(id, node, typeClass):
+        sql_tree = """
+            SELECT name, id FROM thanados.types_all WHERE parent_id = %(id)s ORDER BY name
+        """
+        g.cursor.execute(sql_tree, {'id': id})
+        results = g.cursor.fetchall()
+        if results:
+            node['nodes'] = []
+            for row in results:
+                currentnode = {
+                    'text': row.name,
+                    'id': row.id,
+                    'type': typeClass,
+                    'class': 'treenode'
+                }
+                node['nodes'].append(currentnode)
+                maketree(row.id, currentnode, typeClass)
+
+    tabsToCreate = ['Classifications', 'Standard', 'User defined', 'Value types']
+
+    makeparents(hierarchytypes, 'Classifications')
+    makeparents(systemtypes, 'Standard')
+    makeparents(customtypes, 'User defined')
+    makeparents(valuetypes, 'Value types')
+
+    # return json.dumps(parenttree)
+    return render_template('vocabulary/vocabulary.html', tree=parenttree, tabsToCreate=tabsToCreate)
+
+
 @app.route('/vocabulary/<int:object_id>')
 @app.route('/vocabulary/<int:object_id>/<format_>')
 def vocabulary_view(object_id: int, format_=None):
     object_id = object_id
+
+    if not object_id:
+        return render_template('vocabulary/vocabulary.html')
+
     # get dataset for type entity
     sql_base = 'SELECT * FROM model.entity WHERE id = %(object_id)s;'
     g.cursor.execute(sql_base, {'object_id': object_id})

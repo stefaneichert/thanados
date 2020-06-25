@@ -1979,7 +1979,7 @@ mycitation1 = ' From: <a href="/about" target="_blank">Stefan Eichert et al., TH
     'Licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a><br> After: ';
 
 //retrieve type data for popover
-function getTypeData(id, div) {
+function getTypeData(id, div, hierarchy) {
     $.getJSON("/vocabulary/" + id + "/json", function (data) {
         returnHtml = '<a title="' + data.path + '" href="/vocabulary/' + id + '" target="_blank">' + data.name + '</a>';
         if (data.description) returnHtml = returnHtml + '<p class="mt-2 text-muted font-italic" >' + data.description + '</p>';
@@ -1990,7 +1990,12 @@ function getTypeData(id, div) {
         if (data.topparent.description) returnHtml = returnHtml + '<br><span><i' +
             ' class="text-muted">' + data.topparent.description + '</i></span>';
         returnValue = returnHtml;
-        logHTML(returnValue, div)
+        if (hierarchy) {
+            setHierarchyPopup(returnValue, div)
+        } else {
+            logHTML(returnValue, div)
+        }
+
     });
 }
 
@@ -2004,10 +2009,51 @@ function logHTML(value, div) {
 
 }
 
+function setHierarchyPopup(value, div) {
+    div.popover({html: true, content: value, container: div.parent().next(), placement: 'right',});
+    div.popover('show');
+    var btn = '<div> <button class="closePopover btn btn-xs mb-2 mt-2 btn-secondary float-right" onclick="$(this).popover(\'dispose\')">close</button></div>'
+    $(div).parent().next().find('.popover-body').append(btn);
+}
+
 function initPopovers() {
     $('.typebutton').click(function () {
         popover_div = $(this);
         var id = popover_div.data('value');
-        getTypeData(id, popover_div);
+        getTypeData(id, popover_div, false);
     })
+}
+
+function initTreePopovers() {
+    $('.popCont').click(function () {
+        popover_div = $(this);
+        var id = popover_div.data('id');
+        getTypeData(id, popover_div, true);
+        //$(this).mouseout(function () {
+        //    $('.treenode').popover('dispose')
+        //})
+    });
+}
+
+function getHierarchyData(id, div) {
+    $.getJSON("/vocabulary/" + id + "/json", function (data) {
+        console.log(data)
+        var content = '';
+        var usage = '';
+        if (data.topparent.forms) {
+            $.each(data.topparent.forms, function (i, form) {
+                if (i === 0) {
+                    usage = form;
+                } else {
+                    usage += ', ' + form;
+                }
+            })
+        }
+        if (data.topparent.description) var content = '<p class="text-muted font-italic">' + data.topparent.description + '</p>';
+        content = content + '<p>Relation: <span class="text-muted">' + data.topparent.selection + '</span></p>';
+        if (usage !== '') content = content + '<p>Usage: <span class="text-muted">' + usage + '</span></p>';
+        if (data.types_recursive) content = content + '<p>Subcategories: <span class="text-muted">' + data.types_recursive.length + '</span></p>';
+        if (data.entities_recursive) content = content + '<p>Entities: <span class="text-muted">' + data.entities_recursive.length + '</span></p>';
+        div.html(content)
+    });
 }

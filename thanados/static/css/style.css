@@ -1112,3 +1112,48 @@ input {
   }
 }
 
+.hierarchy-row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.hierarchy-detail {
+    font-size: 0.875rem;
+    background: #ffffff;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+}
+
+.hierarchy-detail p {
+    font-size: 0.875rem;
+    margin-bottom: 0.3rem;
+}
+
+.node-wrapper {
+    display: flex;
+}
+
+.popCont {
+    margin-top: 0.25em;
+    color: #6495ed;
+    cursor: pointer;
+}
+
+.popCont:hover {
+    margin-top: 0.25em;
+    color: #305db3;
+}
+
+.node-wrapper .treenode:hover, .node-wrapper .treenode i {
+    color: #6c757d!important;
+}
+
+.node-wrapper .treenode, .node-wrapper .treenode i {
+    color: #6c757d!important;
+}
+
+.typeheading {
+    padding-left: 0;
+}

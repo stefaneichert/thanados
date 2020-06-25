@@ -11,7 +11,7 @@ class SearchForm(FlaskForm):
     search = SubmitField()
 
 
-@app.route('/search/', methods=["GET", "POST"])
+@app.route('/search', methods=["GET", "POST"])
 def search():
     site_list = Data.get_list()
     form = SearchForm()
