@@ -143,6 +143,7 @@ if (data.entities_recursive) {
 
         map = L.map('map', {
             zoom: 18,
+            maxZoom: 18,
             layers: [landscape]
         });
         entPoints.addTo(map)

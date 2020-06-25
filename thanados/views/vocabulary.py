@@ -10,7 +10,25 @@ def vocabulary():
     systemtypes = app.config["SYSTEM_TYPES"];
     customtypes = app.config["CUSTOM_TYPES"];
     valuetypes = app.config["VALUE_TYPES"];
+    alltypesused = list(set().union(hierarchytypes, systemtypes, customtypes, valuetypes))
     parenttree = []
+
+    sql_list = """
+                   SELECT name, id, name_path FROM (
+                    SELECT name, id::INTEGER, path, name_path, left(path, strpos(path, ' >') -1)::INTEGER AS 
+                    topparent FROM thanados.types_all WHERE path LIKE '%%>%%'
+                    UNION ALL 
+                    SELECT name, id::INTEGER, path, name_path, PATH::INTEGER AS topparent FROM 
+                    thanados.types_all WHERE path NOT LIKE '%%>%%' ORDER BY name_path) tp
+                    WHERE topparent IN %(list)s 
+                    """
+
+
+    g.cursor.execute(sql_list, {'list': tuple(alltypesused)})
+    results = g.cursor.fetchall()
+    Typelist = [];
+    for row in results:
+        Typelist.append({'label': row.name, 'path': row.name_path, 'id': row.id})
 
     def makeparents(typelist, typeClass):
         for id in typelist:
@@ -56,7 +74,7 @@ def vocabulary():
     makeparents(valuetypes, 'Value types')
 
     # return json.dumps(parenttree)
-    return render_template('vocabulary/vocabulary.html', tree=parenttree, tabsToCreate=tabsToCreate)
+    return render_template('vocabulary/vocabulary.html', tree=parenttree, tabsToCreate=tabsToCreate, typelist=Typelist)
 
 
 @app.route('/vocabulary/<int:object_id>')

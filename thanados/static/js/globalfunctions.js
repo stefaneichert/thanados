@@ -2037,7 +2037,6 @@ function initTreePopovers() {
 
 function getHierarchyData(id, div) {
     $.getJSON("/vocabulary/" + id + "/json", function (data) {
-        console.log(data)
         var content = '';
         var usage = '';
         if (data.topparent.forms) {

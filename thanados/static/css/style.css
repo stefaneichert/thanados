@@ -1146,6 +1146,15 @@ input {
     color: #305db3;
 }
 
+.detailLink {
+    color: #6495ed;
+    cursor: pointer;
+}
+
+.detailLink:hover {
+    color: #305db3;
+}
+
 .node-wrapper .treenode:hover, .node-wrapper .treenode i {
     color: #6c757d!important;
 }
@@ -1156,4 +1165,8 @@ input {
 
 .typeheading {
     padding-left: 0;
+}
+
+#search_result p {
+    margin-bottom: 0.2em;
 }
