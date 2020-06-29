@@ -1,4 +1,4 @@
- $('#nav-sites').addClass('activePage')
+$('#nav-sites').addClass('activePage');
 
 $(window).resize(function () {
     maximumHeight = ($(window).height() - $('#mynavbar').height());

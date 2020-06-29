@@ -1,4 +1,4 @@
-$('#nav-search').addClass('activePage')
+$('#nav-search').addClass('activePage');
 
 $(document).ready(function () {
     //$(".sortable").sortable();

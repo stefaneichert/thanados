@@ -1,10 +1,5 @@
 window.onload = function () {
     gifs = Gifffer();
-    $('.imagebox button').on('focus', function () {
-        console.log('hallo')
-    })
-
-
 }
 
 $(document).ready(function () {

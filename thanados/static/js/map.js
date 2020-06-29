@@ -47,7 +47,7 @@ $(document).ready(function () {
 
     $('.ui-dialog').css('max-width', mymodalwith + 'px');
     $('#mytreeModal').css('max-width', ($(window).width()) + 'px');
-    $('.legend').css('max-height', (containerheight - 159))
+    $('.legend').css('max-height', (containerheight - 159));
 
 });
 
@@ -747,10 +747,10 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         '<div class="row">' +
         '<div id="myModalData_' + entId + '">' +
         '<div ' +
-                    'class="modalrowitem typebutton" ' +
-                    'type="button" ' +
-                    'data-toggle="popover" ' +
-                    'data-value="' + typeId + '">' + entType + '</div>' +
+        'class="modalrowitem typebutton" ' +
+        'type="button" ' +
+        'data-toggle="popover" ' +
+        'data-value="' + typeId + '">' + entType + '</div>' +
         '<div id="myModaltimespan' + entId + '" class="modalrowitem">' + dateToInsert + '</div><span class="popover-wrapper"></span>' +
         '<div id="myModalDescr' + entId + '">' + entDesc + '</div>' +
         '<div id="myModalTypescontainer' + entId + '"></div>' +
@@ -789,10 +789,10 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         if (typeof (typevalue) !== 'undefined') var classification = (types.name + ': ' + typevalue + ' ' + typeunit);
         $('#myModalTypescontainer' + entId).append(
             '<div ' +
-                    'class="modalrowitem typebutton" ' +
-                    'type="button" ' +
-                    'data-toggle="popover" ' +
-                    'data-value="' + typeId + '">' + classification + '</div><span class="popover-wrapper"></span>');
+            'class="modalrowitem typebutton" ' +
+            'type="button" ' +
+            'data-toggle="popover" ' +
+            'data-value="' + typeId + '">' + classification + '</div><span class="popover-wrapper"></span>');
     });
 
     $('#myModalDimensionscontainer' + entId).empty();
@@ -808,10 +808,10 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
 
         $('#myModalDimensionscontainer' + entId).append(
             '<div ' +
-                    'class="modalrowitem typebutton" ' +
-                    'type="button" ' +
-                    'data-toggle="popover" ' +
-                    'data-value="' + typeId + '">' + dimension + ': ' + dimvalue + ' ' + dimunit + '</div><span class="popover-wrapper"></span>');
+            'class="modalrowitem typebutton" ' +
+            'type="button" ' +
+            'data-toggle="popover" ' +
+            'data-value="' + typeId + '">' + dimension + ': ' + dimvalue + ' ' + dimunit + '</div><span class="popover-wrapper"></span>');
 
     });
 
@@ -828,10 +828,10 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         if (matvalue > 0) {
             $('#myModalMaterialcontainer' + entId).append(
                 '<div ' +
-                    'class="modalrowitem typebutton" ' +
-                    'type="button" ' +
-                    'data-toggle="popover" ' +
-                    'data-value="' + typeId + '">' + materialname + ': ' + matvalue + '%</div><span class="popover-wrapper"></span>');
+                'class="modalrowitem typebutton" ' +
+                'type="button" ' +
+                'data-toggle="popover" ' +
+                'data-value="' + typeId + '">' + materialname + ': ' + matvalue + '%</div><span class="popover-wrapper"></span>');
         }
 
         if (matvalue == 0) {
@@ -1027,7 +1027,7 @@ function addFilterSearch() {
     LeafletDropdownButton.addTo(map)
 }
 
-function getCitation () {
+function getCitation() {
     singleref = false;
     mycitation2 = '';
     if (myjson.properties.references.length === 1) singleref = true;
@@ -1052,7 +1052,7 @@ function getCitation () {
         }
 
         if (mainref) {
-                mycitation2 = citeme
+            mycitation2 = citeme
         }
     })
 

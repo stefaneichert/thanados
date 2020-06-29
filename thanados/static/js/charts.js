@@ -1,4 +1,5 @@
-$('#nav-charts').addClass('activePage')
+$('#nav-charts').addClass('activePage');
+
 //prepare charts/plots and data
 //remove sites without graves
 site_ids = [];
