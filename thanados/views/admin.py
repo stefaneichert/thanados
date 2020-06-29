@@ -1201,6 +1201,12 @@ FROM thanados.types_all
 WHERE --set types to display in jstree
     name_path LIKE 'Anthropology%'
    OR name_path LIKE 'Grave Construction%'
+   OR name_path LIKE 'Gender%'
+   OR name_path LIKE 'Pathologies and Non-metric traits%'
+   OR name_path LIKE 'Siding%'
+   OR name_path LIKE 'Animals%'
+   OR name_path LIKE 'Body posture%'
+   OR name_path LIKE 'Case Study%'
    OR name_path LIKE 'Grave Shape%'
    OR name_path LIKE 'Position of Find in Grave%'
    OR name_path LIKE 'Sex%'

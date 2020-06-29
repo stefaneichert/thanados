@@ -1974,7 +1974,7 @@ $.featherlight.prototype.afterContent = function () {
 thisUrl = window.location.href;
 if (thisUrl.includes('#')) thisUrl = thisUrl.substring(0, thisUrl.indexOf('#'));
 
-mycitation1 = ' From: <a href="/about" target="_blank">Stefan Eichert et al., THANADOS:</a> <a' +
+mycitation1 = ' From: <a href="/about" target="_blank">THANADOS:</a> <a' +
     ' href="' + thisUrl + '">' + thisUrl + '</a> [Accessed: ' + today() + ']<br>' +
     'Licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a><br> After: ';
 

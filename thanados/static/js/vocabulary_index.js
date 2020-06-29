@@ -63,7 +63,7 @@ $(document).ready(function () {
                         ' class="text-muted">' + data.topparent.description + '</i></p>';
                     content = content + '<p>Relation: <span class="text-muted">' + data.topparent.selection + '</span></p>';
                     if (usage !== '') content = content + '<p>Usage: <span class="text-muted">' + usage + '</span></p>';
-                    if (data.types_recursive) content = content + '<p>Subcategories: <span class="text-muted">' + data.types_recursive.length + '</span></p>';
+                    if (data.types_recursive) content = content + '<p>Subcategories: <span class="text-muted">' + (data.types_recursive.length - 1) + '</span></p>';
                     if (data.entities) content = content + '<p>Entities: <span class="text-muted">' + data.entities.length + '</span></p>';
                     if (data.entities_recursive) content = content + '<p>Entities (incl. subcategories): <span class="text-muted">' + data.entities_recursive.length + '</span></p>';
 
