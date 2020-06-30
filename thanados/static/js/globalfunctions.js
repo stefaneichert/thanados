@@ -2115,3 +2115,47 @@ function getHierarchyData(id, div) {
         div.html(content)
     });
 }
+
+//set maintype to default if no one is given
+function repairJson(data) {
+
+    $.each(data.features, function (i, feature) {
+        if (typeof (feature.properties.maintype.id) === "undefined" && feature.id !== 0) {
+            feature.properties.maintype = {
+                "systemtype": "feature",
+                "name": "Feature",
+                "id": 13362,
+                "parent_id": 13362,
+                "path": "Feature"
+            }
+        }
+        if (feature.burials) {
+            $.each(feature.burials, function (i, burial) {
+                if (typeof (burial.properties.maintype.id) === "undefined") {
+                    burial.properties.maintype = {
+                        "systemtype": "stratigraphic unit",
+                        "name": "Stratigraphic Unit",
+                        "id": 13365,
+                        "parent_id": 13365,
+                        "path": "Stratigraphic Unit"
+                    }
+                }
+
+                if (burial.finds) {
+                    $.each(burial.finds, function (i, find) {
+                        if (typeof (find.properties.maintype.id) === "undefined") {
+                            find.properties.maintype = {
+                                "systemtype": "find",
+                                "name": "Find",
+                                "id": 13368,
+                                "parent_id": 13368,
+                                "path": "Find"
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    })
+    return data
+}

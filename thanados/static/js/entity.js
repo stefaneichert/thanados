@@ -20,6 +20,7 @@ $(document).ready(function () {
 });
 
 getBasemaps();
+jsonmysite = repairJson(jsonmysite);
 sitename = jsonmysite.name;
 
 descriptionSummary = {

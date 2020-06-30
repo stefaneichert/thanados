@@ -3,6 +3,7 @@ $(document).ready(function () {
     $("#sidebarTitle").text(myjson.name);
     markerset = false;
     getBasemaps();
+    myjson = repairJson(myjson);
     setmap(myjson);
     //console.log(myjson);
     $('#CSVmodal').on('shown.bs.modal', function (e) {
@@ -836,7 +837,11 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
 
         if (matvalue == 0) {
             $('#myModalMaterialcontainer' + entId).append(
-                '<div class="modalrowitem" title="' + matpath + '">' + materialname + '</div>');
+                '<div ' +
+                'class="modalrowitem typebutton" ' +
+                'type="button" ' +
+                'data-toggle="popover" ' +
+                'data-value="' + typeId + '">' + materialname + '</div><span class="popover-wrapper"></span>');
         }
 
     });
