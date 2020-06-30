@@ -199,11 +199,11 @@ function appendSearch() {//append search form to dialog
             '<select class="custom-select empty" id="PropSelect_' + Iter + '">\n' +
             '<option selected disabled>Select search criteria...</option>\n' +
             '<option title="Main type of ' + appendLevelName + '" value="maintype">Maintype</option>' +
-            '<option title="Classifications, typology and other named types associated with ' + appendLevelName + '" value="type">Properties</option>' +
+            (checkAvailable(appendLevel, 'type') ? '<option title="Classifications, typology and other named types associated with ' + appendLevelName + '" value="type">Properties</option>' : '') +
             '<option title="Date range of ' + appendLevelName + '" value="timespan">Timespan</option>' +
-            '<option title="Dimensions and certain other measured values concerning the spatial extend of ' + appendLevelName + '" value="dimension">Dimensions</option>' +
-            '<option title="Materials (like copper, iron, ceramics etc.) of ' + appendLevelName + '" value="material">Material</option>' +
-            '<option title="Classifications of entities that are connected with values (e.g. maximum age, body height etc.)" value="value">Value property</option>' +
+            (checkAvailable(appendLevel, 'dimensions') ? '<option title="Dimensions and certain other measured values concerning the spatial extend of ' + appendLevelName + '" value="dimension">Dimensions</option>' : '') +
+            (checkAvailable(appendLevel, 'material') ? '<option title="Materials (like copper, iron, ceramics etc.) of ' + appendLevelName + '" value="material">Material</option>' : '') +
+            (checkAvailable(appendLevel, 'value') ? '<option title="Classifications of entities that are connected with values (e.g. maximum age, body height etc.)" value="value">Value property</option>' : '') +
             '</select>\n' +
             '</div>'
         );

@@ -96,9 +96,23 @@ SELECT path.name,
        path.id,
        path.path,
        path.parent_id,
-       path.name_path
+       path.name_path,
+       NULL AS topparent,
+       '[]'::JSONB AS forms 
 FROM path
 ORDER BY path.path;
+          
+UPDATE thanados.types_all SET topparent = f.topparent, forms = f.forms 
+    FROM (SELECT tp.id, tp.name_path, tp.topparent, jsonb_agg(f.name) AS forms 
+        FROM (SELECT id::INTEGER, path, name_path, left(path, strpos(path, ' >') -1)::INTEGER AS 
+            topparent FROM thanados.types_all WHERE path LIKE '%>%'
+                    UNION ALL 
+            SELECT id::INTEGER, path, name_path, PATH::INTEGER AS topparent FROM 
+                thanados.types_all WHERE path NOT LIKE '%>%' ORDER BY name_path) tp JOIN (select f.name, hierarchy_id FROM  
+	                web.form f JOIN web.hierarchy_form h ON f.id = h.form_id) f 
+	                ON  f.hierarchy_id = tp.topparent 
+	                GROUP BY tp.id, tp.name_path, tp.topparent ORDER BY name_path) f 
+	WHERE thanados.types_all.id = f.id;
 
 
 -- create table with sites to be used
@@ -1196,13 +1210,14 @@ GROUP BY s.id, s.name, s.properties;
 -- create table with all types for json
 DROP TABLE IF EXISTS thanados.typesforjson;
 CREATE TABLE thanados.typesforjson AS
-SELECT DISTINCT 'type' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
+SELECT DISTINCT 'type' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
 WHERE --set types to display in jstree
     name_path LIKE 'Anthropology%'
    OR name_path LIKE 'Grave Construction%'
    OR name_path LIKE 'Gender%'
    OR name_path LIKE 'Pathologies and Non-metric traits%'
+   OR name_path LIKE 'Bone Dimensions%'
    OR name_path LIKE 'Siding%'
    OR name_path LIKE 'Animals%'
    OR name_path LIKE 'Body posture%'
@@ -1212,33 +1227,33 @@ WHERE --set types to display in jstree
    OR name_path LIKE 'Sex%'
    OR name_path LIKE 'Stylistic Classification%'
 UNION ALL
-SELECT DISTINCT 'dimensions' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
+SELECT DISTINCT 'dimensions' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
 WHERE name_path LIKE 'Dimensions%'
 UNION ALL
-SELECT DISTINCT 'material' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
+SELECT DISTINCT 'material' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
 WHERE name_path LIKE 'Material%'
 UNION ALL
-SELECT DISTINCT 'value' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
+SELECT DISTINCT 'value' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
 WHERE name_path LIKE 'Body Height%' OR
 name_path LIKE 'Isotopic Analyses%' OR
 name_path LIKE 'Absolute Age%'
 UNION ALL
-SELECT DISTINCT 'find' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
+SELECT DISTINCT 'find' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
 WHERE name_path LIKE 'Find >%'
 UNION ALL
-SELECT DISTINCT 'strat' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
+SELECT DISTINCT 'strat' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
 WHERE name_path LIKE 'Stratigraphic Unit%'
 UNION ALL
-SELECT DISTINCT 'burial_site' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
+SELECT DISTINCT 'burial_site' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
 WHERE name_path LIKE '%Burial Site%'
 UNION ALL
-SELECT DISTINCT 'feature' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
+SELECT DISTINCT 'feature' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
 WHERE name_path LIKE 'Feature%'
 
@@ -1250,8 +1265,8 @@ WHERE parent ISNULL; --necessary for jstree
 UPDATE thanados.typesforjson
 SET parent = '#'
 WHERE parent = '73'; --necessary for jstree
-INSERT INTO thanados.typesforjson (level, id, text, parent, path, name_path)
-VALUES ('find', '13368', 'Find', '#', '13368', 'Find');
+INSERT INTO thanados.typesforjson (level, id, text, parent, path, name_path, forms, topparent)
+VALUES ('find', '13368', 'Find', '#', '13368', 'Find', '["Find"]', 13368);
 --hack because find has no parent
 
 -- create table with all types as json
@@ -1262,11 +1277,12 @@ CREATE TABLE thanados.typesjson AS (
                                         'parent', parent,
                                         'namepath', name_path,
                                         'path', path,
-                                        'level', level
+                                        'level', level,
+                                        'forms', forms
         )) as types
     FROM (SELECT *
           FROM thanados.typesforjson AS types
-          GROUP BY types.level, types.id, types.text, types.parent, types.name_path, types.path
+          GROUP BY types.level, types.id, types.text, types.parent, types.name_path, types.path, types.forms, types.topparent
           ORDER BY name_path) as u);
           
 -- prepare data for charts

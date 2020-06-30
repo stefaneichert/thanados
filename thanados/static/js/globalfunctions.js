@@ -234,21 +234,80 @@ $(window).resize(function () {
 })
 
 //build jstree after criteria and level for search in Map and Global search
+function checkAvailable(appendLevel, type) {
+    var form;
+    switch (appendLevel) {
+        case "burial_site":
+            form = "Place";
+            break;
+        case "feature":
+            form = "Feature";
+            break;
+        case "strat":
+            form = "Stratigraphic Unit";
+            break;
+        case "find":
+            form = "Find";
+            break;
+        case "bones":
+            form = "Human Remains"
+            break;
+        default:
+            alert('notype')
+    }
+    var availableTypes = [];
+    $.each(jsontypes, function (j, entry) {
+        //console.log(entry.forms);
+        if (entry.forms) {
+            if (entry.forms.includes(form)) {
+                if (availableTypes.includes(entry.level) === false)
+                    availableTypes.push(entry.level);
+            }
+        }
+    });
+    //console.log(availableTypes)
+    if (availableTypes.includes(type)) return true;
+    return false
+}
+
 
 function initiateTree(Iter, appendLevel, criteria, targetField) {
+    var form;
+    switch (appendLevel) {
+        case "burial_site":
+            form = "Place";
+            break;
+        case "feature":
+            form = "Feature";
+            break;
+        case "strat":
+            form = "Stratigraphic Unit";
+            break;
+        case "find":
+            form = "Find";
+            break;
+        case "bones":
+            form = "Human Remains"
+            break;
+        default:
+            alert('notype')
+    }
     $('#mytreeModal').removeClass('d-none');
     UnsetGlobalVars(); //reset vars
     //define search criteria
     treecriteria = criteria;
     if (criteria === 'maintype') treecriteria = appendLevel;
-
+    console.log(treecriteria + ': ' + form);
     //build tree after selected criteria
     selectedtypes = [];
     $.each(jsontypes, function (j, entry) {
-        if (entry.level === treecriteria) {
-            selectedtypes.push(entry);
+        if (entry.forms) {
+            if (entry.level === treecriteria && entry.forms.includes(form)) {
+                selectedtypes.push(entry);
+            }
         }
     });
+    console.log(selectedtypes);
 
     $(function () {
         $('#jstree').jstree({
