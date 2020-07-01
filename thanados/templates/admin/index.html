@@ -63,13 +63,13 @@
             </div>
         </div>
     </div>
-    <label for="sitelist">Current Site Ids</label>
-    <textarea id="sitelist" type="text">{{ currentsitelist }}</textarea>
-
+    <form method="post">
+        Site list<br>
+        {{ form.csrf_token|safe}}
+        {{ form.site_list|safe }}<br>
+        {{ form.save|safe }}
+    </form>
     <div class="m-5 alert alert-info" role="alert" id="infotext"></div>
     <script src="/static/js/admin.js"></script>
-    <script>
-        currentSites = {{ currentsitelist|safe }};
-        test_csrf_token = '{{ csrf_token() }}';
-    </script>
+
 {% endblock %}

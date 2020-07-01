@@ -6,10 +6,10 @@ from thanados.models.entity import Data
 
 @app.route('/vocabulary/')
 def vocabulary():
-    hierarchytypes = app.config["HIERARCHY_TYPES"];
-    systemtypes = app.config["SYSTEM_TYPES"];
-    customtypes = app.config["CUSTOM_TYPES"];
-    valuetypes = app.config["VALUE_TYPES"];
+    hierarchytypes = app.config["HIERARCHY_TYPES"]
+    systemtypes = app.config["SYSTEM_TYPES"]
+    customtypes = app.config["CUSTOM_TYPES"]
+    valuetypes = app.config["VALUE_TYPES"]
     alltypesused = list(set().union(hierarchytypes, systemtypes, customtypes, valuetypes))
     parenttree = []
 
@@ -26,16 +26,13 @@ def vocabulary():
 
     g.cursor.execute(sql_list, {'list': tuple(alltypesused)})
     results = g.cursor.fetchall()
-    Typelist = [];
+    Typelist = []
     for row in results:
         Typelist.append({'label': row.name, 'path': row.name_path, 'id': row.id})
 
     def makeparents(typelist, typeClass):
         for id in typelist:
-
-            sql_tree = """
-                                    SELECT name, id FROM thanados.types_all WHERE id = %(id)s ORDER BY name
-                                """
+            sql_tree = "SELECT name, id FROM thanados.types_all WHERE id = %(id)s ORDER BY name"
             g.cursor.execute(sql_tree, {'id': id})
             results = g.cursor.fetchone()
             if results:
@@ -100,14 +97,13 @@ def vocabulary_view(object_id: int, format_=None):
 
     # get top parent
     sql_topparent = """
-                SELECT topparent FROM (
-                    SELECT id::INTEGER, path, name_path, left(path, strpos(path, ' >') -1)::INTEGER AS 
-                    topparent FROM thanados.types_all WHERE path LIKE '%%>%%'
-                    UNION ALL 
-                    SELECT id::INTEGER, path, name_path, PATH::INTEGER AS topparent FROM 
-                    thanados.types_all WHERE path NOT LIKE '%%>%%' ORDER BY name_path) tp
-                    WHERE id = %(object_id)s
-            """
+        SELECT topparent FROM (
+            SELECT id::INTEGER, path, name_path, left(path, strpos(path, ' >') -1)::INTEGER AS 
+            topparent FROM thanados.types_all WHERE path LIKE '%%>%%'
+            UNION ALL 
+            SELECT id::INTEGER, path, name_path, PATH::INTEGER AS topparent FROM 
+            thanados.types_all WHERE path NOT LIKE '%%>%%' ORDER BY name_path) tp
+            WHERE id = %(object_id)s"""
     g.cursor.execute(sql_topparent, {'object_id': object_id})
     topparent = g.cursor.fetchone().topparent
 
@@ -279,7 +275,7 @@ def vocabulary_view(object_id: int, format_=None):
         thanados.searchdata s
         WHERE type_id IN %(type_id)s AND s.site_id IN %(site_ids)s  
     """
-    g.cursor.execute(sql_entities, {'type_id': tuple([object_id]), 'site_ids': Data.get_site_ids()})
+    g.cursor.execute(sql_entities, {'type_id': tuple([object_id]), 'site_ids': tuple(g.site_list)})
     output_direct_ents = g.cursor.fetchall()
     if output_direct_ents:
         data['entities'] = []
@@ -291,7 +287,7 @@ def vocabulary_view(object_id: int, format_=None):
                                      'system_type':
                                          row.system_type})
 
-    g.cursor.execute(sql_entities, {'type_id': entlist, 'site_ids': Data.get_site_ids()})
+    g.cursor.execute(sql_entities, {'type_id': entlist, 'site_ids': tuple(g.site_list)})
     output_direct_ents = g.cursor.fetchall()
     if output_direct_ents:
         data['entities_recursive'] = []
