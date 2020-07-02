@@ -10,22 +10,6 @@ list_of_sites = app.config["SITE_LIST"]
 
 class Data:
 
-
-    @staticmethod
-    def get_site_ids():
-        list_of_sites = app.config["SITE_LIST"]
-        if list_of_sites == 0:
-            g.cursor.execute('SELECT child_id FROM thanados.sites')
-            result = g.cursor.fetchall()
-            mylist = []
-            for row in result:
-                mylist.append(row.child_id)
-            mylist = (tuple(mylist))
-            return (tuple(mylist))
-        else:
-            mylist = list_of_sites
-            return (mylist)
-
     @staticmethod
     def get_list():
         sql_sites = """
@@ -51,7 +35,7 @@ class Data:
         sql_sites2 = """
         UPDATE thanados.tmpsites SET (graves) = (SELECT graves FROM ( 
             SELECT              
-		            s.name,
+                    s.name,
                     s.description,
                     s.begin,
                     s.end,
@@ -60,16 +44,14 @@ class Data:
                     s.path,
                     s.lat,
                     s.lon,
-                    COUNT(mt.path) FILTER (WHERE mt.path LIKE '%> Grave%')::TEXT AS graves
-                            
+                    COUNT(mt.path) FILTER (WHERE mt.path LIKE '%> Grave%')::TEXT AS graves                           
 
                      FROM thanados.tmpsites s LEFT JOIN thanados.graves g ON s.id = g.parent_id LEFT JOIN thanados.maintype mt ON g.child_id = mt.entity_id 
                      GROUP BY s.name, s.description, s.begin, s.end, s.id, s.type, s.path, s.lat, s.lon) a WHERE id = thanados.tmpsites.id);
                      UPDATE thanados.tmpsites SET graves = NULL WHERE graves = '0';     
                      
-            SELECT jsonb_agg(a) as sitelist FROM thanados.tmpsites a;
-                     """
-        g.cursor.execute(sql_sites, {"sites": Data.get_site_ids()})
+            SELECT jsonb_agg(a) as sitelist FROM thanados.tmpsites a;"""
+        g.cursor.execute(sql_sites, {"sites": tuple(g.site_list)})
         g.cursor.execute(sql_sites2)
         return g.cursor.fetchall()
 
@@ -84,7 +66,7 @@ class Data:
     @staticmethod
     def get_data(place_id):
         sql = 'SELECT data FROM thanados.tbl_thanados_data WHERE id = %(place_id)s AND id IN %(sites)s;'
-        g.cursor.execute(sql, {'place_id': place_id, 'sites': Data.get_site_ids()})
+        g.cursor.execute(sql, {'place_id': place_id, 'sites': tuple(g.site_list)})
         return g.cursor.fetchall()
 
     @staticmethod

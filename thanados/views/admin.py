@@ -1,22 +1,39 @@
 from flask import render_template, g, url_for, abort
 from flask_login import login_required, current_user
+from flask_wtf import FlaskForm
 from werkzeug.utils import redirect
+from wtforms import SubmitField, TextAreaField
 
 from thanados import app
 from thanados.models.entity import Data
 
 
-@app.route('/admin/', )
+class SiteListForm(FlaskForm):  # type: ignore
+    site_list = TextAreaField('Site list')
+    save = SubmitField('Save site list')
+
+
+@app.route('/admin/', methods=['POST', 'GET'])
 @login_required
 def admin():  # pragma: no cover
-
+    form = SiteListForm()
     if current_user.group not in ['admin']:
         abort(403)
 
-    f = open("./instance/sitelist.txt", "r")
-    currentsitelist = (f.read())
+    if form.validate_on_submit():
+        try:
+            with open("./instance/site_list.txt", 'w') as file:
+                file.write(form.site_list.data)
+        except Exception as e:  # pragma: no cover
+            pass
 
-    return render_template('admin/index.html', currentsitelist=currentsitelist)
+    try:
+        with open("./instance/site_list.txt") as file:
+            form.site_list.data = file.read()
+    except Exception as e:  # pragma: no cover
+        pass
+    return render_template('admin/index.html', form=form)
+
 
 @app.route('/admin/execute/')
 @login_required
