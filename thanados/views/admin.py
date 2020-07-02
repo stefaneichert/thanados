@@ -1217,7 +1217,7 @@ WHERE --set types to display in jstree
    OR name_path LIKE 'Grave Construction%'
    OR name_path LIKE 'Gender%'
    OR name_path LIKE 'Pathologies and Non-metric traits%'
-   OR name_path LIKE 'Bone Dimensions%'
+   OR name_path LIKE 'Bone measurements%'
    OR name_path LIKE 'Siding%'
    OR name_path LIKE 'Animals%'
    OR name_path LIKE 'Body posture%'
