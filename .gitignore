@@ -2,6 +2,7 @@
 # sensitive data (except example files)
 instance/*
 !instance/example_*
+install/data_cleanup.sql
 
 # cache
 __pycache__/*

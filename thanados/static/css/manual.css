@@ -23,7 +23,7 @@ h3, h4 {
     border-bottom-left-radius: 0;
     border-top-left-radius: 0;
     border: none;
-    z-index: 2000 !important;
+    z-index: 999 !important;
 }
 
 #toggleIcon {

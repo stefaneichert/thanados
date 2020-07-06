@@ -83,7 +83,7 @@ def ajax_test() -> str:
                (SELECT * FROM thanados.searchData WHERE site_id IN %(site_ids)s AND  system_type = %(system_type)s AND type_id IN %(type_ids)s AND min >= %(min)s AND max <= %(max)s) d
            """
 
-    g.cursor.execute(sql, {'site_ids': Data.get_site_ids(),
+    g.cursor.execute(sql, {'site_ids': tuple(g.site_list),
                            'system_type': system_type,
                            'type_ids': type_ids,
                            'min': min,

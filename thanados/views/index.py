@@ -15,7 +15,7 @@ def index():
     SELECT * FROM thanados.searchdata WHERE site_id IN %(site_ids)s
     """
 
-    g.cursor.execute(sql0, {'site_ids': Data.get_site_ids()})
+    g.cursor.execute(sql0, {'site_ids': tuple(g.site_list)})
 
     sql = """
     SELECT '['
