@@ -7,9 +7,6 @@ $(document).ready(function () {
         }
     });
 
-    $('body').click(function () {
-        $('.popover').popover('dispose')
-    })
 
     // scroll body to 0px on click
     $('#back-to-top').click(function () {
@@ -233,21 +230,45 @@ $(window).resize(function () {
     setlogo()
 })
 
+
+function groundTypes(data, length) {
+    var oldlength = AvailableNodes.length;
+    if (AvailableNodes.length !== length) {
+        $.each(jsontypes, function (i, type) {
+            if (data.includes(type.id)) {
+                if (AvailableNodes.includes(type.parent) === false) {
+                    AvailableNodes.push(type.parent);
+                    console.log(AvailableNodes.length)
+                }
+            }
+        })
+        groundTypes(AvailableNodes, oldlength)
+    } else {
+        AvailableNodes = (AvailableNodes.concat(availables))
+    }
+    // console.log(parentlist);
+}
+
+
 //build jstree after criteria and level for search in Map and Global search
 function checkAvailable(appendLevel, type) {
     var form;
+    AvailableNodes = [];
     switch (appendLevel) {
         case "burial_site":
             form = "Place";
             break;
         case "feature":
             form = "Feature";
+            if (mapsearch) availables = availableTypes.gravetypes;
             break;
         case "strat":
             form = "Stratigraphic Unit";
+            if (mapsearch) availables = availableTypes.burialtypes;
             break;
         case "find":
             form = "Find";
+            if (mapsearch) availables = availableTypes.findtypes;
             break;
         case "bones":
             form = "Human Remains"
@@ -255,19 +276,28 @@ function checkAvailable(appendLevel, type) {
         default:
             alert('notype')
     }
-    var availableTypes = [];
+    if (mapsearch) groundTypes(availables, 1, form);
+    var availableFormTypes = [];
     $.each(jsontypes, function (j, entry) {
+
+
         //console.log(entry.forms);
         if (entry.forms) {
-            if (entry.forms.includes(form)) {
-                if (availableTypes.includes(entry.level) === false)
-                    availableTypes.push(entry.level);
+            if (mapsearch) {
+                if (entry.forms.includes(form) && AvailableNodes.includes(entry.id)) {
+                    if (availableFormTypes.includes(entry.level) === false)
+                        availableFormTypes.push(entry.level);
+                }
+            } else {
+                if (entry.forms.includes(form)) {
+                    if (availableFormTypes.includes(entry.level) === false)
+                        availableFormTypes.push(entry.level);
+                }
             }
         }
     });
-    //console.log(availableTypes)
-    if (availableTypes.includes(type)) return true;
-    return false
+    return availableFormTypes.includes(type);
+
 }
 
 
@@ -279,12 +309,15 @@ function initiateTree(Iter, appendLevel, criteria, targetField) {
             break;
         case "feature":
             form = "Feature";
+            if (mapsearch) availables = availableTypes.gravetypes;
             break;
         case "strat":
             form = "Stratigraphic Unit";
+            if (mapsearch) availables = availableTypes.burialtypes;
             break;
         case "find":
             form = "Find";
+            if (mapsearch) availables = availableTypes.findtypes;
             break;
         case "bones":
             form = "Human Remains"
@@ -297,17 +330,23 @@ function initiateTree(Iter, appendLevel, criteria, targetField) {
     //define search criteria
     treecriteria = criteria;
     if (criteria === 'maintype') treecriteria = appendLevel;
-    console.log(treecriteria + ': ' + form);
     //build tree after selected criteria
     selectedtypes = [];
+    if (mapsearch) groundTypes(availables, 1, form);
     $.each(jsontypes, function (j, entry) {
         if (entry.forms) {
-            if (entry.level === treecriteria && entry.forms.includes(form)) {
-                selectedtypes.push(entry);
+            if (mapsearch) {
+                if (entry.level === treecriteria && entry.forms.includes(form) && AvailableNodes.includes(entry.id)) {
+                    selectedtypes.push(entry);
+                }
+            } else {
+                if (entry.level === treecriteria && entry.forms.includes(form)) {
+                    selectedtypes.push(entry);
+                }
             }
         }
     });
-    console.log(selectedtypes);
+    //console.log(selectedtypes);
 
     $(function () {
         $('#jstree').jstree({
@@ -2080,6 +2119,9 @@ function initPopovers() {
         popover_div = $(this);
         var id = popover_div.data('value');
         getTypeData(id, popover_div, false);
+    })
+    $('body').click(function () {
+        $('.popover').popover('dispose')
     })
 }
 

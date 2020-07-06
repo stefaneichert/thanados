@@ -5,6 +5,7 @@ $(document).ready(function () {
     getBasemaps();
     myjson = repairJson(myjson);
     setmap(myjson);
+    mapsearch = true;
     //console.log(myjson);
     $('#CSVmodal').on('shown.bs.modal', function (e) {
         table.draw();

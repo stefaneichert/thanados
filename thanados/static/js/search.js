@@ -14,6 +14,7 @@ $(document).ready(function () {
     getBasemaps();
     if (($(window).width()) > 550) dialogPosition = {my: "left+20 top+20", at: "left top", of: "body"}
     if (($(window).width()) <= 550) dialogPosition = {my: "left top", at: "left top", of: "body"}
+    mapsearch = false;
 });
 
 $(window).resize(function () {

@@ -5,9 +5,6 @@ from flask import g
 
 from thanados import app
 
-list_of_sites = app.config["SITE_LIST"]
-
-
 class Data:
 
     @staticmethod
@@ -103,15 +100,6 @@ class Data:
         sql = "SELECT system_type FROM model.entity WHERE id = %(object_id)s;"
         g.cursor.execute(sql, {"object_id": id_})
         return g.cursor.fetchone()[0]
-
-    @staticmethod
-    def get_sitelist():
-        if list_of_sites == 0:
-            sql = 'SELECT child_id FROM thanados.sites;'
-            g.cursor.execute(sql)
-            return g.cursor.fetchall()
-        else:
-            return list_of_sites
 
     @staticmethod
     def get_parent_place_id(id_):
