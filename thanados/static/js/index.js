@@ -35,19 +35,11 @@ if ($('#map').length) {
 
     map = L.map('map', {
         maxZoom: 12,
-        scrollWheelZoom: false
+        scrollWheelZoom: false,
+        dragging: false
     });
 
     landscape.addTo(map);
-
-    /*entitycounters = L.control({position: "bottomleft"});
-    entitycounters.onAdd = function (map) {
-        var div = L.DomUtil.create('div', 'counterLegend')
-        div.innerHTML =
-            '<div id="entCount"><span class="entCounters">Cemeteries: ' + entitycount[0] + '</span><span class="entCounters">Graves: ' + entitycount[1] + '</span><span class="entCounters">Burials: ' + entitycount[2] + '</span><span class="entCounters">Finds: ' + entitycount[3] + '</span> </div>'
-        return div
-    }
-    entitycounters.addTo(map);*/
 
     $('#counters').html(
         '<div class="col-sm">' +
@@ -80,7 +72,6 @@ if ($('#map').length) {
         });
     });
 
-    heatmarkers = []
     mymarkers = new L.featureGroup([]).addTo(map);
 
     $.each(sitelist, function (e, dataset) {
@@ -90,7 +81,6 @@ if ($('#map').length) {
             fillOpacity: 0,
             fillColor: "#ff3636"
         }).bindPopup('<a href="/entity/' + dataset.id + '" title="' + dataset.description + '"><b>' + dataset.name + '</b></a><br><br>' + dataset.type);
-        heatmarkers.push([dataset.lon, dataset.lat]);
         marker.addTo(mymarkers);
     })
 
@@ -122,9 +112,6 @@ if ($('#map').length) {
     });
     } else zoom = 0.7
 
-    console.log(zoom)
-
-
     $.each($('.leaflet-interactive'), function (i, el) {
         var time = (1000 / sitelist.length);
         setTimeout(function () {
@@ -139,9 +126,4 @@ if ($('#map').length) {
     console.log('no map on index')
 }
 
-function markerwait() {
-    setTimeout(function () {
-
-    }, 250)
-}
 

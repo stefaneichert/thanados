@@ -3,7 +3,9 @@ $(document).ready(function () {
     $("#sidebarTitle").text(myjson.name);
     markerset = false;
     getBasemaps();
+    myjson = repairJson(myjson);
     setmap(myjson);
+    mapsearch = true;
     //console.log(myjson);
     $('#CSVmodal').on('shown.bs.modal', function (e) {
         table.draw();
@@ -47,7 +49,7 @@ $(document).ready(function () {
 
     $('.ui-dialog').css('max-width', mymodalwith + 'px');
     $('#mytreeModal').css('max-width', ($(window).width()) + 'px');
-    $('.legend').css('max-height', (containerheight - 159))
+    $('.legend').css('max-height', (containerheight - 159));
 
 });
 
@@ -664,6 +666,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         }
 
         var entType = currentfeature.properties.maintype.name;
+        var typeId = currentfeature.properties.maintype.id;
         var typepath = currentfeature.properties.maintype.path;
         if (typeof (currentfeature.properties.timespan) !== 'undefined' && typeof (currentfeature.properties.timespan.begin_from) !== 'undefined')
             var tsbegin = parseInt((currentfeature.properties.timespan.begin_from), 10);
@@ -684,6 +687,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         var entId = currentfeature.id;
         var entName = currentfeature.properties.name;
         var entDesc = currentfeature.properties.description;
+        var typeId = currentfeature.properties.maintype.id;
         if (typeof entDesc == 'undefined') {
             var entDesc = '';
         }
@@ -744,8 +748,12 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         '<div class="container-fluid">' +
         '<div class="row">' +
         '<div id="myModalData_' + entId + '">' +
-        '<div id="myModaltype_' + entId + '" class="modalrowitem" title="' + typepath + '">' + entType + '</div>' +
-        '<div id="myModaltimespan' + entId + '" class="modalrowitem">' + dateToInsert + '</div>' +
+        '<div ' +
+        'class="modalrowitem typebutton" ' +
+        'type="button" ' +
+        'data-toggle="popover" ' +
+        'data-value="' + typeId + '">' + entType + '</div>' +
+        '<div id="myModaltimespan' + entId + '" class="modalrowitem">' + dateToInsert + '</div><span class="popover-wrapper"></span>' +
         '<div id="myModalDescr' + entId + '">' + entDesc + '</div>' +
         '<div id="myModalTypescontainer' + entId + '"></div>' +
         '<div id="myModalDimensionscontainer' + entId + '"></div>' +
@@ -779,9 +787,14 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         var classtype = types.path;
         var typevalue = types.value;
         var typeunit = types.description;
+        var typeId = types.id;
         if (typeof (typevalue) !== 'undefined') var classification = (types.name + ': ' + typevalue + ' ' + typeunit);
         $('#myModalTypescontainer' + entId).append(
-            '<div class="modalrowitem" title="' + classtype + '">' + classification + '</div>');
+            '<div ' +
+            'class="modalrowitem typebutton" ' +
+            'type="button" ' +
+            'data-toggle="popover" ' +
+            'data-value="' + typeId + '">' + classification + '</div><span class="popover-wrapper"></span>');
     });
 
     $('#myModalDimensionscontainer' + entId).empty();
@@ -793,9 +806,14 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         var dimension = dimensions.name;
         var dimvalue = dimensions.value;
         var dimunit = dimensions.unit;
+        var typeId = dimensions.id;
 
         $('#myModalDimensionscontainer' + entId).append(
-            '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' ' + dimunit + '</div>');
+            '<div ' +
+            'class="modalrowitem typebutton" ' +
+            'type="button" ' +
+            'data-toggle="popover" ' +
+            'data-value="' + typeId + '">' + dimension + ': ' + dimvalue + ' ' + dimunit + '</div><span class="popover-wrapper"></span>');
 
     });
 
@@ -808,14 +826,23 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         var materialname = material.name;
         var matvalue = material.value;
         var matpath = material.path;
+        var typeId = material.id;
         if (matvalue > 0) {
             $('#myModalMaterialcontainer' + entId).append(
-                '<div class="modalrowitem" title="' + matpath + '">' + materialname + ': ' + matvalue + '%</div>');
+                '<div ' +
+                'class="modalrowitem typebutton" ' +
+                'type="button" ' +
+                'data-toggle="popover" ' +
+                'data-value="' + typeId + '">' + materialname + ': ' + matvalue + '%</div><span class="popover-wrapper"></span>');
         }
 
         if (matvalue == 0) {
             $('#myModalMaterialcontainer' + entId).append(
-                '<div class="modalrowitem" title="' + matpath + '">' + materialname + '</div>');
+                '<div ' +
+                'class="modalrowitem typebutton" ' +
+                'type="button" ' +
+                'data-toggle="popover" ' +
+                'data-value="' + typeId + '">' + materialname + '</div><span class="popover-wrapper"></span>');
         }
 
     });
@@ -927,6 +954,7 @@ function modalset(id) {
             getModalData(0, features);
         }
     });
+    initPopovers();
     showpolygon(id);
     collapseAllOthers(id);
     $("#myModal").dialog({
@@ -980,7 +1008,8 @@ function modalsetsite() {
         }
     });
     $("#myModal").scrollTop("0");
-    if (loginTrue) $('.backendlink').removeClass('d-none')
+    if (loginTrue) $('.backendlink').removeClass('d-none');
+    initPopovers();
 }
 
 function addFilterSearch() {
@@ -1004,7 +1033,7 @@ function addFilterSearch() {
     LeafletDropdownButton.addTo(map)
 }
 
-function getCitation () {
+function getCitation() {
     singleref = false;
     mycitation2 = '';
     if (myjson.properties.references.length === 1) singleref = true;
@@ -1029,7 +1058,7 @@ function getCitation () {
         }
 
         if (mainref) {
-                mycitation2 = citeme
+            mycitation2 = citeme
         }
     })
 

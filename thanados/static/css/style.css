@@ -868,14 +868,15 @@ input[type=color] {
 
 #mystyleform > .card > .card-header {
     padding: 0;
-    font-size: 0.875rem!important;
+    font-size: 0.875rem !important;
     height: 34px;
     color: #495057 !important;
     background-color: #f2f2f2;
     border-bottom: none !important;
 }
+
 .infobtns {
-    font-size: 0.875rem!important;
+    font-size: 0.875rem !important;
 }
 
 #mystyleform > .card > .card-header > h6 > .btn {
@@ -942,14 +943,15 @@ input[type=color] {
     opacity: 0.5;
     display: none;
     font-size: 1rem;
-    z-index: 2000!important;
+    z-index: 2000 !important;
 }
+
 .sitepermalink:hover {
-    color: #0056b3!important;
+    color: #0056b3 !important;
 }
 
 input {
-    min-width: 35px!important;
+    min-width: 35px !important;
 }
 
 .entCounters {
@@ -960,7 +962,7 @@ input {
 .counterLegend {
     padding: 6px 8px;
     font-weight: bold;
-    background-color: rgba(250, 250, 250, 0.7)!important;
+    background-color: rgba(250, 250, 250, 0.7) !important;
     box-shadow: none !important;
     /* border: 2px solid #696969!important; */
     border-radius: 4px !important;
@@ -970,8 +972,8 @@ input {
 #counters {
     color: #eeee;
     background-color: #777777;
-    margin-left: 0!important;
-    margin-right: 0!important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
 }
 
 .statistic-counter {
@@ -991,13 +993,13 @@ input {
 }
 
 .activePage {
-    color: #e3e3e3!important;
+    color: #e3e3e3 !important;
     font-weight: bold;
 }
 
 .leaflet-control-attribution a {
     text-decoration: none;
-    color: #0089bf!important;
+    color: #0089bf !important;
     font-weight: bold;
 }
 
@@ -1011,3 +1013,160 @@ input {
 #mytablebody td, #mybibbody td {
     background: #f2f2f2;
 }*/
+
+.treenode {
+    border: none;
+    color: #007bff !important;
+    cursor: pointer;
+    padding: 0.25rem 1rem;
+}
+
+.toptreenode {
+    border: none;
+    font-weight: bold;
+    padding: 0.25rem 1rem;
+    margin-left: -1rem;
+}
+
+.treenode:hover {
+    color: #003db3 !important;
+}
+
+.treenode > i, .treenode > i:hover {
+    color: #212529;
+    margin-left: -1.3em;
+}
+
+#tree {
+    max-height: 50vw;
+    overflow: auto;
+}
+
+.bstreeview {
+    margin-left: 1em;
+}
+
+.hierarchy-card .btn-link {
+    cursor: pointer;
+}
+
+.popover .arrow {
+    display: none;
+}
+
+.typebutton:hover {
+    background: #f2f2f2;
+}
+
+.popover a {
+    color: #007bff;
+}
+
+.popover a:hover {
+    color: #003db3;
+}
+
+.popover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.closePopover {
+    margin-right: -0.3em;
+}
+
+
+#images p, #ImgOne p {
+    font-size: 0.875rem;
+    margin: 0.6rem;
+    text-align: center;
+}
+
+#ImgOne {
+    margin: 0.8rem
+}
+
+
+@media (min-width: 576px) {
+  .card-columns {
+    column-count: 2;
+  }
+}
+
+@media (min-width: 768px) {
+  .card-columns {
+    column-count: 3;
+  }
+}
+
+@media (min-width: 992px) {
+  .card-columns {
+    column-count: 4;
+  }
+}
+
+@media (min-width: 1200px) {
+  .card-columns {
+    column-count: 5;
+  }
+}
+
+.hierarchy-row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.hierarchy-detail {
+    font-size: 0.875rem;
+    background: #ffffff;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+}
+
+.hierarchy-detail p {
+    font-size: 0.875rem;
+    margin-bottom: 0.3rem;
+}
+
+.node-wrapper {
+    display: flex;
+}
+
+.popCont {
+    margin-top: 0.25em;
+    color: #6495ed;
+    cursor: pointer;
+}
+
+.popCont:hover {
+    margin-top: 0.25em;
+    color: #305db3;
+}
+
+.detailLink {
+    color: #6495ed;
+    cursor: pointer;
+}
+
+.detailLink:hover {
+    color: #305db3;
+}
+
+.node-wrapper .treenode:hover, .node-wrapper .treenode i {
+    color: #6c757d!important;
+}
+
+.node-wrapper .treenode, .node-wrapper .treenode i {
+    color: #6c757d!important;
+}
+
+.typeheading {
+    padding-left: 0;
+}
+
+#search_result p {
+    margin-bottom: 0.2em;
+}

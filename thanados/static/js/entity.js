@@ -15,11 +15,12 @@ $(document).ready(function () {
         return false;
     });
 
-    //$('#back-to-top').tooltip('show');
+    initPopovers();
 
 });
 
 getBasemaps();
+jsonmysite = repairJson(jsonmysite);
 sitename = jsonmysite.name;
 
 descriptionSummary = {
@@ -184,6 +185,7 @@ function getEntityData(parentName, parentId, currentfeature) {
     }
 
     entType = currentfeature.properties.maintype.name;
+    entTypeId = currentfeature.properties.maintype.id;
     typepath = currentfeature.properties.maintype.path;
     var tsbegin;
     var tsend;
@@ -248,7 +250,8 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" class="btn btn-sm btn-secondary" title="Open detailed map of this site">Map</button>' +
         '</div>' +
         '</div>' +
-        '<div id="mytype_' + entId + '" class="modalrowitem" title="' + typepath + '">' + entType + '</div>' +
+        '<div type="button" data-value="' + entTypeId + '" class="modalrowitem typebutton"' +
+        ' data-toggle="popover">' + entType + '</div><span class="popover-wrapper"></span>' +
         '<div id="mytimespan' + entId + '" class="modalrowitem" title="Timespan/daterange of entity">' + dateToInsert + '</div>' +
         '<div id="myDescr' + entId + '" title="Description of entity"><span class="shrinkable">' + entDesc + '</span></div><a class="truncBtn" onclick="truncId=\'#myDescr' + entId + '\'" href="#">Show more</a>' +
         '<div class="mt-5" id="myTypescontainer' + entId + '"></div>' +
@@ -295,9 +298,13 @@ function getEntityData(parentName, parentId, currentfeature) {
         var classtype = types.path;
         var typevalue = types.value;
         var typeunit = types.description;
+        var typeid = types.id;
         if (typeof (typevalue) !== 'undefined') var classification = (types.name + ': ' + typevalue + ' ' + typeunit);
         $('#myTypescontainer' + entId).append(
-            '<div class="modalrowitem" title="' + classtype + '">' + classification + '</div>');
+            '<div type="button" data-value="' + typeid + '" + ' +
+
+            'class="modalrowitem typebutton" ' +
+            'data-toggle="popover">' + classification + '</div><span class="popover-wrapper"></span>');
     });
 
     $('#myDimensionscontainer' + entId).empty();
@@ -309,9 +316,12 @@ function getEntityData(parentName, parentId, currentfeature) {
         var dimension = dimensions.name;
         var dimvalue = dimensions.value;
         var dimunit = dimensions.unit;
+        var typeid = dimensions.id;
 
         $('#myDimensionscontainer' + entId).append(
-            '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' ' + dimunit + '</div>');
+            '<div type="button" data-value="' + typeid + '" ' +
+
+            'class="modalrowitem typebutton" "data-toggle="popover">' + dimension + ': ' + dimvalue + ' ' + dimunit + '</div><span class="popover-wrapper"></span>');
 
     });
 
@@ -324,14 +334,19 @@ function getEntityData(parentName, parentId, currentfeature) {
         var materialname = material.name;
         var matvalue = material.value;
         var matpath = material.path;
+        var typeid = material.id;
         if (matvalue > 0) {
             $('#myMaterialcontainer' + entId).append(
-                '<div class="modalrowitem" title="' + matpath + '">' + materialname + ': ' + matvalue + '%</div>');
+                '<div type="button" data-value="' + typeid + '" ' +
+
+                'class="modalrowitem typebutton" data-toggle="popover">' + materialname + ': ' + matvalue + '%</div><span class="popover-wrapper"></span>');
         }
 
         if (matvalue == 0) {
             $('#myMaterialcontainer' + entId).append(
-                '<div class="modalrowitem" title="' + matpath + '">' + materialname + '</div>');
+                '<div type="button" data-value="' + typeid + '" ' +
+
+                'class="modalrowitem typebutton" data-toggle="popover">' + materialname + '</div><span class="popover-wrapper"></span>');
         }
 
     });
@@ -910,6 +925,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
         }
 
         var entType = currentfeature.properties.maintype.name;
+        var typeId = currentfeature.properties.maintype.id;
 
         var typepath = currentfeature.properties.maintype.path;
         if (typeof (currentfeature.properties.timespan) !== 'undefined' && typeof (currentfeature.properties.timespan.begin_from) !== 'undefined')
@@ -930,7 +946,11 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             '<div class="container-fluid">' +
             '<div class="row">' +
             '<div id="myModalData_' + entId + '">' +
-            '<div id="myModaltype_' + entId + '" class="modalrowitem" title="' + typepath + '">' + entType + '</div>' +
+            '<div ' +
+            'class="modalrowitem typebutton" ' +
+            'type="button" ' +
+            'data-toggle="popover" ' +
+            'data-value="' + typeId + '">' + entType + '</div><span class="popover-wrapper"></span>' +
             '<div id="myModaltimespan' + entId + '" class="modalrowitem">' + dateToInsert + '</div>' +
             '<div id="myModalImagecontainer' + entId + '" class="row mb-2"></div>' +
             '<div id="myModalDescr' + entId + '">' + entDesc + '</div>' +
@@ -955,9 +975,14 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             var classtype = types.path;
             var typevalue = types.value;
             var typeunit = types.description;
+            var typeId = types.id;
             if (typeof (typevalue) !== 'undefined') var classification = (types.name + ': ' + typevalue + ' ' + typeunit);
             $('#myModalTypescontainer' + entId).append(
-                '<div class="modalrowitem" title="' + classtype + '">' + classification + '</div>');
+                '<div ' +
+                'class="modalrowitem typebutton" ' +
+                'type="button" ' +
+                'data-toggle="popover" ' +
+                'data-value="' + typeId + '">' + classification + '</div><span class="popover-wrapper"></span>');
         });
 
         $('#myModalDimensionscontainer' + entId).empty();
@@ -969,9 +994,14 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             var dimension = dimensions.name;
             var dimvalue = dimensions.value;
             var dimunit = dimensions.unit;
+            var typeId = dimensions.id;
 
             $('#myModalDimensionscontainer' + entId).append(
-                '<div class="modalrowitem">' + dimension + ': ' + dimvalue + ' ' + dimunit + '</div>');
+                '<div ' +
+                'class="modalrowitem typebutton" ' +
+                'type="button" ' +
+                'data-toggle="popover" ' +
+                'data-value="' + typeId + '">' + dimension + ': ' + dimvalue + ' ' + dimunit + '</div><span class="popover-wrapper"></span>');
 
         });
 
@@ -984,14 +1014,24 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             var materialname = material.name;
             var matvalue = material.value;
             var matpath = material.path;
+            typeId = material.id;
+
             if (matvalue > 0) {
                 $('#myModalMaterialcontainer' + entId).append(
-                    '<div class="modalrowitem" title="' + matpath + '">' + materialname + ': ' + matvalue + '%</div>');
+                    '<div ' +
+                    'class="modalrowitem typebutton" ' +
+                    'type="button" ' +
+                    'data-toggle="popover" ' +
+                    'data-value="' + typeId + '">' + materialname + ': ' + matvalue + '%</div><span class="popover-wrapper"></span>');
             }
 
             if (matvalue == 0) {
                 $('#myModalMaterialcontainer' + entId).append(
-                    '<div class="modalrowitem" title="' + matpath + '">' + materialname + '</div>');
+                    '<div ' +
+                    'class="modalrowitem typebutton" ' +
+                    'type="button" ' +
+                    'data-toggle="popover" ' +
+                    'data-value="' + typeId + '">' + materialname + '</div><span class="popover-wrapper"></span>');
             }
 
         });
@@ -1029,6 +1069,7 @@ $('#nav-catalogue-tab').click(function (e) {
         });
     }
     cataloguetrue = true;
+    initPopovers();
 })
 
 $('#myattr').toggle();

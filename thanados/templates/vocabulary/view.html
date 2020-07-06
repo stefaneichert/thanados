@@ -1,0 +1,288 @@
+{% extends "layout.html" %}
+{% block content %}
+    <script src="/static/vendor/node_modules/bstreeview/dist/js/bstreeview.min.js"></script>
+    <link rel="stylesheet"
+          href="/static/vendor/node_modules/leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.css">
+    <script src="/static/vendor/node_modules/leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.js"></script>
+    <link href="/static/css/charts.css" rel="stylesheet">
+
+    <style>
+        input[type="checkbox"] + label {
+            margin-left: 0.5em;
+            margin-right: 0.5em;
+            margin-bottom: -0.3em;
+            background-color: #007bff;
+        }
+    </style>
+    <div class="breadcrumb" id="mybreadcrumbs">{{ data.topparent.type }}: {{ data.path }}</div>
+    <div id="mycontent">
+        <div class="container-fluid">
+            <div class="row hierarchy-card">
+                <div class="col-xl">
+
+                    <div class="card mb-3">
+                        <div class="card-header" id="typename">
+                             <span class="btn-link" data-toggle="collapse" data-target="#main"
+                                   aria-expanded="true" aria-controls="main">
+                                 {{ data.name }}
+                             </span>
+                        </div>
+                        <div class="card-body collapse show" id="main">
+
+                            {% if data.description %}
+                                <p class="card-text text-muted" id="typeDescription">
+                                    {{ data.description }}
+                                </p>
+                            {% endif %}
+                            <h6 class="card-subtitle mb-2">
+                                Hierarchy:
+                                <a href="/vocabulary/{{ data.topparent.id }}" class="card-link">
+                                    {{ data.topparent.name }}
+                                </a>
+                                {% if data.topparent.description and data.parent %}
+                                    <p class="card-text text-muted" id="topparentDescription">
+                                        <i> ({{ data.topparent.description }})
+                                        </i>
+                                    </p>
+                                {% endif %}
+                            </h6>
+                            <h6 class="card-subtitle mt-2 mb-2">
+                                Properties:
+                                <span class="text-muted">
+                                {{ data.topparent.type }}, {{ data.topparent.selection }}
+                                </span>
+                            </h6>
+                            <h6 class="card-subtitle mt-2 mb-2">
+                                Usage:
+                                <span class="text-muted" id="usage">
+                                </span>
+                            </h6>
+                            {% if data.parent %}
+                                <h6 class="card-subtitle mt-2 mb-2">
+                                    Subcategory of:
+                                    <a href="/vocabulary/{{ data.parent }}" class="card-link">
+                                        {{ data.parent_name }}
+                                    </a>
+                                </h6>
+                            {% endif %}
+                            {% if data.children %}
+                                <h6 class="card-subtitle mt-2 mb-2">
+                                    Subcategories:
+                                    <span class="text-muted">
+                                    {{ children }}
+                                        {% if children != children_recursive-1 %}
+                                            ({{ children_recursive-1 }} - recursively)
+                                        {% endif %}
+                                </span>
+                                </h6>
+                            {% endif %}
+                            {% if data.entities_recursive %}
+                                <h6 class="card-subtitle mt-2 mb-2">
+                                    Entities:
+                                    <span class="text-muted">
+                                    {{ data.entities|length }}
+                                        {% if data.entities|length !=
+                                        data.entities_recursive|length %}
+                                            ({{ data.entities_recursive|length }} -
+                                            including subcategories)
+                                        {% endif %}
+                                </span>
+                                </h6>
+                            {% endif %}
+                            {% if data.files %}
+                                <div class="row">
+
+                                    <div class="card" id="ImgOne">
+                                        <a href="{{ data.files[0].file_name }}" data-featherlight>
+                                            <img class="card-img-bottom img-fluid"
+                                                 src="{{ data.files[0].file_name }}"
+                                                 alt="image"
+                                                    {% if data.files[0].source %}
+                                                 title="{{ data.files[0].source }}"
+                                                    {% endif %}
+                                                 style="width:auto; max-height: 250px">
+                                        </a>
+                                        <p class="text-muted">
+                                            {% if data.files[0].source %}
+                                                {{ data.files[0].source }}
+                                            {% endif %}
+                                        </p>
+                                        <p>
+                                            {% if data.files[0].license %}
+                                                <a href="/vocabulary/{{ data.files[0].licenseId }}" target="_blank">{{ data.files[0].license }}</a>
+                                            {% endif %}
+                                        </p>
+                                    </div>
+
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <span class="btn-link" data-toggle="collapse" data-target="#tree"
+                                  aria-expanded="true" aria-controls="tree">
+                                Hierarchy
+                            </span>
+                        </div>
+                        <div class="card-body collapse show" id="tree">
+                            {% if data.parent %}
+                                <a style="margin-left: -0.5em" href="/vocabulary/{{ data.parent }}">
+                                    {{ data.parent_name }}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {% if data.entities_recursive %}
+                    <div class="col-xl">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <span class="btn-link" data-toggle="collapse"
+                                      data-target="#mapContainer"
+                                      aria-expanded="true" aria-controls="collapseOne">
+                                    Occurences
+                                </span>
+                            </div>
+                            <div id="mapContainer" class="collapse show">
+                                <div class="card-body" id="map"
+                                     style="height: 50vh; width: 100%"></div>
+                                <div class="card-footer text-muted" id="occurence"></div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if data.entities_recursive or data.files %}
+                <div class="card mb-2">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs">
+                            {% if data.entities_recursive %}
+                                <li class="nav-item">
+                                    <a id="entNav" class="nav-link active" data-toggle="tab" href="#entities">Entities</a>
+                                </li>
+                            {% endif %}
+                            {% if data.bibliography %}
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab"
+                                       href="#bibliography">Bibliography</a>
+                                </li>
+                            {% endif %}
+                            {% if data.references %}
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab"
+                                       href="#references">External references</a>
+                                </li>
+                            {% endif %}
+                            {% if data.files %}
+                                <li class="nav-item">
+                                    {% if not data.entities_recursive %}
+                                        <a id="fileNav" class="nav-link active" data-toggle="tab" href="#images">Images</a>
+                                    {% else %}
+                                        <a id="fileNav" class="nav-link" data-toggle="tab" href="#images">Images</a>
+                                    {% endif %}
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <div class="card-body tab-content">
+                        {% if data.entities_recursive %}
+                            <div class="tab-pane active" id="entities">
+                                <table id="entities_tbl"
+                                       class="display table table-striped table-bordered" width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Context</th>
+                                        <th>Level</th>
+
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        {% endif %}
+                        {% if data.bibliography %}
+                            <div class="tab-pane" id="bibliography">Bibliography</div>
+                        {% endif %}
+                        {% if data.references %}
+                            <div class="tab-pane" id="references">External References</div>
+                        {% endif %}
+                        {% if data.files|length > 1 %}
+                            {% if not data.entities_recursive %}
+                                <div class="tab-pane active" id="images">
+                                    <div class="card-columns">
+                                        {% for row in data.files %}
+                                            <div class="card ">
+                                                <a href="{{ row.file_name }}" data-featherlight>
+                                                    <img src="{{ row.file_name }}" alt="image"
+                                                            {% if row.source %}
+                                                         title="{{ row.source }}"
+                                                            {% endif %}
+                                                         class="img-fluid card-img-bottom">
+                                                </a>
+
+                                                <p class="text-muted">
+                                                    {% if row.source %}
+                                                        {{ row.source }}
+                                                    {% endif %}
+                                                </p>
+                                                <p>
+                                                    {% if row.license %}
+                                                        <a href="/vocabulary/{{ row.licenseId }}" target="_blank">{{ row.license }}</a>
+                                                    {% endif %}
+                                                </p>
+
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="tab-pane" id="images">
+                                    <div class="card-columns">
+                                        {% for row in data.files %}
+                                            <div class="card ">
+                                                <a href="{{ row.file_name }}" data-featherlight>
+                                                    <img src="{{ row.file_name }}" alt="image"
+                                                            {% if row.source %}
+                                                         title="{{ row.source }}"
+                                                            {% endif %}
+                                                         class="img-fluid card-img-bottom">
+                                                </a>
+
+                                                <p class="text-muted">
+                                                    {% if row.source %}
+                                                        {{ row.source }}
+                                                    {% endif %}
+                                                </p>
+                                                <p>
+                                                    {% if row.license %}
+                                                        <a href="/vocabulary/{{ row.licenseId }}" target="_blank">{{ row.license }}</a>
+                                                    {% endif %}
+                                                </p>
+
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                </div>
+            {% endif %}
+        </div>
+
+
+    </div>
+
+    <script>
+        data =
+        {{ data|tojson }}
+    </script>
+    <script src="/static/js/vocabulary.js"></script>
+{% endblock %}

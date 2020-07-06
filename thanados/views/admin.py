@@ -1,17 +1,38 @@
 from flask import render_template, g, url_for, abort
 from flask_login import login_required, current_user
+from flask_wtf import FlaskForm
 from werkzeug.utils import redirect
+from wtforms import SubmitField, TextAreaField
 
 from thanados import app
 from thanados.models.entity import Data
 
 
-@app.route('/admin/')
+class SiteListForm(FlaskForm):  # type: ignore
+    site_list = TextAreaField('Site list')
+    save = SubmitField('Save site list')
+
+
+@app.route('/admin/', methods=['POST', 'GET'])
 @login_required
 def admin():  # pragma: no cover
+    form = SiteListForm()
     if current_user.group not in ['admin']:
         abort(403)
-    return render_template('admin/index.html')
+
+    if form.validate_on_submit():
+        try:
+            with open("./instance/site_list.txt", 'w') as file:
+                file.write(form.site_list.data)
+        except Exception as e:  # pragma: no cover
+            pass
+
+    try:
+        with open("./instance/site_list.txt") as file:
+            form.site_list.data = file.read()
+    except Exception as e:  # pragma: no cover
+        pass
+    return render_template('admin/index.html', form=form)
 
 
 @app.route('/admin/execute/')
@@ -92,9 +113,23 @@ SELECT path.name,
        path.id,
        path.path,
        path.parent_id,
-       path.name_path
+       path.name_path,
+       NULL AS topparent,
+       '[]'::JSONB AS forms 
 FROM path
 ORDER BY path.path;
+          
+UPDATE thanados.types_all SET topparent = f.topparent, forms = f.forms 
+    FROM (SELECT tp.id, tp.name_path, tp.topparent, jsonb_agg(f.name) AS forms 
+        FROM (SELECT id::INTEGER, path, name_path, left(path, strpos(path, ' >') -1)::INTEGER AS 
+            topparent FROM thanados.types_all WHERE path LIKE '%>%'
+                    UNION ALL 
+            SELECT id::INTEGER, path, name_path, PATH::INTEGER AS topparent FROM 
+                thanados.types_all WHERE path NOT LIKE '%>%' ORDER BY name_path) tp JOIN (select f.name, hierarchy_id FROM  
+	                web.form f JOIN web.hierarchy_form h ON f.id = h.form_id) f 
+	                ON  f.hierarchy_id = tp.topparent 
+	                GROUP BY tp.id, tp.name_path, tp.topparent ORDER BY name_path) f 
+	WHERE thanados.types_all.id = f.id;
 
 
 -- create table with sites to be used
@@ -316,7 +351,7 @@ FROM model.entity parent
          JOIN model.link l_p_c ON parent.id = l_p_c.domain_id
          JOIN model.entity child ON l_p_c.range_id = child.id
 WHERE parent.id in (SELECT child_id FROM thanados.burials)
-  AND l_p_c.property_code = 'P46'
+  AND l_p_c.property_code = 'P46' AND child.system_type = 'find'
 ORDER BY child.system_type, parent.id, child.name;
 
 
@@ -340,6 +375,52 @@ FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
       WHERE l.property_code = 'P53') AS point
 WHERE child_id = point.id
   AND thanados.finds.geom ISNULL;
+  
+--humanremains
+DROP TABLE IF EXISTS thanados.humanremains;
+CREATE TABLE thanados.humanremains AS
+SELECT parent.id                                    AS parent_id,
+       child.name                                   AS child_name,
+       child.id                                     AS child_id,
+       child.description,
+       date_part('year', child.begin_from)::integer AS begin_from,
+       date_part('year', child.begin_to)::integer   AS begin_to,
+       child.begin_comment,
+       date_part('year', child.end_from)::integer   AS end_from,
+       date_part('year', child.end_to)::integer     AS end_to,
+       child.end_comment,
+       child.system_type,
+       NULL::TEXT                                   as geom,
+       NULL::TEXT as lon,
+       NULL::TEXT as lat
+FROM model.entity parent
+         JOIN model.link l_p_c ON parent.id = l_p_c.domain_id
+         JOIN model.entity child ON l_p_c.range_id = child.id
+WHERE parent.id in (SELECT child_id FROM thanados.burials)
+  AND l_p_c.property_code = 'P46' AND child.system_type = 'human remains'
+ORDER BY child.system_type, parent.id, child.name;
+
+
+UPDATE thanados.humanremains
+SET geom = poly.geom
+FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
+             e.id
+      FROM model.entity e
+               JOIN model.link l ON e.id = l.domain_id
+               JOIN gis.polygon pl ON l.range_id = pl.entity_id
+      WHERE l.property_code = 'P53') AS poly
+WHERE child_id = poly.id;
+
+UPDATE thanados.humanremains
+SET geom = point.geom
+FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
+             e.id
+      FROM model.entity e
+               JOIN model.link l ON e.id = l.domain_id
+               JOIN gis.point pnt ON l.range_id = pnt.entity_id
+      WHERE l.property_code = 'P53') AS point
+WHERE child_id = point.id
+  AND thanados.humanremains.geom ISNULL;
 
 -- all entities union
 CREATE TABLE thanados.entitiestmp AS
@@ -354,6 +435,9 @@ FROM thanados.burials
 UNION ALL
 SELECT *
 FROM thanados.finds
+UNION ALL
+SELECT *
+FROM thanados.humanremains
 ORDER BY parent_id, child_name;
 
 UPDATE thanados.entitiestmp
@@ -407,6 +491,7 @@ WHERE path LIKE 'Place >%'
    OR path LIKE 'Feature >%'
    OR path LIKE 'Stratigraphic Unit >%'
    OR path LIKE 'Find >%'
+   OR path LIKE 'Human Remains >%'
 ORDER BY entity_id, path;
 
 --types dimensions
@@ -572,6 +657,7 @@ WHERE path NOT LIKE 'Dimensions >%'
   AND path NOT LIKE 'Place >%'
   AND path NOT LIKE 'Feature >%'
   AND path NOT LIKE 'Stratigraphic Unit >%'
+  AND path NOT LIKE 'Human Remains >%'
   AND path NOT LIKE 'Find >%'
   AND path NOT LIKE 'Material >%'
 ORDER BY entity_id, path;
@@ -944,19 +1030,75 @@ SELECT id,
 FROM thanados.tbl_finds f;
 --ORDER BY f.properties -> 'name' asc;
 
+---humanremains json
+DROP TABLE IF EXISTS thanados.tbl_humanremains;
+CREATE TABLE thanados.tbl_humanremains
+(
+    id         integer,
+    parent_id  integer,
+    properties jsonb,
+    files      jsonb
+);
+
+INSERT INTO thanados.tbl_humanremains (id, parent_id, files, properties)
+SELECT f.child_id,
+       f.parent_id,
+       f.files,
+       jsonb_strip_nulls(jsonb_build_object(
+               'name', f.child_name,
+               'maintype', jsonb_build_object(
+                       'name', f.typename,
+                       'path', f.path,
+                       'id', f.type_id,
+                       'parent_id', f.parenttype_id,
+                       'systemtype', f.system_type
+                   ),
+               'types', f.types,
+               'description', f.description,
+               'timespan', f.timespan,
+               'dimensions', f.dimensions,
+               'material', f.material,
+               'references', f.reference,
+               'externalreference', f.extrefs
+           )) AS humanremains
+FROM (SELECT * FROM thanados.tmp WHERE system_type LIKE 'human remains') f
+ORDER BY f.child_name;
+
+
+
+DROP TABLE IF EXISTS thanados.tbl_humanremainscomplete;
+CREATE TABLE thanados.tbl_humanremainscomplete
+(
+    id        integer,
+    parent_id integer,
+    humanremains      jsonb
+);
+
+INSERT INTO thanados.tbl_humanremainscomplete (id, parent_id, humanremains)
+SELECT id,
+       parent_id,
+       jsonb_strip_nulls(jsonb_build_object(
+               'id', f.id,
+               'properties', f.properties,
+               'files', f.files
+           )) AS humanremains
+FROM thanados.tbl_humanremains f;
+--ORDER BY f.properties -> 'name' asc;
+
 
 --burial
 DROP TABLE IF EXISTS thanados.tbl_burials;
 CREATE TABLE thanados.tbl_burials
 (
-    id         integer,
-    parent_id  integer,
-    properties jsonb,
-    finds      jsonb,
-    files      jsonb
+    id                integer,
+    parent_id         integer,
+    properties        jsonb,
+    finds             jsonb,
+    humanremains      jsonb,
+    files             jsonb
 );
 
-INSERT INTO thanados.tbl_burials (id, parent_id, files, properties, finds)
+INSERT INTO thanados.tbl_burials (id, parent_id, files, properties, finds) --, humanremains)
 SELECT f.child_id AS id,
        f.parent_id,
        f.files,
@@ -977,9 +1119,11 @@ SELECT f.child_id AS id,
                'references', f.reference,
                'externalreference', f.extrefs
            ))     AS burials,
-       jsonb_strip_nulls(jsonb_agg(fi.find))
+       jsonb_strip_nulls(jsonb_agg(fi.find))--,
+       --jsonb_strip_nulls(jsonb_agg(hr.humanremains))
 FROM (SELECT * FROM thanados.tmp WHERE system_type LIKE 'stratigraphic unit') f
          LEFT JOIN thanados.tbl_findscomplete fi ON f.child_id = fi.parent_id
+         --LEFT JOIN thanados.tbl_humanremainscomplete hr ON f.child_id = hr.parent_id
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.typename, f.path,
          f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_type, f.reference, f.extrefs
 ORDER BY f.child_name;
@@ -987,6 +1131,9 @@ ORDER BY f.child_name;
 UPDATE thanados.tbl_burials f
 SET finds = NULL
 WHERE f.finds = '[null]';
+UPDATE thanados.tbl_burials f
+SET humanremains = NULL
+WHERE f.humanremains = '[null]';
 
 DROP TABLE IF EXISTS thanados.tbl_burialscomplete;
 CREATE TABLE thanados.tbl_burialscomplete
@@ -1192,43 +1339,50 @@ GROUP BY s.id, s.name, s.properties;
 -- create table with all types for json
 DROP TABLE IF EXISTS thanados.typesforjson;
 CREATE TABLE thanados.typesforjson AS
-SELECT DISTINCT 'type' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
+SELECT DISTINCT 'type' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
 WHERE --set types to display in jstree
     name_path LIKE 'Anthropology%'
    OR name_path LIKE 'Grave Construction%'
+   OR name_path LIKE 'Gender%'
+   OR name_path LIKE 'Pathologies and Non-metric traits%'
+   OR name_path LIKE 'Bone measurements%'
+   OR name_path LIKE 'Siding%'
+   OR name_path LIKE 'Animals%'
+   OR name_path LIKE 'Body posture%'
+   OR name_path LIKE 'Case Study%'
    OR name_path LIKE 'Grave Shape%'
    OR name_path LIKE 'Position of Find in Grave%'
    OR name_path LIKE 'Sex%'
    OR name_path LIKE 'Stylistic Classification%'
 UNION ALL
-SELECT DISTINCT 'dimensions' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
+SELECT DISTINCT 'dimensions' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
 WHERE name_path LIKE 'Dimensions%'
 UNION ALL
-SELECT DISTINCT 'material' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
+SELECT DISTINCT 'material' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
 WHERE name_path LIKE 'Material%'
 UNION ALL
-SELECT DISTINCT 'value' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
+SELECT DISTINCT 'value' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
 WHERE name_path LIKE 'Body Height%' OR
 name_path LIKE 'Isotopic Analyses%' OR
 name_path LIKE 'Absolute Age%'
 UNION ALL
-SELECT DISTINCT 'find' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
+SELECT DISTINCT 'find' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
 WHERE name_path LIKE 'Find >%'
 UNION ALL
-SELECT DISTINCT 'strat' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
+SELECT DISTINCT 'strat' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
 WHERE name_path LIKE 'Stratigraphic Unit%'
 UNION ALL
-SELECT DISTINCT 'burial_site' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
+SELECT DISTINCT 'burial_site' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
 WHERE name_path LIKE '%Burial Site%'
 UNION ALL
-SELECT DISTINCT 'feature' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path
+SELECT DISTINCT 'feature' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
 WHERE name_path LIKE 'Feature%'
 
@@ -1240,8 +1394,8 @@ WHERE parent ISNULL; --necessary for jstree
 UPDATE thanados.typesforjson
 SET parent = '#'
 WHERE parent = '73'; --necessary for jstree
-INSERT INTO thanados.typesforjson (level, id, text, parent, path, name_path)
-VALUES ('find', '13368', 'Find', '#', '13368', 'Find');
+INSERT INTO thanados.typesforjson (level, id, text, parent, path, name_path, forms, topparent)
+VALUES ('find', '13368', 'Find', '#', '13368', 'Find', '["Find"]', 13368);
 --hack because find has no parent
 
 -- create table with all types as json
@@ -1252,11 +1406,12 @@ CREATE TABLE thanados.typesjson AS (
                                         'parent', parent,
                                         'namepath', name_path,
                                         'path', path,
-                                        'level', level
+                                        'level', level,
+                                        'forms', forms
         )) as types
     FROM (SELECT *
           FROM thanados.typesforjson AS types
-          GROUP BY types.level, types.id, types.text, types.parent, types.name_path, types.path
+          GROUP BY types.level, types.id, types.text, types.parent, types.name_path, types.path, types.forms, types.topparent
           ORDER BY name_path) as u);
           
 -- prepare data for charts

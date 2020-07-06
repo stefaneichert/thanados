@@ -1,3 +1,5 @@
+import json
+
 import psycopg2.extras
 from flask import Flask, g, request
 from flask_wtf.csrf import CSRFProtect
@@ -12,7 +14,8 @@ app.config.from_pyfile('production.py')  # Load instance/INSTANCE_NAME.py
 thunderforest_API_key = app.config["THUNDERFOREST_API_KEY"]
 openatlas_url = app.config["OPENATLAS_URL"]
 
-from thanados.views import index, map, about, entity, charts, login, manual, sites, admin, search, ajax
+from thanados.views import index, map, about, entity, charts, login, manual, sites, admin, \
+    search, ajax, vocabulary
 
 
 def connect():
@@ -37,11 +40,25 @@ def before_request():
     g.db = connect()
     g.cursor = g.db.cursor(cursor_factory=psycopg2.extras.NamedTupleCursor)
 
+    # Get site ids of site to be shown, default or if error show all
+    site_list = []
+    try:
+        with open("./instance/site_list.txt") as file:
+            site_list = json.loads(file.read())
+    except Exception as e:  # pragma: no cover
+        pass
+    if not site_list:
+        g.cursor.execute('SELECT child_id FROM thanados.sites;')
+        result = g.cursor.fetchall()
+        site_list = [row.child_id for row in result]
+    g.site_list = site_list
+
 
 @app.teardown_request
 def teardown_request(exception):
     if hasattr(g, 'db'):
         g.db.close()
+
 
 @app.context_processor
 def global_vars():

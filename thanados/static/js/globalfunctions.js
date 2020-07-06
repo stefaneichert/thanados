@@ -6,6 +6,8 @@ $(document).ready(function () {
             $('#back-to-top').fadeOut();
         }
     });
+
+
     // scroll body to 0px on click
     $('#back-to-top').click(function () {
         //$('#back-to-top').tooltip('hide');
@@ -24,6 +26,7 @@ $(document).ready(function () {
     });
 
 })
+
 $(document).on('change', "input[type|=\'text\']", function () {
     if ($(this).hasClass('legendtext')) {
         currentLegend = this.value;
@@ -227,22 +230,123 @@ $(window).resize(function () {
     setlogo()
 })
 
+
+function groundTypes(data, length) {
+    var oldlength = AvailableNodes.length;
+    if (AvailableNodes.length !== length) {
+        $.each(jsontypes, function (i, type) {
+            if (data.includes(type.id)) {
+                if (AvailableNodes.includes(type.parent) === false) {
+                    AvailableNodes.push(type.parent);
+                    console.log(AvailableNodes.length)
+                }
+            }
+        })
+        groundTypes(AvailableNodes, oldlength)
+    } else {
+        AvailableNodes = (AvailableNodes.concat(availables))
+    }
+    // console.log(parentlist);
+}
+
+
 //build jstree after criteria and level for search in Map and Global search
+function checkAvailable(appendLevel, type) {
+    var form;
+    AvailableNodes = [];
+    switch (appendLevel) {
+        case "burial_site":
+            form = "Place";
+            break;
+        case "feature":
+            form = "Feature";
+            if (mapsearch) availables = availableTypes.gravetypes;
+            break;
+        case "strat":
+            form = "Stratigraphic Unit";
+            if (mapsearch) availables = availableTypes.burialtypes;
+            break;
+        case "find":
+            form = "Find";
+            if (mapsearch) availables = availableTypes.findtypes;
+            break;
+        case "bones":
+            form = "Human Remains"
+            break;
+        default:
+            alert('notype')
+    }
+    if (mapsearch) groundTypes(availables, 1, form);
+    var availableFormTypes = [];
+    $.each(jsontypes, function (j, entry) {
+
+
+        //console.log(entry.forms);
+        if (entry.forms) {
+            if (mapsearch) {
+                if (entry.forms.includes(form) && AvailableNodes.includes(entry.id)) {
+                    if (availableFormTypes.includes(entry.level) === false)
+                        availableFormTypes.push(entry.level);
+                }
+            } else {
+                if (entry.forms.includes(form)) {
+                    if (availableFormTypes.includes(entry.level) === false)
+                        availableFormTypes.push(entry.level);
+                }
+            }
+        }
+    });
+    return availableFormTypes.includes(type);
+
+}
+
 
 function initiateTree(Iter, appendLevel, criteria, targetField) {
+    var form;
+    switch (appendLevel) {
+        case "burial_site":
+            form = "Place";
+            break;
+        case "feature":
+            form = "Feature";
+            if (mapsearch) availables = availableTypes.gravetypes;
+            break;
+        case "strat":
+            form = "Stratigraphic Unit";
+            if (mapsearch) availables = availableTypes.burialtypes;
+            break;
+        case "find":
+            form = "Find";
+            if (mapsearch) availables = availableTypes.findtypes;
+            break;
+        case "bones":
+            form = "Human Remains"
+            break;
+        default:
+            alert('notype')
+    }
     $('#mytreeModal').removeClass('d-none');
     UnsetGlobalVars(); //reset vars
     //define search criteria
     treecriteria = criteria;
     if (criteria === 'maintype') treecriteria = appendLevel;
-
     //build tree after selected criteria
     selectedtypes = [];
+    if (mapsearch) groundTypes(availables, 1, form);
     $.each(jsontypes, function (j, entry) {
-        if (entry.level === treecriteria) {
-            selectedtypes.push(entry);
+        if (entry.forms) {
+            if (mapsearch) {
+                if (entry.level === treecriteria && entry.forms.includes(form) && AvailableNodes.includes(entry.id)) {
+                    selectedtypes.push(entry);
+                }
+            } else {
+                if (entry.level === treecriteria && entry.forms.includes(form)) {
+                    selectedtypes.push(entry);
+                }
+            }
         }
     });
+    //console.log(selectedtypes);
 
     $(function () {
         $('#jstree').jstree({
@@ -1712,6 +1816,22 @@ function makeid(length) {
     return result;
 }
 
+typeIdList = [];
+
+function makeTypeId(length) {
+    var result = 'type_';
+    var characters = '0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    if (typeIdList.includes(result)) {
+        var result = makeTypeId(5)
+    }
+    typeIdList.push(result);
+    return result;
+}
+
 function setSearchInfo(data, CSV, first) {
     //console.log('setSearchInfo');
 
@@ -1949,5 +2069,135 @@ $.featherlight.prototype.afterContent = function () {
     $('<div style="max-width: fit-content; font-size: 0.875em" class="caption text-muted">').text(caption).appendTo(this.$instance.find('.featherlight-content'));
 }
 
-mycitation1 = ' From: Stefan Eichert et al., THANADOS: <a href="' + window.location + '">' + window.location + '</a> [Accessed: ' + today() + ']<br>' +
+thisUrl = window.location.href;
+if (thisUrl.includes('#')) thisUrl = thisUrl.substring(0, thisUrl.indexOf('#'));
+
+mycitation1 = ' From: <a href="/about" target="_blank">THANADOS:</a> <a' +
+    ' href="' + thisUrl + '">' + thisUrl + '</a> [Accessed: ' + today() + ']<br>' +
     'Licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a><br> After: ';
+
+//retrieve type data for popover
+function getTypeData(id, div, hierarchy) {
+    $.getJSON("/vocabulary/" + id + "/json", function (data) {
+        returnHtml = '<a title="' + data.path + '" href="/vocabulary/' + id + '" target="_blank">' + data.name + '</a>';
+        if (data.description) returnHtml = returnHtml + '<p class="mt-2 text-muted font-italic" >' + data.description + '</p>';
+        if (data.parent) returnHtml = returnHtml + '<p class="mt-2"> Subcategory of:' +
+            ' <a href="/vocabulary/' + data.parent + '" target="_blank">' + data.parent_name + '</a></p>';
+        if (data.topparent.name) returnHtml = returnHtml + '<span class="mt-2"> Hierarchy:' +
+            ' <a href="/vocabulary/' + data.topparent.id + '" target="_blank">' + data.topparent.name + '</a></span>';
+        if (data.topparent.description) returnHtml = returnHtml + '<br><span><i' +
+            ' class="text-muted">' + data.topparent.description + '</i></span>';
+        returnValue = returnHtml;
+        if (hierarchy) {
+            setHierarchyPopup(returnValue, div)
+        } else {
+            logHTML(returnValue, div)
+        }
+
+    });
+}
+
+function logHTML(value, div) {
+
+    div.popover({html: true, content: value, container: div.next()});
+    div.popover('show');
+    var btn = '<div> <button class="closePopover btn btn-xs mb-2 mt-2 btn-secondary float-right" onclick="$(this).popover(\'dispose\')">close</button></div>'
+    $(div).next().find('.popover-body').append(btn);
+
+
+}
+
+function setHierarchyPopup(value, div) {
+    div.popover({html: true, content: value, container: div.parent().next(), placement: 'right',});
+    div.popover('show');
+    var btn = '<div> <button class="closePopover btn btn-xs mb-2 mt-2 btn-secondary float-right" onclick="$(this).popover(\'dispose\')">close</button></div>'
+    $(div).parent().next().find('.popover-body').append(btn);
+}
+
+function initPopovers() {
+    $('.typebutton').click(function () {
+        popover_div = $(this);
+        var id = popover_div.data('value');
+        getTypeData(id, popover_div, false);
+    })
+    $('body').click(function () {
+        $('.popover').popover('dispose')
+    })
+}
+
+function initTreePopovers() {
+    $('.popCont').click(function () {
+        popover_div = $(this);
+        var id = popover_div.data('id');
+        getTypeData(id, popover_div, true);
+        //$(this).mouseout(function () {
+        //    $('.treenode').popover('dispose')
+        //})
+    });
+}
+
+function getHierarchyData(id, div) {
+    $.getJSON("/vocabulary/" + id + "/json", function (data) {
+        var content = '';
+        var usage = '';
+        if (data.topparent.forms) {
+            $.each(data.topparent.forms, function (i, form) {
+                if (i === 0) {
+                    usage = form;
+                } else {
+                    usage += ', ' + form;
+                }
+            })
+        }
+        if (data.topparent.description) var content = '<p class="text-muted font-italic">' + data.topparent.description + '</p>';
+        content = content + '<p>Relation: <span class="text-muted">' + data.topparent.selection + '</span></p>';
+        if (usage !== '') content = content + '<p>Usage: <span class="text-muted">' + usage + '</span></p>';
+        if (data.types_recursive) content = content + '<p>Subcategories: <span class="text-muted">' + data.types_recursive.length + '</span></p>';
+        if (data.entities_recursive) content = content + '<p>Entities: <span class="text-muted">' + data.entities_recursive.length + '</span></p>';
+        div.html(content)
+    });
+}
+
+//set maintype to default if no one is given
+function repairJson(data) {
+
+    $.each(data.features, function (i, feature) {
+        if (typeof (feature.properties.maintype.id) === "undefined" && feature.id !== 0) {
+            feature.properties.maintype = {
+                "systemtype": "feature",
+                "name": "Feature",
+                "id": 13362,
+                "parent_id": 13362,
+                "path": "Feature"
+            }
+        }
+        if (feature.burials) {
+            $.each(feature.burials, function (i, burial) {
+                if (typeof (burial.properties.maintype.id) === "undefined") {
+                    burial.properties.maintype = {
+                        "systemtype": "stratigraphic unit",
+                        "name": "Stratigraphic Unit",
+                        "id": 13365,
+                        "parent_id": 13365,
+                        "path": "Stratigraphic Unit"
+                    }
+                }
+
+                if (burial.finds) {
+                    $.each(burial.finds, function (i, find) {
+                        if (typeof (find.properties.maintype.id) === "undefined") {
+                            find.properties.maintype = {
+                                "systemtype": "find",
+                                "name": "Find",
+                                "id": 13368,
+                                "parent_id": 13368,
+                                "path": "Find"
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    })
+    return data
+}
