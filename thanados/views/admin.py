@@ -1098,7 +1098,7 @@ CREATE TABLE thanados.tbl_burials
     files             jsonb
 );
 
-INSERT INTO thanados.tbl_burials (id, parent_id, files, properties, finds) --, humanremains)
+INSERT INTO thanados.tbl_burials (id, parent_id, files, properties, finds)
 SELECT f.child_id AS id,
        f.parent_id,
        f.files,
@@ -1118,12 +1118,11 @@ SELECT f.child_id AS id,
                'material', f.material,
                'references', f.reference,
                'externalreference', f.extrefs
+
            ))     AS burials,
        jsonb_strip_nulls(jsonb_agg(fi.find))--,
-       --jsonb_strip_nulls(jsonb_agg(hr.humanremains))
 FROM (SELECT * FROM thanados.tmp WHERE system_type LIKE 'stratigraphic unit') f
-         LEFT JOIN thanados.tbl_findscomplete fi ON f.child_id = fi.parent_id
-         --LEFT JOIN thanados.tbl_humanremainscomplete hr ON f.child_id = hr.parent_id
+         LEFT JOIN thanados.tbl_findscomplete fi ON f.child_id = fi.parent_id         
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.typename, f.path,
          f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_type, f.reference, f.extrefs
 ORDER BY f.child_name;
@@ -1131,6 +1130,12 @@ ORDER BY f.child_name;
 UPDATE thanados.tbl_burials f
 SET finds = NULL
 WHERE f.finds = '[null]';
+
+UPDATE thanados.tbl_burials f
+SET humanremains = hr.humanremains FROM (SELECT parent_id,
+                                                jsonb_strip_nulls(jsonb_agg(humanremains)) AS humanremains
+                                                    FROM thanados.tbl_humanremainscomplete GROUP BY parent_id) hr WHERE f.id = hr.parent_id;
+
 UPDATE thanados.tbl_burials f
 SET humanremains = NULL
 WHERE f.humanremains = '[null]';
@@ -1150,7 +1155,8 @@ SELECT id,
                'id', f.id,
                'properties', f.properties,
                'files', f.files,
-               'finds', f.finds
+               'finds', f.finds,
+               'humanremains', f.humanremains
            )) AS burials
 FROM thanados.tbl_burials f;
 --ORDER BY f.properties -> 'name' asc;

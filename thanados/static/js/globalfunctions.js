@@ -2134,6 +2134,9 @@ function initTreePopovers() {
         //    $('.treenode').popover('dispose')
         //})
     });
+    $('body').click(function () {
+        $('.popover').popover('dispose')
+    })
 }
 
 function getHierarchyData(id, div) {
