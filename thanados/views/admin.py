@@ -351,7 +351,7 @@ FROM model.entity parent
          JOIN model.link l_p_c ON parent.id = l_p_c.domain_id
          JOIN model.entity child ON l_p_c.range_id = child.id
 WHERE parent.id in (SELECT child_id FROM thanados.burials)
-  AND l_p_c.property_code = 'P46'
+  AND l_p_c.property_code = 'P46' AND child.system_type = 'find'
 ORDER BY child.system_type, parent.id, child.name;
 
 
@@ -375,6 +375,52 @@ FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
       WHERE l.property_code = 'P53') AS point
 WHERE child_id = point.id
   AND thanados.finds.geom ISNULL;
+  
+--humanremains
+DROP TABLE IF EXISTS thanados.humanremains;
+CREATE TABLE thanados.humanremains AS
+SELECT parent.id                                    AS parent_id,
+       child.name                                   AS child_name,
+       child.id                                     AS child_id,
+       child.description,
+       date_part('year', child.begin_from)::integer AS begin_from,
+       date_part('year', child.begin_to)::integer   AS begin_to,
+       child.begin_comment,
+       date_part('year', child.end_from)::integer   AS end_from,
+       date_part('year', child.end_to)::integer     AS end_to,
+       child.end_comment,
+       child.system_type,
+       NULL::TEXT                                   as geom,
+       NULL::TEXT as lon,
+       NULL::TEXT as lat
+FROM model.entity parent
+         JOIN model.link l_p_c ON parent.id = l_p_c.domain_id
+         JOIN model.entity child ON l_p_c.range_id = child.id
+WHERE parent.id in (SELECT child_id FROM thanados.burials)
+  AND l_p_c.property_code = 'P46' AND child.system_type = 'human remains'
+ORDER BY child.system_type, parent.id, child.name;
+
+
+UPDATE thanados.humanremains
+SET geom = poly.geom
+FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
+             e.id
+      FROM model.entity e
+               JOIN model.link l ON e.id = l.domain_id
+               JOIN gis.polygon pl ON l.range_id = pl.entity_id
+      WHERE l.property_code = 'P53') AS poly
+WHERE child_id = poly.id;
+
+UPDATE thanados.humanremains
+SET geom = point.geom
+FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
+             e.id
+      FROM model.entity e
+               JOIN model.link l ON e.id = l.domain_id
+               JOIN gis.point pnt ON l.range_id = pnt.entity_id
+      WHERE l.property_code = 'P53') AS point
+WHERE child_id = point.id
+  AND thanados.humanremains.geom ISNULL;
 
 -- all entities union
 CREATE TABLE thanados.entitiestmp AS
@@ -389,6 +435,9 @@ FROM thanados.burials
 UNION ALL
 SELECT *
 FROM thanados.finds
+UNION ALL
+SELECT *
+FROM thanados.humanremains
 ORDER BY parent_id, child_name;
 
 UPDATE thanados.entitiestmp
@@ -442,6 +491,7 @@ WHERE path LIKE 'Place >%'
    OR path LIKE 'Feature >%'
    OR path LIKE 'Stratigraphic Unit >%'
    OR path LIKE 'Find >%'
+   OR path LIKE 'Human Remains >%'
 ORDER BY entity_id, path;
 
 --types dimensions
@@ -607,6 +657,7 @@ WHERE path NOT LIKE 'Dimensions >%'
   AND path NOT LIKE 'Place >%'
   AND path NOT LIKE 'Feature >%'
   AND path NOT LIKE 'Stratigraphic Unit >%'
+  AND path NOT LIKE 'Human Remains >%'
   AND path NOT LIKE 'Find >%'
   AND path NOT LIKE 'Material >%'
 ORDER BY entity_id, path;
@@ -979,19 +1030,75 @@ SELECT id,
 FROM thanados.tbl_finds f;
 --ORDER BY f.properties -> 'name' asc;
 
+---humanremains json
+DROP TABLE IF EXISTS thanados.tbl_humanremains;
+CREATE TABLE thanados.tbl_humanremains
+(
+    id         integer,
+    parent_id  integer,
+    properties jsonb,
+    files      jsonb
+);
+
+INSERT INTO thanados.tbl_humanremains (id, parent_id, files, properties)
+SELECT f.child_id,
+       f.parent_id,
+       f.files,
+       jsonb_strip_nulls(jsonb_build_object(
+               'name', f.child_name,
+               'maintype', jsonb_build_object(
+                       'name', f.typename,
+                       'path', f.path,
+                       'id', f.type_id,
+                       'parent_id', f.parenttype_id,
+                       'systemtype', f.system_type
+                   ),
+               'types', f.types,
+               'description', f.description,
+               'timespan', f.timespan,
+               'dimensions', f.dimensions,
+               'material', f.material,
+               'references', f.reference,
+               'externalreference', f.extrefs
+           )) AS humanremains
+FROM (SELECT * FROM thanados.tmp WHERE system_type LIKE 'human remains') f
+ORDER BY f.child_name;
+
+
+
+DROP TABLE IF EXISTS thanados.tbl_humanremainscomplete;
+CREATE TABLE thanados.tbl_humanremainscomplete
+(
+    id        integer,
+    parent_id integer,
+    humanremains      jsonb
+);
+
+INSERT INTO thanados.tbl_humanremainscomplete (id, parent_id, humanremains)
+SELECT id,
+       parent_id,
+       jsonb_strip_nulls(jsonb_build_object(
+               'id', f.id,
+               'properties', f.properties,
+               'files', f.files
+           )) AS humanremains
+FROM thanados.tbl_humanremains f;
+--ORDER BY f.properties -> 'name' asc;
+
 
 --burial
 DROP TABLE IF EXISTS thanados.tbl_burials;
 CREATE TABLE thanados.tbl_burials
 (
-    id         integer,
-    parent_id  integer,
-    properties jsonb,
-    finds      jsonb,
-    files      jsonb
+    id                integer,
+    parent_id         integer,
+    properties        jsonb,
+    finds             jsonb,
+    humanremains      jsonb,
+    files             jsonb
 );
 
-INSERT INTO thanados.tbl_burials (id, parent_id, files, properties, finds)
+INSERT INTO thanados.tbl_burials (id, parent_id, files, properties, finds) --, humanremains)
 SELECT f.child_id AS id,
        f.parent_id,
        f.files,
@@ -1012,9 +1119,11 @@ SELECT f.child_id AS id,
                'references', f.reference,
                'externalreference', f.extrefs
            ))     AS burials,
-       jsonb_strip_nulls(jsonb_agg(fi.find))
+       jsonb_strip_nulls(jsonb_agg(fi.find))--,
+       --jsonb_strip_nulls(jsonb_agg(hr.humanremains))
 FROM (SELECT * FROM thanados.tmp WHERE system_type LIKE 'stratigraphic unit') f
          LEFT JOIN thanados.tbl_findscomplete fi ON f.child_id = fi.parent_id
+         --LEFT JOIN thanados.tbl_humanremainscomplete hr ON f.child_id = hr.parent_id
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.typename, f.path,
          f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_type, f.reference, f.extrefs
 ORDER BY f.child_name;
@@ -1022,6 +1131,9 @@ ORDER BY f.child_name;
 UPDATE thanados.tbl_burials f
 SET finds = NULL
 WHERE f.finds = '[null]';
+UPDATE thanados.tbl_burials f
+SET humanremains = NULL
+WHERE f.humanremains = '[null]';
 
 DROP TABLE IF EXISTS thanados.tbl_burialscomplete;
 CREATE TABLE thanados.tbl_burialscomplete
