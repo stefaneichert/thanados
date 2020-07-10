@@ -233,12 +233,12 @@ var skeleton = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' +
     '   pagecolor="#ffffff"\n' +
     '   id="base"\n' +
     '   showgrid="false"\n' +
-    '   inkscape:zoom="2.6939384"\n' +
-    '   inkscape:cx="85.132122"\n' +
-    '   inkscape:cy="629.13969"\n' +
+    '   inkscape:zoom="1.9049021"\n' +
+    '   inkscape:cx="73.115714"\n' +
+    '   inkscape:cy="298.48686"\n' +
     '   inkscape:window-x="0"\n' +
     '   inkscape:window-y="34"\n' +
-    '   inkscape:current-layer="A_119336"\n' +
+    '   inkscape:current-layer="A_119335"\n' +
     '   showguides="true"\n' +
     '   inkscape:guide-bbox="true"\n' +
     '   inkscape:window-maximized="1"\n' +
@@ -12901,7 +12901,9 @@ var skeleton = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' +
     '   inkscape:label="119740"\n' +
     '   id="A_119740"><title\n' +
     '     id="title3061">Dentition</title><g\n' +
-    '     id="g1297">\n' +
+    '     id="A_119741"\n' +
+    '     inkscape:label="119741"><title\n' +
+    '   id="title2855">Mandible</title>\n' +
     '\t\t<path\n' +
     '   d="m 187.446,111.308 c 0.369,0.319 1.467,0.815 1.987,0.454 0.616,-0.429 1.131,-1.929 0.675,-2.598 -1.524,-2.238 -4.84,0.253 -2.662,2.144 z"\n' +
     '   id="path1299"\n' +
@@ -12973,7 +12975,9 @@ var skeleton = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' +
     '   style="fill:#e1e2e3;stroke:#967348;stroke-width:0.4269"\n' +
     '   inkscape:connector-curvature="0" />\n' +
     '\t</g><g\n' +
-    '     id="g1581">\n' +
+    '     id="A_119742"\n' +
+    '     inkscape:label="119742"><title\n' +
+    '   id="title2853">Maxilla</title>\n' +
     '\t\t\t<path\n' +
     '   inkscape:connector-curvature="0"\n' +
     '   style="fill:#e1e2e3;stroke:#967348;stroke-width:0.3915"\n' +

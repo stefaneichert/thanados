@@ -2205,23 +2205,43 @@ function repairJson(data) {
     return data
 }
 
-function sortByProperty(objArray, prop, direction){
-    if (arguments.length<2) throw new Error("ARRAY, AND OBJECT PROPERTY MINIMUM ARGUMENTS, OPTIONAL DIRECTION");
+function sortByProperty(objArray, prop, direction) {
+    if (arguments.length < 2) throw new Error("ARRAY, AND OBJECT PROPERTY MINIMUM ARGUMENTS, OPTIONAL DIRECTION");
     if (!Array.isArray(objArray)) throw new Error("FIRST ARGUMENT NOT AN ARRAY");
     const clone = objArray.slice(0);
-    const direct = arguments.length>2 ? arguments[2] : 1; //Default to ascending
-    const propPath = (prop.constructor===Array) ? prop : prop.split(".");
-    clone.sort(function(a,b){
-        for (let p in propPath){
-                if (a[propPath[p]] && b[propPath[p]]){
-                    a = a[propPath[p]];
-                    b = b[propPath[p]];
-                }
+    const direct = arguments.length > 2 ? arguments[2] : 1; //Default to ascending
+    const propPath = (prop.constructor === Array) ? prop : prop.split(".");
+    clone.sort(function (a, b) {
+        for (let p in propPath) {
+            if (a[propPath[p]] && b[propPath[p]]) {
+                a = a[propPath[p]];
+                b = b[propPath[p]];
+            }
         }
         // convert numeric strings to integers
         a = a.match(/^\d+$/) ? +a : a;
         b = b.match(/^\d+$/) ? +b : b;
-        return ( (a < b) ? -1*direct : ((a > b) ? 1*direct : 0) );
+        return ((a < b) ? -1 * direct : ((a > b) ? 1 * direct : 0));
     });
     return clone;
+}
+
+function highlightbones(svg_label) {
+    svg_label = svg_label.toString();
+    if (availableBones.includes(svg_label)) {
+        var bonegroup = $('g[inkscape\\:label="' + svg_label + '"]');
+        $(bonegroup).find('path').css("fill", "rgba(255,0,0,0.29)");
+    } else {
+        if (svg_label !== '119334') {
+            var siding = svg_label.toString().replace(/[0-9]/g, '')
+            console.log(siding);
+            $.getJSON("/vocabulary/" + parseInt(svg_label.replace(/[^0-9]/g, '')) + "/json", function (data) {
+                if (data.parent !== 119334) {
+                console.log('parent: ' + data.parent)
+                svg_label = (data.parent.toString()) + siding;
+                highlightbones(svg_label.toString())
+                    }
+            })
+        } return false
+    }
 }

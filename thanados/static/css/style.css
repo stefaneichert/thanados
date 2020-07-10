@@ -1187,7 +1187,7 @@ input {
     max-height: 60vh;
     overflow-y: auto;
     border: 1px solid rgba(0, 0, 0, 0.125);
-    font-size: 0.875em!important;
+    font-size: 0.875em !important;
     border-radius: 5px;
 }
 
@@ -1197,7 +1197,11 @@ input {
 }
 
 .hoverbone {
-    fill: rgb(255, 0, 0) !important;
+    fill: rgba(255, 0, 0, 0.67) !important;
+    transform-origin: 50% 50%;
+    transform-box: fill-box;
+    transform: scale(1.1, 1.1);
+    transition: all 0.2s;
 }
 
 .BonetruncBtn {
@@ -1214,7 +1218,7 @@ input {
 }
 
 .boneheading {
-    font-size: 1.2em!important;
+    font-size: 1.2em !important;
 }
 
 .breadcrumb-item + .breadcrumb-item::before {

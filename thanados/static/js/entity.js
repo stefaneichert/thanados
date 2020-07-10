@@ -297,7 +297,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myChildrencontainer' + entId + '">' +
         '<nav>' +
         '<div class="nav nav-tabs" id="nav-tab" role="tablist">' +
-        '<a class="nav-item nav-link active" id="nav-table-tab' + entId + '" data-toggle="tab" href="#nav-table' + entId + '" role="tab" aria-controls="nav-table' + entId + '" aria-selected="true">'+ subLabel +'</a>' +
+        '<a class="nav-item nav-link active" id="nav-table-tab' + entId + '" data-toggle="tab" href="#nav-table' + entId + '" role="tab" aria-controls="nav-table' + entId + '" aria-selected="true">' + subLabel + '</a>' +
         '<a class="nav-item nav-link d-none" id="nav-pills-tab' + entId + '" data-toggle="tab" href="#nav-pills' + entId + '" role="tab" aria-controls="nav-pills' + entId + '" aria-selected="false">Simple</a>' +
         '<a class="nav-item nav-link d-none" id="nav-humanremains-tab" data-toggle="tab" href="#nav-humanremains" role="tab" aria-controls="nav-humanremains" aria-selected="false">Human remains</a>' +
         '<a class="nav-item nav-link" id="nav-catalogue-tab" data-toggle="tab" href="#nav-catalogue" role="tab" aria-controls="nav-catalogue" aria-selected="false">Catalogue</a>' +
@@ -332,11 +332,21 @@ function getEntityData(parentName, parentId, currentfeature) {
             hr.path = hr.properties.maintype.path
         })
 
+        availableBones = [];
+        $('g[inkscape\\:label]').each(function (i) {
+            var currentBone = $(this).attr("inkscape:label");
+            var boneid = parseInt(currentBone.replace(/[^0-9]/g, ''));
+            if (isNaN(boneid) === false) {
+                availableBones.push($(this).attr("inkscape:label"));
+            }
+        })
+
         humanremains = sortByProperty(humanremains, 'path')
 
         $.each(humanremains, function (i, hr) {
             hr_name = hr.properties.maintype.path.replace("Human Remains > ", "")
             svg_label = hr.properties.maintype.id;
+
             if (hr.properties.types) {
                 $.each(hr.properties.types, function (i, type) {
 
@@ -346,9 +356,7 @@ function getEntityData(parentName, parentId, currentfeature) {
                     }
                 })
             }
-
-            var bonegroup = $('g[inkscape\\:label="' + svg_label + '"]');
-            $(bonegroup).find('path').css("fill", "rgb(255, 0, 0, 0.4)");
+            highlightbones(svg_label);
 
             $('#hr_data').append(
                 '<div class="bonediv" data-svglabel="' + svg_label + '">' +
@@ -373,6 +381,8 @@ function getEntityData(parentName, parentId, currentfeature) {
                 })
             }
         })
+
+
         $('.bonediv').hover(function (i) {
             svg_label = $(this).data('svglabel')
             var bonegroup = $('g[inkscape\\:label="' + svg_label + '"]');
