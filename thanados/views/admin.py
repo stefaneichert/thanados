@@ -1840,7 +1840,7 @@ CREATE TABLE thanados.ageatdeath AS (
 DROP TABLE IF EXISTS thanados.searchData_tmp;
     CREATE TABLE thanados.searchData_tmp AS (
 
-SELECT 
+SELECT
 	se.*,
 	mt.path AS maintype,
 	f.parent_id AS burial_id,
@@ -1852,13 +1852,33 @@ SELECT
 
 	FROM thanados.searchData se
 		JOIN thanados.maintype mt ON se.child_id = mt.entity_id
-		JOIN thanados.finds f ON se.child_id = f.child_id 
-		JOIN thanados.burials b ON f.parent_id = b.child_id 
-		JOIN thanados.graves g ON b.parent_id = g.child_id 
-		JOIN thanados.sites s ON g.parent_id = s.child_id 
+		JOIN thanados.finds f ON se.child_id = f.child_id
+		JOIN thanados.burials b ON f.parent_id = b.child_id
+		JOIN thanados.graves g ON b.parent_id = g.child_id
+		JOIN thanados.sites s ON g.parent_id = s.child_id
 		WHERE se.system_type = 'find' AND s.lon != ''
 
-UNION ALL		
+UNION ALL
+
+SELECT
+	se.*,
+	mt.path AS maintype,
+	f.parent_id AS burial_id,
+	b.parent_id AS grave_id,
+	g.parent_id AS site_id,
+	s.lon,
+	s.lat,
+	s.child_name || ' > ' || g.child_name || ' > ' || b.child_name || ' > ' || se.child_name AS context
+
+	FROM thanados.searchData se
+		JOIN thanados.maintype mt ON se.child_id = mt.entity_id
+		JOIN thanados.humanremains f ON se.child_id = f.child_id
+		JOIN thanados.burials b ON f.parent_id = b.child_id
+		JOIN thanados.graves g ON b.parent_id = g.child_id
+		JOIN thanados.sites s ON g.parent_id = s.child_id
+		WHERE se.system_type = 'human remains' AND s.lon != ''
+
+UNION ALL
 
 SELECT 
 	se.*,
