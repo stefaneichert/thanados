@@ -297,14 +297,14 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myChildrencontainer' + entId + '">' +
         '<nav>' +
         '<div class="nav nav-tabs" id="nav-tab" role="tablist">' +
-        '<a class="nav-item nav-link active" id="nav-table-tab' + entId + '" data-toggle="tab" href="#nav-table' + entId + '" role="tab" aria-controls="nav-table' + entId + '" aria-selected="true">' + subLabel + '</a>' +
+        '<a class="nav-item nav-link active" id="nav-table-tab" data-toggle="tab" href="#nav-table' + entId + '" role="tab" aria-controls="nav-table' + entId + '" aria-selected="true">' + subLabel + '</a>' +
         '<a class="nav-item nav-link d-none" id="nav-pills-tab' + entId + '" data-toggle="tab" href="#nav-pills' + entId + '" role="tab" aria-controls="nav-pills' + entId + '" aria-selected="false">Simple</a>' +
         '<a class="nav-item nav-link d-none" id="nav-humanremains-tab" data-toggle="tab" href="#nav-humanremains" role="tab" aria-controls="nav-humanremains" aria-selected="false">Human remains</a>' +
         '<a class="nav-item nav-link" id="nav-catalogue-tab" data-toggle="tab" href="#nav-catalogue" role="tab" aria-controls="nav-catalogue" aria-selected="false">Catalogue</a>' +
         '</div>' +
         '</nav>' +
         '<div class="tab-content pl-2 pr-2 pt-4" id="nav-tabContent">' +
-        '<div class="tab-pane fade show active" id="nav-table' + entId + '" role="tabpanel" aria-labelledby="nav-table-tab' + entId + '"></div>' +
+        '<div class="tab-pane fade show active" id="nav-table' + entId + '" role="tabpanel" aria-labelledby="nav-table-tab"></div>' +
         '<div class="tab-pane fade" id="nav-pills' + entId + '" role="tabpanel" aria-labelledby="nav-pills-tab' + entId + '"></div>' +
         '<div class="tab-pane fade" id="nav-humanremains" role="tabpanel" aria-labelledby="nav-humanremains-tab">' +
         '<div class="row">' +
@@ -719,7 +719,21 @@ function getEntityData(parentName, parentId, currentfeature) {
 
         if (systemtype == "stratigraphic unit") table.column(4).visible(false);
     } else {
-        $('#nav-tab').toggle();
+        if (currentfeature.humanremains === false) {
+            $('#nav-tab').toggle();
+        } else {
+            if (currentfeature.humanremains) {
+                $('#nav-table-tab').toggle();
+                $('#nav-catalogue-tab').toggle();
+                $('#nav-humanremains-tab').tab('show')
+                //$('#nav-humanremains-tab').addClass('active');
+                //$('#nav-humanremains-tab').removeClass('d-none');
+            } else {
+                if (systemtype == "human remains") {
+                    $('#nav-tab').toggle();
+                }
+            }
+        }
     }
     if (loginTrue) {
         $('.backendlink').removeClass('d-none')
