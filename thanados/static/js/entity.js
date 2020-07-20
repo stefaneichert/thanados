@@ -498,7 +498,7 @@ function getEntityData(parentName, parentId, currentfeature) {
 
     singleref = false;
 
-    if (currentfeature.properties.references.length === 1) singleref = true;
+    if (typeof (currentfeature.properties.references) !== 'undefined' && currentfeature.properties.references.length === 1) singleref = true;
 
     $.each(currentfeature.properties.references, function (t, ref) {
         if (typeof (ref.title) !== 'undefined') {
@@ -719,7 +719,7 @@ function getEntityData(parentName, parentId, currentfeature) {
 
         if (systemtype == "stratigraphic unit") table.column(4).visible(false);
     } else {
-        if (currentfeature.humanremains === false) {
+        if (typeof (currentfeature.humanremains) === 'undefined') {
             $('#nav-tab').toggle();
         } else {
             if (currentfeature.humanremains) {
