@@ -16,8 +16,32 @@ $(document).ready(function () {
     });
 
     initPopovers();
+    $('#nav-humanremains-tab').on('shown.bs.tab', function (e) {
+        $('.bonetext').each(function (i) {
+            if ($(this).height() > 150) {
+                $(this).shave(150);
+                $(this).after(
+                    '<a style="cursor: pointer" class="BonetruncBtn mb-2">Show more</a><br>'
+                )
+            }
+        })
+        $('.BonetruncBtn').click(function (e) {
+            if ($(this).text() === 'Show less') {
+                console.log($(this).prev().height())
+                $(this).prev().shave(150);
+                $(this).text('Show more')
+            } else {
+                console.log($(this).prev().height())
+                $(this).text('Show less');
+                $(this).prev().shave(999999999);
+                //console.log($(this).prev().html())
+            }
+        });
+
+    })
 
 });
+
 
 getBasemaps();
 jsonmysite = repairJson(jsonmysite);
@@ -47,8 +71,10 @@ $('#mybreadcrumb').append(
     '</ol>' +
     '</nav>');
 
+subLabel = 'Subunits'
 
 if (systemtype == 'place') {
+    subLabel = 'Graves';
     getEntityData(sitename, jsonmysite.id, jsonmysite);
     mycitation = '"' + sitename + '".';
     myjson = jsonmysite;
@@ -73,14 +99,11 @@ window.addEventListener('load', function () {
             $(this).html('Show less')
         }
     });
-    //carouselwidth = $(window).width()/3;
-    //console.log(carouselwidth)
-    //$('.maxImg').css('max-width', carouselwidth)
-
 })
 
 
 if (systemtype == 'feature') {
+    subLabel = 'Burials';
     $.each(jsonmysite.features, function (f, feature) {
         if (entity_id == feature.id) {
             graveName = feature.properties.name;
@@ -103,6 +126,7 @@ if (systemtype == 'feature') {
 
 
 if (systemtype == 'stratigraphic unit') {
+    subLabel = 'Finds';
     $.each(jsonmysite.features, function (f, feature) {
         var featureName = feature.properties.name;
         var featureID = feature.id;
@@ -133,17 +157,25 @@ if (systemtype == 'stratigraphic unit') {
 }
 
 
-if (systemtype == 'find') {
+if (systemtype === 'find' || systemtype === 'human remains') {
     $.each(jsonmysite.features, function (f, feature) {
         var featureName = feature.properties.name;
         var featureID = feature.id;
         var featureGeom = feature.geometry;
 
         $.each(feature.burials, function (b, burial) {
+
+            if (systemtype === 'find') {
+                currentobjects = burial.finds
+            } else {
+                currentobjects = burial.humanremains
+            }
+
             var stratName = burial.properties.name;
             var stratID = burial.id;
-            $.each(burial.finds, function (f, find) {
+            $.each(currentobjects, function (f, find) {
                 if (entity_id == find.id) {
+                    console.log(find);
                     graveName = featureName;
                     graveId = featureID;
                     graveGeom = featureGeom;
@@ -224,7 +256,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         }
     }
 
-    if (currentfeature.properties.maintype.systemtype == 'find') {
+    if (currentfeature.properties.maintype.systemtype == 'find' || currentfeature.properties.maintype.systemtype == 'human remains') {
         children = '';
     }
 
@@ -265,14 +297,25 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myChildrencontainer' + entId + '">' +
         '<nav>' +
         '<div class="nav nav-tabs" id="nav-tab" role="tablist">' +
-        '<a class="nav-item nav-link active" id="nav-table-tab' + entId + '" data-toggle="tab" href="#nav-table' + entId + '" role="tab" aria-controls="nav-table' + entId + '" aria-selected="true">List</a>' +
+        '<a class="nav-item nav-link active" id="nav-table-tab" data-toggle="tab" href="#nav-table' + entId + '" role="tab" aria-controls="nav-table' + entId + '" aria-selected="true">' + subLabel + '</a>' +
         '<a class="nav-item nav-link d-none" id="nav-pills-tab' + entId + '" data-toggle="tab" href="#nav-pills' + entId + '" role="tab" aria-controls="nav-pills' + entId + '" aria-selected="false">Simple</a>' +
+        '<a class="nav-item nav-link d-none" id="nav-humanremains-tab" data-toggle="tab" href="#nav-humanremains" role="tab" aria-controls="nav-humanremains" aria-selected="false">Human remains</a>' +
         '<a class="nav-item nav-link" id="nav-catalogue-tab" data-toggle="tab" href="#nav-catalogue" role="tab" aria-controls="nav-catalogue" aria-selected="false">Catalogue</a>' +
         '</div>' +
         '</nav>' +
         '<div class="tab-content pl-2 pr-2 pt-4" id="nav-tabContent">' +
-        '<div class="tab-pane fade show active" id="nav-table' + entId + '" role="tabpanel" aria-labelledby="nav-table-tab' + entId + '"></div>' +
+        '<div class="tab-pane fade show active" id="nav-table' + entId + '" role="tabpanel" aria-labelledby="nav-table-tab"></div>' +
         '<div class="tab-pane fade" id="nav-pills' + entId + '" role="tabpanel" aria-labelledby="nav-pills-tab' + entId + '"></div>' +
+        '<div class="tab-pane fade" id="nav-humanremains" role="tabpanel" aria-labelledby="nav-humanremains-tab">' +
+        '<div class="row">' +
+        '<div class="col-md-8" id="svgContainer">' +
+        '</div>' +
+        '<div class="col-md-4">' +
+        '<div id="hr_data">' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
         '<div class="tab-pane fade" id="nav-catalogue" role="tabpanel" aria-labelledby="nav-catalogue-tab' + entId + '"></div>' +
         '</div>' +
         '</div>' +
@@ -280,6 +323,72 @@ function getEntityData(parentName, parentId, currentfeature) {
         '</div>' +
         '</div>'
     )
+
+    if (typeof (currentfeature.humanremains) !== 'undefined') {
+        $('#nav-humanremains-tab').removeClass('d-none')
+        $('#svgContainer').append(skeleton)
+        humanremains = currentfeature.humanremains;
+        $.each(humanremains, function (i, hr) {
+            hr.path = hr.properties.maintype.path
+        })
+
+        availableBones = [];
+        $('g[inkscape\\:label]').each(function (i) {
+            var currentBone = $(this).attr("inkscape:label");
+            var boneid = parseInt(currentBone.replace(/[^0-9]/g, ''));
+            if (isNaN(boneid) === false) {
+                availableBones.push($(this).attr("inkscape:label"));
+            }
+        })
+
+        humanremains = sortByProperty(humanremains, 'path')
+
+        $.each(humanremains, function (i, hr) {
+            hr_name = hr.properties.maintype.path.replace("Human Remains > ", "")
+            svg_label = hr.properties.maintype.id;
+
+            if (hr.properties.types) {
+                $.each(hr.properties.types, function (i, type) {
+
+                    if (type.name === 'left' || type.name === 'right') {
+                        hr_name = hr_name + ': ' + type.name;
+                        svg_label += '_' + type.name.substr(0, 1);
+                    }
+                })
+            }
+            highlightbones(svg_label);
+
+            $('#hr_data').append(
+                '<div class="bonediv" data-svglabel="' + svg_label + '">' +
+                '<p><a class="boneheading" href="/entity/' + hr.id + '">' + hr.properties.name + '</a></p> ' +
+                '<div type="button" data-value="' + hr.properties.maintype.id + '" + ' +
+                'class="modalrowitem typebutton btn-xs bonebutton" ' +
+                'data-toggle="popover">' + hr_name + '</div><span class="popover-wrapper"></span><br>' +
+                (typeof (hr.properties.description) !== 'undefined' ? '<span class="bonetext text-muted">' + hr.properties.description + '</span><br>' : '')
+            );
+            if (hr.properties.types) {
+                $(".bonediv:last-child").append('<div class="mt-2"></div>')
+                $.each(hr.properties.types, function (i, type) {
+
+                    if (type.name !== 'left' && type.name !== 'right') {
+                        $(".bonediv:last-child").append(
+                            '<div type="button" data-value="' + type.id + '" + ' +
+
+                            'class="modalrowitem typebutton hr-button btn-xs" ' +
+                            'data-toggle="popover">' + type.name + '</div><span class="popover-wrapper"></span>'
+                        );
+                    }
+                })
+            }
+        })
+
+
+        $('.bonediv').hover(function (i) {
+            svg_label = $(this).data('svglabel')
+            var bonegroup = $('g[inkscape\\:label="' + svg_label + '"]');
+            $(bonegroup).find('path').toggleClass('hoverbone');
+        })
+    }
 
     if (dateToInsert == '') {
         $('#mytimespan' + entId).attr("class", "");
@@ -354,7 +463,7 @@ function getEntityData(parentName, parentId, currentfeature) {
 
     $('#myMetadatacontainer' + entId).empty();
     $('#myMetadatacontainer' + entId).append(
-        '<div id="mainRef" class="mt-5"><p><h6>Main source</h6></p>' +
+        '<div id="mainRef" class="mt-5"><p><h6>Data source</h6></p>' +
         '<table class="table table-sm table-hover">' +
         '<thead class="thead-light">' +
         '<tr>' +
@@ -389,7 +498,7 @@ function getEntityData(parentName, parentId, currentfeature) {
 
     singleref = false;
 
-    if (currentfeature.properties.references.length === 1) singleref = true;
+    if (typeof (currentfeature.properties.references) !== 'undefined' && currentfeature.properties.references.length === 1) singleref = true;
 
     $.each(currentfeature.properties.references, function (t, ref) {
         if (typeof (ref.title) !== 'undefined') {
@@ -610,7 +719,21 @@ function getEntityData(parentName, parentId, currentfeature) {
 
         if (systemtype == "stratigraphic unit") table.column(4).visible(false);
     } else {
-        $('#nav-tab').toggle();
+        if (typeof (currentfeature.humanremains) === 'undefined') {
+            $('#nav-tab').toggle();
+        } else {
+            if (currentfeature.humanremains) {
+                $('#nav-table-tab').toggle();
+                $('#nav-catalogue-tab').toggle();
+                $('#nav-humanremains-tab').tab('show')
+                //$('#nav-humanremains-tab').addClass('active');
+                //$('#nav-humanremains-tab').removeClass('d-none');
+            } else {
+                if (systemtype == "human remains") {
+                    $('#nav-tab').toggle();
+                }
+            }
+        }
     }
     if (loginTrue) {
         $('.backendlink').removeClass('d-none')
@@ -1051,7 +1174,6 @@ function setcatalogue(currentchildren, parentDiv, iter) {
         if (typeof (currentfeature.finds) != 'undefined') {
             setcatalogue(currentfeature.finds, parentDiv + '_' + entId, iter);
         }
-
 
     });
     if (loginTrue) {

@@ -123,6 +123,16 @@ class Data:
                   WHERE ls.range_id = %(object_id)s;"""
             g.cursor.execute(sql, {"object_id": id_})
             place_id = g.cursor.fetchone()[0]
+        elif system_type == 'human remains':
+            sql = """
+                  SELECT p.id
+                  FROM model.entity p
+                  JOIN model.link lf on p.id = lf.domain_id AND lf.property_code = 'P46'
+                  JOIN model.link ls on lf.range_id = ls.domain_id AND ls.property_code = 'P46'
+                  JOIN model.link lfi on ls.range_id = lfi.domain_id AND lfi.property_code = 'P46'
+                  WHERE lfi.range_id = %(object_id)s;"""
+            g.cursor.execute(sql, {"object_id": id_})
+            place_id = g.cursor.fetchone()[0]
         else:  # has to be a find
             sql = """
                   SELECT p.id

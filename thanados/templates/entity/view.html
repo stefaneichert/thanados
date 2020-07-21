@@ -10,7 +10,7 @@
         <div id="myModalContent" style="padding-bottom: 2em" class="modal-content"></div>
     </div>
 
-
+    <div id="tooltip" display="none" style="position: absolute; display: none;"></div>
 
     <script>
         place_id = {{ place_id }};
@@ -19,5 +19,6 @@
         var jsonmysite = {{ mysitejson|tojson }};
     </script>
     <link href="/static/css/style.css" rel="stylesheet">
+    <script src="/static/js/svg.js"></script>
     <script src="/static/js/entity.js"></script>
 {% endblock %}
