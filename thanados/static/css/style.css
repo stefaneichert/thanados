@@ -1089,27 +1089,27 @@ input {
 
 
 @media (min-width: 576px) {
-  .card-columns {
-    column-count: 2;
-  }
+    .card-columns {
+        column-count: 2;
+    }
 }
 
 @media (min-width: 768px) {
-  .card-columns {
-    column-count: 3;
-  }
+    .card-columns {
+        column-count: 3;
+    }
 }
 
 @media (min-width: 992px) {
-  .card-columns {
-    column-count: 4;
-  }
+    .card-columns {
+        column-count: 4;
+    }
 }
 
 @media (min-width: 1200px) {
-  .card-columns {
-    column-count: 5;
-  }
+    .card-columns {
+        column-count: 5;
+    }
 }
 
 .hierarchy-row {
@@ -1156,11 +1156,11 @@ input {
 }
 
 .node-wrapper .treenode:hover, .node-wrapper .treenode i {
-    color: #6c757d!important;
+    color: #6c757d !important;
 }
 
 .node-wrapper .treenode, .node-wrapper .treenode i {
-    color: #6c757d!important;
+    color: #6c757d !important;
 }
 
 .typeheading {
@@ -1169,4 +1169,61 @@ input {
 
 #search_result p {
     margin-bottom: 0.2em;
+}
+
+.hr-button {
+    color: #FFFFFF;
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+}
+
+.hr-button:hover {
+    color: #FFFFFF !important;
+    background-color: #0069d9 !important;
+    border-color: #0062cc !important;
+}
+
+#hr_data {
+    max-height: 60vh;
+    overflow-y: auto;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    font-size: 0.875em !important;
+    border-radius: 5px;
+}
+
+#svgContainer {
+    max-height: 60vh;
+    padding-bottom: 1em;
+}
+
+.hoverbone {
+    fill: rgba(255, 0, 0, 0.67) !important;
+    transform-origin: 50% 50%;
+    transform-box: fill-box;
+    transform: scale(1.1, 1.1);
+    transition: all 0.2s;
+}
+
+.BonetruncBtn {
+    color: #007bff !important;
+}
+
+.BonetruncBtn:hover {
+    color: #0069d9 !important;
+}
+
+.bonediv {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    padding: 1em;
+}
+
+.boneheading {
+    font-size: 1.2em !important;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    display: inline-block;
+    padding-right: 0.5rem;
+    color: #6c757d;
+    content: ">";
 }
