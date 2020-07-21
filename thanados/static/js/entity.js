@@ -463,7 +463,7 @@ function getEntityData(parentName, parentId, currentfeature) {
 
     $('#myMetadatacontainer' + entId).empty();
     $('#myMetadatacontainer' + entId).append(
-        '<div id="mainRef" class="mt-5"><p><h6>Main source</h6></p>' +
+        '<div id="mainRef" class="mt-5"><p><h6>Data source</h6></p>' +
         '<table class="table table-sm table-hover">' +
         '<thead class="thead-light">' +
         '<tr>' +

@@ -40,6 +40,9 @@
                             <a href="#catalogue">Catalogue</a>
                         </li>
                         <li>
+                            <a href="#humanremains">Human remains</a>
+                        </li>
+                        <li>
                             <a href="#metadata">Metadata</a>
                         </li>
                     </ul>
@@ -294,6 +297,16 @@
                         of the respective unit can be accessed by clicking on the <b>entity
                         name</b>.
                     </p>
+
+                    <h4 id="humanremains">Human remains</h4>
+                    <p>
+                        If the selected entity is a burial respectively if there is distinctive information on human
+                        remains, then an additional tab is shown with the associated data. E.g. if there are
+                        anthropological attributes (pathologies etc.) for single bones or parts of the skeleton they are
+                        shown here. Every bone that has a certain attribute is highlighted on the skeleton schema. Next
+                        to the schema a list with further information on the respective bone is displayed.
+                    </p>
+                    <img class="img-fluid" src="static/images/manual/humanremains.jpg" alt="Human remains">
 
                     <h4 id="metadata">Metadata</h4>
                     <p>
@@ -1244,39 +1257,50 @@
 
                     <h3>Vocabulary</h3>
                     <p>
-                        THANADOS links various properties, classifications, types and values with the recorded entities to document their
+                        THANADOS links various properties, classifications, types and values with the recorded entities
+                        to document their
                         attributes.
                         They are divided into four different "type" classes:
                     </p>
                     <ul>
-                        <li><b>Classifications:</b> Each entity of a certain level (site, grave, burial and find) is defined by one functional type
-                            that explains what the entity represents. Eg. "Inumation cemetery" as classification of a site or "Sword" as
+                        <li><b>Classifications:</b> Each entity of a certain level (site, grave, burial and find) is
+                            defined by one functional type
+                            that explains what the entity represents. Eg. "Inumation cemetery" as classification of a
+                            site or "Sword" as
                             classifictaion for a find.
                         </li>
-                        <li><b>Standard:</b> Properties of non archaeological entities (e.g. file license, type of publications)
+                        <li><b>Standard:</b> Properties of non archaeological entities (e.g. file license, type of
+                            publications)
                         </li>
-                        <li><b>User defined:</b> Categories defined in the backend by users who enter data and want to "tag" archaeological entities
+                        <li><b>User defined:</b> Categories defined in the backend by users who enter data and want to
+                            "tag" archaeological entities
                             with them.
                         </li>
-                        <li><b>Value types:</b> "Tags" that are additionally linked with a certain value and a unit (e.g. dimensions, weight,
+                        <li><b>Value types:</b> "Tags" that are additionally linked with a certain value and a unit
+                            (e.g. dimensions, weight,
                             measurements, count)
                         </li>
                     </ul>
 
                     <p>
-                        The <b>Vocabulary</b> page lists all contained types and gives an overview on their hierarchy, usage and linked entities.
-                        Selecting the respective tab displays the top level types that are available. You can expand them by clicking the heading.
+                        The <b>Vocabulary</b> page lists all contained types and gives an overview on their hierarchy,
+                        usage and linked entities.
+                        Selecting the respective tab displays the top level types that are available. You can expand
+                        them by clicking the heading.
                         Here you find further information and the type hierarchy.
                     </p>
-                    <div class="whitebox">
-                        <p>
-                            <i class="fa fa-info-circle"></i> opens a popover with detailed information on the selected type.
-                        </p>
-                    </div>
+                    <div class="whitebox text-muted">
 
+                            <i class="fa fa-info-circle"></i> opens a popover with detailed information on the selected
+                            type.
+
+                    </div>
+                    <br>
                     <p>
-                        Each type also has its own page with a permanent link. This page can be accessed from within THANADOS by clicking the
-                        property buttons for example in the detailed view, via the info pop-up in the map respectively from the links in the
+                        Each type also has its own page with a permanent link. This page can be accessed from within
+                        THANADOS by clicking the
+                        property buttons for example in the detailed view, via the info pop-up in the map respectively
+                        from the links in the
                         vocabulary hierarchy.
                     </p>
 
@@ -1352,6 +1376,13 @@
 
                     <img class="img-fluid" src="/static/images/manual/hierarchy.jpg"
                          alt="hierarchy">
+                    <p>
+                        Additionally, if a stratigraphic unit contains human remains, these can be recorded e.g. as
+                        single bones with specific properties like pathologies, preservation etc. A skeleton/burial
+                        therefore can be a container of the bones it comprises. This way various attributes that apply
+                        not to the whole skeleton but only to parts of it can be differentiated down to the level of
+                        each single bone.
+                    </p>
                     <p>
                         As THANADOS uses <a href="https://openatlas.eu"
                                             target="_blank">OpenAtlas</a> as backend for the data
