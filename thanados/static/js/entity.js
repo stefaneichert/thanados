@@ -204,6 +204,7 @@ if (systemtype === 'find' || systemtype === 'human remains') {
 
 function getEntityData(parentName, parentId, currentfeature) {
     globalfeature = currentfeature;
+    console.log(currentfeature);
     if (currentfeature.type == "FeatureCollection") {
         entId = currentfeature.site_id;
         entName = currentfeature.name;
@@ -488,19 +489,22 @@ function getEntityData(parentName, parentId, currentfeature) {
     singleref = false;
     mainref = false;
     mainrefthere = false;
+    bibfeature = JSON.parse(JSON.stringify(currentfeature))
 
+    console.log(currentfeature)
     if (typeof (currentfeature.properties.references) !== 'undefined') {
-        currentfeature = currentfeature
+        bibfeature = JSON.parse(JSON.stringify(currentfeature))
     } else {
-        currentfeature.properties = jsonmysite.properties
+        bibfeature.properties = jsonmysite.properties
     }
-
+    console.log(currentfeature)
+    console.log(bibfeature)
 
     singleref = false;
 
-    if (typeof (currentfeature.properties.references) !== 'undefined' && currentfeature.properties.references.length === 1) singleref = true;
+    if (typeof (bibfeature.properties.references) !== 'undefined' && bibfeature.properties.references.length === 1) singleref = true;
 
-    $.each(currentfeature.properties.references, function (t, ref) {
+    $.each(bibfeature.properties.references, function (t, ref) {
         if (typeof (ref.title) !== 'undefined') {
             title = ref.title;
             citeme = title;
@@ -780,10 +784,11 @@ function getEntityData(parentName, parentId, currentfeature) {
         touchZoom: false,
         layers: [landscape]
     });
+    console.log('addMap')
 
 
 //add graves
-    if (children != '' && children[0].id !== 0 || globalfeature.properties.maintype.systemtype !== 'feature') {
+    if (jsonmysite.features[0].id !== 0) {
         function polygonFilter(feature) {
             if (feature.geometry.type == "Polygon")
                 return true
@@ -800,7 +805,7 @@ function getEntityData(parentName, parentId, currentfeature) {
             filter: polygonFilter,
             style: myStyle
         });
-
+        console.log(graves)
         graves.addTo(mymap);
 
 //if geometry is point create a rectangle around that point
@@ -890,13 +895,13 @@ function getEntityData(parentName, parentId, currentfeature) {
     var osm2 = miniBaseMap;
     var rect1 = {color: "#ff1100", weight: 15};
 
-    if (children != '' && children[0].id !== 0 || globalfeature.properties.maintype.systemtype !== 'find' || globalfeature.properties.maintype.systemtype !== 'stratigraphic unit') {
+    if (setJson(jsonmysite)) {
         mapcenter = mymap.getCenter();
     } else {
-        mapcenter = graves.getLatLng();
-        mymap.panTo(mapcenter);
-        if ((mymap.getZoom()) > 20) mymap.setZoom(20);
+        mapcenter = [ jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]]
     }
+    mymap.panTo(mapcenter);
+    if ((mymap.getZoom()) > 20) mymap.setZoom(20);
 
 
     var miniMap = new L.Control.MiniMap(osm2,
