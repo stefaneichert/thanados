@@ -180,6 +180,7 @@ function appendSearch() {//append search form to dialog
         '<option value="feature">Graves</option>\n' +
         '<option value="strat">Burials</option>\n' +
         '<option value="find">Finds</option>\n' +
+        '<option value="osteology">Osteology</option>\n' +
         '</select>\n' +
         '</div>');
     scrollToElement('start');
@@ -404,11 +405,14 @@ function returnQuerystring() {
     $('#RemoveBtn' + Iter).removeClass('d-none');
     $('#AddSearch').removeClass('d-none');
     mylevel = $('#level' + Iter).val();
+
     mycriteria = $('#criteria' + Iter).val();
     mymin = $('#min' + Iter).val();
     mymax = $('#max' + Iter).val();
     mytypes = $('#type' + Iter).val();
+    console.log(mytypes);
     system_type = mylevel;
+    if (mylevel === 'osteology') system_type = 'human remains'
     if (mylevel === 'burial_site') system_type = 'place';
     if (mylevel === 'strat') system_type = 'stratigraphic unit';
     $('#headingb' + Iter).toggle();
@@ -459,7 +463,7 @@ function returnQuerystring() {
 }
 
 function CombinedSearch(oldresult, oldLevel, newresult, newLevel) {
-
+    console.log(oldLevel)
     if (oldLevel === newLevel) {
         oldId = 'id';
         newId = 'id';
@@ -467,14 +471,14 @@ function CombinedSearch(oldresult, oldLevel, newresult, newLevel) {
     }
 
     if (oldLevel === 'burial_site') {
-        if (newLevel === 'feature' || newLevel === 'strat' || newLevel === 'find') {
+        if (newLevel === 'feature' || newLevel === 'strat' || newLevel === 'find' || newLevel === 'osteology') {
             oldId = 'id';
             newId = 'site_id';
             connectionString = ' found in';
         }
     }
 
-    if (oldLevel === 'feature' || oldLevel === 'strat' || oldLevel === 'find') {
+    if (oldLevel === 'feature' || oldLevel === 'strat' || oldLevel === 'find' || oldLevel === 'osteology') {
         if (newLevel === 'burial_site') {
             oldId = 'site_id';
             newId = 'id';
@@ -483,14 +487,14 @@ function CombinedSearch(oldresult, oldLevel, newresult, newLevel) {
     }
 
     if (oldLevel === 'feature') {
-        if (newLevel === 'find') {
+        if (newLevel === 'find' || newLevel === 'osteology') {
             oldId = 'id';
             newId = 'grave_id';
             connectionString = ' found in';
         }
     }
 
-    if (oldLevel === 'strat' || oldLevel === 'find') {
+    if (oldLevel === 'strat' || oldLevel === 'find' || oldLevel === 'osteology') {
         if (newLevel === 'feature') {
             oldId = 'grave_id';
             newId = 'id';
@@ -499,14 +503,14 @@ function CombinedSearch(oldresult, oldLevel, newresult, newLevel) {
     }
 
     if (oldLevel === 'strat') {
-        if (newLevel === 'find') {
+        if (newLevel === 'find' || newLevel === 'osteology') {
             oldId = 'id';
             newId = 'burial_id';
             connectionString = ' found in';
         }
     }
 
-    if (oldLevel === 'find') {
+    if (oldLevel === 'find' || oldLevel === 'osteology') {
         if (newLevel === 'strat') {
             oldId = 'burial_id';
             newId = 'id';
@@ -865,6 +869,7 @@ addSearch();
 
 function combinate(operator) {
     oldLevel = $('#LevelSelect_' + oldIter).val();
+    console.log(oldLevel);
     Queryclass = operator;
     oldresult = eval('result_' + oldIter);
     Iter = (Iter + 1);

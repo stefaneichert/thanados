@@ -345,12 +345,10 @@ function initiateTree(Iter, appendLevel, criteria, targetField) {
             } else {
                 if (entry.level === treecriteria && entry.forms.includes(form)) {
                     selectedtypes.push(entry);
-                    console.log(entry)
                 }
             }
         }
     });
-    console.log(selectedtypes);
 
     $(function () {
         $('#jstree').jstree({
