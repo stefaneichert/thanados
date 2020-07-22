@@ -1052,6 +1052,12 @@ function prepareCSV(result, path, value, unit, feature, level, entity) {
     var tmpValue = {};
     tmpValue.site = myjson.name.replace(/"/g, '\'');
     tmpValue.siteID = myjson.site_id;
+    tmpValue.grave = feature.properties.name.replace(/"/g, '\'');
+    tmpValue.graveID = feature.id;
+    tmpValue.gravetype = feature.properties.maintype.name.replace(/"/g, '\'');
+    tmpValue.burial = null;
+    tmpValue.burialtype = null;
+    tmpValue.burialID = null;
     tmpValue.ObjectId = entity.id;
     tmpValue.ObjectName = entity.properties.name.replace(/"/g, '\'');
     tmpValue.ObjectType = entity.properties.maintype.name.replace(/"/g, '\'');
@@ -1072,6 +1078,31 @@ function prepareCSV(result, path, value, unit, feature, level, entity) {
     tmpValue.easting = null;
     tmpValue.northing = null;
     tmpValue.image = null;
+
+
+    if (tmpValue.ObjectClass === 'find' || tmpValue.ObjectClass === 'human remains') {
+        $.each(myjson.features, function (i, feature) {
+            if (feature.id === tmpValue.graveID) {
+                $.each(feature.burials, function (i, burial) {
+                    var burialId = burial.id;
+                    var burialname = burial.properties.name;
+                    var burialtype = burial.properties.maintype.name;
+                    $.each(burial.finds, function (i, find) {
+                        if (find.id === tmpValue.ObjectId) {
+                            tmpValue.burialID = burialId;
+                        }
+                    })
+                    $.each(burial.humanremains, function (i, bone) {
+                        if (bone.id === tmpValue.ObjectId) {
+                            tmpValue.burialID = burialId;
+                            tmpValue.burial = burialname;
+                            tmpValue.burialtype = burialtype;
+                        }
+                    })
+                })
+            }
+        })
+    }
 
     if (typeof (feature.geometry) != 'undefined') {
         var wkt = new Wkt.Wkt();
