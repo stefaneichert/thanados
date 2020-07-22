@@ -1380,6 +1380,10 @@ SELECT DISTINCT 'find' AS level, id::text, name AS text, parent_id::text AS pare
 FROM thanados.types_all
 WHERE name_path LIKE 'Find >%'
 UNION ALL
+SELECT DISTINCT 'osteology' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
+FROM thanados.types_all
+WHERE name_path LIKE 'Human Remains%'
+UNION ALL
 SELECT DISTINCT 'strat' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
 WHERE name_path LIKE 'Stratigraphic Unit%'

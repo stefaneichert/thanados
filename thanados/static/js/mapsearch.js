@@ -53,6 +53,9 @@ function initateQuery() {
             $.each(burial.finds, function (f, find) {
                 finalSearchResultIds.push(parseInt(find.id));
             });
+            $.each(burial.humanremains, function (f, humanremain) {
+                finalSearchResultIds.push(parseInt(humanremain.id));
+            });
         });
     });
 }
@@ -72,6 +75,7 @@ function appendSearch(Iter) {//append search form to dialog
         '<option value="feature">Graves</option>\n' +
         '<option value="strat">Burials</option>\n' +
         '<option value="find">Finds</option>\n' +
+        '<option value="osteology">Osteology</option>\n' +
         '</select>\n' +
         '</div>');
 
@@ -1002,6 +1006,20 @@ function jsonquery(id, level, prop, val1, val2) {
                 $.each(burial.finds, function (f, find) {
                     levelQuery(feature, find, id, prop, val1, val2);
                     if (searchResultIds.includes(find.id)) {
+                        searchResultIds.push(burial.id);
+                        searchResultIds.push(feature.id);
+                    }
+                });
+            });
+        });
+    }
+
+    if (level == 'osteology') {
+        $.each(myjson.features, function (i, feature) {
+            $.each(feature.burials, function (b, burial) {
+                $.each(burial.humanremains, function (f, humanremain) {
+                    levelQuery(feature, humanremain, id, prop, val1, val2);
+                    if (searchResultIds.includes(humanremain.id)) {
                         searchResultIds.push(burial.id);
                         searchResultIds.push(feature.id);
                     }

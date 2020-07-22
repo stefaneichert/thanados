@@ -270,8 +270,9 @@ function checkAvailable(appendLevel, type) {
             form = "Find";
             if (mapsearch) availables = availableTypes.findtypes;
             break;
-        case "bones":
+        case "osteology":
             form = "Human Remains"
+            if (mapsearch) availables = availableTypes.bonetypes;
             break;
         default:
             alert('notype')
@@ -319,8 +320,9 @@ function initiateTree(Iter, appendLevel, criteria, targetField) {
             form = "Find";
             if (mapsearch) availables = availableTypes.findtypes;
             break;
-        case "bones":
+        case "osteology":
             form = "Human Remains"
+            if (mapsearch) availables = availableTypes.bonetypes;
             break;
         default:
             alert('notype')
@@ -330,6 +332,7 @@ function initiateTree(Iter, appendLevel, criteria, targetField) {
     //define search criteria
     treecriteria = criteria;
     if (criteria === 'maintype') treecriteria = appendLevel;
+    console.log(treecriteria);
     //build tree after selected criteria
     selectedtypes = [];
     if (mapsearch) groundTypes(availables, 1, form);
@@ -342,11 +345,12 @@ function initiateTree(Iter, appendLevel, criteria, targetField) {
             } else {
                 if (entry.level === treecriteria && entry.forms.includes(form)) {
                     selectedtypes.push(entry);
+                    console.log(entry)
                 }
             }
         }
     });
-    //console.log(selectedtypes);
+    console.log(selectedtypes);
 
     $(function () {
         $('#jstree').jstree({
