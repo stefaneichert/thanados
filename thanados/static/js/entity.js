@@ -76,6 +76,7 @@ if (systemtype == 'place') {
     getEntityData(sitename, jsonmysite.id, jsonmysite);
     mycitation = '"' + sitename + '".';
     myjson = jsonmysite;
+    $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Site) </div>');
 }
 
 window.addEventListener('load', function () {
@@ -120,6 +121,7 @@ if (systemtype == 'feature') {
         }
 
     });
+    $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Feature/Grave) </div>');
 }
 
 
@@ -152,6 +154,7 @@ if (systemtype == 'stratigraphic unit') {
 
         });
     });
+    $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Burial/Stratigraphic Unit) </div>');
 }
 
 
@@ -197,6 +200,12 @@ if (systemtype === 'find' || systemtype === 'human remains') {
             });
         });
     });
+    if (systemtype === 'find') {
+        $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Find) </div>')
+    } else {
+        $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Osteology) </div>');
+    }
+    ;
 }
 
 function getEntityData(parentName, parentId, currentfeature) {
