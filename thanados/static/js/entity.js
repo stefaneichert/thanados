@@ -27,14 +27,12 @@ $(document).ready(function () {
         })
         $('.BonetruncBtn').click(function (e) {
             if ($(this).text() === 'Show less') {
-                console.log($(this).prev().height())
+
                 $(this).prev().shave(150);
                 $(this).text('Show more')
             } else {
-                console.log($(this).prev().height())
                 $(this).text('Show less');
                 $(this).prev().shave(999999999);
-                //console.log($(this).prev().html())
             }
         });
 
@@ -175,7 +173,6 @@ if (systemtype === 'find' || systemtype === 'human remains') {
             var stratID = burial.id;
             $.each(currentobjects, function (f, find) {
                 if (entity_id == find.id) {
-                    console.log(find);
                     graveName = featureName;
                     graveId = featureID;
                     graveGeom = featureGeom;
@@ -204,7 +201,6 @@ if (systemtype === 'find' || systemtype === 'human remains') {
 
 function getEntityData(parentName, parentId, currentfeature) {
     globalfeature = currentfeature;
-    console.log(currentfeature);
     if (currentfeature.type == "FeatureCollection") {
         entId = currentfeature.site_id;
         entName = currentfeature.name;
@@ -491,15 +487,12 @@ function getEntityData(parentName, parentId, currentfeature) {
     mainrefthere = false;
     bibfeature = JSON.parse(JSON.stringify(currentfeature))
 
-    console.log(currentfeature)
     if (typeof (currentfeature.properties.references) !== 'undefined') {
         bibfeature = JSON.parse(JSON.stringify(currentfeature))
     } else {
         bibfeature.properties = jsonmysite.properties
     }
-    console.log(currentfeature)
-    console.log(bibfeature)
-
+    
     singleref = false;
 
     if (typeof (bibfeature.properties.references) !== 'undefined' && bibfeature.properties.references.length === 1) singleref = true;
@@ -784,8 +777,6 @@ function getEntityData(parentName, parentId, currentfeature) {
         touchZoom: false,
         layers: [landscape]
     });
-    console.log('addMap')
-
 
 //add graves
     if (jsonmysite.features[0].id !== 0) {
@@ -805,7 +796,7 @@ function getEntityData(parentName, parentId, currentfeature) {
             filter: polygonFilter,
             style: myStyle
         });
-        console.log(graves)
+
         graves.addTo(mymap);
 
 //if geometry is point create a rectangle around that point
@@ -898,7 +889,7 @@ function getEntityData(parentName, parentId, currentfeature) {
     if (setJson(jsonmysite)) {
         mapcenter = mymap.getCenter();
     } else {
-        mapcenter = [ jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]]
+        mapcenter = [jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]]
     }
     mymap.panTo(mapcenter);
     if ((mymap.getZoom()) > 20) mymap.setZoom(20);
