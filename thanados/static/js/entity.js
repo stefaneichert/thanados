@@ -377,11 +377,14 @@ function getEntityData(parentName, parentId, currentfeature) {
                 $.each(hr.properties.types, function (i, type) {
 
                     if (type.name !== 'left' && type.name !== 'right') {
+                        var labeltext = type.name;
+                        if (type.value) labeltext += ': ' + type.value + ' ' + type.description
+
                         $(".bonediv:last-child").append(
                             '<div type="button" data-value="' + type.id + '" + ' +
 
                             'class="modalrowitem typebutton hr-button btn-xs" ' +
-                            'data-toggle="popover">' + type.name + '</div><span class="popover-wrapper"></span>'
+                            'data-toggle="popover">' + labeltext + '</div><span class="popover-wrapper"></span>'
                         );
                     }
                 })
