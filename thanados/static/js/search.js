@@ -101,7 +101,7 @@ function addSearch() {
         '    <div class="float-right card-body btn-toolbar">\n' +
         '           <button value="' + Iter + '" type="button" onclick="currentBtn = this.value; getCitation()" title="how to cite this" class="mr-2 btn btn-secondary combosearchdropdown">\n' +
         '                            <i class="fas fa-quote-right"></i>\n' +
-        '           </button>'+
+        '           </button>' +
         '       <div class="dropdown">' +
         '           <button class="btn btn-secondary dropdown-toggle combosearchdropdown" type="button" id="dropdownMenuButton' + Iter + '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
         '               Combine search' +
@@ -135,8 +135,8 @@ function addSearch() {
     $(".resultCard").mouseleave(function () {
         var thismap = ($(this).data('map'))
         //console.log(thismap);
-        if (typeof(hovermarker) !== 'undefined') {
-                hovermarker.removeFrom(eval(thismap))
+        if (typeof (hovermarker) !== 'undefined') {
+            hovermarker.removeFrom(eval(thismap))
         }
     })
 
@@ -410,7 +410,6 @@ function returnQuerystring() {
     mymin = $('#min' + Iter).val();
     mymax = $('#max' + Iter).val();
     mytypes = $('#type' + Iter).val();
-    console.log(mytypes);
     system_type = mylevel;
     if (mylevel === 'osteology') system_type = 'human remains'
     if (mylevel === 'burial_site') system_type = 'place';
@@ -455,6 +454,7 @@ function returnQuerystring() {
                 eval('map' + Iter + '.fitBounds(markers' + Iter + '.getBounds());')
                 eval('table' + Iter).draw();
                 scrollToElement('start');
+
             }
         }
     });
@@ -463,7 +463,6 @@ function returnQuerystring() {
 }
 
 function CombinedSearch(oldresult, oldLevel, newresult, newLevel) {
-    console.log(oldLevel)
     if (oldLevel === newLevel) {
         oldId = 'id';
         newId = 'id';
@@ -555,6 +554,17 @@ function CombinedSearch(oldresult, oldLevel, newresult, newLevel) {
 function setdatatable(data, tablePosition) {
     var mymarkers = new L.featureGroup([]);
     var heatmarkers = [];
+    //console.log(data)
+    var graveIds = [];
+    $.each(data, function (i, dataset) {
+        if (graveIds.includes(dataset.grave_id) === false) {
+            graveIds.push(dataset.grave_id)
+        }
+    })
+    //console.log(graveIds);
+    graveIds = JSON.stringify(graveIds).replace('[', '')
+    graveIds = graveIds.replace(']', '')
+
     var table = $('#myResultlist' + Iter).DataTable({
         data: data,
         drawCallback: function () {
@@ -629,14 +639,14 @@ function setdatatable(data, tablePosition) {
         //table.draw();
     });
     //table.draw();
-    setmymap(mymarkers, heatmarkers);
+    setmymap(mymarkers, heatmarkers, graveIds);
 }
 
-function setmymap(markers, heatmarkers) {
+function setmymap(markers, heatmarkers, graveIds) {
 //define basemaps
 
     //initiate markers
-    var clustermarkers = L.markerClusterGroup({
+    clustermarkers = L.markerClusterGroup({
         singleMarkerMode: true,
         maxClusterRadius: 0,
 
@@ -651,7 +661,7 @@ function setmymap(markers, heatmarkers) {
     eval('markers' + Iter + '= markers;')
 
 
-    eval('map' + Iter + ' = L.map(\'map\' + Iter, {fullscreenControl: true, maxZoom: 20, zoomControl: false, layers: [landscape' + Iter + ']}).fitBounds(markers.getBounds());')
+    eval('map' + Iter + ' = L.map(\'map\' + Iter, {fullscreenControl: true, maxZoom: 25, zoomControl: false, layers: [landscape' + Iter + ']}).fitBounds(markers.getBounds());')
 
     clustermarkers.addTo((eval('map' + Iter)));
 
@@ -679,7 +689,7 @@ function setmymap(markers, heatmarkers) {
     var groupedOverlays = {
         "Search Results": {
             "Clustered": clustermarkers,
-            "Single": eval('resultpoints' + Iter),
+            "Single": eval('resultpoints' + Iter)
         },
         "Visualisations": {
             "Density": heat
@@ -691,8 +701,8 @@ function setmymap(markers, heatmarkers) {
     };
 
     eval('MyBaseLayers' + Iter + ' = {"Landscape": landscape' + Iter + ', "Satellite": satellite' + Iter + ', "Streets": streets' + Iter + '};');
-
-
+    if (mylevel == 'burial_site') getAllGraves();
+    if (mylevel !== 'burial_site') createFeatureCollection(graveIds)
     // Use the custom grouped layer control, not "L.control.layers"
     eval('layerControl' + Iter + ' = L.control.groupedLayers(MyBaseLayers' + Iter + ', groupedOverlays, options)');
     eval('map' + Iter + '.addControl(layerControl' + Iter + ')');
@@ -711,7 +721,7 @@ function setmymap(markers, heatmarkers) {
                 currentID = button.options.id;
                 openStyleDialog('single');
             },
-            title: 'style options for search results (single)',
+            title: 'style options for search results (single and graves)',
             icon: 'fas fa-palette'
         }]
     }).addTo(eval('map' + Iter));
@@ -723,9 +733,9 @@ function setmymap(markers, heatmarkers) {
                 '<a title="Download Data" style="background-size: 16px 16px; cursor: pointer; border-top-right-radius: 2px; border-bottom-right-radius: 2px;">' +
                 '<span class="fas fa-download"></span>' +
                 '</a>' +
-                '<ul class="easyBtnHolder">' +
+                '<ul class="easyBtnHolder" id="btnHolder'+Iter+'">' +
                 '<li class="d-inline-block"><a class="csvDownload" title="Download search result as CSV file" data-iter="' + Iter + '"><i class="fas fa-list-alt"></i></a></li>' +
-                '<li class="d-inline-block"><a class="jsonDownload" title="Download search result as GeoJSON file" data-iter="' + Iter + '"><i class="fas fa-map-marker-alt"></i></a></li>' +
+                '<li class="d-inline-block"><a class="jsonDownload" title="Download search result (sites) as GeoJSON file" data-iter="' + Iter + '"><i class="fas fa-map-marker-alt"></i></a></li>' +
                 '</ul>' +
                 '</div>';
 
@@ -816,6 +826,12 @@ function createResult(data, iter) { //finish query and show results on map
 
     eval('resultpoints' + iter + '.clearLayers();');
     eval('resultpoints' + iter + '.addLayer(customResult' + iter + ');');
+
+    gravesAvailable = false;
+    eval('if (typeof(graves' + iter + ') !== "undefined") gravesAvailable = true')
+    if (gravesAvailable) {
+        eval('graves' + iter + '.eachLayer(function (layer) {layer.setStyle(myStyle)})')
+    }
 }
 
 function createCSV(data) {
@@ -863,13 +879,19 @@ myStyle = {
     "fillColor": "#007bd9"
 };
 
+myBackgroundStyle = {
+    "color": "rgb(112,112,112)",
+    "weight": 1,
+    "fillOpacity": 0.3,
+    "fillColor": "rgb(112,112,112)"
+};
+
 myStyleSquare = {};
 
 addSearch();
 
 function combinate(operator) {
     oldLevel = $('#LevelSelect_' + oldIter).val();
-    console.log(oldLevel);
     Queryclass = operator;
     oldresult = eval('result_' + oldIter);
     Iter = (Iter + 1);

@@ -108,7 +108,6 @@ if ($('#map').length) {
                 'fillOpacity': zoom
             }, 50);
         })
-        console.log(zoom)
     });
     } else zoom = 0.7
 

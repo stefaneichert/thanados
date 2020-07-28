@@ -22,7 +22,6 @@ def map(object_id: int):
         'bonetypes': []
     }
     for row in jsontypes:
-        print(row)
         if row.system_type == 'feature':
             availabletypes['gravetypes'].append(row.id)
         if row.system_type == 'stratigraphic unit':

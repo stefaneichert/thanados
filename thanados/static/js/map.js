@@ -86,17 +86,7 @@ $(window).resize(function () {
 //set map and sidebar content//
 ///////////////////////////////
 
-//filter to get polygons from the geojson
-function polygonFilter(feature) {
-    if (feature.geometry.type === "Polygon")
-        return true
-}
 
-//filter to get points from the geojson
-function pointFilter(feature) {
-    if (feature.geometry.type === "Point")
-        return true
-}
 
 
 function setmap(myjson) {

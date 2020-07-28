@@ -979,7 +979,6 @@ function jsonquery(id, level, prop, val1, val2) {
                     });
                 });
             }
-
         });
     }
 
@@ -994,7 +993,6 @@ function jsonquery(id, level, prop, val1, val2) {
                         searchResultIds.push(parseInt(find.id));
                     });
                 }
-
             });
         });
     }
