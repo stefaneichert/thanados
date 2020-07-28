@@ -455,6 +455,9 @@
                         <li><b>Finds:</b> all properties connected to the finds (e.g. types,
                             material, dimensions, position of find in grave etc.)
                         </li>
+                        <li><b>Osteology:</b> all properties connected to individual bones (e.g. diseases,
+                            fractures etc.)
+                        </li>
                     </ul>
                     <p>
                         The next step lets you choose the criteria you want to search for:
@@ -1024,6 +1027,9 @@
                         <li><b>Finds:</b> all properties connected to the finds (e.g. types,
                             material, dimensions, position of find in grave etc.)
                         </li>
+                        <li><b>Osteology:</b> all properties connected to individual bones (e.g. diseases,
+                            fractures etc.)
+                        </li>
                     </ul>
                     <p>
                         The next step lets you choose the criteria you want to search for:
@@ -1152,8 +1158,11 @@
                            target="_blank">Esri</a> and the standard
                         <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>.
                         You can also select/deselect between layers: the default (clustered) result
-                        circles and single symbol circles as well as a density
-                        (heatmap) visualisation of your results.
+                        circles, single symbol circles for sites and graves as polygons.
+                        Please not that graves are not available on the "Burial Site" level.
+                        <br>You can also select a density (heatmap) visualisation of your results.
+                        <br>Also you can add all graves (not only the ones from the search result) as semi-transparent
+                        background layer.
                     </p>
 
                     <p>
@@ -1166,7 +1175,7 @@
 
                     <p>
                         <i class="btn-secondary btn-sm fas fa-palette"></i> opens a dialog for
-                        styling options of the single symbol layer.
+                        styling options for the single symbol and graves (results) layer.
                     </p>
 
                     <p>
@@ -1174,7 +1183,10 @@
                         downloading the search result either as
                         <i class="btn-secondary btn-sm fas fa-list-alt"></i> CSV list or as
                         <i class="btn-secondary btn-sm fas fa-map-marker-alt"></i> GeoJSON file
-                        that you can use in every common GIS software.
+                        of the resulting sites that you can use in every common GIS software.<br>
+                        <i class="btn-secondary btn-sm fas fa-draw-polygon"></i> downloads a GeoJSON file
+                        with all graves as polygons that contain at least one search result. Please not that this is not
+                        available on the "Burial Site" level.
                     </p>
 
                     <p>
@@ -1244,6 +1256,32 @@
                         search with all possibilities described above.
                     </p>
                     <p>
+                        If you want to search for example for burials that contain two different types of finds in
+                        combination you would carry out the search as follows:
+                    </p>
+                    <ul>
+                        <li>
+                            Start with a search on the find level for all finds that are classified with the respective
+                            maintype.
+                        </li>
+                        <li>
+                            Continue with an "and" search on the burial level for all burials with the maintype "burial
+                            (strat. Unit)". This will get you all burials that contain at least one find of the maintype
+                            you selected before.
+                        </li>
+                        <li>
+                            Combine this with another "and" search on the find level for all finds with the respective
+                            second maintype you want to have in combination with the maintype selected at the beginning.
+                            The result will be all finds that were found in this very combination.
+                        </li>
+                        <li>
+                            If you want your result not on the find but on the burial level you can simply jump one
+                            level up by combining this search again with a search for burials with the maintype "Burial
+                            (strat. Unit). This will result in all burials that contain a combination of the two find
+                            "maintypes" you selected.
+                        </li>
+                    </ul>
+                    <p>
                         At the bottom of the window, once one search is done, there is a
                         <span class="btn-secondary btn-xs">New Search</span> button that will
                         start a completely new search without combining it with existing
@@ -1291,8 +1329,8 @@
                     </p>
                     <div class="whitebox text-muted">
 
-                            <i class="fa fa-info-circle"></i> opens a popover with detailed information on the selected
-                            type.
+                        <i class="fa fa-info-circle"></i> opens a popover with detailed information on the selected
+                        type.
 
                     </div>
                     <br>
@@ -1377,7 +1415,8 @@
                     <img class="img-fluid" src="/static/images/manual/hierarchy.jpg"
                          alt="hierarchy">
                     <p>
-                        Additionally, if a stratigraphic unit contains osteology data for individual bones, these can be recorded e.g. as
+                        Additionally, if a stratigraphic unit contains osteology data for individual bones, these can be
+                        recorded e.g. as
                         single bones with specific properties like pathologies, preservation etc. A skeleton/burial
                         therefore can be a container of the bones it comprises. This way various attributes that apply
                         not to the whole skeleton but only to parts of it can be differentiated down to the level of
