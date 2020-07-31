@@ -1229,7 +1229,7 @@ input {
 }
 
 #babyloncontainer {
-    height: 80vh;
+    height: 60vh;
 }
 
 .logo-button {
@@ -1247,8 +1247,9 @@ input {
 
 .ThreeDeeImage {
     cursor: pointer;
+    opacity: 0.5;
 }
 
 .ThreeDeeImage:hover {
-    opacity: 0.5;
+    opacity: 1;
 }

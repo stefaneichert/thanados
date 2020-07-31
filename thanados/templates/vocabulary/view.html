@@ -229,7 +229,10 @@
                                             <div class="card ">
                                                 {% if ".glb" in row.file_name %}
                                                     <img src="/static/images/icons/3d.png" alt="image"
-                                                         onclick="set3D('{{ row.file_name }}')"
+                                                         onclick="
+                                                                 current3dFile = JSON.stringify(JSON.parse('{{ row }}'));
+                                                                 set3D('{{ row.file_name }}'
+                                                                 )"
                                                          title="open 3D model"
                                                          class="img-fluid card-img-bottom">
                                                 {% else %}
@@ -265,7 +268,10 @@
                                             <div class="card ">
                                                 {% if ".glb" in row.file_name %}
                                                     <img src="/static/images/icons/3d.png" alt="image"
-                                                         onclick="set3D('{{ row.file_name }}')"
+                                                         onclick="
+                                                                 current3dFile = {{ row }};
+                                                                 set3D('{{ row.file_name }}');
+                                                                 "
                                                          title="open 3D model"
                                                          class="img-fluid ThreeDeeImage card-img-bottom">
                                                 {% else %}

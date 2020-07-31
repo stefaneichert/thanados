@@ -167,7 +167,7 @@ CREATE TABLE thanados.sites AS (
             )
              AS s
              JOIN thanados.types_all t ON t.id = s.range_id
-    WHERE t.name_path LIKE 'Place > Burial Site%' -- replace Burial Site with the top parent of the place category of which you want to show
+    WHERE t.name_path LIKE 'Place >%' -- replace with the top parent of the place category of which you want to show
 );
 
 -- set polygons as main geometry where available
@@ -687,7 +687,8 @@ WHERE end_to IS NULL;
 CREATE TABLE thanados.files AS
 SELECT entities.child_id AS parent_id,
        entity.name,
-       entity.id
+       entity.id, 
+       entity.description
 FROM thanados.entities,
      model.link,
      model.entity
@@ -696,6 +697,8 @@ WHERE entities.child_id = link.range_id
   AND entities.child_id != 0
   AND entity.system_type ~~ 'file'::text
 ORDER BY entities.child_id;
+
+UPDATE thanados.files SET description = NULL WHERE description = '';
 
 DROP TABLE IF EXISTS thanados.filestmp;
 CREATE TABLE thanados.filestmp AS
@@ -852,7 +855,8 @@ SET files = (SELECT files
                                            'file_name', t.filename,
                                            'license', t.license,
                                            'source', t.source,
-                                           'reference', t.reference
+                                           'reference', t.reference,
+                                           'description', t.description
                                        ))) AS files
                             FROM thanados.files t
                             GROUP BY parent_id) AS irgendwas

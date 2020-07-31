@@ -2404,18 +2404,31 @@ function set3D(file) {
         '    <div class="modal-dialog" role="document">\n' +
         '        <div class="modal-content">\n' +
         '            <div class="modal-body">\n' +
-        '            <div id="babyloncontainer">\n' +
-        '                <div id="babylon"></div>\n' +
-        '                </div>\n' +
-        '            <div class="modal-footer">\n' +
-        '                <a type="button" href="' + file + '" class="btn btn-primary">Download</a>\n' +
-        '                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>\n' +
-        '            </div>' +
+        '               <div id="babyloncontainer">\n' +
+        '                    <div id="babylon"></div>\n' +
+        '               </div>\n' +
+        '               <div class="modal-footer pt-2 pl-0 pr-0">\n' +
+        '                   <div style="width: 100%">\n' +
+        '                       <button type="button" title="show metadata" class="btn btn-primary float-left ml-2" onclick="$(\'#3dmetadata\').toggleClass(\'d-none\')"><i class="fas fa-info"></i></button>\n' +
+        '                       <button type="button" class="btn btn-secondary float-right ml-2" data-dismiss="modal"><i class="fas fa-times"></i></button>\n' +
+        '                       <a type="button" href="' + file + '" class="btn btn-primary float-right"><i class="fas fa-download"></i></a>\n' +
+        '                   </div>' +
+        '                   <div id="3dmetadata" style="font-size: 0.875rem" class="w-100 pl-2 pr-2 pt-2 pb-0 text-muted float-left d-none"></div>\n' +
+        '                   </div>\n' +
+        '               </div>' +
         '            </div>\n' +
         '        </div>\n' +
         '    </div>\n' +
         '</div>'
     )
+
+    if (typeof(current3dFile) === 'string') current3dFile = (JSON.parse(current3dFile.replace(/'/g, '"')));
+
+    Object.keys(current3dFile).forEach(function (key) {
+        $("#3dmetadata").append(key + ': ' + current3dFile[key] + '<br>')
+    })
+
+
     $('#3DModal').on('shown.bs.modal', function () {
         let domElement = document.getElementById('babylon');
 
@@ -2443,16 +2456,16 @@ function set3D(file) {
 }
 
 function getImageHtml(files) {
-    console.log(files)
+    var filestring = JSON.stringify(files).replace(/'/g, '').replace(/"/g, '\'');
     var myImgSource = '';
     if (typeof (files.source) != 'undefined') myImgSource = files.source;
     if (typeof (files.source) == 'undefined') myImgSource = "unknown source";
     if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
     var imageHtml
     if (files.file_name.includes('.glb')) {
-                    imageHtml = '<img class="modalimg ThreeDeeImage" title="open 3d model" src="/static/images/icons/3d.png" alt="3d" onclick="set3D(\'' + files.file_name + '\')">'
-                } else {
-                    imageHtml = '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" alt="' + myImgSource + '"></a>'
-                }
+        imageHtml = '<img class="modalimg ThreeDeeImage" data-file="' + filestring + '" title="open 3d model" src="/static/images/icons/3d.png" alt="3d" onclick="current3dFile = $(this).data(\'file\'); set3D(\'' + files.file_name + '\')">'
+    } else {
+        imageHtml = '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" alt="' + myImgSource + '"></a>'
+    }
     return imageHtml
 }
