@@ -928,34 +928,17 @@ function setImages(entId, entfiles) {
         //append one image without slides
         if (entfiles.length == 1) {
             $('#myImagecontainer' + entId).empty();
-            $.each(entfiles, function (f, files) {
-                var myImgSource = '';
-                if (typeof (files.source) != 'undefined') myImgSource = files.source;
-                if (typeof (files.source) == 'undefined') myImgSource = "unknown source";
-                if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
-                $('#myImagecontainer' + entId).append(
-                    '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" id="mymodalimg" alt="' + myImgSource + '"></a>'
-                );
-            });
+                    $('#myImagecontainer' + entId).append(
+                        getImageHtml(entfiles[0])
+                    )
         }
 
 
         //append more than one image with slides
         if (entfiles.length !== 1) {
             $('#myImagecontainer' + entId).empty();
-            firstimage = entfiles[0].file_name;
-            var firstimageObj = entfiles[0];
-            var myImgSource1 = '';
-            if (typeof (firstimageObj.source) != 'undefined') myImgSource1 = firstimageObj.source;
-            if (typeof (firstimageObj.source) == 'undefined') myImgSource1 = "unknown source";
-            if ((typeof (firstimageObj.source) != 'undefined') && (typeof (firstimageObj.reference) != 'undefined')) myImgSource1 = firstimageObj.source + ' ' + firstimageObj.reference;
-            secondimage = entfiles[1].file_name;
-            var secondimageObj = entfiles[1];
-            var myImgSource2 = '';
-            if (typeof (secondimageObj.source) != 'undefined') myImgSource2 = secondimageObj.source;
-            if (typeof (secondimageObj.source) == 'undefined') myImgSource2 = "unknown source";
-            if ((typeof (secondimageObj.source) != 'undefined') && (typeof (secondimageObj.reference) != 'undefined')) myImgSource2 = secondimageObj.source + ' ' + secondimageObj.reference;
-            //create carousel and apppend first two images
+            firstimage = entfiles[0];
+            secondimage = entfiles[1];
             $('#myImagecontainer' + entId).append(
                 '<div id="carouselExampleIndicators' + entId + '" class="carousel slide" data-ride="carousel" data-interval="false">' +
                 '<ol id="mymodalimageindicators' + entId + '" class="carousel-indicators">' +
@@ -964,10 +947,10 @@ function setImages(entId, entfiles) {
                 '</ol>' +
                 '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
                 '<div class="carousel-item active">' +
-                '<a href="' + firstimage + '" data-featherlight><img title="' + myImgSource1 + '" class="d-block modalimg lazy" src="/static/images/icons/loading.gif" data-src="' + firstimage + '" alt="" alt="" alt=""></a>' +
+                getImageHtml(firstimage) +
                 '</div>' +
                 '<div class="carousel-item">' +
-                '<a href="' + secondimage + '" data-featherlight><img title="' + myImgSource2 + '" class="d-block modalimg lazy" src="/static/images/icons/loading.gif" data-src="' + secondimage + '" alt="" alt="" alt=""></a>' +
+                getImageHtml(secondimage) +
                 '</div>' +
                 '</div>' +
                 '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
@@ -983,23 +966,21 @@ function setImages(entId, entfiles) {
 
 
             //append further images to carousel
-            $.each(entfiles, function (f, files) {
+            $.each(entfiles, function (f, file) {
                 if (f > 1) {
 
-                    var myImgSource = '';
-                    if (typeof (files.source) != 'undefined') myImgSource = files.source;
-                    if (typeof (files.source) == 'undefined') myImgSource = "unknown source";
-                    if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
                     $('#mycarouselimages' + entId).append(
-                        '<div class="carousel-item">' +
-                        '<a href="' + files.file_name + '" data-featherlight><img title="' + myImgSource + '" class="d-block modalimg lazy" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" alt=""></a>' +
-                        '</div>'
-                    );
+                            '<div class="carousel-item">' +
+                            getImageHtml(file) +
+                            '</div>'
+                        );
+
                     $('#mymodalimageindicators' + entId).append(
                         '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="' + f + '"></li>'
                     );
+                    }
                 }
-            });
+            );
         }
 
     } else {
@@ -1171,7 +1152,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             if (typeof (file.source) != 'undefined') myImgSource = file.source;
             if (typeof (file.source) == 'undefined') myImgSource = "unknown source";
             if ((typeof (file.source) != 'undefined') && (typeof (file.reference) != 'undefined')) myImgSource = file.source + ' ' + file.reference;
-            $('#myModalImagecontainer' + entId).append('<div class="col-lg-4"><a href="' + file.file_name + '" data-featherlight><img style="max-height: 300px" class="img-fluid border mt-2" src="/static/images/icons/loading.gif" data-src="' + file.file_name + '" title="' + myImgSource + '" alt=""></a></div>');
+            $('#myModalImagecontainer' + entId).append('<div class="col-lg-4 mt-2">'+ getImageHtml(file) + '</div>');
         });
 
         if (typeof (currentfeature.burials) != 'undefined') {

@@ -1227,3 +1227,28 @@ input {
     color: #6c757d;
     content: ">";
 }
+
+#babyloncontainer {
+    height: 80vh;
+}
+
+.logo-button {
+    display: none!important;
+}
+
+.fullscreen-icon {
+    display: contents;
+    background-image: none;
+}
+
+.static-loading-image {
+    display: none!important;
+}
+
+.ThreeDeeImage {
+    cursor: pointer;
+}
+
+.ThreeDeeImage:hover {
+    opacity: 0.5;
+}

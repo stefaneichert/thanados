@@ -2252,12 +2252,12 @@ function createFeatureCollection(ids) {
             'ids': ids
         },
         success: function (result) {
-             eval('graves' + Iter + '= L.geoJSON(result, {onEachFeature: function (feature, layer){\n' +
+            eval('graves' + Iter + '= L.geoJSON(result, {onEachFeature: function (feature, layer){\n' +
                 '                    layer.bindPopup(getPopUp(feature))\n' +
                 '                },filter: polygonFilter,style: myStyle})')
 
             pointgraves = L.geoJSON(result, {
-                onEachFeature: function (feature, layer){
+                onEachFeature: function (feature, layer) {
                     layer.bindPopup(getPopUp(feature))
                 },
                 filter: pointFilter,
@@ -2281,7 +2281,6 @@ function createFeatureCollection(ids) {
                     }
                 },
             });
-
 
 
             var currentbtnHolder = eval('$("#btnHolder' + Iter + '")')
@@ -2326,7 +2325,7 @@ function getAllGraves() {
                 '                },filter: polygonFilter,style: myBackgroundStyle})')
 
             pointgraves = L.geoJSON(result, {
-                onEachFeature: function (feature, layer){
+                onEachFeature: function (feature, layer) {
                     layer.bindPopup(getPopUp(feature))
                 },
                 filter: pointFilter,
@@ -2352,32 +2351,32 @@ function getAllGraves() {
             });
 
             var gravesexist = false;
-            eval('if (typeof(graves'+Iter +') !== "undefined") var gravesexist = true')
+            eval('if (typeof(graves' + Iter + ') !== "undefined") var gravesexist = true')
 
             if (gravesexist) {
-            var groupedOverlays = {
-                "Search Results": {
-                    "Clustered": clustermarkers,
-                    "Single": eval('resultpoints' + Iter),
-                    "Graves (results)": eval('graves' + Iter)
-                },
-                "Visualisations": {
-                    "Density": heat,
-                    "Graves (all)": eval('allGraves'+Iter)
-                }
-            };
+                var groupedOverlays = {
+                    "Search Results": {
+                        "Clustered": clustermarkers,
+                        "Single": eval('resultpoints' + Iter),
+                        "Graves (results)": eval('graves' + Iter)
+                    },
+                    "Visualisations": {
+                        "Density": heat,
+                        "Graves (all)": eval('allGraves' + Iter)
+                    }
+                };
             } else {
-            var groupedOverlays = {
-                "Search Results": {
-                    "Clustered": clustermarkers,
-                    "Single": eval('resultpoints' + Iter),
-                    //"Graves (results)": eval('graves' + Iter)
-                },
-                "Visualisations": {
-                    "Density": heat,
-                    "Graves (all)": eval('allGraves'+Iter)
+                var groupedOverlays = {
+                    "Search Results": {
+                        "Clustered": clustermarkers,
+                        "Single": eval('resultpoints' + Iter),
+                        //"Graves (results)": eval('graves' + Iter)
+                    },
+                    "Visualisations": {
+                        "Density": heat,
+                        "Graves (all)": eval('allGraves' + Iter)
+                    }
                 }
-            }
             }
             var options = {
                 groupCheckboxes: false
@@ -2393,7 +2392,67 @@ function getAllGraves() {
 }
 
 function getPopUp(feature) {
-    var myPopup = '<a href="entity\/' + feature.id + '" title="' + feature.properties.path + '" target="_blank"><b>' + feature.properties.name + '</b></a>'+
+    var myPopup = '<a href="entity\/' + feature.id + '" title="' + feature.properties.path + '" target="_blank"><b>' + feature.properties.name + '</b></a>' +
         '<br>' + feature.site.name
     return myPopup
+}
+
+function set3D(file) {
+    $('body').append(
+        '<div class="modal fade bd-example-modal-lg" id="3DModal" tabindex="-1" role="dialog"\n' +
+        '     aria-labelledby="3d-model" aria-hidden="true">\n' +
+        '    <div class="modal-dialog" role="document">\n' +
+        '        <div class="modal-content">\n' +
+        '            <div class="modal-body">\n' +
+        '            <div id="babyloncontainer">\n' +
+        '                <div id="babylon"></div>\n' +
+        '                </div>\n' +
+        '            <div class="modal-footer">\n' +
+        '                <a type="button" href="' + file + '" class="btn btn-primary">Download</a>\n' +
+        '                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>\n' +
+        '            </div>' +
+        '            </div>\n' +
+        '        </div>\n' +
+        '    </div>\n' +
+        '</div>'
+    )
+    $('#3DModal').on('shown.bs.modal', function () {
+        let domElement = document.getElementById('babylon');
+
+        let viewer = new BabylonViewer.DefaultViewer(domElement, {
+            scene: {
+                debug: false
+            },
+            camera: {
+                behaviors: {
+                    autoRotate: 0
+                }
+            },
+            model: {
+                url: threeDfilename
+            }
+        });
+    })
+
+    $('#3DModal').on('hide.bs.modal', function () {
+        $('#3DModal').remove();
+    })
+
+    $('#3DModal').modal('show')
+    threeDfilename = file
+}
+
+function getImageHtml(files) {
+    console.log(files)
+    var myImgSource = '';
+    if (typeof (files.source) != 'undefined') myImgSource = files.source;
+    if (typeof (files.source) == 'undefined') myImgSource = "unknown source";
+    if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
+    var imageHtml
+    if (files.file_name.includes('.glb')) {
+                    imageHtml = '<img class="modalimg ThreeDeeImage" title="open 3d model" src="/static/images/icons/3d.png" alt="3d" onclick="set3D(\'' + files.file_name + '\')">'
+                } else {
+                    imageHtml = '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" alt="' + myImgSource + '"></a>'
+                }
+    return imageHtml
 }
