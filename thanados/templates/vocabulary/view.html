@@ -95,6 +95,10 @@
                                     <div class="card" id="ImgOne">
 
                                         {% if ".glb" in data.files[0].file_name %}
+                                            <p class="text-muted" title="see Media tab for more">Preview <i title="enlarge" onclick="
+                                                    current3dFile = JSON.stringify({{ data.files[0] }});
+                                                    set3D('{{ data.files[0].file_name }}')
+                                                    " class="hoverfa float-right fas fa-expand-arrows-alt"></i></p>
                                             <babylon model="{{ data.files[0].file_name }}"></babylon>
                                         {% else %}
                                             <a href="{{ data.files[0].file_name }}" data-featherlight>
@@ -190,9 +194,9 @@
                                 <li class="nav-item">
                                     {% if not data.entities_recursive %}
                                         <a id="fileNav" class="nav-link active" data-toggle="tab"
-                                           href="#images">Images</a>
+                                           href="#images">Media</a>
                                     {% else %}
-                                        <a id="fileNav" class="nav-link" data-toggle="tab" href="#images">Images</a>
+                                        <a id="fileNav" class="nav-link" data-toggle="tab" href="#images">Media</a>
                                     {% endif %}
                                 </li>
                             {% endif %}

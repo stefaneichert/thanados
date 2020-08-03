@@ -1253,3 +1253,14 @@ input {
 .ThreeDeeImage:hover {
     opacity: 1;
 }
+
+#ImgOne .fullscreen-button {
+    display: none!important;
+}
+
+.hoverfa:hover {
+    color: #6c757d;
+}
+.hoverfa {
+    cursor: pointer;
+}
