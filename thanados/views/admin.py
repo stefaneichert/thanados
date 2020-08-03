@@ -167,7 +167,7 @@ CREATE TABLE thanados.sites AS (
             )
              AS s
              JOIN thanados.types_all t ON t.id = s.range_id
-    WHERE t.name_path LIKE 'Place >%' -- replace with the top parent of the place category of which you want to show
+    WHERE t.name_path LIKE 'Place > Burial Site%' -- replace with the top parent of the place category of which you want to show
 );
 
 -- set polygons as main geometry where available

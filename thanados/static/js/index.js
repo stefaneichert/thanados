@@ -36,7 +36,8 @@ if ($('#map').length) {
     map = L.map('map', {
         maxZoom: 12,
         scrollWheelZoom: false,
-        dragging: false
+        dragging: false,
+        zoomControl: false
     });
 
     landscape.addTo(map);
