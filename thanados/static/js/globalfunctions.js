@@ -238,7 +238,6 @@ function groundTypes(data, length) {
             if (data.includes(type.id)) {
                 if (AvailableNodes.includes(type.parent) === false) {
                     AvailableNodes.push(type.parent);
-                    console.log(AvailableNodes.length)
                 }
             }
         })
@@ -270,8 +269,9 @@ function checkAvailable(appendLevel, type) {
             form = "Find";
             if (mapsearch) availables = availableTypes.findtypes;
             break;
-        case "bones":
+        case "osteology":
             form = "Human Remains"
+            if (mapsearch) availables = availableTypes.bonetypes;
             break;
         default:
             alert('notype')
@@ -319,8 +319,9 @@ function initiateTree(Iter, appendLevel, criteria, targetField) {
             form = "Find";
             if (mapsearch) availables = availableTypes.findtypes;
             break;
-        case "bones":
+        case "osteology":
             form = "Human Remains"
+            if (mapsearch) availables = availableTypes.bonetypes;
             break;
         default:
             alert('notype')
@@ -346,7 +347,6 @@ function initiateTree(Iter, appendLevel, criteria, targetField) {
             }
         }
     });
-    //console.log(selectedtypes);
 
     $(function () {
         $('#jstree').jstree({
@@ -1999,7 +1999,6 @@ function setChoroplethJSON(data, value) {
         })
     }
 
-    console.log(numbers);
     return data;
 }
 
@@ -2234,14 +2233,239 @@ function highlightbones(svg_label) {
     } else {
         if (svg_label !== '119334') {
             var siding = svg_label.toString().replace(/[0-9]/g, '')
-            console.log(siding);
             $.getJSON("/vocabulary/" + parseInt(svg_label.replace(/[^0-9]/g, '')) + "/json", function (data) {
                 if (data.parent !== 119334) {
-                console.log('parent: ' + data.parent)
-                svg_label = (data.parent.toString()) + siding;
-                highlightbones(svg_label.toString())
-                    }
+                    svg_label = (data.parent.toString()) + siding;
+                    highlightbones(svg_label.toString())
+                }
             })
-        } return false
+        }
+        return false
     }
+}
+
+function createFeatureCollection(ids) {
+    $.ajax({
+        type: 'POST',
+        url: '/ajax/featureCollection',
+        data: {
+            'ids': ids
+        },
+        success: function (result) {
+            eval('graves' + Iter + '= L.geoJSON(result, {onEachFeature: function (feature, layer){\n' +
+                '                    layer.bindPopup(getPopUp(feature))\n' +
+                '                },filter: polygonFilter,style: myStyle})')
+
+            pointgraves = L.geoJSON(result, {
+                onEachFeature: function (feature, layer) {
+                    layer.bindPopup(getPopUp(feature))
+                },
+                filter: pointFilter,
+                pointToLayer: function (feature, latlng) {
+                    if (feature.id !== 0) {
+                        var lefttoplat = (latlng.lat - 0.000003);
+                        var lefttoplon = (latlng.lng - 0.000005);
+                        var rightbottomlat = (latlng.lat + 0.000003);
+                        var rightbottomlon = (latlng.lng + 0.000005);
+                        var bounds = [[lefttoplat, lefttoplon], [rightbottomlat, rightbottomlon]];
+                        var rect = L.rectangle(bounds).toGeoJSON(13);
+                        L.extend(rect, {//add necessary properties from json
+                            properties: feature.properties,
+                            id: feature.id,
+                            parent: feature.parent,
+                            burials: feature.burials,
+                            derivedPoly: "true",
+                            site: feature.site
+                        });
+                        eval('graves' + Iter).addData(rect);
+                    }
+                },
+            });
+
+
+            var currentbtnHolder = eval('$("#btnHolder' + Iter + '")')
+            $(currentbtnHolder).append(
+                '<li class="d-inline-block"><a id="graveDnld' + Iter + '" class="graveDownload" title="Download search result (graves) as GeoJSON file" data-iter="' + Iter + '"><i class="fas fa-draw-polygon"></i></a></li>'
+            )
+            var currentbtn = eval('$("#graveDnld' + Iter + '")')
+            var jsondownload = eval('graves' + Iter).toGeoJSON(13);
+            $(currentbtn).data('json', JSON.stringify(jsondownload))
+            $(currentbtn).click(function f() {
+                var data = $(this).data('json');
+                exportToJsonFile(JSON.parse(data));
+            })
+            getAllGraves()
+        }
+    });
+}
+
+//filter to get polygons from the geojson
+function polygonFilter(feature) {
+    if (feature.geometry) {
+        if (feature.geometry.type === "Polygon")
+            return true
+    }
+}
+
+//filter to get points from the geojson
+function pointFilter(feature) {
+    if (feature.geometry) {
+        if (feature.geometry.type === "Point")
+            return true
+    }
+}
+
+function getAllGraves() {
+    $.ajax({
+        type: 'POST',
+        url: '/ajax/allgraves',
+        success: function (result) {
+            eval('allGraves' + Iter + '= L.geoJSON(result, {onEachFeature: function (feature, layer){\n' +
+                '                    layer.bindPopup(getPopUp(feature))\n' +
+                '                },filter: polygonFilter,style: myBackgroundStyle})')
+
+            pointgraves = L.geoJSON(result, {
+                onEachFeature: function (feature, layer) {
+                    layer.bindPopup(getPopUp(feature))
+                },
+                filter: pointFilter,
+                pointToLayer: function (feature, latlng) {
+                    if (feature.id !== 0) {
+                        var lefttoplat = (latlng.lat - 0.000003);
+                        var lefttoplon = (latlng.lng - 0.000005);
+                        var rightbottomlat = (latlng.lat + 0.000003);
+                        var rightbottomlon = (latlng.lng + 0.000005);
+                        var bounds = [[lefttoplat, lefttoplon], [rightbottomlat, rightbottomlon]];
+                        var rect = L.rectangle(bounds).toGeoJSON(13);
+                        L.extend(rect, {//add necessary properties from json
+                            properties: feature.properties,
+                            id: feature.id,
+                            parent: feature.parent,
+                            burials: feature.burials,
+                            derivedPoly: "true",
+                            site: feature.site
+                        });
+                        eval('allGraves' + Iter).addData(rect);
+                    }
+                },
+            });
+
+            var gravesexist = false;
+            eval('if (typeof(graves' + Iter + ') !== "undefined") var gravesexist = true')
+
+            if (gravesexist) {
+                var groupedOverlays = {
+                    "Search Results": {
+                        "Clustered": clustermarkers,
+                        "Single": eval('resultpoints' + Iter),
+                        "Graves (results)": eval('graves' + Iter)
+                    },
+                    "Visualisations": {
+                        "Density": heat,
+                        "Graves (all)": eval('allGraves' + Iter)
+                    }
+                };
+            } else {
+                var groupedOverlays = {
+                    "Search Results": {
+                        "Clustered": clustermarkers,
+                        "Single": eval('resultpoints' + Iter),
+                        //"Graves (results)": eval('graves' + Iter)
+                    },
+                    "Visualisations": {
+                        "Density": heat,
+                        "Graves (all)": eval('allGraves' + Iter)
+                    }
+                }
+            }
+            var options = {
+                groupCheckboxes: false
+            };
+            eval('map' + Iter + '.removeControl(layerControl' + Iter + ')');
+            eval('layerControl' + Iter + ' = L.control.groupedLayers(MyBaseLayers' + Iter + ', groupedOverlays, options)');
+            eval('map' + Iter + '.addControl(layerControl' + Iter + ')');
+
+            eval
+
+        }
+    });
+}
+
+function getPopUp(feature) {
+    var myPopup = '<a href="entity\/' + feature.id + '" title="' + feature.properties.path + '" target="_blank"><b>' + feature.properties.name + '</b></a>' +
+        '<br>' + feature.site.name
+    return myPopup
+}
+
+function set3D(file) {
+    $('body').append(
+        '<div class="modal fade bd-example-modal-lg" id="3DModal" tabindex="-1" role="dialog"\n' +
+        '     aria-labelledby="3d-model" aria-hidden="true">\n' +
+        '    <div class="modal-dialog" role="document">\n' +
+        '        <div class="modal-content">\n' +
+        '            <div class="modal-body">\n' +
+        '               <div id="babyloncontainer">\n' +
+        '                    <div id="babylon"></div>\n' +
+        '               </div>\n' +
+        '               <div class="modal-footer pt-2 pl-0 pr-0">\n' +
+        '                   <div style="width: 100%">\n' +
+        '                       <button type="button" title="show metadata" class="btn btn-primary float-left ml-2" onclick="$(\'#3dmetadata\').toggleClass(\'d-none\')"><i class="fas fa-info"></i></button>\n' +
+        '                       <button type="button" class="btn btn-secondary float-right ml-2" data-dismiss="modal"><i class="fas fa-times"></i></button>\n' +
+        '                       <a type="button" href="' + file + '" class="btn btn-primary float-right"><i class="fas fa-download"></i></a>\n' +
+        '                   </div>' +
+        '                   <div id="3dmetadata" style="font-size: 0.875rem" class="w-100 pl-2 pr-2 pt-2 pb-0 text-muted float-left d-none"></div>\n' +
+        '                   </div>\n' +
+        '               </div>' +
+        '            </div>\n' +
+        '        </div>\n' +
+        '    </div>\n' +
+        '</div>'
+    )
+
+    if (typeof(current3dFile) === 'string') current3dFile = (JSON.parse(current3dFile.replace(/'/g, '"')));
+
+    Object.keys(current3dFile).forEach(function (key) {
+        $("#3dmetadata").append(key + ': ' + current3dFile[key] + '<br>')
+    })
+
+
+    $('#3DModal').on('shown.bs.modal', function () {
+        let domElement = document.getElementById('babylon');
+
+        let viewer = new BabylonViewer.DefaultViewer(domElement, {
+            scene: {
+                debug: false
+            },
+            camera: {
+                behaviors: {
+                    autoRotate: 0
+                }
+            },
+            model: {
+                url: threeDfilename
+            }
+        });
+    })
+
+    $('#3DModal').on('hide.bs.modal', function () {
+        $('#3DModal').remove();
+    })
+
+    $('#3DModal').modal('show')
+    threeDfilename = file
+}
+
+function getImageHtml(files) {
+    var filestring = JSON.stringify(files).replace(/'/g, '').replace(/"/g, '\'');
+    var myImgSource = '';
+    if (typeof (files.source) != 'undefined') myImgSource = files.source;
+    if (typeof (files.source) == 'undefined') myImgSource = "unknown source";
+    if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
+    var imageHtml
+    if (files.file_name.includes('.glb')) {
+        imageHtml = '<img class="modalimg ThreeDeeImage" data-file="' + filestring + '" title="open 3d model" src="/static/images/icons/3d.png" alt="3d" onclick="current3dFile = $(this).data(\'file\'); set3D(\'' + files.file_name + '\')">'
+    } else {
+        imageHtml = '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" alt="' + myImgSource + '"></a>'
+    }
+    return imageHtml
 }

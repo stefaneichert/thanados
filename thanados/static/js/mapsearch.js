@@ -53,6 +53,9 @@ function initateQuery() {
             $.each(burial.finds, function (f, find) {
                 finalSearchResultIds.push(parseInt(find.id));
             });
+            $.each(burial.humanremains, function (f, humanremain) {
+                finalSearchResultIds.push(parseInt(humanremain.id));
+            });
         });
     });
 }
@@ -72,6 +75,7 @@ function appendSearch(Iter) {//append search form to dialog
         '<option value="feature">Graves</option>\n' +
         '<option value="strat">Burials</option>\n' +
         '<option value="find">Finds</option>\n' +
+        '<option value="osteology">Osteology</option>\n' +
         '</select>\n' +
         '</div>');
 
@@ -975,7 +979,6 @@ function jsonquery(id, level, prop, val1, val2) {
                     });
                 });
             }
-
         });
     }
 
@@ -990,7 +993,6 @@ function jsonquery(id, level, prop, val1, val2) {
                         searchResultIds.push(parseInt(find.id));
                     });
                 }
-
             });
         });
     }
@@ -1002,6 +1004,20 @@ function jsonquery(id, level, prop, val1, val2) {
                 $.each(burial.finds, function (f, find) {
                     levelQuery(feature, find, id, prop, val1, val2);
                     if (searchResultIds.includes(find.id)) {
+                        searchResultIds.push(burial.id);
+                        searchResultIds.push(feature.id);
+                    }
+                });
+            });
+        });
+    }
+
+    if (level == 'osteology') {
+        $.each(myjson.features, function (i, feature) {
+            $.each(feature.burials, function (b, burial) {
+                $.each(burial.humanremains, function (f, humanremain) {
+                    levelQuery(feature, humanremain, id, prop, val1, val2);
+                    if (searchResultIds.includes(humanremain.id)) {
                         searchResultIds.push(burial.id);
                         searchResultIds.push(feature.id);
                     }
@@ -1034,6 +1050,12 @@ function prepareCSV(result, path, value, unit, feature, level, entity) {
     var tmpValue = {};
     tmpValue.site = myjson.name.replace(/"/g, '\'');
     tmpValue.siteID = myjson.site_id;
+    tmpValue.grave = feature.properties.name.replace(/"/g, '\'');
+    tmpValue.graveID = feature.id;
+    tmpValue.gravetype = feature.properties.maintype.name.replace(/"/g, '\'');
+    tmpValue.burial = null;
+    tmpValue.burialtype = null;
+    tmpValue.burialID = null;
     tmpValue.ObjectId = entity.id;
     tmpValue.ObjectName = entity.properties.name.replace(/"/g, '\'');
     tmpValue.ObjectType = entity.properties.maintype.name.replace(/"/g, '\'');
@@ -1054,6 +1076,31 @@ function prepareCSV(result, path, value, unit, feature, level, entity) {
     tmpValue.easting = null;
     tmpValue.northing = null;
     tmpValue.image = null;
+
+
+    if (tmpValue.ObjectClass === 'find' || tmpValue.ObjectClass === 'human remains') {
+        $.each(myjson.features, function (i, feature) {
+            if (feature.id === tmpValue.graveID) {
+                $.each(feature.burials, function (i, burial) {
+                    var burialId = burial.id;
+                    var burialname = burial.properties.name;
+                    var burialtype = burial.properties.maintype.name;
+                    $.each(burial.finds, function (i, find) {
+                        if (find.id === tmpValue.ObjectId) {
+                            tmpValue.burialID = burialId;
+                        }
+                    })
+                    $.each(burial.humanremains, function (i, bone) {
+                        if (bone.id === tmpValue.ObjectId) {
+                            tmpValue.burialID = burialId;
+                            tmpValue.burial = burialname;
+                            tmpValue.burialtype = burialtype;
+                        }
+                    })
+                })
+            }
+        })
+    }
 
     if (typeof (feature.geometry) != 'undefined') {
         var wkt = new Wkt.Wkt();

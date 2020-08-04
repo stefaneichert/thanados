@@ -86,17 +86,7 @@ $(window).resize(function () {
 //set map and sidebar content//
 ///////////////////////////////
 
-//filter to get polygons from the geojson
-function polygonFilter(feature) {
-    if (feature.geometry.type === "Polygon")
-        return true
-}
 
-//filter to get points from the geojson
-function pointFilter(feature) {
-    if (feature.geometry.type === "Point")
-        return true
-}
 
 
 function setmap(myjson) {
@@ -755,11 +745,11 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         'data-value="' + typeId + '">' + entType + '</div>' +
         '<div id="myModaltimespan' + entId + '" class="modalrowitem">' + dateToInsert + '</div><span class="popover-wrapper"></span>' +
         '<div id="myModalDescr' + entId + '">' + entDesc + '</div>' +
+        '<div class="mt-2" id="myModalImagecontainer' + entId + '"></div>' +
         '<div id="myModalTypescontainer' + entId + '"></div>' +
         '<div id="myModalDimensionscontainer' + entId + '"></div>' +
         '<div id="myModalMaterialcontainer' + entId + '"></div>' +
         '</div>' +
-        '<div id="myModalImagecontainer' + entId + '"></div>' +
         '</div>' +
         '</div>' +
         '</div>' +
@@ -863,36 +853,23 @@ function setImages(entId, entfiles) {
 
         //append one image without slides
         if (entfiles.length == 1) {
-            $('#myModalImagecontainer' + entId).attr("class", "col-md-4 col-sm-6");
-            $('#myModalData_' + entId).attr("class", "col-md-8 col-sm-6");
+            //$('#myModalImagecontainer' + entId).attr("class", "col-md-4 col-sm-6");
+            //$('#myModalData_' + entId).attr("class", "col-md-8 col-sm-6");
             $('#myModalImagecontainer' + entId).empty();
 
-            $.each(entfiles, function (f, files) {
-                if (typeof (files.source) != 'undefined') myImgSource = files.source;
-                if (typeof (files.source) == 'undefined') myImgSource = 'unknown source';
-                if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
-                $('#myModalImagecontainer' + entId).append(
-                    '<a href="' + files.file_name + '" data-featherlight> \n' +
-                    '<img src="' + files.file_name + '" title="' + myImgSource + '" class="modalimg" id="mymodalimg" alt="image">\n' +
-                    '</a>\n'
-                )
-            });
+            $('#myModalImagecontainer' + entId).append(
+                        getImageHtml(entfiles[0])
+                    )
         }
 
 
         //append more than one image with slides
         if (entfiles.length !== 1) {
-            $('#myModalImagecontainer' + entId).attr("class", "col-md-4 col-sm-6");
-            $('#myModalData_' + entId).attr("class", "col-md-8 col-sm-6");
+            //$('#myModalImagecontainer' + entId).attr("class", "col-md-4 col-sm-6");
+            //$('#myModalData_' + entId).attr("class", "col-md-8 col-sm-6");
             $('#myModalImagecontainer' + entId).empty();
-            firstimage = entfiles[0].file_name;
-            if (typeof (entfiles[0].source) != 'undefined') myImgSource = entfiles[0].source;
-            if (typeof (entfiles[0].source) == 'undefined') myImgSource = "unknown source"
-            if ((typeof (entfiles[0].source) != 'undefined') && (typeof (entfiles[0].reference) != 'undefined')) myImgSource = entfiles[0].source + ' ' + entfiles[0].reference;
-            secondimage = entfiles[1].file_name;
-            if (typeof (entfiles[1].source) != 'undefined') my2ndImgSource = entfiles[1].source;
-            if (typeof (entfiles[1].source) == 'undefined') my2ndImgSource = "unknown source";
-            if ((typeof (entfiles[1].source) != 'undefined') && (typeof (entfiles[1].reference) != 'undefined')) my2ndImgSource = entfiles[1].source + ' ' + entfiles[1].reference;
+            firstimage = entfiles[0]
+            secondimage = entfiles[1]
 
             //create carousel and apppend first two images
             $('#myModalImagecontainer' + entId).append(
@@ -903,10 +880,10 @@ function setImages(entId, entfiles) {
                 '</ol>' +
                 '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
                 '<div class="carousel-item active">' +
-                '<a href="' + firstimage + '" data-featherlight><img title="' + myImgSource + '" class="d-block modalimg" src="' + firstimage + '" alt="image"></a>' +
+                getImageHtml(firstimage) +
                 '</div>' +
                 '<div class="carousel-item">' +
-                '<a href="' + secondimage + '" data-featherlight><img title="' + my2ndImgSource + '" class="d-block modalimg" src="' + secondimage + '" alt="image"></a>' +
+                getImageHtml(secondimage) +
                 '</div>' +
                 '</div>' +
                 '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
@@ -923,12 +900,9 @@ function setImages(entId, entfiles) {
             //append further images to carousel
             $.each(entfiles, function (f, files) {
                 if (f > 1) {
-                    if (typeof (files.source) != 'undefined') myImgSource = files.source;
-                    if (typeof (files.source) == 'undefined') myImgSource = 'unknown source';
-                    if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
                     $('#mycarouselimages' + entId).append(
                         '<div class="carousel-item">' +
-                        '<a href="' + files.file_name + '" data-featherlight><img title="' + myImgSource + '" class="d-block modalimg" src="' + files.file_name + '" alt="image"></a>' +
+                        getImageHtml(files) +
                         '</div>'
                     );
                     $('#mymodalimageindicators' + entId).append(
@@ -945,6 +919,10 @@ function setImages(entId, entfiles) {
         $('#myModalImagecontainer' + entId).empty();
         $('#myModalData_' + entId).attr("class", "modalwithoutimage");
     }
+    var lazyLoadInstance = new LazyLoad({
+        elements_selector: ".lazy"
+    });
+    lazyLoadInstance.update();
 }
 
 //initiate modal

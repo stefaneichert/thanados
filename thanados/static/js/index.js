@@ -36,7 +36,8 @@ if ($('#map').length) {
     map = L.map('map', {
         maxZoom: 12,
         scrollWheelZoom: false,
-        dragging: false
+        dragging: false,
+        zoomControl: false
     });
 
     landscape.addTo(map);
@@ -108,7 +109,6 @@ if ($('#map').length) {
                 'fillOpacity': zoom
             }, 50);
         })
-        console.log(zoom)
     });
     } else zoom = 0.7
 

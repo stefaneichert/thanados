@@ -27,14 +27,12 @@ $(document).ready(function () {
         })
         $('.BonetruncBtn').click(function (e) {
             if ($(this).text() === 'Show less') {
-                console.log($(this).prev().height())
+
                 $(this).prev().shave(150);
                 $(this).text('Show more')
             } else {
-                console.log($(this).prev().height())
                 $(this).text('Show less');
                 $(this).prev().shave(999999999);
-                //console.log($(this).prev().html())
             }
         });
 
@@ -78,6 +76,7 @@ if (systemtype == 'place') {
     getEntityData(sitename, jsonmysite.id, jsonmysite);
     mycitation = '"' + sitename + '".';
     myjson = jsonmysite;
+    $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Site) </div>');
 }
 
 window.addEventListener('load', function () {
@@ -122,6 +121,7 @@ if (systemtype == 'feature') {
         }
 
     });
+    $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Feature/Grave) </div>');
 }
 
 
@@ -154,6 +154,7 @@ if (systemtype == 'stratigraphic unit') {
 
         });
     });
+    $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Burial/Stratigraphic Unit) </div>');
 }
 
 
@@ -175,7 +176,6 @@ if (systemtype === 'find' || systemtype === 'human remains') {
             var stratID = burial.id;
             $.each(currentobjects, function (f, find) {
                 if (entity_id == find.id) {
-                    console.log(find);
                     graveName = featureName;
                     graveId = featureID;
                     graveGeom = featureGeom;
@@ -200,6 +200,12 @@ if (systemtype === 'find' || systemtype === 'human remains') {
             });
         });
     });
+    if (systemtype === 'find') {
+        $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Find) </div>')
+    } else {
+        $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Osteology) </div>');
+    }
+    ;
 }
 
 function getEntityData(parentName, parentId, currentfeature) {
@@ -299,7 +305,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div class="nav nav-tabs" id="nav-tab" role="tablist">' +
         '<a class="nav-item nav-link active" id="nav-table-tab" data-toggle="tab" href="#nav-table' + entId + '" role="tab" aria-controls="nav-table' + entId + '" aria-selected="true">' + subLabel + '</a>' +
         '<a class="nav-item nav-link d-none" id="nav-pills-tab' + entId + '" data-toggle="tab" href="#nav-pills' + entId + '" role="tab" aria-controls="nav-pills' + entId + '" aria-selected="false">Simple</a>' +
-        '<a class="nav-item nav-link d-none" id="nav-humanremains-tab" data-toggle="tab" href="#nav-humanremains" role="tab" aria-controls="nav-humanremains" aria-selected="false">Human remains</a>' +
+        '<a class="nav-item nav-link d-none" id="nav-humanremains-tab" data-toggle="tab" href="#nav-humanremains" role="tab" aria-controls="nav-humanremains" aria-selected="false">Osteology</a>' +
         '<a class="nav-item nav-link" id="nav-catalogue-tab" data-toggle="tab" href="#nav-catalogue" role="tab" aria-controls="nav-catalogue" aria-selected="false">Catalogue</a>' +
         '</div>' +
         '</nav>' +
@@ -371,11 +377,14 @@ function getEntityData(parentName, parentId, currentfeature) {
                 $.each(hr.properties.types, function (i, type) {
 
                     if (type.name !== 'left' && type.name !== 'right') {
+                        var labeltext = type.name;
+                        if (type.value) labeltext += ': ' + type.value + ' ' + type.description
+
                         $(".bonediv:last-child").append(
                             '<div type="button" data-value="' + type.id + '" + ' +
 
                             'class="modalrowitem typebutton hr-button btn-xs" ' +
-                            'data-toggle="popover">' + type.name + '</div><span class="popover-wrapper"></span>'
+                            'data-toggle="popover">' + labeltext + '</div><span class="popover-wrapper"></span>'
                         );
                     }
                 })
@@ -488,19 +497,19 @@ function getEntityData(parentName, parentId, currentfeature) {
     singleref = false;
     mainref = false;
     mainrefthere = false;
+    bibfeature = JSON.parse(JSON.stringify(currentfeature))
 
     if (typeof (currentfeature.properties.references) !== 'undefined') {
-        currentfeature = currentfeature
+        bibfeature = JSON.parse(JSON.stringify(currentfeature))
     } else {
-        currentfeature.properties = jsonmysite.properties
+        bibfeature.properties = jsonmysite.properties
     }
-
 
     singleref = false;
 
-    if (typeof (currentfeature.properties.references) !== 'undefined' && currentfeature.properties.references.length === 1) singleref = true;
+    if (typeof (bibfeature.properties.references) !== 'undefined' && bibfeature.properties.references.length === 1) singleref = true;
 
-    $.each(currentfeature.properties.references, function (t, ref) {
+    $.each(bibfeature.properties.references, function (t, ref) {
         if (typeof (ref.title) !== 'undefined') {
             title = ref.title;
             citeme = title;
@@ -781,9 +790,8 @@ function getEntityData(parentName, parentId, currentfeature) {
         layers: [landscape]
     });
 
-
 //add graves
-    if (children != '' && children[0].id !== 0 || globalfeature.properties.maintype.systemtype !== 'feature') {
+    if (jsonmysite.features[0].id !== 0) {
         function polygonFilter(feature) {
             if (feature.geometry.type == "Polygon")
                 return true
@@ -890,13 +898,13 @@ function getEntityData(parentName, parentId, currentfeature) {
     var osm2 = miniBaseMap;
     var rect1 = {color: "#ff1100", weight: 15};
 
-    if (children != '' && children[0].id !== 0 || globalfeature.properties.maintype.systemtype !== 'find' || globalfeature.properties.maintype.systemtype !== 'stratigraphic unit') {
+    if (setJson(jsonmysite)) {
         mapcenter = mymap.getCenter();
     } else {
-        mapcenter = graves.getLatLng();
-        mymap.panTo(mapcenter);
-        if ((mymap.getZoom()) > 20) mymap.setZoom(20);
+        mapcenter = [jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]]
     }
+    mymap.panTo(mapcenter);
+    if ((mymap.getZoom()) > 20) mymap.setZoom(20);
 
 
     var miniMap = new L.Control.MiniMap(osm2,
@@ -920,34 +928,17 @@ function setImages(entId, entfiles) {
         //append one image without slides
         if (entfiles.length == 1) {
             $('#myImagecontainer' + entId).empty();
-            $.each(entfiles, function (f, files) {
-                var myImgSource = '';
-                if (typeof (files.source) != 'undefined') myImgSource = files.source;
-                if (typeof (files.source) == 'undefined') myImgSource = "unknown source";
-                if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
-                $('#myImagecontainer' + entId).append(
-                    '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" id="mymodalimg" alt="' + myImgSource + '"></a>'
-                );
-            });
+                    $('#myImagecontainer' + entId).append(
+                        getImageHtml(entfiles[0])
+                    )
         }
 
 
         //append more than one image with slides
         if (entfiles.length !== 1) {
             $('#myImagecontainer' + entId).empty();
-            firstimage = entfiles[0].file_name;
-            var firstimageObj = entfiles[0];
-            var myImgSource1 = '';
-            if (typeof (firstimageObj.source) != 'undefined') myImgSource1 = firstimageObj.source;
-            if (typeof (firstimageObj.source) == 'undefined') myImgSource1 = "unknown source";
-            if ((typeof (firstimageObj.source) != 'undefined') && (typeof (firstimageObj.reference) != 'undefined')) myImgSource1 = firstimageObj.source + ' ' + firstimageObj.reference;
-            secondimage = entfiles[1].file_name;
-            var secondimageObj = entfiles[1];
-            var myImgSource2 = '';
-            if (typeof (secondimageObj.source) != 'undefined') myImgSource2 = secondimageObj.source;
-            if (typeof (secondimageObj.source) == 'undefined') myImgSource2 = "unknown source";
-            if ((typeof (secondimageObj.source) != 'undefined') && (typeof (secondimageObj.reference) != 'undefined')) myImgSource2 = secondimageObj.source + ' ' + secondimageObj.reference;
-            //create carousel and apppend first two images
+            firstimage = entfiles[0];
+            secondimage = entfiles[1];
             $('#myImagecontainer' + entId).append(
                 '<div id="carouselExampleIndicators' + entId + '" class="carousel slide" data-ride="carousel" data-interval="false">' +
                 '<ol id="mymodalimageindicators' + entId + '" class="carousel-indicators">' +
@@ -956,10 +947,10 @@ function setImages(entId, entfiles) {
                 '</ol>' +
                 '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
                 '<div class="carousel-item active">' +
-                '<a href="' + firstimage + '" data-featherlight><img title="' + myImgSource1 + '" class="d-block modalimg lazy" src="/static/images/icons/loading.gif" data-src="' + firstimage + '" alt="" alt="" alt=""></a>' +
+                getImageHtml(firstimage) +
                 '</div>' +
                 '<div class="carousel-item">' +
-                '<a href="' + secondimage + '" data-featherlight><img title="' + myImgSource2 + '" class="d-block modalimg lazy" src="/static/images/icons/loading.gif" data-src="' + secondimage + '" alt="" alt="" alt=""></a>' +
+                getImageHtml(secondimage) +
                 '</div>' +
                 '</div>' +
                 '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
@@ -975,23 +966,21 @@ function setImages(entId, entfiles) {
 
 
             //append further images to carousel
-            $.each(entfiles, function (f, files) {
+            $.each(entfiles, function (f, file) {
                 if (f > 1) {
 
-                    var myImgSource = '';
-                    if (typeof (files.source) != 'undefined') myImgSource = files.source;
-                    if (typeof (files.source) == 'undefined') myImgSource = "unknown source";
-                    if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
                     $('#mycarouselimages' + entId).append(
-                        '<div class="carousel-item">' +
-                        '<a href="' + files.file_name + '" data-featherlight><img title="' + myImgSource + '" class="d-block modalimg lazy" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" alt=""></a>' +
-                        '</div>'
-                    );
+                            '<div class="carousel-item">' +
+                            getImageHtml(file) +
+                            '</div>'
+                        );
+
                     $('#mymodalimageindicators' + entId).append(
                         '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="' + f + '"></li>'
                     );
+                    }
                 }
-            });
+            );
         }
 
     } else {
@@ -1163,7 +1152,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             if (typeof (file.source) != 'undefined') myImgSource = file.source;
             if (typeof (file.source) == 'undefined') myImgSource = "unknown source";
             if ((typeof (file.source) != 'undefined') && (typeof (file.reference) != 'undefined')) myImgSource = file.source + ' ' + file.reference;
-            $('#myModalImagecontainer' + entId).append('<div class="col-lg-4"><a href="' + file.file_name + '" data-featherlight><img style="max-height: 300px" class="img-fluid border mt-2" src="/static/images/icons/loading.gif" data-src="' + file.file_name + '" title="' + myImgSource + '" alt=""></a></div>');
+            $('#myModalImagecontainer' + entId).append('<div class="col-lg-4 mt-2">'+ getImageHtml(file) + '</div>');
         });
 
         if (typeof (currentfeature.burials) != 'undefined') {
