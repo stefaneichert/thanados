@@ -88,5 +88,45 @@ def ajax_test() -> str:
                            'type_ids': type_ids,
                            'min': min,
                            'max': max})
-    # print(jsonify(g.cursor.fetchall()['result']))
     return jsonify(g.cursor.fetchone()[0])
+
+@app.route('/ajax/featureCollection', methods=['POST'])
+def ajax_featureCollection() -> str:
+    ids = tuple(ast.literal_eval('[' + request.form['ids'] + ']'))
+    sql = """
+        SELECT g.parent_id AS site_id, e.name as site_name, g.grave FROM thanados.tbl_gravescomplete g JOIN model.entity e ON g.parent_id = e.id WHERE g.id IN %(ids)s
+    """
+
+    geojson = {
+            'type': 'FeatureCollection',
+            'features': []
+    }
+
+    g.cursor.execute(sql, {'ids': ids})
+    graves = g.cursor.fetchall()
+    for row in graves:
+        row.grave['site'] = {'name': row.site_name, 'id': row.site_id}
+        geojson['features'].append(row.grave)
+    return jsonify(geojson)
+
+
+@app.route('/ajax/allgraves', methods=['POST'])
+def ajax_getAllGraves() -> str:
+
+    sql = """
+    SELECT g.parent_id AS site_id, e.name as site_name, g.grave 
+    FROM thanados.tbl_gravescomplete g JOIN model.entity e ON g.parent_id = e.id
+    WHERE g.parent_id IN %(site_ids)s
+    """
+
+    geojson = {
+        'type': 'FeatureCollection',
+        'features': []
+    }
+
+    g.cursor.execute(sql, {'site_ids': tuple(g.site_list)})
+    graves = g.cursor.fetchall()
+    for row in graves:
+        row.grave['site'] = {'name': row.site_name, 'id': row.site_id}
+        geojson['features'].append(row.grave)
+    return jsonify(geojson)

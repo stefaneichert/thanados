@@ -204,7 +204,6 @@ if (data.entities_recursive) {
     });
 
     if (data.entities) {
-        console.log(data.entities.length + ' - ' + data.entities_recursive.length)
         if (data.entities.length !== data.entities_recursive.length) {
             $('#entities').prepend('<h6><span id="exact">' + data.entities.length + ' exact matches </span><input id="entSwitch" type="checkbox"><label for="entSwitch"></label><span id="incl" class="text-muted">' + data.entities_recursive.length + ' including subcategories</span></h6>')
         } else {

@@ -93,15 +93,24 @@
                                 <div class="row">
 
                                     <div class="card" id="ImgOne">
-                                        <a href="{{ data.files[0].file_name }}" data-featherlight>
-                                            <img class="card-img-bottom img-fluid"
-                                                 src="{{ data.files[0].file_name }}"
-                                                 alt="image"
-                                                    {% if data.files[0].source %}
-                                                 title="{{ data.files[0].source }}"
-                                                    {% endif %}
-                                                 style="width:auto; max-height: 250px">
-                                        </a>
+
+                                        {% if ".glb" in data.files[0].file_name %}
+                                            <p class="text-muted" title="see Media tab for more">Preview <i title="enlarge" onclick="
+                                                    current3dFile = JSON.stringify({{ data.files[0] }});
+                                                    set3D('{{ data.files[0].file_name }}')
+                                                    " class="hoverfa float-right fas fa-expand-arrows-alt"></i></p>
+                                            <babylon model="{{ data.files[0].file_name }}"></babylon>
+                                        {% else %}
+                                            <a href="{{ data.files[0].file_name }}" data-featherlight>
+                                                <img class="card-img-bottom img-fluid"
+                                                     src="{{ data.files[0].file_name }}"
+                                                     alt="image"
+                                                        {% if data.files[0].source %}
+                                                     title="{{ data.files[0].source }}"
+                                                        {% endif %}
+                                                     style="width:auto; max-height: 250px">
+                                            </a>
+                                        {% endif %}
                                         <p class="text-muted">
                                             {% if data.files[0].source %}
                                                 {{ data.files[0].source }}
@@ -109,9 +118,11 @@
                                         </p>
                                         <p>
                                             {% if data.files[0].license %}
-                                                <a href="/vocabulary/{{ data.files[0].licenseId }}" target="_blank">{{ data.files[0].license }}</a>
+                                                <a href="/vocabulary/{{ data.files[0].licenseId }}"
+                                                   target="_blank">{{ data.files[0].license }}</a>
                                             {% endif %}
                                         </p>
+
                                     </div>
 
                                 </div>
@@ -163,7 +174,8 @@
                         <ul class="nav nav-tabs card-header-tabs">
                             {% if data.entities_recursive %}
                                 <li class="nav-item">
-                                    <a id="entNav" class="nav-link active" data-toggle="tab" href="#entities">Entities</a>
+                                    <a id="entNav" class="nav-link active" data-toggle="tab"
+                                       href="#entities">Entities</a>
                                 </li>
                             {% endif %}
                             {% if data.bibliography %}
@@ -181,9 +193,10 @@
                             {% if data.files %}
                                 <li class="nav-item">
                                     {% if not data.entities_recursive %}
-                                        <a id="fileNav" class="nav-link active" data-toggle="tab" href="#images">Images</a>
+                                        <a id="fileNav" class="nav-link active" data-toggle="tab"
+                                           href="#images">Media</a>
                                     {% else %}
-                                        <a id="fileNav" class="nav-link" data-toggle="tab" href="#images">Images</a>
+                                        <a id="fileNav" class="nav-link" data-toggle="tab" href="#images">Media</a>
                                     {% endif %}
                                 </li>
                             {% endif %}
@@ -212,19 +225,29 @@
                         {% if data.references %}
                             <div class="tab-pane" id="references">External References</div>
                         {% endif %}
-                        {% if data.files|length > 1 %}
+                        {% if data.files|length >= 1 %}
                             {% if not data.entities_recursive %}
                                 <div class="tab-pane active" id="images">
                                     <div class="card-columns">
                                         {% for row in data.files %}
                                             <div class="card ">
-                                                <a href="{{ row.file_name }}" data-featherlight>
-                                                    <img src="{{ row.file_name }}" alt="image"
-                                                            {% if row.source %}
-                                                         title="{{ row.source }}"
-                                                            {% endif %}
+                                                {% if ".glb" in row.file_name %}
+                                                    <img src="/static/images/icons/3d.png" alt="image"
+                                                         onclick="
+                                                                 current3dFile = JSON.stringify(JSON.parse('{{ row }}'));
+                                                                 set3D('{{ row.file_name }}'
+                                                                 )"
+                                                         title="open 3D model"
                                                          class="img-fluid card-img-bottom">
-                                                </a>
+                                                {% else %}
+                                                    <a href="{{ row.file_name }}" data-featherlight>
+                                                        <img src="{{ row.file_name }}" alt="image"
+                                                                {% if row.source %}
+                                                             title="{{ row.source }}"
+                                                                {% endif %}
+                                                             class="img-fluid ThreeDeeImage card-img-bottom">
+                                                    </a>
+                                                {% endif %}
 
                                                 <p class="text-muted">
                                                     {% if row.source %}
@@ -233,7 +256,8 @@
                                                 </p>
                                                 <p>
                                                     {% if row.license %}
-                                                        <a href="/vocabulary/{{ row.licenseId }}" target="_blank">{{ row.license }}</a>
+                                                        <a href="/vocabulary/{{ row.licenseId }}"
+                                                           target="_blank">{{ row.license }}</a>
                                                     {% endif %}
                                                 </p>
 
@@ -246,14 +270,23 @@
                                     <div class="card-columns">
                                         {% for row in data.files %}
                                             <div class="card ">
-                                                <a href="{{ row.file_name }}" data-featherlight>
-                                                    <img src="{{ row.file_name }}" alt="image"
-                                                            {% if row.source %}
-                                                         title="{{ row.source }}"
-                                                            {% endif %}
-                                                         class="img-fluid card-img-bottom">
-                                                </a>
-
+                                                {% if ".glb" in row.file_name %}
+                                                    <img src="/static/images/icons/3d.png" alt="image"
+                                                         onclick="
+                                                                 current3dFile = {{ row }};
+                                                                 set3D('{{ row.file_name }}');
+                                                                 "
+                                                         title="open 3D model"
+                                                         class="img-fluid ThreeDeeImage card-img-bottom">
+                                                {% else %}
+                                                    <a href="{{ row.file_name }}" data-featherlight>
+                                                        <img src="{{ row.file_name }}" alt="image"
+                                                                {% if row.source %}
+                                                             title="{{ row.source }}"
+                                                                {% endif %}
+                                                             class="img-fluid card-img-bottom">
+                                                    </a>
+                                                {% endif %}
                                                 <p class="text-muted">
                                                     {% if row.source %}
                                                         {{ row.source }}
@@ -261,7 +294,8 @@
                                                 </p>
                                                 <p>
                                                     {% if row.license %}
-                                                        <a href="/vocabulary/{{ row.licenseId }}" target="_blank">{{ row.license }}</a>
+                                                        <a href="/vocabulary/{{ row.licenseId }}"
+                                                           target="_blank">{{ row.license }}</a>
                                                     {% endif %}
                                                 </p>
 

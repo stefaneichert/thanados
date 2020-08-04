@@ -18,16 +18,19 @@ def map(object_id: int):
     availabletypes = {
         'gravetypes': [],
         'burialtypes': [],
-        'findtypes': []
+        'findtypes': [],
+        'bonetypes': []
     }
     for row in jsontypes:
-        print(row)
         if row.system_type == 'feature':
             availabletypes['gravetypes'].append(row.id)
         if row.system_type == 'stratigraphic unit':
             availabletypes['burialtypes'].append(row.id)
         if row.system_type == 'find':
             availabletypes['findtypes'].append(row.id)
+        if row.system_type == 'human remains':
+            availabletypes['bonetypes'].append(row.id)
+
     return render_template('map/map.html',
                            myjson=myjson[0].data,
                            object_id=object_id,

@@ -232,7 +232,6 @@ def vocabulary_view(object_id: int, format_=None):
             file = {'id': file_id, 'file_name': file_name}
             g.cursor.execute(sql_file_refs, {'file_id': file_id})
             output_file_refs = g.cursor.fetchone()
-            print(output_file_refs)
             g.cursor.execute(sql_filelicense, {'file_id': file_id})
             output_filelicense = g.cursor.fetchone()
 
