@@ -873,7 +873,7 @@ function setImages(entId, entfiles) {
 
             //create carousel and apppend first two images
             $('#myModalImagecontainer' + entId).append(
-                '<div id="carouselExampleIndicators' + entId + '" class="carousel slide" data-ride="carousel" data-interval="false">' +
+                '<div id="carouselExampleIndicators' + entId + '" class="cat-image-container carousel slide" data-ride="carousel" data-interval="false">' +
                 '<ol id="mymodalimageindicators' + entId + '" class="carousel-indicators">' +
                 '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="0" class="active"></li>' +
                 '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="1"></li>' +

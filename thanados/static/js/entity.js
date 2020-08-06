@@ -297,7 +297,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myMaterialcontainer' + entId + '"></div>' +
         '<div id="myParentcontainer' + entId + '"></div>' +
         '</div>' +
-        '<div id="myImagecontainer' + entId + '" class="maxImg col-lg-auto" style="margin-top: 4em" ></div>' +
+        '<div id="myImagecontainer' + entId + '" class="col-lg-auto" style="margin-top: 4em" ></div>' +
         '<div id="myMapcontainer" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" title="Click to open detailed map" class="col-lg" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; cursor: pointer"></div>' +
         '</div>' +
         '<div id="myChildrencontainer' + entId + '">' +
@@ -940,7 +940,7 @@ function setImages(entId, entfiles) {
             firstimage = entfiles[0];
             secondimage = entfiles[1];
             $('#myImagecontainer' + entId).append(
-                '<div id="carouselExampleIndicators' + entId + '" class="carousel slide" data-ride="carousel" data-interval="false">' +
+                '<div id="carouselExampleIndicators' + entId + '" class="cat-image-container carousel slide" data-ride="carousel" data-interval="false">' +
                 '<ol id="mymodalimageindicators' + entId + '" class="carousel-indicators">' +
                 '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="0" class="active"></li>' +
                 '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="1"></li>' +
@@ -1152,7 +1152,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             if (typeof (file.source) != 'undefined') myImgSource = file.source;
             if (typeof (file.source) == 'undefined') myImgSource = "unknown source";
             if ((typeof (file.source) != 'undefined') && (typeof (file.reference) != 'undefined')) myImgSource = file.source + ' ' + file.reference;
-            $('#myModalImagecontainer' + entId).append('<div class="col-lg-4 mt-2">'+ getImageHtml(file) + '</div>');
+            $('#myModalImagecontainer' + entId).append('<div class="cat-image-container col-lg-4 mt-2">'+ getImageHtml(file) + '</div>');
         });
 
         if (typeof (currentfeature.burials) != 'undefined') {
