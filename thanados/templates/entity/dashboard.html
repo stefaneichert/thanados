@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <div id="containerPermalink">
+        <div id="mybreadcrumb"></div>
+        <div id="mycontent"></div>
+    </div>
+
+    <div id="tooltip" display="none" style="position: absolute; display: none;"></div>
+
+    <script>
+        place_id = {{ place_id }};
+        entity_id = {{ object_id }};
+        systemtype = "{{ system_type }}";
+        jsonmysite = {{ mysitejson|tojson }};
+    </script>
+    <link href="/static/css/style.css" rel="stylesheet">
+    <script src="/static/js/dashboard.js"></script>
+{% endblock %}
