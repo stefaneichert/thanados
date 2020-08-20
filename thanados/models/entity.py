@@ -190,3 +190,100 @@ class Data:
             		        ORDER BY 1) as t;"""
             g.cursor.execute(sql, {"term": searchterm})
             return g.cursor.fetchall()
+
+    @staticmethod
+    def get_network(id):
+        id = id
+        sql1 = """
+            SELECT DISTINCT g.* FROM 
+                (       
+                SELECT domain_id AS fromid, range_id AS toid, property_code AS label FROM model.link WHERE domain_id = %(id)s
+                UNION ALL
+                SELECT domain_id AS fromid, range_id AS toid, property_code AS label FROM model.link WHERE range_id = %(id)s
+                ) g ;
+        """
+        g.cursor.execute(sql1, {"id": id})
+        result = g.cursor.fetchall();
+
+        network = {}
+        nodes = []
+        edges = []
+
+        for row in result:
+            if result:
+                edges.append({'from': row.fromid,'to': row.toid, 'label': row.label})
+                if row.label == 'P46':
+                    edges.append(Data.get_subunits(row.toid))
+
+
+        sql2 = """
+        SELECT class_code, id, name AS label, description AS title, system_type AS group FROM model.entity WHERE id = %(id)s;
+        """
+        g.cursor.execute(sql2, {"id": id})
+        result = g.cursor.fetchone();
+
+        nodes.append({'label': result.label, 'title': result.title, 'group': result.group})
+
+
+        sql3 = """
+        SELECT DISTINCT class_code, id, name AS label, description AS title, system_type AS group FROM model.entity WHERE id IN (
+                     SELECT fromid FROM  (       
+                SELECT domain_id AS fromid, range_id AS toid, property_code AS label FROM model.link WHERE domain_id = %(id)s
+                UNION ALL
+                SELECT domain_id AS fromid, range_id AS toid, property_code AS label FROM model.link WHERE range_id = %(id)s
+                ) g
+                     UNION ALL
+                     SELECT toid FROM  (       
+                SELECT domain_id AS fromid, range_id AS toid, property_code AS label FROM model.link WHERE domain_id = %(id)s
+                UNION ALL
+                SELECT domain_id AS fromid, range_id AS toid, property_code AS label FROM model.link WHERE range_id = %(id)s
+                ) h
+                     )
+        """
+
+        g.cursor.execute(sql3, {"id": id})
+        result = g.cursor.fetchall();
+
+        for row in result:
+            nodes.append({'label': row.label, 'title': row.title, 'group': row.group})
+
+        network['nodes'] = nodes
+        network['edges'] = edges
+
+        return network
+
+    #
+    #     sql2 = """
+    #                         SELECT DISTINCT * FROM thanados.egdes WHERE property_code = 'P2'
+    #                     """
+    #     g.cursor.execute(sql2)
+    #     result = g.cursor.fetchall()
+    #     for row in result:
+    #         Data.get_types_rec(row.toid)
+    #
+    # @staticmethod
+    def get_subunits(id):
+        sql = """
+        SELECT domain_id AS fromid, range_id AS toid, property_code AS label FROM model.link WHERE domain_id = %(id)s AND property_code = 'P46'
+        """
+        g.cursor.execute(sql, {"id": id})
+        result = g.cursor.fetchall()
+        if result:
+            for row in result:
+                edge = {'from': row.fromid,'to': row.toid, 'label': row.label}
+                return edge
+
+
+
+    #     id = id
+    #     sql1 = """
+    #     INSERT INTO thanados.nodes (class_code, id, label, title, group)
+    #         SELECT 'E55', id, name AS label, description as title, '' AS group FROM thanados.types_all WHERE id = (SELECT parent_id FROM thanados.types_all WHERE id = %(id)s);
+    #     INSERT INTO thanados.edges (fromid, toid, label)
+    #         SELECT 'E55', id, name AS label, description as title, '' AS group FROM thanados.types_all WHERE id = (SELECT parent_id FROM thanados.types_all WHERE id = %(id)s);
+    #     SELECT id WHERE id = (SELECT parent_id FROM thanados.types_all WHERE id = %(id)s);
+    #     """
+    #     g.cursor.execute(sql1, {"id": id})
+    #     result = g.cursor.fetchone();
+    #     if result:
+    #         Data.get_types_rec(result.id)
