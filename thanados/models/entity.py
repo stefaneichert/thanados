@@ -5,6 +5,7 @@ from flask import g
 
 from thanados import app
 
+
 class Data:
 
     @staticmethod
@@ -192,98 +193,100 @@ class Data:
             return g.cursor.fetchall()
 
     @staticmethod
-    def get_network(id):
-        id = id
-        sql1 = """
-            SELECT DISTINCT g.* FROM 
-                (       
-                SELECT domain_id AS fromid, range_id AS toid, property_code AS label FROM model.link WHERE domain_id = %(id)s
-                UNION ALL
-                SELECT domain_id AS fromid, range_id AS toid, property_code AS label FROM model.link WHERE range_id = %(id)s
-                ) g ;
-        """
-        g.cursor.execute(sql1, {"id": id})
-        result = g.cursor.fetchall();
-
-        network = {}
-        nodes = []
+    def getNetwork(id):
         edges = []
+        nodes = []
+        entities = []
+        types = []
+        sql = """
+                        WITH RECURSIVE subunits AS (
+            	SELECT
+            		domain_id,
+            		range_id,
+            		property_code
+            	FROM
+            		model.link
+            	WHERE
+            		domain_id = %(id)s OR range_id = %(id)s
+            	UNION
+            		SELECT
+            		l.domain_id,
+            		l.range_id,
+            		l.property_code
+            	FROM
+            		model.link l INNER JOIN subunits s ON s.range_id = l.domain_id WHERE l.property_code = 'P46'
+            ) SELECT
+            	*
+            FROM
+            	subunits;
+        """
+
+
+
+
+        g.cursor.execute(sql, {"id": id})
+        result = g.cursor.fetchall()
 
         for row in result:
-            if result:
-                edges.append({'from': row.fromid,'to': row.toid, 'label': row.label})
-                if row.label == 'P46':
-                    edges.append(Data.get_subunits(row.toid))
+            if row.property_code == 'P2':
+                types.append(row.range_id)
+            edges.append({'from': row.domain_id, 'to': row.range_id})
+            entities.append(row.domain_id)
+            entities.append(row.range_id)
 
+
+        entities=list(dict.fromkeys(entities))
+        entities = tuple(entities)
+
+        sqltypes = """
+                WITH RECURSIVE supertypes AS (
+                    	SELECT
+                    		id,
+                    		parent_id
+                    	FROM
+                    		thanados.types_all
+                    	WHERE
+                    		id IN %(id)s
+                    	UNION
+                    		SELECT
+                    		l.id,
+                    		l.parent_id
+                    	FROM
+                    		thanados.types_all l INNER JOIN supertypes s ON s.parent_id = l.id
+                    ) SELECT
+                    	*
+                    FROM
+                    	supertypes;
+                """
+
+        g.cursor.execute(sqltypes, {"id": tuple(types)})
+        resulttypes = g.cursor.fetchall()
+
+        for row in resulttypes:
+            if row.parent_id:
+                edges.append({'from': row.id, 'to': row.parent_id})
+                types.append(row.id)
+                types.append(row.parent_id)
 
         sql2 = """
-        SELECT class_code, id, name AS label, description AS title, system_type AS group FROM model.entity WHERE id = %(id)s;
-        """
-        g.cursor.execute(sql2, {"id": id})
-        result = g.cursor.fetchone();
+                    SELECT id, name, system_type FROM model.entity WHERE id IN %(entities)s OR id IN %(types)s
+                        """
+        g.cursor.execute(sql2, {"entities": entities, "types": tuple(types)})
+        result2 = g.cursor.fetchall()
 
-        nodes.append({'label': result.label, 'title': result.title, 'group': result.group})
+        for row in result2:
+            if row.id != id:
+                if row.system_type:
+                    group = row.system_type
+                else:
+                    group = 'classification'
+                nodes.append({'label': row.name, 'id': row.id, 'group': group, 'title': group})
+            else:
+                nodes.append({'label': row.name, 'id': row.id, 'group': row.system_type, 'title': row.system_type, 'size': 40, 'color': 'red'})
 
 
-        sql3 = """
-        SELECT DISTINCT class_code, id, name AS label, description AS title, system_type AS group FROM model.entity WHERE id IN (
-                     SELECT fromid FROM  (       
-                SELECT domain_id AS fromid, range_id AS toid, property_code AS label FROM model.link WHERE domain_id = %(id)s
-                UNION ALL
-                SELECT domain_id AS fromid, range_id AS toid, property_code AS label FROM model.link WHERE range_id = %(id)s
-                ) g
-                     UNION ALL
-                     SELECT toid FROM  (       
-                SELECT domain_id AS fromid, range_id AS toid, property_code AS label FROM model.link WHERE domain_id = %(id)s
-                UNION ALL
-                SELECT domain_id AS fromid, range_id AS toid, property_code AS label FROM model.link WHERE range_id = %(id)s
-                ) h
-                     )
-        """
-
-        g.cursor.execute(sql3, {"id": id})
-        result = g.cursor.fetchall();
-
-        for row in result:
-            nodes.append({'label': row.label, 'title': row.title, 'group': row.group})
-
+        network = {}
         network['nodes'] = nodes
         network['edges'] = edges
 
         return network
-
-    #
-    #     sql2 = """
-    #                         SELECT DISTINCT * FROM thanados.egdes WHERE property_code = 'P2'
-    #                     """
-    #     g.cursor.execute(sql2)
-    #     result = g.cursor.fetchall()
-    #     for row in result:
-    #         Data.get_types_rec(row.toid)
-    #
-    # @staticmethod
-    def get_subunits(id):
-        sql = """
-        SELECT domain_id AS fromid, range_id AS toid, property_code AS label FROM model.link WHERE domain_id = %(id)s AND property_code = 'P46'
-        """
-        g.cursor.execute(sql, {"id": id})
-        result = g.cursor.fetchall()
-        if result:
-            for row in result:
-                edge = {'from': row.fromid,'to': row.toid, 'label': row.label}
-                return edge
-
-
-
-    #     id = id
-    #     sql1 = """
-    #     INSERT INTO thanados.nodes (class_code, id, label, title, group)
-    #         SELECT 'E55', id, name AS label, description as title, '' AS group FROM thanados.types_all WHERE id = (SELECT parent_id FROM thanados.types_all WHERE id = %(id)s);
-    #     INSERT INTO thanados.edges (fromid, toid, label)
-    #         SELECT 'E55', id, name AS label, description as title, '' AS group FROM thanados.types_all WHERE id = (SELECT parent_id FROM thanados.types_all WHERE id = %(id)s);
-    #     SELECT id WHERE id = (SELECT parent_id FROM thanados.types_all WHERE id = %(id)s);
-    #     """
-    #     g.cursor.execute(sql1, {"id": id})
-    #     result = g.cursor.fetchone();
-    #     if result:
-    #         Data.get_types_rec(result.id)

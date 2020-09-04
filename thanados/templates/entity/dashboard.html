@@ -3,7 +3,9 @@
 
     <div id="containerPermalink">
         <div id="mybreadcrumb"></div>
-        <div id="mycontent"></div>
+        <div id="mycontent">
+            <div id="mynetwork"></div>
+        </div>
     </div>
 
     <div id="tooltip" display="none" style="position: absolute; display: none;"></div>
@@ -13,6 +15,8 @@
         entity_id = {{ object_id }};
         systemtype = "{{ system_type }}";
         jsonmysite = {{ mysitejson|tojson }};
+        myentity = {{ entity|tojson }};
+        mynetwork = {{ network|tojson }};
     </script>
     <link href="/static/css/style.css" rel="stylesheet">
     <script src="/static/js/dashboard.js"></script>
