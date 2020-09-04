@@ -207,7 +207,7 @@ class Data:
             	FROM
             		model.link
             	WHERE
-            		domain_id = %(id)s OR range_id = %(id)s
+            		domain_id = %(id)s
             	UNION
             		SELECT
             		l.domain_id,
@@ -218,7 +218,30 @@ class Data:
             ) SELECT
             	*
             FROM
-            	subunits;
+            	subunits
+            	
+            UNION ALL 
+            SELECT * FROM (
+            WITH RECURSIVE superunits AS (
+            	SELECT
+            		domain_id,
+            		range_id,
+            		property_code
+            	FROM
+            		model.link
+            	WHERE
+            		range_id = %(id)s
+            	UNION
+            		SELECT
+            		l.domain_id,
+            		l.range_id,
+            		l.property_code
+            	FROM
+            		model.link l INNER JOIN superunits s ON s.domain_id = l.range_id WHERE l.property_code = 'P46'
+            ) SELECT
+            	*
+            FROM
+            	superunits) su
         """
 
 
@@ -282,8 +305,7 @@ class Data:
                     group = 'classification'
                 nodes.append({'label': row.name, 'id': row.id, 'group': group, 'title': group})
             else:
-                nodes.append({'label': row.name, 'id': row.id, 'group': row.system_type, 'title': row.system_type, 'size': 40, 'color': 'red'})
-
+                nodes.append({'label': row.name, 'id': row.id, 'group': row.system_type, 'title': row.system_type, 'size': 30})
 
         network = {}
         network['nodes'] = nodes

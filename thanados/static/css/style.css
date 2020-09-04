@@ -1272,8 +1272,8 @@ input {
 }
 
 #mynetwork {
-    width: 100%;
     height: 75vh;
     border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 4px;
     background: #f8faff;
 }

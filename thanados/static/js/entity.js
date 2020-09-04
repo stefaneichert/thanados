@@ -285,6 +285,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-secondary" title="Download data as GeoJSON"><i class="fas fa-download"></i></button>' +
         '<a style="margin-left: 0.1em" onclick="this.blur();" href="' + openAtlasUrl + entId + '" target="_blank" class="backendlink d-none btn btn-sm btn-secondary" title="Backend link"><i class="fas fa-database"></i></a>' +
+        '<a style="margin-left: 0.1em" onclick="this.blur();" href="/entity/'+ entId + '/network"class="btn btn-sm btn-secondary" title="Network visualisation"><i class="fas fa-project-diagram"></i></a>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" class="btn btn-sm btn-secondary" title="Open detailed map of this site">Map</button>' +
         '</div>' +
         '</div>' +

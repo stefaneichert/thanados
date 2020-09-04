@@ -25,9 +25,9 @@ def entity_view(object_id: int, format_=None):
 
     if format_ == 'json':
         return json.dumps(data)
-    if format_ == 'dashboard':
+    if format_ == 'network':
         network = Data.getNetwork(object_id)
-        return render_template('entity/dashboard.html', place_id=place_id, object_id=object_id,
+        return render_template('entity/network.html', place_id=place_id, object_id=object_id,
                            mysitejson=data, system_type=system_type, entity=entity, network=network)
     return render_template('entity/view.html', place_id=place_id, object_id=object_id,
                            mysitejson=data, system_type=system_type)
