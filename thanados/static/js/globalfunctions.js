@@ -2156,6 +2156,7 @@ function getHierarchyData(id, div) {
         if (usage !== '') content = content + '<p>Usage: <span class="text-muted">' + usage + '</span></p>';
         if (data.types_recursive) content = content + '<p>Subcategories: <span class="text-muted">' + data.types_recursive.length + '</span></p>';
         if (data.entities_recursive) content = content + '<p>Entities: <span class="text-muted">' + data.entities_recursive.length + '</span></p>';
+        content = content + '<p><a href="/vocabulary/' + data.id + '" target="_blank">Permalink</a></p>';
         div.html(content)
     });
 }
