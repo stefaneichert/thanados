@@ -84,7 +84,7 @@ function appendvis(iter, search) { //append vis form to dialog
                     '</div>'
                 );
             }
-            if (visappendLevel == 'age') {
+            if (visappendLevel === 'age') {
                 visform.append(
                     //selection for property to choose: maintype, types, dimensions, material or timespan
                     '<div id="PropSelect_' + iter + '_parent" class="input-group input-group-sm mb-3">' +

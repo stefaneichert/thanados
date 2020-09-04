@@ -20,7 +20,7 @@ thanados/templates/index/indexmedcem.html
 thanados/templates/index/indexthanados.html
 
 # data cleanup for thanados
-install/data_cleanup.sql
+thanados/install/*
 
 # ide
 .idea

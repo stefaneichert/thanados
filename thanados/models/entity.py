@@ -10,6 +10,7 @@ class Data:
 
     @staticmethod
     def get_list():
+        # noinspection SqlIdentifier
         sql_sites = """
         DROP TABLE IF EXISTS thanados.tmpsites;
             CREATE TABLE thanados.tmpsites AS (
