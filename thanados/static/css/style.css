@@ -422,6 +422,11 @@ body {
     border: 1px solid rgba(0, 0, 0, 0.125);
 }
 
+.cat-image-container {
+    align-self: center;
+    text-align: center;
+}
+
 .carousel-indicators li {
     background-color: #000;
 }
@@ -1233,7 +1238,7 @@ input {
 }
 
 .logo-button {
-    display: none!important;
+    display: none !important;
 }
 
 .fullscreen-icon {
@@ -1242,7 +1247,7 @@ input {
 }
 
 .static-loading-image {
-    display: none!important;
+    display: none !important;
 }
 
 .ThreeDeeImage {
@@ -1255,12 +1260,20 @@ input {
 }
 
 #ImgOne .fullscreen-button {
-    display: none!important;
+    display: none !important;
 }
 
 .hoverfa:hover {
     color: #6c757d;
 }
+
 .hoverfa {
     cursor: pointer;
+}
+
+#mynetwork {
+    height: 75vh;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 4px;
+    background: #f8faff;
 }

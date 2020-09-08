@@ -599,7 +599,6 @@ function setage(data) {
             backgroundColor: 'rgba(225,87,89,0.5)',
             borderColor: 'red',
             borderWidth: 1,
-            outlierColor: '#999999',
             padding: 10,
             itemRadius: 0,
             outlierColor: '#999999',
@@ -610,7 +609,6 @@ function setage(data) {
                 backgroundColor: 'rgba(78,121,167,0.5)',
                 borderColor: 'blue',
                 borderWidth: 1,
-                outlierColor: '#999999',
                 padding: 10,
                 itemRadius: 0,
                 outlierColor: '#999999',
@@ -621,7 +619,6 @@ function setage(data) {
                 backgroundColor: 'rgba(242,142,43,0.5)',
                 borderColor: 'orange',
                 borderWidth: 1,
-                outlierColor: '#999999',
                 padding: 10,
                 itemRadius: 0,
                 outlierColor: '#999999',
@@ -661,7 +658,7 @@ function removeZeros(data) {
         $.each(dataset.data, function (i, number) {
             if (number > 0)
                 valueindex = (i + 1);
-            if (i == (arraylength - 1))
+            if (i === (arraylength - 1))
                 lastvalueindex = valueindex;
         })
         var newdata = (dataset.data.slice(0, valueindex));
@@ -775,12 +772,12 @@ function prepareTypedata(mytypedata) {
         mytype = type.type;
         mycount = type.count;
         $.each(typedata.labels, function (i, label) {
-            if (mytype == label) {
+            if (mytype === label) {
                 myindex = i;
                 $.each(typedata.datasets, function (i, dataset) {
-                    if (dataset.label == mysite) {
+                    if (dataset.label === mysite) {
                         $.each(dataset.data, function (e, data) {
-                            if (e == myindex) {
+                            if (e === myindex) {
                                 dataset.data[myindex] = mycount;
                                 dataset.site_id = mysiteid;
                             }

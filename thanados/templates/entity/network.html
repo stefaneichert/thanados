@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+    <script src="/static/vendor/node_modules/vis-network/dist/vis-network.min.js"></script>
+
+    <div id="containerPermalink">
+        <div id="mybreadcrumb"></div>
+        <div id="mycontent" class="p-3">
+            <div class="row">
+                <div class="col">
+                    <div id="mynetwork"></div>
+                </div>
+                <div class="col-sm-auto" style="min-width: min-content;">
+                    <span id="loadingspinner">
+                                <div class="spinner-border text-primary"
+                                     style="width: 1.3em; height: 1.3em;" role="status">
+                                </div>
+                    Loading network
+                    </span>
+                    <p class="mt-3">Legend</p>
+                    <ul class="list-group" id="mylegend"></ul>
+                    <span class="text-muted" style="font-size: 0.875rem">Double click a node to <br> open it in another tab</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tooltip" display="none" style="position: absolute; display: none;"></div>
+
+    <script>
+        place_id = {{ place_id }};
+        entity_id = {{ object_id }};
+        systemtype = "{{ system_type }}";
+        jsonmysite = {{ mysitejson|tojson }};
+        myentity = {{ entity|tojson }};
+        mynetwork = {{ network|tojson }};
+    </script>
+    <link href="/static/css/style.css" rel="stylesheet">
+    <script src="/static/js/network.js"></script>
+{% endblock %}

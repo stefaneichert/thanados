@@ -285,6 +285,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-secondary" title="Download data as GeoJSON"><i class="fas fa-download"></i></button>' +
         '<a style="margin-left: 0.1em" onclick="this.blur();" href="' + openAtlasUrl + entId + '" target="_blank" class="backendlink d-none btn btn-sm btn-secondary" title="Backend link"><i class="fas fa-database"></i></a>' +
+        '<a style="margin-left: 0.1em" onclick="this.blur();" href="/entity/'+ entId + '/network"class="btn btn-sm btn-secondary" title="Network visualisation"><i class="fas fa-project-diagram"></i></a>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" class="btn btn-sm btn-secondary" title="Open detailed map of this site">Map</button>' +
         '</div>' +
         '</div>' +
@@ -297,7 +298,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myMaterialcontainer' + entId + '"></div>' +
         '<div id="myParentcontainer' + entId + '"></div>' +
         '</div>' +
-        '<div id="myImagecontainer' + entId + '" class="maxImg col-lg-auto" style="margin-top: 4em" ></div>' +
+        '<div id="myImagecontainer' + entId + '" class="col-lg-auto" style="margin-top: 4em" ></div>' +
         '<div id="myMapcontainer" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" title="Click to open detailed map" class="col-lg" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; cursor: pointer"></div>' +
         '</div>' +
         '<div id="myChildrencontainer' + entId + '">' +
@@ -940,7 +941,7 @@ function setImages(entId, entfiles) {
             firstimage = entfiles[0];
             secondimage = entfiles[1];
             $('#myImagecontainer' + entId).append(
-                '<div id="carouselExampleIndicators' + entId + '" class="carousel slide" data-ride="carousel" data-interval="false">' +
+                '<div id="carouselExampleIndicators' + entId + '" class="cat-image-container carousel slide" data-ride="carousel" data-interval="false">' +
                 '<ol id="mymodalimageindicators' + entId + '" class="carousel-indicators">' +
                 '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="0" class="active"></li>' +
                 '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="1"></li>' +
@@ -1152,7 +1153,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             if (typeof (file.source) != 'undefined') myImgSource = file.source;
             if (typeof (file.source) == 'undefined') myImgSource = "unknown source";
             if ((typeof (file.source) != 'undefined') && (typeof (file.reference) != 'undefined')) myImgSource = file.source + ' ' + file.reference;
-            $('#myModalImagecontainer' + entId).append('<div class="col-lg-4 mt-2">'+ getImageHtml(file) + '</div>');
+            $('#myModalImagecontainer' + entId).append('<div class="cat-image-container col-lg-4 mt-2">'+ getImageHtml(file) + '</div>');
         });
 
         if (typeof (currentfeature.burials) != 'undefined') {

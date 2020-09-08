@@ -243,4 +243,72 @@ function setData() {
     }
 }
 
+var container = document.getElementById("mynetwork");
+var nodes = new vis.DataSet(data.hierarchy.nodes);
+var edges = new vis.DataSet(data.hierarchy.edges);
+
+
+var hierarchydata = {
+    nodes: nodes,
+    edges: edges,
+};
+var options = {
+    layout: {
+        hierarchical: {
+            direction: "UD",
+            sortMethod: "directed",
+            shakeTowards: "roots"
+        },
+    },
+    physics: {
+        hierarchicalRepulsion: {
+            avoidOverlap: 1,
+        },
+    },
+    nodes: {
+        shape: "box",
+        shadow: true
+    },
+    edges: {
+        shadow: true
+    },
+};
+
+noNetwork = true;
+
+$('#network').on('shown.bs.collapse', function () {
+
+    if (noNetwork) {
+
+        $('#loadingspinner').removeClass('d-none')
+
+        $('#network-container')[0].scrollIntoView(
+            {
+                behavior: "smooth", // or "auto" or "instant"
+                block: 'end'
+            }
+        );
+
+        setTimeout(function () {
+            createNetwork()
+        }, 500);
+    }
+
+})
+
+
+function createNetwork() {
+
+    network = new vis.Network(container, hierarchydata, options);
+
+    network.once("stabilizationIterationsDone", function () {
+        setTimeout(function () {
+            $('#loadingspinner').addClass('d-none')
+        }, 200);
+    });
+    noNetwork = false;
+}
+
+
+
 

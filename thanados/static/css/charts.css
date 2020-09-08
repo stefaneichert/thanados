@@ -25,7 +25,7 @@ input[type="checkbox"] + label::before {
   float: left;
   margin-right: 5px;
   transition: margin 0.05s linear;
-  box-shadow: 0px 0px 5px #aaa;
+  box-shadow: 0 0 5px #aaa;
 }
 input[type="checkbox"]:checked+label{
   background-color: #007bff;
