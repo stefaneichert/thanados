@@ -322,10 +322,44 @@ def vocabulary_view(object_id: int, format_=None):
         'text': data['name'],
         'class': 'toptreenode'
     }]
+
     getchildren(object_id, tree[0])
+
+    hierarchy = {}
+
+    currentcolor = '#97C2FC'
+    if object_id == topparent['id']:
+        currentcolor = '#ff8c8c'
+
+    alltreeNodes = [{'id': topparent['id'], 'label': topparent['name'], 'color' : currentcolor}]
+    alltreeEdges = []
+
+    def getTree(id):
+        sql_getChildren = """
+            SELECT name, id FROM thanados.types_all WHERE parent_id = %(id)s ORDER BY name
+        """
+        g.cursor.execute(sql_getChildren, {'id': id})
+        results = g.cursor.fetchall()
+        if results:
+            for row in results:
+                currentcolor = '#97C2FC';
+                if row.id == object_id:
+                    currentcolor= '#ff8c8c'
+                currentnode = {'id': row.id, 'label': row.name, 'color' : currentcolor}
+                currentedge = {'from': id, 'to': row.id, 'color': '#757575'}
+                alltreeNodes.append(currentnode)
+                alltreeEdges.append(currentedge)
+                getTree(row.id)
+
+    getTree(topparent['id'])
+
+    hierarchy['nodes'] = alltreeNodes
+    hierarchy['edges'] = alltreeEdges
 
     data['topparent'] = topparent
     data['tree'] = tree
+    data['hierarchy'] = hierarchy
+
 
     if format_ == 'json':
         return json.dumps(data)

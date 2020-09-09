@@ -2156,6 +2156,7 @@ function getHierarchyData(id, div) {
         if (usage !== '') content = content + '<p>Usage: <span class="text-muted">' + usage + '</span></p>';
         if (data.types_recursive) content = content + '<p>Subcategories: <span class="text-muted">' + data.types_recursive.length + '</span></p>';
         if (data.entities_recursive) content = content + '<p>Entities: <span class="text-muted">' + data.entities_recursive.length + '</span></p>';
+        content = content + '<p><a href="/vocabulary/' + data.id + '" target="_blank">Permalink</a></p>';
         div.html(content)
     });
 }
@@ -2445,6 +2446,7 @@ function set3D(file) {
                 url: threeDfilename
             }
         });
+        //wireframeMe()
     })
 
     $('#3DModal').on('hide.bs.modal', function () {
@@ -2468,4 +2470,53 @@ function getImageHtml(files) {
         imageHtml = '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" alt="' + myImgSource + '"></a>'
     }
     return imageHtml
+}
+
+function wireframeMe() {
+    BabylonViewer.viewerManager
+  .getViewerPromiseById("babylon")
+  .then(function(viewer) {
+    /*
+    Each viewer has its own model loader.
+    The loader has an internal plugin system, based on observables.
+    Each event in the loading process will trigger an event that will call the plugin,
+    if the plugin has this event implemented.
+    The plugin interface looks like this:
+
+interface ILoaderPlugin {
+  onInit?: (loader: ISceneLoaderPlugin | ISceneLoaderPluginAsync, model: ViewerModel) => void;
+  onLoaded?: (model: ViewerModel) => void;
+  onError?: (message: string, exception?: any) => void;
+  onProgress?: (progressEvent: SceneLoaderProgressEvent) => void;
+  onExtensionLoaded?: (extension: IGLTFLoaderExtension) => void;
+  onParsed?: (parsedData: IGLTFLoaderData) => void;
+  onMeshLoaded?: (mesh: AbstractMesh) => void;
+  onTextureLoaded?: (texture: BaseTexture) => void;
+  onMaterialLoaded?: (material: Material) => void;
+  onComplete?: () => void;
+}
+
+  All functions are optional and only triggered if implemented.
+  */
+
+    // create a new plugin, using javascript
+
+    // This plugin will change all loaded materials to wireframe.
+    let myLoaderPlugin = {
+      onInit: function(loader, model) {
+        // Log that a model started loading
+        console.log("model loading initialized");
+      },
+      // we will register the onMaterialLoaded function to change each material to wireframe
+      onMaterialLoaded: function(material) {
+        material.diffuseTexture = false;
+        material.wireframe = true;
+        console.log("changed material " + material.name + " to wireframe");
+      }
+    };
+
+    // add the plugin to the loader
+    viewer.modelLoader.addPlugin(myLoaderPlugin);
+  });
+
 }

@@ -1,2 +1,0 @@
-export * from "./nodeMaterialOptimizer";
-//# sourceMappingURL=index.js.map
