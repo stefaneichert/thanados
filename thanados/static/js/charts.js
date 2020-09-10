@@ -14,10 +14,10 @@ $.each(sitelist, function (i, dataset) {
     }
 )
 
-maxGraves.sort(function(a, b) {
-  return a - b;
+maxGraves.sort(function (a, b) {
+    return a - b;
 });
-maxGraves = maxGraves.slice(maxGraves.length-10);
+maxGraves = maxGraves.slice(maxGraves.length - 10);
 
 mysite_ids = site_ids;
 if (site_ids.length > 10) {
@@ -26,7 +26,7 @@ if (site_ids.length > 10) {
         if (dataset.graves >= maxGraves[0]) mysite_ids.push(dataset.id);
     })
     if (mysite_ids.length > 10) {
-        mysite_ids = mysite_ids.slice(mysite_ids.length-10)
+        mysite_ids = mysite_ids.slice(mysite_ids.length - 10)
     }
 }
 CurrentSelection = mysite_ids;
@@ -74,7 +74,7 @@ table = $('#sitelist').DataTable({
         {
             data: "id",
             "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                $(nTd).html('<input class="siteselector" type="checkbox" id="' + oData.id +'" value="' + oData.id + '"><label for="' + oData.id +'"></label>');
+                $(nTd).html('<input class="siteselector" type="checkbox" id="' + oData.id + '" value="' + oData.id + '"><label for="' + oData.id + '"></label>');
             },
             "orderDataType": "dom-checkbox",
         },
@@ -248,6 +248,44 @@ function checkTheBoxes() {
 }
 
 function setcharts() {
+
+//date of sites: Data contains site and chronological range
+    mydatedata = setDating();
+    dateconfig = {
+        // The type of chart we want to create
+        type: 'bar',
+        // The data for our dataset
+        data: mydatedata,
+        // Configuration options go here
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                xAxes: [{
+                    scaleLabel: {
+                        display: false,
+                        labelString: 'Site'
+                    }
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Years'
+                    }
+                }]
+            },
+            legend: false,
+            plugins: {
+                colorschemes: {
+                    scheme: 'tableau.Tableau20'
+                }
+            }
+        }
+    };
+    var ctx = document.getElementById('date-chart').getContext('2d');
+    if (typeof (datechart) != 'undefined') datechart.destroy();
+    datechart = new Chart(ctx, dateconfig);
+
 
 //depth of graves: Data contains site and no of graves of a depth interval of 20cm
     mydepthdata = setChartData(depth_data, false, true, true);
@@ -576,6 +614,43 @@ function setcharts() {
 
 }
 
+function setDating() {
+    var sites = [];
+    var labels = [];
+    var data = [];
+
+    $.each(sitelist, function (i, site) {
+        if (CurrentSelection.includes(site.id)) {
+            if (site.begin && site.end) {
+                sites.push({'name': site.name, 'begin': site.begin, 'end': site.end})
+            }
+        }
+    })
+
+    sites = sites.sort(function (a, b) {
+        return parseFloat(a.end) - parseFloat(b.end);
+    });
+
+    sites = sites.sort(function (a, b) {
+        return parseFloat(a.begin) - parseFloat(b.begin);
+    });
+
+    console.log(sites)
+
+    $.each(sites, function (i, site) {
+        labels.push(site.name);
+        data.push([site.begin, site.end])
+    })
+
+    var returndata = {
+        labels: labels,
+        datasets: [{
+            data: data
+        }]
+    }
+    return returndata
+}
+
 function setage(data) {
     agelabels = [];
     min_age = [];
@@ -854,17 +929,19 @@ function enlargeChart(currentConfig) {
     var ctx = document.getElementById('bigchart-container').getContext('2d');
     bigchart = new Chart(ctx, currentConfig);
     if (percScript !== '') {
-        $('.absBtn').removeClass('d-none')
-        percScript = percScript.substring(percScript.indexOf(",") + 1);
-        percScript = 'updateChart(bigchart,' + percScript;
-        absScript = absScript.substring(absScript.indexOf(",") + 1);
-        absScript = 'updateChart(bigchart,' + absScript;
-        $('#percBtn').click(function () {
-            eval(percScript)
-        });
-        $('#absBtn').click(function () {
-            eval(absScript)
-        });
+        $('.absBtn').addClass('d-none');
+        if (percScript !== 'nix') {
+            percScript = percScript.substring(percScript.indexOf(",") + 1);
+            percScript = 'updateChart(bigchart,' + percScript;
+            absScript = absScript.substring(absScript.indexOf(",") + 1);
+            absScript = 'updateChart(bigchart,' + absScript;
+            $('#percBtn').click(function () {
+                eval(percScript)
+            });
+            $('#absBtn').click(function () {
+                eval(absScript)
+            })
+        }
     } else {
         $('.boxBtn').removeClass('d-none');
         $('.absBtn').addClass('d-none');

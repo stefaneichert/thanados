@@ -121,6 +121,37 @@
                 </div>
             </div>
             <div class="col-xl-6 mymargin">
+                <div class="card" id="card_date-chart">
+                    <div class="card-header" id="headingDate">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
+                                    data-target="#collapseDate" aria-expanded="true"
+                                    aria-controls="collapseDate">
+                                Chronology
+                            </button>
+                            <button id="datechart_enlarge"
+                                    class="btn btn-sm btn-secondary fa-pull-right enlargeBtn"
+                                    title="enlarge" style="margin-left: 0.5em"
+                                    onclick="
+                                    percScript='nix'
+                                    absScript = 'nix'
+                                    currentTitle = ($( this ).siblings('.title-btn').text());
+                                    enlargeChart(dateconfig)">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseDate" class="collapse show" aria-labelledby="headingDate">
+                        <div class="card-body">
+                            <div id=date-chart-container">
+                                <canvas id="date-chart" class="chartcontainer"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6 mymargin">
                 <div class="card" id="card_sexchart">
                     <div class="card-header" id="headingThree">
                         <h5 class="mb-0">
