@@ -124,7 +124,7 @@ if (systemtype == 'feature') {
     $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Feature/Grave) </div>');
 }
 
-
+sex = 'none';
 if (systemtype == 'stratigraphic unit') {
     subLabel = 'Finds';
     $.each(jsonmysite.features, function (f, feature) {
@@ -285,7 +285,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-secondary" title="Download data as GeoJSON"><i class="fas fa-download"></i></button>' +
         '<a style="margin-left: 0.1em" onclick="this.blur();" href="' + openAtlasUrl + entId + '" target="_blank" class="backendlink d-none btn btn-sm btn-secondary" title="Backend link"><i class="fas fa-database"></i></a>' +
-        '<a style="margin-left: 0.1em" onclick="this.blur();" href="/entity/'+ entId + '/network"class="btn btn-sm btn-secondary" title="Network visualisation"><i class="fas fa-project-diagram"></i></a>' +
+        '<a style="margin-left: 0.1em" onclick="this.blur();" href="/entity/' + entId + '/network"class="btn btn-sm btn-secondary" title="Network visualisation"><i class="fas fa-project-diagram"></i></a>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" class="btn btn-sm btn-secondary" title="Open detailed map of this site">Map</button>' +
         '</div>' +
         '</div>' +
@@ -330,6 +330,40 @@ function getEntityData(parentName, parentId, currentfeature) {
         '</div>' +
         '</div>'
     )
+
+    if (dateToInsert == '') {
+        $('#mytimespan' + entId).attr("class", "");
+    }
+
+
+    setImages(entId, entfiles);
+
+    $('#myTypescontainer' + entId).empty();
+    $.each(currentfeature.properties.types, function (t, types) {
+        if ($('#myTypescontainer' + entId).is(':empty')) {
+            $('#myTypescontainer' + entId).append('<p><h6>Properties:</h6></p>');
+        }
+
+        var classification = types.name;
+        var classtype = types.path;
+        var typevalue = types.value;
+        var typeunit = types.description;
+        var typeid = types.id;
+        //check for sex of skeleton
+        if (typeid === 24) {
+            sex = 'female'
+        }
+        if (typeid === 25) {
+            sex = 'male'
+        }
+
+        if (typeof (typevalue) !== 'undefined') var classification = (types.name + ': ' + typevalue + ' ' + typeunit);
+        $('#myTypescontainer' + entId).append(
+            '<div type="button" data-value="' + typeid + '" + ' +
+
+            'class="modalrowitem typebutton" ' +
+            'data-toggle="popover">' + classification + '</div><span class="popover-wrapper"></span>');
+    });
 
     if (typeof (currentfeature.humanremains) !== 'undefined') {
         $('#nav-humanremains-tab').removeClass('d-none')
@@ -377,6 +411,15 @@ function getEntityData(parentName, parentId, currentfeature) {
                 $(".bonediv:last-child").append('<div class="mt-2"></div>')
                 $.each(hr.properties.types, function (i, type) {
 
+                    if (type.id === 132033 && type.value && sex !== 'none') {
+                        console.log(type)
+                        if (sex === 'male') {
+                            console.log(sex + ' Body height (Breitinger 1938): ' + parseFloat((type.value) * 1.988 + 95.59) + ' cm.');
+                        } else {
+                            console.log(sex + ' Body height (Bach 1965): ' + parseFloat((type.value) * 1.745 + 95.91) + ' cm.');
+                        }
+                    }
+
                     if (type.name !== 'left' && type.name !== 'right') {
                         var labeltext = type.name;
                         if (type.value) labeltext += ': ' + type.value + ' ' + type.description
@@ -399,32 +442,6 @@ function getEntityData(parentName, parentId, currentfeature) {
             $(bonegroup).find('path').toggleClass('hoverbone');
         })
     }
-
-    if (dateToInsert == '') {
-        $('#mytimespan' + entId).attr("class", "");
-    }
-
-
-    setImages(entId, entfiles);
-
-    $('#myTypescontainer' + entId).empty();
-    $.each(currentfeature.properties.types, function (t, types) {
-        if ($('#myTypescontainer' + entId).is(':empty')) {
-            $('#myTypescontainer' + entId).append('<p><h6>Properties:</h6></p>');
-        }
-
-        var classification = types.name;
-        var classtype = types.path;
-        var typevalue = types.value;
-        var typeunit = types.description;
-        var typeid = types.id;
-        if (typeof (typevalue) !== 'undefined') var classification = (types.name + ': ' + typevalue + ' ' + typeunit);
-        $('#myTypescontainer' + entId).append(
-            '<div type="button" data-value="' + typeid + '" + ' +
-
-            'class="modalrowitem typebutton" ' +
-            'data-toggle="popover">' + classification + '</div><span class="popover-wrapper"></span>');
-    });
 
     $('#myDimensionscontainer' + entId).empty();
     $.each(currentfeature.properties.dimensions, function (d, dimensions) {
@@ -929,9 +946,9 @@ function setImages(entId, entfiles) {
         //append one image without slides
         if (entfiles.length == 1) {
             $('#myImagecontainer' + entId).empty();
-                    $('#myImagecontainer' + entId).append(
-                        getImageHtml(entfiles[0])
-                    )
+            $('#myImagecontainer' + entId).append(
+                getImageHtml(entfiles[0])
+            )
         }
 
 
@@ -968,17 +985,17 @@ function setImages(entId, entfiles) {
 
             //append further images to carousel
             $.each(entfiles, function (f, file) {
-                if (f > 1) {
+                    if (f > 1) {
 
-                    $('#mycarouselimages' + entId).append(
+                        $('#mycarouselimages' + entId).append(
                             '<div class="carousel-item">' +
                             getImageHtml(file) +
                             '</div>'
                         );
 
-                    $('#mymodalimageindicators' + entId).append(
-                        '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="' + f + '"></li>'
-                    );
+                        $('#mymodalimageindicators' + entId).append(
+                            '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="' + f + '"></li>'
+                        );
                     }
                 }
             );
@@ -1153,7 +1170,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             if (typeof (file.source) != 'undefined') myImgSource = file.source;
             if (typeof (file.source) == 'undefined') myImgSource = "unknown source";
             if ((typeof (file.source) != 'undefined') && (typeof (file.reference) != 'undefined')) myImgSource = file.source + ' ' + file.reference;
-            $('#myModalImagecontainer' + entId).append('<div class="cat-image-container col-lg-4 mt-2">'+ getImageHtml(file) + '</div>');
+            $('#myModalImagecontainer' + entId).append('<div class="cat-image-container col-lg-4 mt-2">' + getImageHtml(file) + '</div>');
         });
 
         if (typeof (currentfeature.burials) != 'undefined') {

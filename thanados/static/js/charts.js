@@ -635,8 +635,6 @@ function setDating() {
         return parseFloat(a.begin) - parseFloat(b.begin);
     });
 
-    console.log(sites)
-
     $.each(sites, function (i, site) {
         labels.push(site.name);
         data.push([site.begin, site.end])
