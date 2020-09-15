@@ -249,8 +249,13 @@ function checkTheBoxes() {
 
 function setcharts() {
 
+    sorttype = 'beginend';
+    sortdirection = false;
+    bigDatechart = false;
+
+
 //date of sites: Data contains site and chronological range
-    mydatedata = setDating();
+    mydatedata = setDating(sorttype, sortdirection);
     dateconfig = {
         // The type of chart we want to create
         type: 'bar',
@@ -282,8 +287,10 @@ function setcharts() {
             }
         }
     };
-    var ctx = document.getElementById('date-chart').getContext('2d');
+
     if (typeof (datechart) != 'undefined') datechart.destroy();
+    var ctx = document.getElementById('date-chart').getContext('2d');
+
     datechart = new Chart(ctx, dateconfig);
 
 
@@ -614,7 +621,39 @@ function setcharts() {
 
 }
 
-function setDating() {
+function setChronVars() {
+
+    if (sorttype === 'beginend') {
+        sorttype = 'endbegin'
+    } else {
+        sorttype = 'beginend'
+
+    }
+
+
+    if (bigDatechart) {
+        updateChron(bigchart, sorttype, sortdirection);
+    } else {
+        updateChron(datechart, sorttype, sortdirection);
+    }
+    bigDatechart = false
+}
+
+function setChronDir() {
+    if (sortdirection) {
+        sortdirection = false
+    } else {
+        sortdirection = true
+    }
+    if (bigDatechart) {
+        updateChron(bigchart, sorttype, sortdirection);
+    } else {
+        updateChron(datechart, sorttype, sortdirection);
+    }
+    bigDatechart = false
+}
+
+function setDating(sorttype, sortdirection) {
     var sites = [];
     var labels = [];
     var data = [];
@@ -627,13 +666,32 @@ function setDating() {
         }
     })
 
-    sites = sites.sort(function (a, b) {
-        return parseFloat(a.end) - parseFloat(b.end);
-    });
+    if (sorttype === 'beginend') {
 
-    sites = sites.sort(function (a, b) {
-        return parseFloat(a.begin) - parseFloat(b.begin);
-    });
+        sites = sites.sort(function (a, b) {
+            return parseFloat(a.end) - parseFloat(b.end);
+        });
+
+        sites = sites.sort(function (a, b) {
+            return parseFloat(a.begin) - parseFloat(b.begin);
+        });
+    }
+
+    if (sorttype === 'endbegin') {
+
+        sites = sites.sort(function (a, b) {
+            return parseFloat(a.begin) - parseFloat(b.begin);
+        });
+
+        sites = sites.sort(function (a, b) {
+            return parseFloat(a.end) - parseFloat(b.end);
+        });
+    }
+
+    if (sortdirection) {
+        sites = sites.reverse()
+    }
+
 
     $.each(sites, function (i, site) {
         labels.push(site.name);
@@ -874,6 +932,12 @@ function updateChart(chart, data, percentageset) {
     chart.update();
 }
 
+//change chart from absolute values to percentage
+function updateChron(chart, sorttype, sortdirection) {
+    chart.data = setDating(sorttype, sortdirection);
+    chart.update();
+}
+
 //set data
 function setChartData(originalData, axesswitch, percentageset, zeroslice, preparetypes) {
     dataToWorkWith = JSON.parse(JSON.stringify(originalData));
@@ -918,6 +982,7 @@ $('#collapseFilter').on('shown.bs.collapse', function () {
 function enlargeChart(currentConfig) {
     $('.boxBtn').addClass('d-none')
     $('.absBtn').addClass('d-none')
+    $('.chronBtn').addClass('d-none')
     $('.modal-title').text(currentTitle);
     $('#chart-xl').modal();
     if (typeof (bigchart) !== 'undefined') {
@@ -927,19 +992,21 @@ function enlargeChart(currentConfig) {
     var ctx = document.getElementById('bigchart-container').getContext('2d');
     bigchart = new Chart(ctx, currentConfig);
     if (percScript !== '') {
-        $('.absBtn').addClass('d-none');
-        if (percScript !== 'nix') {
-            percScript = percScript.substring(percScript.indexOf(",") + 1);
-            percScript = 'updateChart(bigchart,' + percScript;
-            absScript = absScript.substring(absScript.indexOf(",") + 1);
-            absScript = 'updateChart(bigchart,' + absScript;
-            $('#percBtn').click(function () {
-                eval(percScript)
-            });
-            $('#absBtn').click(function () {
-                eval(absScript)
-            })
+        if (percScript.includes('Chron') === false) {
+            $('.absBtn').removeClass('d-none')
+        } else {
+            $('.chronBtn').removeClass('d-none')
         }
+        percScript = percScript.substring(percScript.indexOf(",") + 1);
+        percScript = 'updateChart(bigchart,' + percScript;
+        absScript = absScript.substring(absScript.indexOf(",") + 1);
+        absScript = 'updateChart(bigchart,' + absScript;
+        $('#percBtn').click(function () {
+            eval(percScript)
+        });
+        $('#absBtn').click(function () {
+            eval(absScript)
+        });
     } else {
         $('.boxBtn').removeClass('d-none');
         $('.absBtn').addClass('d-none');

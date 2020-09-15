@@ -134,11 +134,23 @@
                                     class="btn btn-sm btn-secondary fa-pull-right enlargeBtn"
                                     title="enlarge" style="margin-left: 0.5em"
                                     onclick="
-                                    percScript='nix'
-                                    absScript = 'nix'
+                                    percScript=$('#datechart_switch').attr('onclick');
+                                    absScript = $('#datechart_begin_end').attr('onclick');
                                     currentTitle = ($( this ).siblings('.title-btn').text());
                                     enlargeChart(dateconfig)">
                                 <i class="fas fa-expand-alt"></i>
+                            </button>
+                            <button id="datechart_switch"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="Switch between begin and end dates for sorting" style="margin-left: 0.5em"
+                                    onclick="setChronVars()">
+                                <i class="fas fa-sort"></i>
+                            </button>
+                            <button id="datechart_begin_end"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="Switch between left-right and right-left order"
+                                    onclick="setChronDir()">
+                                <i style="transform: rotate(90deg)" class="fas fa-sort"></i>
                             </button>
                         </h5>
                     </div>
@@ -526,6 +538,17 @@
                                 title="Boxplot"
                                 onclick="change('boxplot', 'bigchart', 'bigchart-container', ageconfig);">
                             Boxplot
+                        </button>
+
+                        <button class="mr-2  chronBtn btn btn-sm btn-secondary fa-pull-right"
+                                title="Switch between begin and end dates for sorting"
+                                    onclick="bigDatechart = true; setChronVars()">
+                                <i class="fas fa-sort"></i>
+                        </button>
+                        <button class="mr-2  chronBtn btn btn-sm btn-secondary fa-pull-right"
+                                title="Switch between left-right and right-left order"
+                                    onclick="bigDatechart = true; setChronDir()">
+                                <i style="transform: rotate(90deg)" class="fas fa-sort"></i>
                         </button>
 
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
