@@ -2423,7 +2423,7 @@ function set3D(file) {
         '</div>'
     )
 
-    if (typeof(current3dFile) === 'string') current3dFile = (JSON.parse(current3dFile.replace(/'/g, '"')));
+    if (typeof (current3dFile) === 'string') current3dFile = (JSON.parse(current3dFile.replace(/'/g, '"')));
 
     Object.keys(current3dFile).forEach(function (key) {
         $("#3dmetadata").append(key + ': ' + current3dFile[key] + '<br>')
@@ -2474,49 +2474,110 @@ function getImageHtml(files) {
 
 function wireframeMe() {
     BabylonViewer.viewerManager
-  .getViewerPromiseById("babylon")
-  .then(function(viewer) {
-    /*
-    Each viewer has its own model loader.
-    The loader has an internal plugin system, based on observables.
-    Each event in the loading process will trigger an event that will call the plugin,
-    if the plugin has this event implemented.
-    The plugin interface looks like this:
+        .getViewerPromiseById("babylon")
+        .then(function (viewer) {
+            /*
+            Each viewer has its own model loader.
+            The loader has an internal plugin system, based on observables.
+            Each event in the loading process will trigger an event that will call the plugin,
+            if the plugin has this event implemented.
+            The plugin interface looks like this:
 
-interface ILoaderPlugin {
-  onInit?: (loader: ISceneLoaderPlugin | ISceneLoaderPluginAsync, model: ViewerModel) => void;
-  onLoaded?: (model: ViewerModel) => void;
-  onError?: (message: string, exception?: any) => void;
-  onProgress?: (progressEvent: SceneLoaderProgressEvent) => void;
-  onExtensionLoaded?: (extension: IGLTFLoaderExtension) => void;
-  onParsed?: (parsedData: IGLTFLoaderData) => void;
-  onMeshLoaded?: (mesh: AbstractMesh) => void;
-  onTextureLoaded?: (texture: BaseTexture) => void;
-  onMaterialLoaded?: (material: Material) => void;
-  onComplete?: () => void;
+        interface ILoaderPlugin {
+          onInit?: (loader: ISceneLoaderPlugin | ISceneLoaderPluginAsync, model: ViewerModel) => void;
+          onLoaded?: (model: ViewerModel) => void;
+          onError?: (message: string, exception?: any) => void;
+          onProgress?: (progressEvent: SceneLoaderProgressEvent) => void;
+          onExtensionLoaded?: (extension: IGLTFLoaderExtension) => void;
+          onParsed?: (parsedData: IGLTFLoaderData) => void;
+          onMeshLoaded?: (mesh: AbstractMesh) => void;
+          onTextureLoaded?: (texture: BaseTexture) => void;
+          onMaterialLoaded?: (material: Material) => void;
+          onComplete?: () => void;
+        }
+
+          All functions are optional and only triggered if implemented.
+          */
+
+            // create a new plugin, using javascript
+
+            // This plugin will change all loaded materials to wireframe.
+            let myLoaderPlugin = {
+                onInit: function (loader, model) {
+                    // Log that a model started loading
+                    console.log("model loading initialized");
+                },
+                // we will register the onMaterialLoaded function to change each material to wireframe
+                onMaterialLoaded: function (material) {
+                    material.diffuseTexture = false;
+                    material.wireframe = true;
+                    console.log("changed material " + material.name + " to wireframe");
+                }
+            };
+
+            // add the plugin to the loader
+            viewer.modelLoader.addPlugin(myLoaderPlugin);
+        });
+
 }
 
-  All functions are optional and only triggered if implemented.
-  */
+function bodyheight() {
+    var ageclassids = [22283, 22284, 117201, 22285, 22286, 22287, 22288] //ids to check if burial is grown up
+    var ageminids = [118152, 118134, 117199] //ids to check if minimum age value is >= 18
+    var maleids = [25, 22374] //ids to check if burial is of male sex
+    var femaleids = [24, 22373] //ids to check if burial is of female sex
+    var agecheck = false;
+    var bhsex = 'undetermined';
 
-    // create a new plugin, using javascript
+    var measurbones = []
+    var measureids = [131911, 118169, 141363, 132017, 132033]
+    var femaleage = [];
+    var maleage = [];
+    $.each(bodyheighttypes, function (i, entry) {
+        if (ageclassids.includes(entry.id)) agecheck = true;
+        if (ageminids.includes(entry.id) && typeof (entry.value) !== "undefined") {
+            if (entry.value >= 18) agecheck = true
+        }
+        if (maleids.includes(entry.id)) bhsex = 'male';
+        if (femaleids.includes(entry.id)) bhsex = 'female';
 
-    // This plugin will change all loaded materials to wireframe.
-    let myLoaderPlugin = {
-      onInit: function(loader, model) {
-        // Log that a model started loading
-        console.log("model loading initialized");
-      },
-      // we will register the onMaterialLoaded function to change each material to wireframe
-      onMaterialLoaded: function(material) {
-        material.diffuseTexture = false;
-        material.wireframe = true;
-        console.log("changed material " + material.name + " to wireframe");
-      }
-    };
+        if (agecheck && measureids.includes(entry.id) && typeof (entry.value) !== "undefined") {
+            switch (entry.id) {
+                case 131911:
+                    entry.height_male = entry.value * 2.715 + 83.21;
+                    entry.height_female = entry.value * 2.121 + 99.44;
+                case 118169:
+                    entry.height_male = entry.value * 2.71 + 81.33;
+                    entry.height_female = entry.value * 2.121 + 98.38;
+                case 141363:
+                    entry.height_male = entry.value * 2.968 + 97.09;
+                    entry.height_female = entry.value * 1.925 + 116.89;
+                case 132017:
+                    entry.height_male = entry.value * 1.645 + 94.31;
+                    entry.height_female = entry.value * 1.314 + 106.69;
+                case 132033:
+                    entry.height_male = entry.value * 1.988 + 95.59;
+                    entry.height_female = entry.value * 1.745 + 95.91;
+            }
+            //console.log(entry)
+            measurbones.push(entry)
+            femaleage.push(entry.height_female);
+            maleage.push(entry.height_male)
+        }
+    })
 
-    // add the plugin to the loader
-    viewer.modelLoader.addPlugin(myLoaderPlugin);
-  });
 
+    if (bhsex === 'female' && agecheck && femaleage.length > 0) var weiter = true;
+    if (bhsex === 'male' && agecheck && maleage.length > 0) var weiter = true;
+
+    if (weiter) {
+        const arrAvg = arr => arr.reduce((a, b) => a + b, 0) / arr.length
+        if (bhsex === 'male') var bodyheight_avg = arrAvg(maleage).toFixed(2);
+        if (bhsex === 'female') var bodyheight_avg = arrAvg(femaleage).toFixed(2);
+        //if (sex === 'undetermined') var bodyheight_avg = [arrAvg(femaleage).toFixed(2), arrAvg(femaleage).toFixed(2)]
+        var bodyheightBtn = '<div type="button" class="modalrowitem heigthbtn">Body height: ' + bodyheight_avg + ' cm</div>'
+
+        var calcData = {'sex': bhsex, 'bones': measurbones, 'btn': bodyheightBtn, 'avg': bodyheight_avg}
+        return calcData
+    } else return false
 }

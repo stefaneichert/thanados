@@ -447,6 +447,12 @@ UPDATE thanados.entitiestmp
 SET end_comment = NULL
 WHERE end_comment = '';
 UPDATE thanados.entitiestmp
+SET begin_comment = NULL
+WHERE begin_comment = 'None';
+UPDATE thanados.entitiestmp
+SET end_comment = NULL
+WHERE end_comment = 'None';
+UPDATE thanados.entitiestmp
 SET description = NULL
 WHERE description = '';
 UPDATE thanados.entitiestmp

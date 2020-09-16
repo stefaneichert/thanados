@@ -1,3 +1,5 @@
+bodyheighttypes = [];
+
 $(document).ready(function () {
     $('#mycontent').scroll(function () {
         if ($(this).scrollTop() > 50) {
@@ -124,7 +126,7 @@ if (systemtype == 'feature') {
     $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Feature/Grave) </div>');
 }
 
-sex = 'none';
+
 if (systemtype == 'stratigraphic unit') {
     subLabel = 'Finds';
     $.each(jsonmysite.features, function (f, feature) {
@@ -349,13 +351,14 @@ function getEntityData(parentName, parentId, currentfeature) {
         var typevalue = types.value;
         var typeunit = types.description;
         var typeid = types.id;
-        //check for sex of skeleton
-        if (typeid === 24) {
-            sex = 'female'
-        }
-        if (typeid === 25) {
-            sex = 'male'
-        }
+
+        //collect types for body height calculation
+        if (typeof (currentfeature.humanremains) !== 'undefined') bodyheighttypes.push({
+            'name': classification,
+            'id': typeid,
+            'value': parseFloat(typevalue),
+            'unit': typeunit
+        })
 
         if (typeof (typevalue) !== 'undefined') var classification = (types.name + ': ' + typevalue + ' ' + typeunit);
         $('#myTypescontainer' + entId).append(
@@ -395,6 +398,12 @@ function getEntityData(parentName, parentId, currentfeature) {
                         hr_name = hr_name + ': ' + type.name;
                         svg_label += '_' + type.name.substr(0, 1);
                     }
+                    bodyheighttypes.push({
+                        'name': type.name,
+                        'id': type.id,
+                        'value': parseFloat(type.value),
+                        'unit': type.description
+                    })
                 })
             }
             highlightbones(svg_label);
@@ -410,15 +419,6 @@ function getEntityData(parentName, parentId, currentfeature) {
             if (hr.properties.types) {
                 $(".bonediv:last-child").append('<div class="mt-2"></div>')
                 $.each(hr.properties.types, function (i, type) {
-
-                    if (type.id === 132033 && type.value && sex !== 'none') {
-                        console.log(type)
-                        if (sex === 'male') {
-                            console.log(sex + ' Body height (Breitinger 1938): ' + parseFloat((type.value) * 1.988 + 95.59) + ' cm.');
-                        } else {
-                            console.log(sex + ' Body height (Bach 1965): ' + parseFloat((type.value) * 1.745 + 95.91) + ' cm.');
-                        }
-                    }
 
                     if (type.name !== 'left' && type.name !== 'right') {
                         var labeltext = type.name;
@@ -440,6 +440,33 @@ function getEntityData(parentName, parentId, currentfeature) {
             svg_label = $(this).data('svglabel')
             var bonegroup = $('g[inkscape\\:label="' + svg_label + '"]');
             $(bonegroup).find('path').toggleClass('hoverbone');
+        })
+
+        $('#myTypescontainer' + entId).append(bodyheight().btn);
+        $('.heigthbtn').click(function () {
+            $('#HeightModal').modal('show')
+            var avg = bodyheight().avg;
+            $('#bodyheight').append('<div>Average body height: ' + avg + ' cm</div>')
+
+            if (bodyheight().sex === 'female') {
+                $('#bodyheight').append(
+                    '<div class="mb-3 mt-3 text-muted">Calculation after: <a href="https://www.jstor.org/stable/29537886" target="_blank">Bach 1965</a></div>' +
+                    '<ul id="bonetable" class="text-muted list-group">\n' +
+                    '</ul>')
+                $.each(bodyheight().bones, function (i, bone) {
+                    $('#bonetable').append('<li class="list-group-item">' + bone.name + ': ' + bone.value.toFixed(2) + ' cm. <i class="mr-2 fas fa-arrow-right"></i>calculated: ' + bone.height_female.toFixed(2) + ' cm. </li>')
+                })
+            }
+
+    if (bodyheight().sex === 'male') {
+                $('#bodyheight').append(
+                    '<div class="mb-3 mt-3 text-muted">Calculation after: <a href="https://www.jstor.org/stable/29536541" target="_blank">Breitinger 1938</a></div>' +
+                    '<ul id="bonetable" class="text-muted list-group">\n' +
+                    '</ul>')
+                $.each(bodyheight().bones, function (i, bone) {
+                    $('#bonetable').append('<li class="list-group-item">' + bone.name + ': ' + bone.value.toFixed(2) + ' cm. <i class="mr-2 fas fa-arrow-right"></i>calculated: ' + bone.height_male.toFixed(2) + ' cm. </li>')
+                })
+            }
         })
     }
 
