@@ -1278,7 +1278,7 @@ input {
     background: #f8faff;
 }
 
-#bonetable > .list-group-item {
+#bonetable > .list-group-item, #avgLegend {
     font-size: 0.8rem;
     padding: 0.3rem;
 }

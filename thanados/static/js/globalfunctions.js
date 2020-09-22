@@ -2543,19 +2543,19 @@ function bodyheight() {
 
         if (agecheck && measureids.includes(entry.id) && typeof (entry.value) !== "undefined") {
             switch (entry.id) {
-                case 131911:
-                    entry.height_male = entry.value * 2.715 + 83.21;
-                    entry.height_female = entry.value * 2.121 + 99.44;
-                case 118169:
+                case 118169: //H1
                     entry.height_male = entry.value * 2.71 + 81.33;
                     entry.height_female = entry.value * 2.121 + 98.38;
-                case 141363:
+                case 131911: //H2
+                    entry.height_male = entry.value * 2.715 + 83.21;
+                    entry.height_female = entry.value * 2.121 + 99.44;
+                case 141363: //R1b
                     entry.height_male = entry.value * 2.968 + 97.09;
                     entry.height_female = entry.value * 1.925 + 116.89;
-                case 132017:
+                case 132017: //F1
                     entry.height_male = entry.value * 1.645 + 94.31;
-                    entry.height_female = entry.value * 1.314 + 106.69;
-                case 132033:
+                    entry.height_female = entry.value * 1.313 + 106.69;
+                case 132033: //T1b
                     entry.height_male = entry.value * 1.988 + 95.59;
                     entry.height_female = entry.value * 1.745 + 95.91;
             }
