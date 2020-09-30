@@ -390,21 +390,29 @@ function getEntityData(parentName, parentId, currentfeature) {
         $.each(humanremains, function (i, hr) {
             hr_name = hr.properties.maintype.path.replace("Human Remains > ", "")
             svg_label = hr.properties.maintype.id;
-
+            siding = ''
             if (hr.properties.types) {
                 $.each(hr.properties.types, function (i, type) {
 
                     if (type.name === 'left' || type.name === 'right') {
                         hr_name = hr_name + ': ' + type.name;
+                        siding = type.name;
                         svg_label += '_' + type.name.substr(0, 1);
+                    } else {
+                        siding = ''
                     }
+                })
+                $.each(hr.properties.types, function (i, type) {
+                    if (siding !== '') siding = siding.substring(0, 1)
                     bodyheighttypes.push({
-                        'name': type.name,
+                        'siding': siding,
+                        'name': siding + ' ' + type.name,
                         'id': type.id,
                         'value': parseFloat(type.value),
                         'unit': type.description
                     })
                 })
+
             }
             highlightbones(svg_label);
 
@@ -443,113 +451,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         })
 
         $('#myTypescontainer' + entId).append(bodyheight().btn);
-        $('.heigthbtn').click(function () {
-                $('#bodyheight').empty();
-                $('#HeightModal').modal('show')
-                var avg = bodyheight().avg;
-                $('#bodyheight').append('<div>Average body height: ' + avg + ' cm</div>')
 
-                bhLabels = []
-                bhData = []
-                bhAvg = []
-
-                if (bodyheight().sex === 'female') {
-                    $('#bodyheight').append(
-                        '<div class="mb-3 mt-3 text-muted">Calculation after: <a href="https://www.jstor.org/stable/29537886" target="_blank">Bach 1965</a></div>' +
-                        '<ul id="bonetable" class="text-muted list-group">\n' +
-                        '</ul>')
-                    $.each(bodyheight().bones, function (i, bone) {
-                        $('#bonetable').append('<li class="list-group-item">' + bone.name + ': ' + bone.value.toFixed(2) + ' cm. <i class="mr-2 fas fa-arrow-right"></i>calculated: ' + bone.height_female.toFixed(2) + ' cm. </li>')
-                        bhLabels.push('Estimated after: ' + bone.name);
-                        bhData.push(bone.height_female.toFixed(2));
-                        bhAvg.push(avg);
-                    })
-                }
-
-                if (bodyheight().sex === 'male') {
-                    $('#bodyheight').append(
-                        '<div class="mb-3 mt-3 text-muted">Calculation after: <a href="https://www.jstor.org/stable/29536541" target="_blank">Breitinger 1938</a></div>' +
-                        '<ul id="bonetable" class="text-muted list-group">\n' +
-                        '</ul>')
-                    $.each(bodyheight().bones, function (i, bone) {
-                        $('#bonetable').append('<li class="list-group-item">' + bone.name + ': ' + bone.value.toFixed(2) + ' cm. <i class="mr-2 fas fa-arrow-right"></i>calculated: ' + bone.height_male.toFixed(2) + ' cm. </li>')
-                        bhLabels.push('Estimated after: ' + bone.name);
-                        bhData.push(bone.height_male.toFixed(2));
-                        bhAvg.push(avg);
-                    })
-                }
-
-
-                $('#bodyheight').append(
-                    '<div class="mt-2 p-2 border rounded"id="chartwrapper"><canvas id="bhChart">' +
-                    '</canvas><div class="text-center text-muted"id="avgLegend"><b class="mr-2">- - - - - - - -</b> Average: ' + avg + ' cm.</div></div>'
-                )
-
-                var ctx = document.getElementById('bhChart').getContext('2d');
-
-                var avgLabel = 'Average: ' + avg + ' cm.'
-
-                var config = {
-                    // The type of chart we want to create
-                    type: 'bar',
-
-                    // The data for our dataset
-                    data: {
-                        labels: JSON.parse(JSON.stringify(bhLabels)),
-                        datasets: [
-
-                            {
-                                type: 'bar',
-                                label: 'cm',
-                                backgroundColor: 'rgb(99,133,255)',
-                                borderColor: 'rgb(99,125,255)',
-                                data: JSON.parse(JSON.stringify(bhData))
-                            }
-                        ]
-                    },
-
-                    // Configuration options go here
-                    options: {
-                        legend: {
-                            display: false,
-                        },
-                        scales: {
-                            xAxes: [{
-                                ticks: {
-                                    display: false //this will remove only the label
-                                }
-                            }],
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        },
-                        annotation: {
-                            annotations: [{
-                                type: 'line',
-                                mode: 'horizontal',
-                                scaleID: 'y-axis-0',
-                                value: avg,
-                                borderColor: 'rgb(90,90,90)',
-                                borderWidth: 2,
-                                borderDash: [5, 5],
-                                label: {
-                                    enabled: false,
-                                    //content: avgLabel,
-
-                                }
-                            }]
-                        }
-
-                    }
-                };
-
-                var chart = new Chart(ctx, config)
-
-
-            }
-        )
     }
 
     $('#myDimensionscontainer' + entId).empty();

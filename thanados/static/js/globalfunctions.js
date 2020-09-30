@@ -2528,11 +2528,15 @@ function bodyheight() {
     var femaleids = [24, 22373] //ids to check if burial is of female sex
     var agecheck = false;
     var bhsex = 'undetermined';
+    var h1there = false;
+    var h2there = false;
+    var f1there = false;
+    var t1bthere = false;
+    var r1there = false;
 
-    var measurbones = []
-    var measureids = [131911, 118169, 141363, 132017, 132033]
-    var femaleage = [];
-    var maleage = [];
+    var measurebones = []
+    var measureids = [131911, 118169, 141363, 132017, 132033, 132004]
+
     $.each(bodyheighttypes, function (i, entry) {
         if (ageclassids.includes(entry.id)) agecheck = true;
         if (ageminids.includes(entry.id) && typeof (entry.value) !== "undefined") {
@@ -2542,42 +2546,646 @@ function bodyheight() {
         if (femaleids.includes(entry.id)) bhsex = 'female';
 
         if (agecheck && measureids.includes(entry.id) && typeof (entry.value) !== "undefined") {
-            switch (entry.id) {
-                case 118169: //H1
-                    entry.height_male = entry.value * 2.71 + 81.33;
-                    entry.height_female = entry.value * 2.121 + 98.38;
-                case 131911: //H2
-                    entry.height_male = entry.value * 2.715 + 83.21;
-                    entry.height_female = entry.value * 2.121 + 99.44;
-                case 141363: //R1b
-                    entry.height_male = entry.value * 2.968 + 97.09;
-                    entry.height_female = entry.value * 1.925 + 116.89;
-                case 132017: //F1
-                    entry.height_male = entry.value * 1.645 + 94.31;
-                    entry.height_female = entry.value * 1.313 + 106.69;
-                case 132033: //T1b
-                    entry.height_male = entry.value * 1.988 + 95.59;
-                    entry.height_female = entry.value * 1.745 + 95.91;
+            if (entry.id === 118169) { //H1
+                entry.height_breitinger = entry.value * 2.71 + 81.33;
+                entry.height_bach = entry.value * 2.121 + 98.38;
+                entry.height_pearson_m = entry.value * 2.894 + 70.641;
+                entry.height_pearson_f = entry.value * 2.754 + 71.475;
+                h1there = true;
+                if (entry.siding === 'r') h1R = entry;
+                if (entry.siding === 'l') h1L = entry;
+                if (entry.siding === '') h1 = entry;
             }
-            //console.log(entry)
-            measurbones.push(entry)
-            femaleage.push(entry.height_female);
-            maleage.push(entry.height_male)
+
+            if (entry.id === 131911) { //H2
+                entry.height_breitinger = entry.value * 2.715 + 83.21;
+                entry.height_bach = entry.value * 2.121 + 99.44;
+                h2there = true;
+            }
+
+            if (entry.id === 141363) { //R1b
+                entry.height_breitinger = entry.value * 2.968 + 97.09;
+                entry.height_bach = entry.value * 1.925 + 116.89;
+            }
+
+            if (entry.id === 132017) { //F1
+                entry.height_breitinger = entry.value * 1.645 + 94.31;
+                entry.height_bach = entry.value * 1.313 + 106.69;
+                entry.height_pearson_m = entry.value * 1.880 + 81.306;
+                entry.height_pearson_f = entry.value * 1.945 + 72.844;
+                if (entry.siding === 'r') f1R = entry;
+                if (entry.siding === 'l') f1L = entry;
+                if (entry.siding === '') f1 = entry;
+                f1there = true;
+            }
+            if (entry.id === 132033) { //T1b
+                entry.height_breitinger = entry.value * 1.988 + 95.59;
+                entry.height_bach = entry.value * 1.745 + 95.91;
+                entry.height_pearson_m = entry.value * 2.376 + 78.664;
+                entry.height_pearson_f = entry.value * 2.352 + 74.774;
+                if (entry.siding === 'r') t1bR = entry;
+                if (entry.siding === 'l') t1bL = entry;
+                if (entry.siding === '') t1b = entry;
+                t1bthere = true;
+            }
+            if (entry.id === 132004) { //R1
+                entry.height_pearson_m = entry.value * 3.271 + 85.925;
+                entry.height_pearson_f = entry.value * 3.343 + 81.224;
+                r1there = true;
+                if (entry.siding === 'r') r1R = entry;
+                if (entry.siding === 'l') r1L = entry;
+                if (entry.siding === '') r1 = entry;
+            }
+
+            measurebones.push(entry)
+
         }
     })
 
+    //console.log(measurebones)
+    var bones = {
+        'BachBones': [],
+        'BachAvg': 0,
+        'BachArr': [],
+        'BreitingerBones': [],
+        'BreitingerAvg': 0,
+        'BreitingerArr': [],
+        'PearsonBonesM': [],
+        'PearsonAvgM': 0,
+        'PearsonArrM': [],
+        'PearsonBonesF': [],
+        'PearsonAvgF': 0,
+        'PearsonArrF': [],
+    }
 
-    if (bhsex === 'female' && agecheck && femaleage.length > 0) var weiter = true;
-    if (bhsex === 'male' && agecheck && maleage.length > 0) var weiter = true;
+
+    $.each(measurebones, function (i, entry) {
+        if (entry.height_pearson_m) {
+            bones.PearsonBonesM.push({
+                'id': entry.id, 'siding': entry.siding,
+                'name': entry.name,
+                'value': parseFloat(entry.height_pearson_m.toFixed(1)),
+                'length': entry.value
+            });
+            bones.PearsonArrM.push(parseFloat(entry.height_pearson_m.toFixed(1)));
+        }
+        if (entry.height_pearson_f) {
+            bones.PearsonBonesF.push({
+                'id': entry.id,
+                'siding': entry.siding,
+                'name': entry.name,
+                'value': parseFloat(entry.height_pearson_f.toFixed(1)),
+                'length': entry.value
+            });
+            bones.PearsonArrF.push(parseFloat(entry.height_pearson_f.toFixed(1)));
+        }
+        if (entry.height_breitinger && h2there === false) {
+            bones.BreitingerBones.push({
+                'id': entry.id,
+                'siding': entry.siding,
+                'name': entry.name,
+                'value': parseFloat(entry.height_breitinger.toFixed(1)),
+                'length': entry.value
+            });
+            bones.BreitingerArr.push(parseFloat(entry.height_breitinger.toFixed(1)));
+        }
+        if (entry.height_breitinger && h2there && entry.id !== 118169) {
+            bones.BreitingerBones.push({
+                'id': entry.id,
+                'siding': entry.siding,
+                'name': entry.name,
+                'value': parseFloat(entry.height_breitinger.toFixed(1)),
+                'length': entry.value
+            });
+            bones.BreitingerArr.push(parseFloat(entry.height_breitinger.toFixed(1)));
+        }
+        if (entry.height_bach && h2there === false) {
+            bones.BachBones.push({
+                'id': entry.id,
+                'siding': entry.siding,
+                'name': entry.name,
+                'value': parseFloat(entry.height_bach.toFixed(1)),
+                'length': entry.value
+            });
+            bones.BachArr.push(parseFloat(entry.height_bach.toFixed(1)));
+        }
+        if (entry.height_bach && h2there && entry.id !== 118169) {
+            bones.BachBones.push({
+                'id': entry.id,
+                'siding': entry.siding,
+                'name': entry.name,
+                'value': parseFloat(entry.height_bach.toFixed(1)),
+                'length': entry.value
+            });
+            bones.BachArr.push(parseFloat(entry.height_bach.toFixed(1)));
+        }
+    })
+    //console.log(bones);
+    bones.methods = [];
+
+    //Pearson Combinations
+    //Pearson 5 and 6 for each siding and undetermined siding
+    if (typeof (f1) !== 'undefined' && typeof (t1b) !== 'undefined') {
+        var bone = {
+            'id': 0,
+            'siding': '',
+            'name': 'Pearson 5 (F1 + T1b)',
+            'valuef': parseFloat(((f1.value + t1b.value) * 1.126 + 69.154).toFixed(1)),
+            'valuem': parseFloat(((f1.value + t1b.value) * 1.159 + 71.272).toFixed(1)),
+            'length': f1.value + t1b.value
+        }
+        bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
+        bones.PearsonBonesM.push(PearsonSelect(bone, 'male'));
+        bones.PearsonArrF.push(bone.valuef);
+        bones.PearsonArrM.push(bone.valuem);
+
+        var bone = {
+            'id': 0,
+            'siding': '',
+            'name': 'Pearson 6 (F1 + T1b)',
+            'valuef': parseFloat(((f1.value * 1.117) + (t1b.value * 1.125) + 69.561).toFixed(1)),
+            'valuem': parseFloat(((f1.value * 1.117) + (t1b.value * 1.125) + 69.561).toFixed(1)),
+            'length': f1.value + t1b.value
+        }
+        bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
+        bones.PearsonBonesM.push(PearsonSelect(bone, 'male'));
+        bones.PearsonArrF.push(bone.valuef);
+        bones.PearsonArrM.push(bone.valuem);
+
+    }
+
+
+    if (typeof (f1R) !== 'undefined' && typeof (t1bR) !== 'undefined') {
+        var bone = {
+            'id': 0,
+            'siding': 'r',
+            'name': 'r Pearson 5 (F1 + T1b)',
+            'valuef': parseFloat(((f1R.value + t1bR.value) * 1.126 + 69.154).toFixed(1)),
+            'valuem': parseFloat(((f1R.value + t1bR.value) * 1.159 + 71.272).toFixed(1)),
+            'length': f1R.value + t1bR.value
+        }
+        bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
+        bones.PearsonBonesM.push(PearsonSelect(bone, 'male'));
+        bones.PearsonArrF.push(bone.valuef);
+        bones.PearsonArrM.push(bone.valuem);
+        var bone = {
+            'id': 0,
+            'siding': 'r',
+            'name': 'r Pearson 6 (F1 + T1b)',
+            'valuef': parseFloat(((f1R.value * 1.117) + (t1bR.value * 1.125) + 69.561).toFixed(1)),
+            'valuem': parseFloat(((f1R.value * 1.117) + (t1bR.value * 1.125) + 69.561).toFixed(1)),
+            'length': f1R.value + t1bR.value
+        }
+        bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
+        bones.PearsonBonesM.push(PearsonSelect(bone, 'male'));
+        bones.PearsonArrF.push(bone.valuef);
+        bones.PearsonArrM.push(bone.valuem);
+
+    }
+
+    if (typeof (f1L) !== 'undefined' && typeof (t1bL) !== 'undefined') {
+        var bone = {
+            'id': 0,
+            'siding': 'l',
+            'name': 'l Pearson 5 (F1 + T1b)',
+            'valuef': parseFloat(((f1L.value + t1bL.value) * 1.126 + 69.154).toFixed(1)),
+            'valuem': parseFloat(((f1L.value + t1bL.value) * 1.159 + 71.272).toFixed(1)),
+            'length': f1L.value + t1bL.value
+        }
+        bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
+        bones.PearsonBonesM.push(PearsonSelect(bone, 'male'));
+        bones.PearsonArrF.push(bone.valuef);
+        bones.PearsonArrM.push(bone.valuem);
+        var bone = {
+            'id': 0,
+            'siding': 'l',
+            'name': 'l Pearson 6 (F1 + T1b)',
+            'valuef': parseFloat(((f1L.value * 1.117) + (t1bL.value * 1.125) + 69.561).toFixed(1)),
+            'valuem': parseFloat(((f1L.value * 1.117) + (t1bL.value * 1.125) + 69.561).toFixed(1)),
+            'length': f1L.value + t1bL.value
+        }
+        bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
+        bones.PearsonBonesM.push(PearsonSelect(bone, 'male'));
+        bones.PearsonArrF.push(bone.valuef);
+        bones.PearsonArrM.push(bone.valuem);
+
+    }
+
+    //Pearson 7 and 8 for each siding and undetermined siding
+    if (typeof (h1) !== 'undefined' && typeof (r1) !== 'undefined') {
+        var bone = {
+            'id': 0,
+            'siding': '',
+            'name': 'Pearson 7 (H1 + R1)',
+            'value': parseFloat(((h1.value + r1.value) * 1.628 + 69.911).toFixed(1)),
+            'length': h1.value + r1.value
+        }
+        bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
+        bones.PearsonBonesM.push(PearsonSelect(bone, 'male'));
+        bones.PearsonArrF.push(bone.valuef);
+        bones.PearsonArrM.push(bone.valuem);
+        var bone = {
+            'id': 0,
+            'siding': '',
+            'name': 'Pearson 8 (H1 + R1)',
+            'value': parseFloat(((h1.value * 2.582) + (r1.value * 0.281) + 70.542).toFixed(1)),
+            'length': h1.value + r1.value
+        }
+        bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
+        bones.PearsonBonesM.push(PearsonSelect(bone, 'male'));
+        bones.PearsonArrF.push(bone.valuef);
+        bones.PearsonArrM.push(bone.valuem);
+
+    }
+    if (typeof (h1L) !== 'undefined' && typeof (r1L) !== 'undefined') {
+        var bone = {
+            'id': 0,
+            'siding': 'l',
+            'name': 'l Pearson 7 (H1 + R1)',
+            'valuef': parseFloat(((h1L.value + r1L.value) * 1.628 + 69.911).toFixed(1)),
+            'valuem': parseFloat(((h1L.value + r1L.value) * 1.628 + 69.911).toFixed(1)),
+            'length': h1L.value + r1L.value
+        }
+        bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
+        bones.PearsonBonesM.push(PearsonSelect(bone, 'male'));
+        bones.PearsonArrF.push(bone.valuef);
+        bones.PearsonArrM.push(bone.valuem);
+        var bone = {
+            'id': 0,
+            'siding': 'l',
+            'name': 'l Pearson 8 (H1 + R1)',
+            'valuef': parseFloat(((h1L.value * 2.582) + (r1L.value * 0.281) + 70.542).toFixed(1)),
+            'valuem': parseFloat(((h1L.value * 2.582) + (r1L.value * 0.281) + 70.542).toFixed(1)),
+            'length': h1L.value + r1L.value
+        }
+        bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
+        bones.PearsonBonesM.push(PearsonSelect(bone, 'male'));
+        bones.PearsonArrF.push(bone.valuef);
+        bones.PearsonArrM.push(bone.valuem);
+
+    }
+
+    if (typeof (h1R) !== 'undefined' && typeof (r1R) !== 'undefined') {
+        var bone = {
+            'id': 0,
+            'siding': 'r',
+            'name': 'r Pearson 7 (H1 + R1)',
+            'valuef': parseFloat(((h1R.value + r1R.value) * 1.628 + 69.911).toFixed(1)),
+            'valuem': parseFloat(((h1R.value + r1R.value) * 1.628 + 69.911).toFixed(1)),
+            'length': h1R.value + r1R.value
+        }
+        bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
+        bones.PearsonBonesM.push(PearsonSelect(bone, 'male'));
+        bones.PearsonArrF.push(bone.valuef);
+        bones.PearsonArrM.push(bone.valuem);
+        var bone = {
+            'id': 0,
+            'siding': 'r',
+            'name': 'r Pearson 8 (H1 + R1)',
+            'valuef': parseFloat(((h1R.value * 2.582) + (r1R.value * 0.281) + 70.542).toFixed(1)),
+            'valuem': parseFloat(((h1R.value * 2.582) + (r1R.value * 0.281) + 70.542).toFixed(1)),
+            'length': h1R.value + r1R.value
+        }
+        bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
+        bones.PearsonBonesM.push(PearsonSelect(bone, 'male'));
+        bones.PearsonArrF.push(bone.valuef);
+        bones.PearsonArrM.push(bone.valuem);
+
+    }
+
+    //Pearson 9 for each siding and undetermined siding
+    if (typeof (h1) !== 'undefined' && typeof (f1) !== 'undefined') {
+        var bone = {
+            'id': 0,
+            'siding': '',
+            'name': 'Pearson 9 (H1 + F1)',
+            'valuef': parseFloat(((h1.value * 1.027) + (f1.value * 1.339) + 67.435).toFixed(1)),
+            'valuem': parseFloat(((h1.value * 1.027) + (f1.value * 1.339) + 67.435).toFixed(1)),
+            'length': h1.value + f1.value
+        }
+        bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
+        bones.PearsonBonesM.push(PearsonSelect(bone, 'male'));
+        bones.PearsonArrF.push(bone.valuef);
+        bones.PearsonArrM.push(bone.valuem);
+    }
+
+    if (typeof (h1L) !== 'undefined' && typeof (f1L) !== 'undefined') {
+        var bone = {
+            'id': 0,
+            'siding': 'l',
+            'name': 'l Pearson 9 (H1 + F1)',
+            'valuef': parseFloat(((h1L.value * 1.027) + (f1L.value * 1.339) + 67.435).toFixed(1)),
+            'valuem': parseFloat(((h1L.value * 1.027) + (f1L.value * 1.339) + 67.435).toFixed(1)),
+            'length': h1L.value + f1L.value
+        }
+        bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
+        bones.PearsonBonesM.push(PearsonSelect(bone, 'male'));
+        bones.PearsonArrF.push(bone.valuef);
+        bones.PearsonArrM.push(bone.valuem);
+
+    }
+
+    if (typeof (h1R) !== 'undefined' && typeof (f1R) !== 'undefined') {
+        var bone = {
+            'id': 0,
+            'siding': 'r',
+            'name': 'r Pearson 9 (H1 + F1)',
+            'valuef': parseFloat(((h1R.value * 1.027) + (f1R.value * 1.339) + 67.435).toFixed(1)),
+            'valuem': parseFloat(((h1R.value * 1.027) + (f1R.value * 1.339) + 67.435).toFixed(1)),
+            'length': h1R.value + f1R.value
+        }
+        bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
+        bones.PearsonBonesM.push(PearsonSelect(bone, 'male'));
+        bones.PearsonArrF.push(bone.valuef);
+        bones.PearsonArrM.push(bone.valuem);
+    }
+
+    //Pearson 10 for each siding and undetermined siding
+    if (typeof (f1) !== 'undefined' && typeof (t1b) !== 'undefined' && typeof (h1) !== 'undefined' && typeof (r1) !== 'undefined') {
+        var bone = {
+            'id': 0,
+            'siding': '',
+            'name': 'Pearson 10 (F1, T1b, H1, R1)',
+            'valuef': parseFloat((f1.value * 0.782) + (t1b.value * 1.120) + (h1.value * 1.059) - (r1.value * 0.711) + 67.469).toFixed(1),
+            'valuem': parseFloat((f1.value * 0.782) + (t1b.value * 1.120) + (h1.value * 1.059) - (r1.value * 0.711) + 67.469).toFixed(1),
+            'length': (h1.value + f1.value + t1b.value - r1.value).toFixed(1)
+        }
+        bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
+        bones.PearsonBonesM.push(PearsonSelect(bone, 'male'));
+        bones.PearsonArrF.push(parseFloat(bone.valuef));
+        bones.PearsonArrM.push(parseFloat(bone.valuem));
+    }
+
+    if (typeof (f1L) !== 'undefined' && typeof (t1bL) !== 'undefined' && typeof (h1L) !== 'undefined' && typeof (r1L) !== 'undefined') {
+        console.log(parseFloat(((f1L.value * 0.782) + (t1bL.value * 1.120) + (h1L.value * 1.059) - (r1L.value * 0.711) + 67.469).toFixed(1)));
+        var bone = {
+            'id': 0,
+            'siding': 'l',
+            'name': 'l Pearson 10 (F1, T1b, H1, R1)',
+            'valuef': parseFloat((f1L.value * 0.782) + (t1bL.value * 1.120) + (h1L.value * 1.059) - (r1L.value * 0.711) + 67.469).toFixed(1),
+            'valuem': parseFloat((f1L.value * 0.782) + (t1bL.value * 1.120) + (h1L.value * 1.059) - (r1L.value * 0.711) + 67.469).toFixed(1),
+            'length': (h1L.value + f1L.value + t1bL.value - r1L.value).toFixed(1)
+        }
+        bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
+        bones.PearsonBonesM.push(PearsonSelect(bone, 'male'));
+        bones.PearsonArrF.push(parseFloat(bone.valuef));
+        bones.PearsonArrM.push(parseFloat(bone.valuem));
+    }
+
+    if (typeof (f1R) !== 'undefined' && typeof (t1bR) !== 'undefined' && typeof (h1R) !== 'undefined' && typeof (r1R) !== 'undefined') {
+        var bone = {
+            'id': 0,
+            'siding': 'r',
+            'name': 'r Pearson 10 (F1, T1b, H1, R1)',
+            'valuef': parseFloat((f1R.value * 0.782) + (t1bR.value * 1.120) + (h1R.value * 1.059) - (r1R.value * 0.711) + 67.469).toFixed(1),
+            'valuem': parseFloat((f1R.value * 0.782) + (t1bR.value * 1.120) + (h1R.value * 1.059) - (r1R.value * 0.711) + 67.469).toFixed(1),
+            'length': (h1R.value + f1R.value + t1bR.value - r1R.value).toFixed(1)
+        }
+        bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
+        bones.PearsonBonesM.push(PearsonSelect(bone, 'male'));
+        bones.PearsonArrF.push(parseFloat(bone.valuef));
+        bones.PearsonArrM.push(parseFloat(bone.valuem));
+    }
+
+
+    console.log(bones);
+
+
+    if (bhsex === 'female' && agecheck && bones.BachArr.length > 0) {
+        var weiter = true;
+        bones.methods.push({'name': 'Bach 1965', 'method': 'Bach'});
+    }
+    if (bhsex === 'male' && agecheck && bones.BreitingerArr.length > 0) {
+        var weiter = true;
+        bones.methods.push({'name': 'Breitinger 1938', 'method': 'Breitinger'});
+    }
+    if (bhsex === 'male' && agecheck && bones.PearsonArrM.length > 0) {
+        var weiter = true;
+        bones.methods.push({'name': 'Pearson 1898', 'method': 'PearsonM'});
+    }
+    if (bhsex === 'female' && agecheck && bones.PearsonArrF.length > 0) {
+        var weiter = true;
+        bones.methods.push({'name': 'Pearson 1898', 'method': 'PearsonF'});
+    }
 
     if (weiter) {
-        const arrAvg = arr => arr.reduce((a, b) => a + b, 0) / arr.length
-        if (bhsex === 'male') var bodyheight_avg = arrAvg(maleage).toFixed(2);
-        if (bhsex === 'female') var bodyheight_avg = arrAvg(femaleage).toFixed(2);
-        //if (sex === 'undetermined') var bodyheight_avg = [arrAvg(femaleage).toFixed(2), arrAvg(femaleage).toFixed(2)]
-        var bodyheightBtn = '<div type="button" class="modalrowitem heigthbtn">Body height: ' + bodyheight_avg + ' cm</div>'
 
-        var calcData = {'sex': bhsex, 'bones': measurbones, 'btn': bodyheightBtn, 'avg': bodyheight_avg}
-        return calcData
+        const arrAvg = arr => arr.reduce((a, b) => a + b, 0) / arr.length
+        if (bones.BreitingerArr.length > 0) bones.BreitingerAvg = parseFloat(arrAvg(bones.BreitingerArr).toFixed(1));
+        if (bones.PearsonBonesM.length > 0) bones.PearsonAvgM = parseFloat(arrAvg(bones.PearsonArrM).toFixed(1));
+        if (bones.BachArr.length > 0) bones.BachAvg = parseFloat(arrAvg(bones.BachArr).toFixed(1));
+        if (bones.PearsonArrF.length > 0) bones.PearsonAvgF = parseFloat(arrAvg(bones.PearsonArrF).toFixed(1));
+
+        if (bhsex === 'male') {
+            var bodyheight_avg = bones.BreitingerAvg;
+            bones.method = 'Breitinger'
+            if (bodyheight_avg === 0) {
+                bodyheight_avg = bones.PearsonAvgM;
+                bones.method = 'PearsonM'
+            }
+        }
+        if (bhsex === 'female') {
+            var bodyheight_avg = bones.BachAvg;
+            bones.method = 'Bach'
+            if (bodyheight_avg === 0) {
+                bodyheight_avg = bones.PearsonAvgF;
+                bones.method = 'PearsonF'
+            }
+        }
+        //if (sex === 'undetermined') var bodyheight_avg = [arrAvg(BachHeight).toFixed(2), arrAvg(BachHeight).toFixed(2)]
+        var bodyheightBtn = '<div type="button" onclick="bodyheightmodal(\'' + bones.method + '\')" title="Average body height calculated after: ' + bones.method + '" class="modalrowitem heigthbtn">Body height: ' + bodyheight_avg + ' cm</div>'
+
+        bones.sex = bhsex;
+        bones.btn = bodyheightBtn;
+        bones.avg = bodyheight_avg;
+
+        //console.log(bones)
+        return bones
     } else return false
+}
+
+
+function bodyheightmodal(method) {
+    $('#bodyheight').empty();
+    $('#HeightModal').modal('show')
+
+
+    bhLabels = []
+    bhData = []
+    bhAvg = []
+
+    if (method === 'Bach') {
+        bonesToUse = bodyheight().BachBones;
+        citeUrl = 'https://www.jstor.org/stable/29537886';
+        citeName = 'Bach 1965';
+        bonesToUse.avg = bodyheight().BachAvg;
+        console.log(bonesToUse)
+    }
+    if (method === 'Breitinger') {
+        bonesToUse = bodyheight().BreitingerBones;
+        citeUrl = 'https://www.jstor.org/stable/29536541';
+        citeName = 'Breitinger 1938';
+        bonesToUse.avg = bodyheight().BreitingerAvg;
+        console.log(bonesToUse)
+    }
+    if (method === 'PearsonM') {
+        bonesToUse = bodyheight().PearsonBonesM;
+        citeUrl = 'https://www.jstor.org/stable/116008';
+        citeName = 'Pearson 1898';
+        bonesToUse.avg = bodyheight().PearsonAvgM;
+        console.log(bonesToUse)
+    }
+    if (method === 'PearsonF') {
+        bonesToUse = bodyheight().PearsonBonesF;
+        citeUrl = 'https://www.jstor.org/stable/116008';
+        citeName = 'Pearson 1898';
+        bonesToUse.avg = bodyheight().PearsonAvgF;
+        console.log(bonesToUse)
+    }
+
+    var avg = bonesToUse.avg;
+    $('#bodyheight').append('<div>Average body height: ' + avg + ' cm</div>')
+
+
+    $('#bodyheight').append(
+        '<div class="mb-3 mt-3 text-muted">Calculation after: <a href="' + citeUrl + '" target="_blank">' + citeName + '</a></div>' +
+        '<div class="mb-2 p-2 border rounded" id="chartwrapper"><canvas id="bhChart">' +
+            '</canvas><div class="text-center text-muted" id="avgLegend"><b class="mr-2">- - - - - - - -</b> Average: ' + avg + ' cm.</div></div>' +
+        '<div class="input-group input-group-sm mt-2 mb-2">\n' +
+        '  <div class="input-group-prepend">\n' +
+        '    <label class="input-group-text" for="inputGroupSelect01">Method</label>\n' +
+        '  </div>\n' +
+        '  <select class="custom-select" id="inputGroupSelect01">\n' +
+        '  </select>\n' +
+        '</div>' +
+        '<div id="accordion">\n' +
+        '  <div class="card">\n' +
+        '    <div class="card-header p-0" id="boneData">\n' +
+        '      <span class="mb-0">\n' +
+        '        <a class="btn btn-sm btn-link" data-toggle="collapse" data-target="#bonetable" aria-expanded="true" aria-controls="bonetable">\n' +
+        '          Data' +
+        '        </a>\n' +
+        '      </span>\n' +
+        '    </div>' +
+        '<ul id="bonetable" class="collapse show text-muted list-group list-group-flush">\n' +
+        '</ul>'+
+        '</div>'
+
+
+        )
+
+    $.each(bonesToUse, function (i, bone) {
+        $('#bonetable').append('<li class="list-group-item">' + bone.name + ': ' + bone.length + ' cm. <i class="mr-2 fas fa-arrow-right"></i>calculated: ' + bone.value + ' cm. </li>')
+        bhLabels.push('Estimated after: ' + bone.name);
+        bhData.push(bone.value.toFixed(1));
+        bhAvg.push(avg);
+    })
+
+
+    var ctx = document.getElementById('bhChart').getContext('2d');
+
+    var avgLabel = 'Average: ' + avg + ' cm.'
+
+    var config = {
+        // The type of chart we want to create
+        type: 'bar',
+
+        // The data for our dataset
+        data: {
+            labels: JSON.parse(JSON.stringify(bhLabels)),
+            datasets: [
+
+                {
+                    type: 'bar',
+                    label: 'cm',
+                    backgroundColor: 'rgb(99,133,255)',
+                    borderColor: 'rgb(99,125,255)',
+                    data: JSON.parse(JSON.stringify(bhData))
+                }
+            ]
+        },
+
+        // Configuration options go here
+        options: {
+            legend: {
+                display: false,
+            },
+            scales: {
+                xAxes: [{
+                    ticks: {
+                        display: false //this will remove only the label
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            },
+            annotation: {
+                annotations: [{
+                    type: 'line',
+                    mode: 'horizontal',
+                    scaleID: 'y-axis-0',
+                    value: avg,
+                    borderColor: 'rgb(90,90,90)',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    label: {
+                        enabled: false,
+                        //content: avgLabel,
+
+                    }
+                }]
+            }
+
+        }
+    };
+
+    var chart = new Chart(ctx, config)
+
+    usedMethod = method;
+    console.log(usedMethod)
+
+    $.each(bodyheight().methods, function (i, method) {
+        console.log(method.method)
+        if (method.method === usedMethod) {
+            $('#inputGroupSelect01').append(
+                '<option selected value="' + method.method + '">' + method.name + '</option>'
+            )
+        } else {
+            $('#inputGroupSelect01').append(
+                '<option value="' + method.method + '">' + method.name + '</option>'
+            )
+        }
+    })
+
+    $('#inputGroupSelect01').change(function () {
+        var data = $(this).val();
+        bodyheightmodal(data)
+    });
+
+}
+
+function PearsonSelect(bone, sex) {
+    if (sex === 'male') {
+        var returnBone = JSON.parse(JSON.stringify({
+            'id': bone.id,
+            'siding': bone.siding,
+            'name': bone.name,
+            'value': parseFloat(bone.valuem),
+            'length': parseFloat(bone.length)
+        }))
+    }
+    ;
+    if (sex === 'female') {
+        var returnBone = JSON.parse(JSON.stringify({
+            'id': bone.id,
+            'siding': bone.siding,
+            'name': bone.name,
+            'value': parseFloat(bone.valuef),
+            'length': parseFloat(bone.length)
+        }))
+    }
+    return returnBone
 }
