@@ -2704,7 +2704,7 @@ function bodyheight() {
             'siding': '',
             'name': 'Pearson 6 (F1 + T1b)',
             'valuef': parseFloat(((f1.value * 1.117) + (t1b.value * 1.125) + 69.561).toFixed(1)),
-            'valuem': parseFloat(((f1.value * 1.117) + (t1b.value * 1.125) + 69.561).toFixed(1)),
+            'valuem': parseFloat(((f1.value * 1.220) + (t1b.value * 1.080) + 71.443).toFixed(1)),
             'length': f1.value + t1b.value
         }
         bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
@@ -2733,7 +2733,7 @@ function bodyheight() {
             'siding': 'r',
             'name': 'r Pearson 6 (F1 + T1b)',
             'valuef': parseFloat(((f1R.value * 1.117) + (t1bR.value * 1.125) + 69.561).toFixed(1)),
-            'valuem': parseFloat(((f1R.value * 1.117) + (t1bR.value * 1.125) + 69.561).toFixed(1)),
+            'valuem': parseFloat(((f1R.value * 1.220) + (t1bR.value * 1.080) + 71.443).toFixed(1)),
             'length': f1R.value + t1bR.value
         }
         bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
@@ -2761,7 +2761,7 @@ function bodyheight() {
             'siding': 'l',
             'name': 'l Pearson 6 (F1 + T1b)',
             'valuef': parseFloat(((f1L.value * 1.117) + (t1bL.value * 1.125) + 69.561).toFixed(1)),
-            'valuem': parseFloat(((f1L.value * 1.117) + (t1bL.value * 1.125) + 69.561).toFixed(1)),
+            'valuem': parseFloat(((f1L.value * 1.220) + (t1bL.value * 1.080) + 71.443).toFixed(1)),
             'length': f1L.value + t1bL.value
         }
         bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
@@ -2777,7 +2777,8 @@ function bodyheight() {
             'id': 0,
             'siding': '',
             'name': 'Pearson 7 (H1 + R1)',
-            'value': parseFloat(((h1.value + r1.value) * 1.628 + 69.911).toFixed(1)),
+            'valuef': parseFloat(((h1.value + r1.value) * 1.628 + 69.911).toFixed(1)),
+            'valuem': parseFloat(((h1.value + r1.value) * 1.730 + 66.855).toFixed(1)),
             'length': h1.value + r1.value
         }
         bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
@@ -2788,7 +2789,8 @@ function bodyheight() {
             'id': 0,
             'siding': '',
             'name': 'Pearson 8 (H1 + R1)',
-            'value': parseFloat(((h1.value * 2.582) + (r1.value * 0.281) + 70.542).toFixed(1)),
+            'valuef': parseFloat(((h1.value * 2.582) + (r1.value * 0.281) + 70.542).toFixed(1)),
+            'valuem': parseFloat(((h1.value * 2.769) + (r1.value * 0.195) + 69.788).toFixed(1)),
             'length': h1.value + r1.value
         }
         bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
@@ -2803,7 +2805,7 @@ function bodyheight() {
             'siding': 'l',
             'name': 'l Pearson 7 (H1 + R1)',
             'valuef': parseFloat(((h1L.value + r1L.value) * 1.628 + 69.911).toFixed(1)),
-            'valuem': parseFloat(((h1L.value + r1L.value) * 1.628 + 69.911).toFixed(1)),
+            'valuem': parseFloat(((h1L.value + r1L.value) * 1.730 + 66.855).toFixed(1)),
             'length': h1L.value + r1L.value
         }
         bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
@@ -2815,7 +2817,7 @@ function bodyheight() {
             'siding': 'l',
             'name': 'l Pearson 8 (H1 + R1)',
             'valuef': parseFloat(((h1L.value * 2.582) + (r1L.value * 0.281) + 70.542).toFixed(1)),
-            'valuem': parseFloat(((h1L.value * 2.582) + (r1L.value * 0.281) + 70.542).toFixed(1)),
+            'valuem': parseFloat(((h1L.value * 2.769) + (r1L.value * 0.195) + 69.788).toFixed(1)),
             'length': h1L.value + r1L.value
         }
         bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
@@ -2831,7 +2833,7 @@ function bodyheight() {
             'siding': 'r',
             'name': 'r Pearson 7 (H1 + R1)',
             'valuef': parseFloat(((h1R.value + r1R.value) * 1.628 + 69.911).toFixed(1)),
-            'valuem': parseFloat(((h1R.value + r1R.value) * 1.628 + 69.911).toFixed(1)),
+            'valuem': parseFloat(((h1R.value + r1R.value) * 1.730 + 66.855).toFixed(1)),
             'length': h1R.value + r1R.value
         }
         bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
@@ -2843,7 +2845,7 @@ function bodyheight() {
             'siding': 'r',
             'name': 'r Pearson 8 (H1 + R1)',
             'valuef': parseFloat(((h1R.value * 2.582) + (r1R.value * 0.281) + 70.542).toFixed(1)),
-            'valuem': parseFloat(((h1R.value * 2.582) + (r1R.value * 0.281) + 70.542).toFixed(1)),
+            'valuem': parseFloat(((h1R.value * 2.769) + (r1R.value * 0.195) + 69.788).toFixed(1)),
             'length': h1R.value + r1R.value
         }
         bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
@@ -2860,7 +2862,7 @@ function bodyheight() {
             'siding': '',
             'name': 'Pearson 9 (H1 + F1)',
             'valuef': parseFloat(((h1.value * 1.027) + (f1.value * 1.339) + 67.435).toFixed(1)),
-            'valuem': parseFloat(((h1.value * 1.027) + (f1.value * 1.339) + 67.435).toFixed(1)),
+            'valuem': parseFloat(((h1.value * 1.557) + (f1.value * 1.030) + 68.397).toFixed(1)),
             'length': h1.value + f1.value
         }
         bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
@@ -2875,7 +2877,7 @@ function bodyheight() {
             'siding': 'l',
             'name': 'l Pearson 9 (H1 + F1)',
             'valuef': parseFloat(((h1L.value * 1.027) + (f1L.value * 1.339) + 67.435).toFixed(1)),
-            'valuem': parseFloat(((h1L.value * 1.027) + (f1L.value * 1.339) + 67.435).toFixed(1)),
+            'valuem': parseFloat(((h1L.value * 1.557) + (f1L.value * 1.030) + 68.397).toFixed(1)),
             'length': h1L.value + f1L.value
         }
         bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
@@ -2891,7 +2893,7 @@ function bodyheight() {
             'siding': 'r',
             'name': 'r Pearson 9 (H1 + F1)',
             'valuef': parseFloat(((h1R.value * 1.027) + (f1R.value * 1.339) + 67.435).toFixed(1)),
-            'valuem': parseFloat(((h1R.value * 1.027) + (f1R.value * 1.339) + 67.435).toFixed(1)),
+            'valuem': parseFloat(((h1R.value * 1.557) + (f1R.value * 1.030) + 68.397).toFixed(1)),
             'length': h1R.value + f1R.value
         }
         bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
@@ -2907,7 +2909,7 @@ function bodyheight() {
             'siding': '',
             'name': 'Pearson 10 (F1, T1b, H1, R1)',
             'valuef': parseFloat((f1.value * 0.782) + (t1b.value * 1.120) + (h1.value * 1.059) - (r1.value * 0.711) + 67.469).toFixed(1),
-            'valuem': parseFloat((f1.value * 0.782) + (t1b.value * 1.120) + (h1.value * 1.059) - (r1.value * 0.711) + 67.469).toFixed(1),
+            'valuem': parseFloat((f1.value * 0.913) + (t1b.value * 0.600) + (h1.value * 1.225) - (r1.value * 0.187) + 67.049).toFixed(1),
             'length': (h1.value + f1.value + t1b.value - r1.value).toFixed(1)
         }
         bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
@@ -2917,13 +2919,12 @@ function bodyheight() {
     }
 
     if (typeof (f1L) !== 'undefined' && typeof (t1bL) !== 'undefined' && typeof (h1L) !== 'undefined' && typeof (r1L) !== 'undefined') {
-        console.log(parseFloat(((f1L.value * 0.782) + (t1bL.value * 1.120) + (h1L.value * 1.059) - (r1L.value * 0.711) + 67.469).toFixed(1)));
         var bone = {
             'id': 0,
             'siding': 'l',
             'name': 'l Pearson 10 (F1, T1b, H1, R1)',
             'valuef': parseFloat((f1L.value * 0.782) + (t1bL.value * 1.120) + (h1L.value * 1.059) - (r1L.value * 0.711) + 67.469).toFixed(1),
-            'valuem': parseFloat((f1L.value * 0.782) + (t1bL.value * 1.120) + (h1L.value * 1.059) - (r1L.value * 0.711) + 67.469).toFixed(1),
+            'valuem': parseFloat((f1L.value * 0.913) + (t1bL.value * 0.600) + (h1L.value * 1.225) - (r1L.value * 0.187) + 67.049).toFixed(1),
             'length': (h1L.value + f1L.value + t1bL.value - r1L.value).toFixed(1)
         }
         bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
@@ -2938,7 +2939,7 @@ function bodyheight() {
             'siding': 'r',
             'name': 'r Pearson 10 (F1, T1b, H1, R1)',
             'valuef': parseFloat((f1R.value * 0.782) + (t1bR.value * 1.120) + (h1R.value * 1.059) - (r1R.value * 0.711) + 67.469).toFixed(1),
-            'valuem': parseFloat((f1R.value * 0.782) + (t1bR.value * 1.120) + (h1R.value * 1.059) - (r1R.value * 0.711) + 67.469).toFixed(1),
+            'valuem': parseFloat((f1R.value * 0.913) + (t1bR.value * 0.600) + (h1R.value * 1.225) - (r1R.value * 0.187) + 67.049).toFixed(1),
             'length': (h1R.value + f1R.value + t1bR.value - r1R.value).toFixed(1)
         }
         bones.PearsonBonesF.push(PearsonSelect(bone, 'female'));
