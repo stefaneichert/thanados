@@ -2583,6 +2583,11 @@ function bodyheight() {
                 entry.height_bach = entry.value * 1.745 + 95.91;
                 entry.height_pearson_m = entry.value * 2.376 + 78.664;
                 entry.height_pearson_f = entry.value * 2.352 + 74.774;
+                entry.height_TrotterGleser_fw = entry.value * 2.93 + 59.61;
+                entry.height_TrotterGleser_mw = entry.value * 2.52 + 78.62;
+                entry.height_TrotterGleser_fb = entry.value * 2.45 + 72.65;
+                entry.height_TrotterGleser_mb = entry.value * 2.19 + 86.06;
+
                 if (entry.siding === 'r') t1bR = entry;
                 if (entry.siding === 'l') t1bL = entry;
                 if (entry.siding === '') t1b = entry;
@@ -2616,6 +2621,18 @@ function bodyheight() {
         'PearsonBonesF': [],
         'PearsonAvgF': 0,
         'PearsonArrF': [],
+        'TrotterGleserBonesFW': [],
+        'TrotterGleserBonesAvgFW': 0,
+        'TrotterGleserBonesArrFW': [],
+        'TrotterGleserBonesFB': [],
+        'TrotterGleserBonesAvgFB': 0,
+        'TrotterGleserBonesArrFB': [],
+        'TrotterGleserBonesMW': [],
+        'TrotterGleserBonesAvgMW': 0,
+        'TrotterGleserBonesArrMW': [],
+        'TrotterGleserBonesMB': [],
+        'TrotterGleserBonesAvgMB': 0,
+        'TrotterGleserBonesArrMB': [],
     }
 
 
@@ -2679,9 +2696,51 @@ function bodyheight() {
             });
             bones.BachArr.push(parseFloat(entry.height_bach.toFixed(1)));
         }
+        if (entry.height_TrotterGleser_fw) {
+            bones.TrotterGleserBonesFW.push({
+                'id': entry.id,
+                'siding': entry.siding,
+                'name': entry.name,
+                'value': parseFloat(entry.height_TrotterGleser_fw.toFixed(1)),
+                'length': entry.value
+            });
+            bones.TrotterGleserBonesArrFW.push(parseFloat(entry.height_TrotterGleser_fw.toFixed(1)));
+        }
+        if (entry.height_TrotterGleser_fb) {
+            bones.TrotterGleserBonesFB.push({
+                'id': entry.id,
+                'siding': entry.siding,
+                'name': entry.name,
+                'value': parseFloat(entry.height_TrotterGleser_fb.toFixed(1)),
+                'length': entry.value
+            });
+            bones.TrotterGleserBonesArrFB.push(parseFloat(entry.height_TrotterGleser_fb.toFixed(1)));
+        }
+        if (entry.height_TrotterGleser_mw) {
+            bones.TrotterGleserBonesMW.push({
+                'id': entry.id,
+                'siding': entry.siding,
+                'name': entry.name,
+                'value': parseFloat(entry.height_TrotterGleser_mw.toFixed(1)),
+                'length': entry.value
+            });
+            bones.TrotterGleserBonesArrMW.push(parseFloat(entry.height_TrotterGleser_mw.toFixed(1)));
+        }
+        if (entry.height_TrotterGleser_mb) {
+            bones.TrotterGleserBonesMB.push({
+                'id': entry.id,
+                'siding': entry.siding,
+                'name': entry.name,
+                'value': parseFloat(entry.height_TrotterGleser_mb.toFixed(1)),
+                'length': entry.value
+            });
+            bones.TrotterGleserBonesArrMB.push(parseFloat(entry.height_TrotterGleser_mb.toFixed(1)));
+        }
     })
     //console.log(bones);
     bones.methods = [];
+
+    //Trotter & Gleser 1952
 
     //Pearson Combinations
     //Pearson 5 and 6 for each siding and undetermined siding
@@ -2949,12 +3008,17 @@ function bodyheight() {
     }
 
 
-    console.log(bones);
-
-
     if (bhsex === 'female' && agecheck && bones.BachArr.length > 0) {
         var weiter = true;
         bones.methods.push({'name': 'Bach 1965', 'method': 'Bach'});
+    }
+    if (bhsex === 'female' && agecheck && t1bthere) {
+        var weiter = true;
+        bones.methods.push({'name': 'Trotter & Gleser 1952 (fw)', 'method': 'TGfw'}, {'name': 'Trotter & Gleser 1952 (fb)', 'method': 'TGfb'});
+    }
+    if (bhsex === 'male' && agecheck && t1bthere) {
+        var weiter = true;
+        bones.methods.push({'name': 'Trotter & Gleser 1952 (mw)', 'method': 'TGmw'}, {'name': 'Trotter & Gleser 1952 (mb)', 'method': 'TGmb'});
     }
     if (bhsex === 'male' && agecheck && bones.BreitingerArr.length > 0) {
         var weiter = true;
@@ -2976,6 +3040,10 @@ function bodyheight() {
         if (bones.PearsonBonesM.length > 0) bones.PearsonAvgM = parseFloat(arrAvg(bones.PearsonArrM).toFixed(1));
         if (bones.BachArr.length > 0) bones.BachAvg = parseFloat(arrAvg(bones.BachArr).toFixed(1));
         if (bones.PearsonArrF.length > 0) bones.PearsonAvgF = parseFloat(arrAvg(bones.PearsonArrF).toFixed(1));
+        if (bones.TrotterGleserBonesArrFB.length > 0) bones.TrotterGleserBonesAvgFB = parseFloat(arrAvg(bones.TrotterGleserBonesArrFB).toFixed(1));
+        if (bones.TrotterGleserBonesArrFW.length > 0) bones.TrotterGleserBonesAvgFW = parseFloat(arrAvg(bones.TrotterGleserBonesArrFW).toFixed(1));
+        if (bones.TrotterGleserBonesArrMB.length > 0) bones.TrotterGleserBonesAvgMB = parseFloat(arrAvg(bones.TrotterGleserBonesArrMB).toFixed(1));
+        if (bones.TrotterGleserBonesArrMW.length > 0) bones.TrotterGleserBonesAvgMW = parseFloat(arrAvg(bones.TrotterGleserBonesArrMW).toFixed(1));
 
         if (bhsex === 'male') {
             var bodyheight_avg = bones.BreitingerAvg;
@@ -3000,7 +3068,6 @@ function bodyheight() {
         bones.btn = bodyheightBtn;
         bones.avg = bodyheight_avg;
 
-        //console.log(bones)
         return bones
     } else return false
 }
@@ -3020,28 +3087,56 @@ function bodyheightmodal(method) {
         citeUrl = 'https://www.jstor.org/stable/29537886';
         citeName = 'Bach 1965';
         bonesToUse.avg = bodyheight().BachAvg;
-        console.log(bonesToUse)
+
     }
     if (method === 'Breitinger') {
         bonesToUse = bodyheight().BreitingerBones;
         citeUrl = 'https://www.jstor.org/stable/29536541';
         citeName = 'Breitinger 1938';
         bonesToUse.avg = bodyheight().BreitingerAvg;
-        console.log(bonesToUse)
+
     }
     if (method === 'PearsonM') {
         bonesToUse = bodyheight().PearsonBonesM;
         citeUrl = 'https://www.jstor.org/stable/116008';
         citeName = 'Pearson 1898';
         bonesToUse.avg = bodyheight().PearsonAvgM;
-        console.log(bonesToUse)
+
     }
     if (method === 'PearsonF') {
         bonesToUse = bodyheight().PearsonBonesF;
         citeUrl = 'https://www.jstor.org/stable/116008';
         citeName = 'Pearson 1898';
         bonesToUse.avg = bodyheight().PearsonAvgF;
-        console.log(bonesToUse)
+
+    }
+    if (method === 'TGmw') {
+        bonesToUse = bodyheight().TrotterGleserBonesMW;
+        citeUrl = ' https://doi.org/10.1002/ajpa.1330100407';
+        citeName = 'Trotter & Gleser 1952';
+        bonesToUse.avg = bodyheight().TrotterGleserBonesAvgMW;
+
+    }
+    if (method === 'TGmb') {
+        bonesToUse = bodyheight().TrotterGleserBonesMB;
+        citeUrl = ' https://doi.org/10.1002/ajpa.1330100407';
+        citeName = 'Trotter & Gleser 1952';
+        bonesToUse.avg = bodyheight().TrotterGleserBonesAvgMB;
+
+    }
+    if (method === 'TGfw') {
+        bonesToUse = bodyheight().TrotterGleserBonesFW;
+        citeUrl = ' https://doi.org/10.1002/ajpa.1330100407';
+        citeName = 'Trotter & Gleser 1952';
+        bonesToUse.avg = bodyheight().TrotterGleserBonesAvgFW;
+
+    }
+    if (method === 'TGfb') {
+        bonesToUse = bodyheight().TrotterGleserBonesFB;
+        citeUrl = ' https://doi.org/10.1002/ajpa.1330100407';
+        citeName = 'Trotter & Gleser 1952';
+        bonesToUse.avg = bodyheight().TrotterGleserBonesAvgFB;
+
     }
 
     var avg = bonesToUse.avg;
@@ -3146,10 +3241,10 @@ function bodyheightmodal(method) {
     var chart = new Chart(ctx, config)
 
     usedMethod = method;
-    console.log(usedMethod)
+
 
     $.each(bodyheight().methods, function (i, method) {
-        console.log(method.method)
+
         if (method.method === usedMethod) {
             $('#inputGroupSelect01').append(
                 '<option selected value="' + method.method + '">' + method.name + '</option>'
@@ -3178,7 +3273,7 @@ function PearsonSelect(bone, sex) {
             'length': parseFloat(bone.length)
         }))
     }
-    ;
+
     if (sex === 'female') {
         var returnBone = JSON.parse(JSON.stringify({
             'id': bone.id,
