@@ -1,0 +1,347 @@
+/*
+    DEMO STYLE
+*/
+
+h3, h4 {
+    padding-top: 1.5em;
+    margin-bottom: 0.8em;
+}
+
+#counters {
+    color: rgba(0, 0, 0, 0.93);
+    background-color: #ffffff;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.statistic-counter {
+    margin-bottom: 0.2rem;
+}
+
+#counters h4 {
+    padding-top: 0;
+}
+
+.chartcontainer {
+    max-height: 600px;
+    min-height: 400px;
+    padding: 1em;
+}
+
+
+.manualbox {
+    margin-bottom: 1em;
+    padding: 0.5em 2em 0.5em 2em;
+    background: #f2f2f2;
+}
+
+#sidebarCollapse {
+    cursor: pointer;
+    position: fixed;
+    top: 50%;
+    opacity: 0.3;
+    font-size: 1rem;
+    height: 4em;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    border: none;
+    z-index: 999 !important;
+}
+
+#toggleIcon {
+    position: relative;
+    top: 1em;
+}
+
+a,
+a:hover,
+a:focus {
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.manualbox > p > a, .manualbox li > a, .whitebox a {
+    color: #007bff;
+}
+
+.manualbox button:focus {
+    outline: none;
+}
+
+.manualbox > p > .btn-secondary:hover {
+    background-color: #696969 !important;
+    cursor: default;
+}
+
+.manualbox .btn-primary:hover {
+    background-color: #007bff;
+    border-color: #007bff;
+    cursor: default;
+}
+
+.manualbox .btn-secondary {
+    min-width: 30px;
+}
+
+.manualbox > p > a:hover, .manualbox li > a:hover, .whitebox a:hover {
+    color: #003db3;
+    text-decoration: underline;
+}
+
+.manualbox p, .manualbox li {
+    color: #6c757d;
+}
+
+.manualbox > img, .imagebox {
+    margin-right: auto !important;
+    margin-left: auto !important;
+    display: block;
+    margin-bottom: 1em;
+}
+
+.imagebox {
+    max-width: 800px;
+}
+
+.manualbox canvas, .manualbox .imagebox img, .manualbox > img {
+    border: 1px solid #dee2e6 !important;
+}
+
+i,
+span {
+    display: inline-block;
+}
+
+.manualbox ul {
+    background: #f9f9f9;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
+.whitebox {
+    background: #f9f9f9;
+    padding: 1em;
+    margin-bottom: 1em;
+}
+
+.manualbox ul li {
+    margin-right: 1em;
+    padding: 0.3em 0;
+}
+
+.dash-card {
+    margin-bottom: 2em;
+}
+
+/* ---------------------------------------------------
+    SIDEBAR STYLE
+----------------------------------------------------- */
+
+.wrapper {
+    display: flex;
+    align-items: stretch;
+}
+
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    background: #f2f2f2;
+    color: #333333;
+    transition: all 0.3s;
+    overflow-y: auto;
+}
+
+#sidebar.active {
+    min-width: 80px;
+    max-width: 80px;
+    text-align: center;
+}
+
+#sidebar ul li a {
+    text-align: left;
+}
+
+#sidebar.active ul li a {
+    padding: 20px 10px;
+    text-align: center;
+    font-size: 0.7em;
+}
+
+#sidebar.active ul li a i {
+    margin-right: 0;
+    display: block;
+    font-size: 1.8em;
+    margin-bottom: 5px;
+}
+
+#sidebar.active ul ul a {
+    padding: 10px !important;
+}
+
+#sidebar.active .dropdown-toggle::after {
+    top: auto;
+    bottom: 10px;
+    right: 50%;
+    -webkit-transform: translateX(50%);
+    -ms-transform: translateX(50%);
+    transform: translateX(50%);
+}
+
+#sidebar .sidebar-header {
+    padding: 20px 0 0 20px;
+    background: #f2f2f2;
+}
+
+#sidebar ul li a {
+    padding: 10px;
+    font-size: 1em;
+    display: block;
+}
+
+#sidebar ul li a:hover {
+    color: #212529;
+    background: #e7e7e7;
+}
+
+#sidebar ul li a i {
+    margin-right: 10px;
+}
+
+a[data-toggle="collapse"] {
+    position: relative;
+}
+
+.dropdown-toggle::after {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+
+ul ul a {
+    font-size: 0.875rem !important;
+    padding-left: 30px !important;
+    background: #f2f2f2;
+}
+
+ul.CTAs {
+    padding: 20px;
+}
+
+ul.CTAs a {
+    text-align: center;
+    font-size: 0.9em !important;
+    display: block;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+/* ---------------------------------------------------
+    CONTENT STYLE
+----------------------------------------------------- */
+
+#mycontent {
+    padding-left: 2.5em;
+    padding-right: 2.5em;
+    width: 100%;
+    transition: all 0.3s;
+}
+
+/* ---------------------------------------------------
+    MEDIAQUERIES
+----------------------------------------------------- */
+
+@media (max-width: 768px) {
+    #sidebar {
+        min-width: 100px;
+        max-width: 100px;
+        text-align: center;
+        margin-left: -80px !important;
+    }
+
+    .dropdown-toggle::after {
+        top: auto;
+        bottom: 10px;
+        right: 50%;
+        font-size: 0.875rem;
+        -webkit-transform: translateX(50%);
+        -ms-transform: translateX(50%);
+        transform: translateX(50%);
+    }
+
+    #sidebar.active {
+        margin-left: 0 !important;
+        min-width: 100px;
+        max-width: 100px;
+    }
+
+    .sidebar-header {
+        display: none;
+    }
+
+    #sidebar .sidebar-header h3,
+    #sidebar .CTAs {
+        display: none;
+    }
+
+    #sidebar .sidebar-header strong {
+        display: block;
+    }
+
+    #sidebar ul li a {
+        padding: 20px 10px;
+    }
+
+    #sidebar ul li a span {
+        font-size: 0.85em;
+    }
+
+    #sidebar ul li a i {
+        margin-right: 0;
+        display: block;
+    }
+
+    #sidebar ul ul a {
+        padding: 10px !important;
+    }
+
+    #sidebar ul li a i {
+        font-size: 1.3em;
+    }
+
+    #sidebar {
+        margin-left: 0;
+    }
+
+    #sidebarCollapse span {
+        display: none;
+    }
+}
+
+.node {
+    cursor: pointer;
+}
+
+.node:hover {
+    stroke: #000;
+    stroke-width: 1.5px;
+}
+
+.node--leaf {
+    fill: white;
+}
+
+text {
+    font: 24px "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-anchor: middle;
+    pointer-events: none;
+    text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+}
+
+.charttitle {
+    font-size: 12px;
+    font-weight: bold;
+    color: #666;
+}
