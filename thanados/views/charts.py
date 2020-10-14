@@ -8,10 +8,11 @@ from thanados.models.entity import Data
 # @login_required
 def charts():
     depth = Data.get_depth()
-    constr = Data.get_type_data('grave', 'Grave Constr%')
-    gravetypes = Data.get_type_data('grave', 'Feature%')
-    graveshape = Data.get_type_data('grave', 'Grave Shape%')
-    burialtype = Data.get_type_data('burial', 'Stratigraphic Unit%')
+    site_ids = tuple(g.site_list)
+    constr = Data.get_type_data('grave', 'Grave Constr%', site_ids)
+    gravetypes = Data.get_type_data('grave', 'Feature%', site_ids)
+    graveshape = Data.get_type_data('grave', 'Grave Shape%', site_ids)
+    burialtype = Data.get_type_data('burial', 'Stratigraphic Unit%', site_ids)
     sex = Data.get_sex()
     site_list = Data.get_list()
     orientation = Data.get_orientation()

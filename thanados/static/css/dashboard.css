@@ -8,8 +8,8 @@ h3, h4 {
 }
 
 #counters {
-    color: rgba(0, 0, 0, 0.93);
-    background-color: #ffffff;
+    color: #666;
+    background: inherit;
     margin-left: 0 !important;
     margin-right: 0 !important;
 }
@@ -20,6 +20,11 @@ h3, h4 {
 
 #counters h4 {
     padding-top: 0;
+}
+
+.card-body {
+    background: #f2f2f2;
+    color: #666;
 }
 
 .chartcontainer {
@@ -53,17 +58,19 @@ h3, h4 {
     top: 1em;
 }
 
-a,
-a:hover,
-a:focus {
+li a,
+li a:hover,
+li a:focus {
     color: inherit;
     text-decoration: none;
     transition: all 0.3s;
+    cursor: pointer;
 }
 
 .manualbox > p > a, .manualbox li > a, .whitebox a {
     color: #007bff;
 }
+
 
 .manualbox button:focus {
     outline: none;
@@ -132,6 +139,7 @@ span {
 
 .dash-card {
     margin-bottom: 2em;
+    padding: 0;
 }
 
 /* ---------------------------------------------------

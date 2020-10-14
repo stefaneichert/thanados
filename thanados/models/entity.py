@@ -164,7 +164,7 @@ class Data:
         return place_id
 
     @staticmethod
-    def get_type_data(level, searchterm):
+    def get_type_data(level, searchterm, site_id):
         if level == 'grave':
             sql = """
                 SELECT jsonb_agg(jsonb_build_object (
@@ -181,10 +181,10 @@ class Data:
 		        FROM model.entity m 
 		        JOIN thanados.entities e ON e.parent_id = m.id 
 		        JOIN thanados.types_main t ON e.child_id = t.entity_id
-		        WHERE t.path LIKE %(term)s
+		        WHERE t.path LIKE %(term)s AND m.id IN %(site_ids)s
 		        GROUP BY m.id, sitename, type
 		        ORDER BY 1) as t;"""
-            g.cursor.execute(sql, {"term": searchterm})
+            g.cursor.execute(sql, {"term": searchterm, "site_ids": site_id})
             return g.cursor.fetchall()
         if level == 'burial':
             sql = """
@@ -203,10 +203,10 @@ class Data:
             		        JOIN thanados.entities e ON e.parent_id = m.id
             		        JOIN thanados.entities e1 ON e1.parent_id = e.child_id
             		        JOIN thanados.types_main t ON e1.child_id = t.entity_id
-            		        WHERE t.path LIKE %(term)s
+            		        WHERE t.path LIKE %(term)s AND m.id IN %(site_ids)s
             		        GROUP BY m.id, sitename, type
             		        ORDER BY 1) as t;"""
-            g.cursor.execute(sql, {"term": searchterm})
+            g.cursor.execute(sql, {"term": searchterm, "site_ids": site_id})
             return g.cursor.fetchall()
 
     @staticmethod

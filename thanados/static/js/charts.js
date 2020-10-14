@@ -782,28 +782,6 @@ function change(newType, chartvar, canvasid, config) {
     eval(chartvar + ' = new Chart(ctx, temp)');
 }
 
-//remove trailing zeros from data with intervals after highest values of site with highest values
-function removeZeros(data) {
-    $.each(data.datasets, function (i, dataset) {
-        arraylength = dataset.data.length;
-        $.each(dataset.data, function (i, number) {
-            if (number > 0)
-                valueindex = (i + 1);
-            if (i === (arraylength - 1))
-                lastvalueindex = valueindex;
-        })
-        var newdata = (dataset.data.slice(0, valueindex));
-        dataset.data = newdata;
-        if (i == 0) {
-            newvalueindex = lastvalueindex;
-        } else {
-            if (lastvalueindex > newvalueindex)
-                newvalueindex = lastvalueindex
-        }
-    })
-    data.labels = data.labels.slice(0, newvalueindex)
-    return data;
-}
 
 function filtersites(data) {
     mynewdata = {
@@ -821,105 +799,6 @@ function filtersites(data) {
     return mynewdata;
 }
 
-//switch axes of data
-function switchaxes(datatoswitch) {
-    newdata = {
-        "datasets": [],
-        "labels": []
-    };
-
-    $.each(datatoswitch.datasets, function (i, dataset) {
-        newdata.labels.push(dataset.label);
-
-    });
-
-    $.each(datatoswitch.labels, function (i, label) {
-        data1 = {};
-        data1.label = datatoswitch.labels[i];
-        data1.data = [];
-        index = i;
-        $.each(datatoswitch.datasets, function (i, dataset) {
-            data2 = dataset.data;
-            $.each(data2, function (i, value) {
-                if (index === i) {
-                    data1.data.push(value);
-                }
-            })
-        })
-        newdata.datasets.push(data1);
-    });
-    return newdata;
-}
-
-//convert values of data to percentage
-function getPercentage(datatoswitch) {
-    $.each(datatoswitch.datasets, function (i, dataset) {
-        sum = dataset.data.reduce(
-            function (total, num) {
-                return total + num
-            }
-            , 0);
-        newArray = [];
-        $.each(dataset.data, function (i, value) {
-            var perValue = parseFloat(Math.round((value / sum * 100) * 100) / 100);
-            newArray.push(perValue)
-        });
-        dataset.data = newArray;
-    })
-    return datatoswitch;
-}
-
-//prepare typedata as chartdata
-function prepareTypedata(mytypedata) {
-    typelabels = [];
-    $.each(mytypedata.types, function (i, types) {
-        typelabels.push(types.type)
-    });
-    typelabels = Array.from(new Set(typelabels));
-    typedata = {
-        'labels': typelabels,
-        'datasets': []
-    };
-    datalabels = [];
-    $.each(mytypedata.types, function (i, types) {
-        datalabels.push(types.site)
-    });
-    datalabels = Array.from(new Set(datalabels));
-    $.each(datalabels, function (i, label) {
-        var typedatasets = {
-            "data": [],
-            "label": label
-        };
-        typedata.datasets.push(typedatasets);
-    });
-    $.each(typedata.datasets, function (i, dataset) {
-        $.each(typedata.labels, function (i, label) {
-            dataset.data.push(0)
-        });
-    });
-    $.each(mytypedata.types, function (i, type) {
-        mysite = type.site;
-        mysiteid = type.site_id;
-        mytype = type.type;
-        mycount = type.count;
-        $.each(typedata.labels, function (i, label) {
-            if (mytype === label) {
-                myindex = i;
-                $.each(typedata.datasets, function (i, dataset) {
-                    if (dataset.label === mysite) {
-                        $.each(dataset.data, function (e, data) {
-                            if (e === myindex) {
-                                dataset.data[myindex] = mycount;
-                                dataset.site_id = mysiteid;
-                            }
-                        });
-                    }
-                });
-            }
-        })
-    });
-    return typedata;
-}
 
 //change chart from absolute values to percentage
 function updateChart(chart, data, percentageset) {
@@ -938,16 +817,6 @@ function updateChron(chart, sorttype, sortdirection) {
     chart.update();
 }
 
-//set data
-function setChartData(originalData, axesswitch, percentageset, zeroslice, preparetypes) {
-    dataToWorkWith = JSON.parse(JSON.stringify(originalData));
-    if (preparetypes) dataToWorkWith = prepareTypedata(dataToWorkWith);
-    dataToWorkWith = filtersites(dataToWorkWith);
-    if (zeroslice) dataToWorkWith = removeZeros(dataToWorkWith);
-    if (percentageset) dataToWorkWith = getPercentage(dataToWorkWith);
-    if (axesswitch) dataToWorkWith = switchaxes(dataToWorkWith);
-    return dataToWorkWith;
-}
 
 //some css fixes for the window/container size
 $(window).resize(function () {
