@@ -100,6 +100,7 @@ span {
 .whitebox {
     background: #f9f9f9;
     padding: 1em;
+    margin-bottom: 1em;
 }
 
 .manualbox ul li {
@@ -216,7 +217,7 @@ ul.CTAs a {
 ----------------------------------------------------- */
 
 #mycontent {
-    margin-left: 2.5em;
+    padding-left: 2.5em;
     padding-right: 2.5em;
     width: 100%;
     transition: all 0.3s;
@@ -291,4 +292,8 @@ ul.CTAs a {
     #sidebarCollapse span {
         display: none;
     }
+}
+
+.dash-card {
+    margin-bottom: 2em;
 }

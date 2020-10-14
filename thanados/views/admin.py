@@ -447,6 +447,12 @@ UPDATE thanados.entitiestmp
 SET end_comment = NULL
 WHERE end_comment = '';
 UPDATE thanados.entitiestmp
+SET begin_comment = NULL
+WHERE begin_comment = 'None';
+UPDATE thanados.entitiestmp
+SET end_comment = NULL
+WHERE end_comment = 'None';
+UPDATE thanados.entitiestmp
 SET description = NULL
 WHERE description = '';
 UPDATE thanados.entitiestmp
@@ -1963,6 +1969,25 @@ DROP TABLE thanados.searchData;
 CREATE TABLE thanados.searchData AS (
 SELECT * FROM thanados.searchData_tmp);
 DROP TABLE thanados.searchData_tmp;
+
+DROP TABLE IF EXISTS thanados.dashAge;
+CREATE TABLE thanados.dashAge AS (
+SELECT gre.site_id, jsonb_agg(jsonb_build_object(
+                     'name', gre.burial, 'from', gre.agemin, 'to', gre.agemax)) AS ages FROM (
+SELECT t.child_id AS site_id, t.burial,
+       (((t.age::jsonb) -> 0)::text)::double precision         AS agemin,
+       (((t.age::jsonb) -> 1)::text)::double precision         AS agemax
+                FROM (SELECT
+                             s.child_id,
+                             t.description AS age,
+                                b.child_name AS burial,
+                             s.child_id AS site_id
+                      FROM thanados.sites s
+                               JOIN thanados.graves g ON s.child_id = g.parent_id
+                               JOIN thanados.burials b ON b.parent_id = g.child_id
+                               JOIN thanados.types t ON t.entity_id = b.child_id
+                      WHERE t.path LIKE '%> Age >%' ) AS t ) gre GROUP BY gre.site_id);
+
     """
     g.cursor.execute(sql_4)
     return redirect(url_for('admin'))

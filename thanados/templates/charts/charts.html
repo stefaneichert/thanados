@@ -121,6 +121,49 @@
                 </div>
             </div>
             <div class="col-xl-6 mymargin">
+                <div class="card" id="card_date-chart">
+                    <div class="card-header" id="headingDate">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-toggle="collapse"
+                                    data-target="#collapseDate" aria-expanded="true"
+                                    aria-controls="collapseDate">
+                                Chronology
+                            </button>
+                            <button id="datechart_enlarge"
+                                    class="btn btn-sm btn-secondary fa-pull-right enlargeBtn"
+                                    title="enlarge" style="margin-left: 0.5em"
+                                    onclick="
+                                    percScript=$('#datechart_switch').attr('onclick');
+                                    absScript = $('#datechart_begin_end').attr('onclick');
+                                    currentTitle = ($( this ).siblings('.title-btn').text());
+                                    enlargeChart(dateconfig)">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                            <button id="datechart_switch"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="Switch between begin and end dates for sorting" style="margin-left: 0.5em"
+                                    onclick="setChronVars()">
+                                <i class="fas fa-sort"></i>
+                            </button>
+                            <button id="datechart_begin_end"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="Switch between left-right and right-left order"
+                                    onclick="setChronDir()">
+                                <i style="transform: rotate(90deg)" class="fas fa-sort"></i>
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseDate" class="collapse show" aria-labelledby="headingDate">
+                        <div class="card-body">
+                            <div id=date-chart-container">
+                                <canvas id="date-chart" class="chartcontainer"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6 mymargin">
                 <div class="card" id="card_sexchart">
                     <div class="card-header" id="headingThree">
                         <h5 class="mb-0">
@@ -495,6 +538,17 @@
                                 title="Boxplot"
                                 onclick="change('boxplot', 'bigchart', 'bigchart-container', ageconfig);">
                             Boxplot
+                        </button>
+
+                        <button class="mr-2  chronBtn btn btn-sm btn-secondary fa-pull-right"
+                                title="Switch between begin and end dates for sorting"
+                                    onclick="bigDatechart = true; setChronVars()">
+                                <i class="fas fa-sort"></i>
+                        </button>
+                        <button class="mr-2  chronBtn btn btn-sm btn-secondary fa-pull-right"
+                                title="Switch between left-right and right-left order"
+                                    onclick="bigDatechart = true; setChronDir()">
+                                <i style="transform: rotate(90deg)" class="fas fa-sort"></i>
                         </button>
 
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">

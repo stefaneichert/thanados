@@ -1,3 +1,5 @@
+bodyheighttypes = [];
+
 $(document).ready(function () {
     $('#mycontent').scroll(function () {
         if ($(this).scrollTop() > 50) {
@@ -285,7 +287,8 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-secondary" title="Download data as GeoJSON"><i class="fas fa-download"></i></button>' +
         '<a style="margin-left: 0.1em" onclick="this.blur();" href="' + openAtlasUrl + entId + '" target="_blank" class="backendlink d-none btn btn-sm btn-secondary" title="Backend link"><i class="fas fa-database"></i></a>' +
-        '<a style="margin-left: 0.1em" onclick="this.blur();" href="/entity/'+ entId + '/network"class="btn btn-sm btn-secondary" title="Network visualisation"><i class="fas fa-project-diagram"></i></a>' +
+        '<a style="margin-left: 0.1em" onclick="this.blur();" href="/entity/' + entId + '/network"class="btn btn-sm btn-secondary" title="Network visualisation"><i class="fas fa-project-diagram"></i></a>' +
+        '<a style="margin-left: 0.1em" onclick="this.blur();" href="/entity/' + place_id + '/dashboard" class="btn btn-sm btn-secondary" title="Dashborad"><i class="fas fa-chart-line"></i></a>' +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" class="btn btn-sm btn-secondary" title="Open detailed map of this site">Map</button>' +
         '</div>' +
         '</div>' +
@@ -331,6 +334,41 @@ function getEntityData(parentName, parentId, currentfeature) {
         '</div>'
     )
 
+    if (dateToInsert == '') {
+        $('#mytimespan' + entId).attr("class", "");
+    }
+
+
+    setImages(entId, entfiles);
+
+    $('#myTypescontainer' + entId).empty();
+    $.each(currentfeature.properties.types, function (t, types) {
+        if ($('#myTypescontainer' + entId).is(':empty')) {
+            $('#myTypescontainer' + entId).append('<p><h6>Properties:</h6></p>');
+        }
+
+        var classification = types.name;
+        var classtype = types.path;
+        var typevalue = types.value;
+        var typeunit = types.description;
+        var typeid = types.id;
+
+        //collect types for body height calculation
+        if (typeof (currentfeature.humanremains) !== 'undefined') bodyheighttypes.push({
+            'name': classification,
+            'id': typeid,
+            'value': parseFloat(typevalue),
+            'unit': typeunit
+        })
+
+        if (typeof (typevalue) !== 'undefined') var classification = (types.name + ': ' + typevalue + ' ' + typeunit);
+        $('#myTypescontainer' + entId).append(
+            '<div type="button" data-value="' + typeid + '" + ' +
+
+            'class="modalrowitem typebutton" ' +
+            'data-toggle="popover">' + classification + '</div><span class="popover-wrapper"></span>');
+    });
+
     if (typeof (currentfeature.humanremains) !== 'undefined') {
         $('#nav-humanremains-tab').removeClass('d-none')
         $('#svgContainer').append(skeleton)
@@ -353,15 +391,29 @@ function getEntityData(parentName, parentId, currentfeature) {
         $.each(humanremains, function (i, hr) {
             hr_name = hr.properties.maintype.path.replace("Human Remains > ", "")
             svg_label = hr.properties.maintype.id;
-
+            siding = ''
             if (hr.properties.types) {
                 $.each(hr.properties.types, function (i, type) {
 
                     if (type.name === 'left' || type.name === 'right') {
                         hr_name = hr_name + ': ' + type.name;
+                        siding = type.name;
                         svg_label += '_' + type.name.substr(0, 1);
+                    } else {
+                        siding = ''
                     }
                 })
+                $.each(hr.properties.types, function (i, type) {
+                    if (siding !== '') siding = siding.substring(0, 1)
+                    bodyheighttypes.push({
+                        'siding': siding,
+                        'name': siding + ' ' + type.name,
+                        'id': type.id,
+                        'value': parseFloat(type.value),
+                        'unit': type.description
+                    })
+                })
+
             }
             highlightbones(svg_label);
 
@@ -398,33 +450,10 @@ function getEntityData(parentName, parentId, currentfeature) {
             var bonegroup = $('g[inkscape\\:label="' + svg_label + '"]');
             $(bonegroup).find('path').toggleClass('hoverbone');
         })
+
+        $('#myTypescontainer' + entId).append(bodyheight().btn);
+
     }
-
-    if (dateToInsert == '') {
-        $('#mytimespan' + entId).attr("class", "");
-    }
-
-
-    setImages(entId, entfiles);
-
-    $('#myTypescontainer' + entId).empty();
-    $.each(currentfeature.properties.types, function (t, types) {
-        if ($('#myTypescontainer' + entId).is(':empty')) {
-            $('#myTypescontainer' + entId).append('<p><h6>Properties:</h6></p>');
-        }
-
-        var classification = types.name;
-        var classtype = types.path;
-        var typevalue = types.value;
-        var typeunit = types.description;
-        var typeid = types.id;
-        if (typeof (typevalue) !== 'undefined') var classification = (types.name + ': ' + typevalue + ' ' + typeunit);
-        $('#myTypescontainer' + entId).append(
-            '<div type="button" data-value="' + typeid + '" + ' +
-
-            'class="modalrowitem typebutton" ' +
-            'data-toggle="popover">' + classification + '</div><span class="popover-wrapper"></span>');
-    });
 
     $('#myDimensionscontainer' + entId).empty();
     $.each(currentfeature.properties.dimensions, function (d, dimensions) {
@@ -750,7 +779,7 @@ function getEntityData(parentName, parentId, currentfeature) {
     }
 
 
-    //$('.subunits').hide()
+//$('.subunits').hide()
     $('#childrenlist_wrapper').show();
 
 
@@ -929,9 +958,9 @@ function setImages(entId, entfiles) {
         //append one image without slides
         if (entfiles.length == 1) {
             $('#myImagecontainer' + entId).empty();
-                    $('#myImagecontainer' + entId).append(
-                        getImageHtml(entfiles[0])
-                    )
+            $('#myImagecontainer' + entId).append(
+                getImageHtml(entfiles[0])
+            )
         }
 
 
@@ -968,17 +997,17 @@ function setImages(entId, entfiles) {
 
             //append further images to carousel
             $.each(entfiles, function (f, file) {
-                if (f > 1) {
+                    if (f > 1) {
 
-                    $('#mycarouselimages' + entId).append(
+                        $('#mycarouselimages' + entId).append(
                             '<div class="carousel-item">' +
                             getImageHtml(file) +
                             '</div>'
                         );
 
-                    $('#mymodalimageindicators' + entId).append(
-                        '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="' + f + '"></li>'
-                    );
+                        $('#mymodalimageindicators' + entId).append(
+                            '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="' + f + '"></li>'
+                        );
                     }
                 }
             );
@@ -1153,7 +1182,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             if (typeof (file.source) != 'undefined') myImgSource = file.source;
             if (typeof (file.source) == 'undefined') myImgSource = "unknown source";
             if ((typeof (file.source) != 'undefined') && (typeof (file.reference) != 'undefined')) myImgSource = file.source + ' ' + file.reference;
-            $('#myModalImagecontainer' + entId).append('<div class="cat-image-container col-lg-4 mt-2">'+ getImageHtml(file) + '</div>');
+            $('#myModalImagecontainer' + entId).append('<div class="cat-image-container col-lg-4 mt-2">' + getImageHtml(file) + '</div>');
         });
 
         if (typeof (currentfeature.burials) != 'undefined') {
