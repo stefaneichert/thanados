@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 
+    <script src="https://cdn.babylonjs.com/viewer/babylon.viewer.js"></script>
 
     <style>
 
@@ -140,6 +141,50 @@
                     </div>
                 </div>
             </div>
+
+        </div>
+
+        <div class="pt-3 pb-3 mb-5">
+
+
+            <div>
+                <div class="container">
+                    <p class="h6 mb-1 text-uppercase mb-3">News and Highlights:</p>
+
+                    <h4>Oct. 2020: Version 2.4 released</h4>
+                    <p class="text-muted">Introducing a dashboard with various visualisations for graves and burials.
+                        Click <a href="/entity/50505/dashboard">here</a> for an example</p>
+
+                    <h4 class="mt-5">3D models</h4>
+                    <p class="text-muted">If 3D files are available for finds or features they are displayed
+                        interactively in the browser: <a href="#"
+                                                         data-file="{'description':'Model by Ronny Weßling','file_name':'/static/images/entities/137015.glb','id':137015,'license':'CC BY 4.0','name':'rz2'}"
+                                                         title="open 3d model" src="/static/images/icons/3d.png"
+                                                         alt="3d"
+                                                         onclick="current3dFile = $(this).data('file'); set3D('/static/images/entities/137015.glb')">Example</a>
+                    </p>
+
+                    <h4 class="mt-5">Interactive Osteology Skeleton</h4>
+                    <p class="text-muted">With data on osteology for individual bones, these are mapped directly on an
+                        anatomic correct skeleton showing the bones' position and listing their attributes: <a
+                                href="/entity/76097">Example</a> (see "Osteology" tab)</p>
+
+                    <h4 class="mt-5">THANADOS on Facebook</h4>
+                    <p class="text-muted">THANADOS now has its own <a
+                                href="https://www.facebook.com/Thanados-101563005015151/">Facebook </a>account</p>
+
+                    <h4 class="mt-5">100% coverage for Carinthia</h4>
+                    <p class="text-muted">All published Early Medieval cemeteries from Carinthia are digitised and online. E.g. the earliest monastery of Molzbichl (8th c.) with its later <a
+                                href="/entity/45789">churchyard</a> or the nearby cemetery of <a
+                                href="/map/49637">Baldramsdorf/Rosenheim</a></p>
+
+                    <h4 class="mt-5">Highlight: Thunau obere Holzwiese</h4>
+                    <p class="text-muted">One of the biggest 8th to 10th century cemeteries in Austria and also the most recent one to be published: <a
+                                href="/map/50505">Thunau obere Holzwiese</a></p>
+
+                </div>
+            </div>
+
         </div>
 
         <footer id="myfooter">
