@@ -278,6 +278,7 @@ function loadOverview() {
         } else {
             $('#burialtypes-chart-container').remove();
         }
+
         if (descriptionSummary.findtypes.length > 0 && bubbleNotThere) {
             var svgWidth = $('#burialtypes-chart').height();
 
@@ -295,8 +296,11 @@ function loadOverview() {
                 .interpolate(d3.interpolateHcl);
 
             var calculateTextFontSize = function (d) {
+                if (d.data.name === "Coins") console.log(d);
+                if (d.data.name === "unidentified") console.log(d);
+                if (d.data.name === "Cult Object") console.log(d);
                 var id = d.data.id;
-                var radius = 0;
+                //var radius = 0;
                 if (d.data.fontsize) {
                     var r = d3.selectAll("#c" + id).attr("r");
                     //if radius present in DOM use that
@@ -305,9 +309,14 @@ function loadOverview() {
                     }
                     //calculate the font size and store it in object for future
                     d.data.fontsize = (2 * radius - 8) / d.data.computed * 24 + "px";
+                    if (((2 * radius - 8) / d.data.computed * 24) < 0) d.data.fontsize = 0 + "px";
                     //if fontsize is already calculated use that.
+                    if (d.data.name === "Coins") console.log(d);
+                if (d.data.name === "unidentified") console.log(d);
+                if (d.data.name === "Cult Object") console.log(d);
                     return d.data.fontsize;
                 }
+
                 if (!d.data.computed) {
                     //if computed not present get & store the getComputedTextLength() of the text field
                     d.data.computed = this.getComputedTextLength();
@@ -320,6 +329,10 @@ function loadOverview() {
                         }
                         //calculate the font size and store it in object for future
                         d.data.fontsize = (2 * radius - 8) / d.data.computed * 24 + "px";
+                        if (((2 * radius - 8) / d.data.computed * 24) < 0) d.data.fontsize = 0 + "px";
+                        if (d.data.name === "Coins") console.log(d);
+                if (d.data.name === "unidentified") console.log(d);
+                if (d.data.name === "Cult Object") console.log(d);
                         return d.data.fontsize;
                     }
                 }
@@ -363,7 +376,6 @@ function loadOverview() {
                     return d.r;
                 })
                 .on("click", function (d) {
-
                     if (!d.data.children) {
                         labelid = "#" + d.data.id;
                         circleid = "#c" + d.data.id;
