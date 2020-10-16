@@ -3014,11 +3014,17 @@ function bodyheight() {
     }
     if (bhsex === 'female' && agecheck && t1bthere) {
         var weiter = true;
-        bones.methods.push({'name': 'Trotter & Gleser 1952 (fw)', 'method': 'TGfw'}, {'name': 'Trotter & Gleser 1952 (fb)', 'method': 'TGfb'});
+        bones.methods.push({
+            'name': 'Trotter & Gleser 1952 (fw)',
+            'method': 'TGfw'
+        }, {'name': 'Trotter & Gleser 1952 (fb)', 'method': 'TGfb'});
     }
     if (bhsex === 'male' && agecheck && t1bthere) {
         var weiter = true;
-        bones.methods.push({'name': 'Trotter & Gleser 1952 (mw)', 'method': 'TGmw'}, {'name': 'Trotter & Gleser 1952 (mb)', 'method': 'TGmb'});
+        bones.methods.push({
+            'name': 'Trotter & Gleser 1952 (mw)',
+            'method': 'TGmw'
+        }, {'name': 'Trotter & Gleser 1952 (mb)', 'method': 'TGmb'});
     }
     if (bhsex === 'male' && agecheck && bones.BreitingerArr.length > 0) {
         var weiter = true;
@@ -3146,7 +3152,7 @@ function bodyheightmodal(method) {
     $('#bodyheight').append(
         '<div class="mb-3 mt-3 text-muted">Calculation after: <a href="' + citeUrl + '" target="_blank">' + citeName + '</a></div>' +
         '<div class="mb-2 p-2 border rounded" id="chartwrapper"><canvas id="bhChart">' +
-            '</canvas><div class="text-center text-muted" id="avgLegend"><b class="mr-2">- - - - - - - -</b> Average: ' + avg + ' cm.</div></div>' +
+        '</canvas><div class="text-center text-muted" id="avgLegend"><b class="mr-2">- - - - - - - -</b> Average: ' + avg + ' cm.</div></div>' +
         '<div class="input-group input-group-sm mt-2 mb-2">\n' +
         '  <div class="input-group-prepend">\n' +
         '    <label class="input-group-text" for="inputGroupSelect01">Method</label>\n' +
@@ -3164,11 +3170,9 @@ function bodyheightmodal(method) {
         '      </span>\n' +
         '    </div>' +
         '<ul id="bonetable" class="collapse show text-muted list-group list-group-flush">\n' +
-        '</ul>'+
+        '</ul>' +
         '</div>'
-
-
-        )
+    )
 
     $.each(bonesToUse, function (i, bone) {
         $('#bonetable').append('<li class="list-group-item">' + bone.name + ': ' + bone.length + ' cm. <i class="mr-2 fas fa-arrow-right"></i>calculated: ' + bone.value + ' cm. </li>')
@@ -3288,62 +3292,56 @@ function PearsonSelect(bone, sex) {
 
 //chart preparation
 
+function getMinMax(array) {
+    range = [Math.min.apply(Math, array), Math.max.apply(Math, array)];
+    return range
+}
+
+
 //remove trailing zeros from data with intervals after highest values of site with highest values
 function removeZeros(data) {
+    Zeros = [];
     $.each(data.datasets, function (i, dataset) {
-        arraylength = dataset.data.length;
         $.each(dataset.data, function (i, number) {
-            if (number > 0)
-                valueindex = (i + 1);
-            if (i === (arraylength - 1))
-                lastvalueindex = valueindex;
+            if (number > 0) Zeros.push(i);
         })
-        var newdata = (dataset.data.slice(0, valueindex));
-        dataset.data = newdata;
-        if (i == 0) {
-            newvalueindex = lastvalueindex;
-        } else {
-            if (lastvalueindex > newvalueindex)
-                newvalueindex = lastvalueindex
-        }
     })
-    data.labels = data.labels.slice(0, newvalueindex)
+    data.labels = data.labels.slice(getMinMax(Zeros)[0], getMinMax(Zeros)[1] + 1)
+
+    $.each(data.datasets, function (i, dataset) {
+        $.each(dataset.data, function (i, number) {
+            newdata = (dataset.data.slice(getMinMax(Zeros)[0], (getMinMax(Zeros)[1] + 1)));
+        })
+        dataset.data = newdata
+    })
     return data;
+
 }
 
 function removeDashboardZeros(data) {
+    Zeros = [];
     $.each(data.datasets, function (i, number) {
-        arraylength = data.datasets.length;
-            if (number > 0)
-                valueindex = (i + 1);
-            if (i === (arraylength - 1))
-                lastvalueindex = valueindex;
-            })
+        if (number > 0) Zeros.push(i);
+        })
 
-        var newdata = (data.datasets.slice(0, valueindex));
-        data.datasets = newdata;
+    var newdata = (data.datasets.slice(getMinMax(Zeros)[0], (getMinMax(Zeros)[1] + 1)));
+    data.datasets = newdata;
 
-    data.labels = data.labels.slice(0, lastvalueindex)
+    data.labels = data.labels.slice(getMinMax(Zeros)[0], (getMinMax(Zeros)[1] + 1))
     return data;
 }
 
 function removeStackedZeros(data) {
-    lastvalueindex = 0
-    valueindex = 0
+    Zeros = [];
     $.each(data.datasets, function (i, dataset) {
-        iteration = i;
         $.each(dataset.data, function (i, number) {
-            arraylength = dataset.data.length;
-            if (number > 0)
-                valueindex = (i + 1);
-            if (i === (arraylength - 1) && valueindex > lastvalueindex)
-            {lastvalueindex = valueindex} else {if (i === (arraylength - 1) && iteration === 0) lastvalueindex = valueindex};
+            if (number > 0) Zeros.push(i);
         })
 
     })
-    data.labels = data.labels.slice(0, lastvalueindex)
+    data.labels = data.labels.slice(getMinMax(Zeros)[0], (getMinMax(Zeros)[1] + 1))
     $.each(data.datasets, function (i, dataset) {
-        dataset.data = dataset.data.slice(0, lastvalueindex)
+        dataset.data = dataset.data.slice(getMinMax(Zeros)[0], (getMinMax(Zeros)[1] + 1))
     })
 
     return data;
