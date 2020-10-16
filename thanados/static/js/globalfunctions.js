@@ -3339,9 +3339,13 @@ function removeStackedZeros(data) {
             if (i === (arraylength - 1) && valueindex > lastvalueindex)
             {lastvalueindex = valueindex} else {if (i === (arraylength - 1) && iteration === 0) lastvalueindex = valueindex};
         })
-        dataset.data = dataset.data.slice(0, valueindex)
+
     })
     data.labels = data.labels.slice(0, lastvalueindex)
+    $.each(data.datasets, function (i, dataset) {
+        dataset.data = dataset.data.slice(0, lastvalueindex)
+    })
+
     return data;
     //console.log(data)
 }

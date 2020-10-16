@@ -7,13 +7,16 @@ singleref = false;
 furtherRefs = false;
 bibfeature = jsonmysite;
 bubbleNotThere = true;
+PathobubbleNotThere = true;
 overviewmissing = true;
 gravesmissing = true;
 burialsmissing = true;
+findsmissing = true;
 burialstotal = 0;
 OvCh = false;
 GrCh = false;
 BuCh = false;
+FiCh = false;
 if (typeof (bibfeature.properties.references) !== 'undefined' && bibfeature.properties.references.length === 1) singleref = true;
 
 $.each(bibfeature.properties.references, function (t, ref) {
@@ -263,6 +266,10 @@ function loadOverview() {
             createchart(countTypes(descriptionSummary.gravetypes), 'Graves/Features', 'gravetypes-chart');
             OvCh = true;
             $('.chartcontainer').css('max-height', $('gravetypes-chart').height() + 'px')
+
+            svgWidth = $('#gravetypes-chart-container').height();
+            //console.log(svgWidth);
+
         } else {
             $('#gravetypes-chart-container').remove()
         }
@@ -279,208 +286,9 @@ function loadOverview() {
             $('#burialtypes-chart-container').remove();
         }
 
-        if (descriptionSummary.findtypes.length > 0 && bubbleNotThere) {
-            var svgWidth = $('#burialtypes-chart').height();
+        if (descriptionSummary.findtypes.length > 0 && bubbleNotThere && findBubble[0].children) {
 
-            document.getElementById('bubble').setAttribute("width", svgWidth);
-            document.getElementById('bubble').setAttribute("height", svgWidth);
-
-            var svg = d3.select("#bubble"),
-                margin = 5,
-                diameter = +svg.attr("width"),
-                g = svg.append("g").attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
-
-            var color = d3.scaleLinear()
-                .domain([-1, 5])
-                .range(["hsl(204,61%,77%)", "hsl(227,30%,40%)"])
-                .interpolate(d3.interpolateHcl);
-
-            var calculateTextFontSize = function (d) {
-                if (d.data.name === "Coins") console.log(d);
-                if (d.data.name === "unidentified") console.log(d);
-                if (d.data.name === "Cult Object") console.log(d);
-                var id = d.data.id;
-                //var radius = 0;
-                if (d.data.fontsize) {
-                    var r = d3.selectAll("#c" + id).attr("r");
-                    //if radius present in DOM use that
-                    if (r) {
-                        radius = r;
-                    }
-                    //calculate the font size and store it in object for future
-                    d.data.fontsize = (2 * radius - 8) / d.data.computed * 24 + "px";
-                    if (((2 * radius - 8) / d.data.computed * 24) < 0) d.data.fontsize = 0 + "px";
-                    //if fontsize is already calculated use that.
-                    if (d.data.name === "Coins") console.log(d);
-                if (d.data.name === "unidentified") console.log(d);
-                if (d.data.name === "Cult Object") console.log(d);
-                    return d.data.fontsize;
-                }
-
-                if (!d.data.computed) {
-                    //if computed not present get & store the getComputedTextLength() of the text field
-                    d.data.computed = this.getComputedTextLength();
-                    if (d.data.computed != 0) {
-                        //if computed is not 0 then get the visual radius of DOM
-                        var r = d3.selectAll("#c" + id).attr("r");
-                        //if radius present in DOM use that
-                        if (r) {
-                            radius = r;
-                        }
-                        //calculate the font size and store it in object for future
-                        d.data.fontsize = (2 * radius - 8) / d.data.computed * 24 + "px";
-                        if (((2 * radius - 8) / d.data.computed * 24) < 0) d.data.fontsize = 0 + "px";
-                        if (d.data.name === "Coins") console.log(d);
-                if (d.data.name === "unidentified") console.log(d);
-                if (d.data.name === "Cult Object") console.log(d);
-                        return d.data.fontsize;
-                    }
-                }
-            }
-
-            var pack = d3.pack()
-                .size([diameter - margin, diameter - margin])
-                .padding(function (d) {
-                    if (d.data.children.length === 1) {
-                        return 10
-                    } else {
-                        return 2
-                    }
-                });
-
-            root = findBubble[0]
-
-            root = d3.hierarchy(root)
-                .sum(function (d) {
-                    return d.size;
-                })
-                .sort(function (a, b) {
-                    return b.value - a.value;
-                });
-
-            var focus = root,
-                nodes = pack(root).descendants(),
-                view;
-
-            var circle = g.selectAll("circle")
-                .data(nodes)
-                .enter().append("circle")
-                .attr("class", function (d) {
-                    return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root";
-                })
-
-                .style("fill", function (d) {
-                    return d.children ? color(d.depth) : null;
-                })
-                .attr("r", function (d) {
-                    return d.r;
-                })
-                .on("click", function (d) {
-                    if (!d.data.children) {
-                        labelid = "#" + d.data.id;
-                        circleid = "#c" + d.data.id;
-                        currentnode = true;
-                    } else {
-                        currentnode = false
-                    }
-                    if (focus !== d) zoom(d), d3.event.stopPropagation();
-                })
-                .attr("id", function (d) {
-                    return "c" + d.data.id;
-                })
-
-
-            circle.append("svg:title")
-                .text(function (d) {
-                    return d.data.name + ": " + d.value;
-                })
-
-
-            var text = g.selectAll("text")
-                .data(nodes)
-                .enter().append("text")
-                .attr("class", "label")
-                .attr("id", function (d) {
-                    return d.data.id
-                })
-                .style("fill-opacity", function (d) {
-                    return d.parent === root ? 1 : 0;
-                })
-                .style("display", function (d) {
-                    return d.parent === root ? "inline" : "none";
-                })
-                .text(function (d) {
-                    return d.data.name;
-                })
-                .style("font-size", calculateTextFontSize)
-                .attr("dy", ".35em");
-
-            var node = g.selectAll("circle,text");
-
-            svg
-                .style("background", "rgb(242 242 242)")
-                .on("click", function () {
-                    zoom(root);
-                });
-
-            zoomTo([root.x, root.y, root.r * 2 + margin]);
-
-            function zoom(d) {
-                var focus0 = focus;
-                focus = d;
-
-                var transition = d3.transition()
-                    .duration(d3.event.altKey ? 7500 : 500)
-                    .tween("zoom", function (d) {
-                        var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
-                        return function (t) {
-                            zoomTo(i(t));
-                        };
-                    });
-
-                transition.selectAll("text")
-                    .filter(function (d) {
-                        return d.parent === focus || this.style.display === "inline";
-                    })
-                    .style("fill-opacity", function (d) {
-                        return d.parent === focus || d === focus && !d.children ? 1 : 0;
-                    })
-
-                    .on("start", function (d) {
-                        if (d.parent === focus || d === focus && !d.children) this.style.display = "inline";
-                    })
-                    .on("end", function (d) {
-                        if (d.parent !== focus) this.style.display = "inline";
-                    })
-                if (typeof (labelid) !== "undefined") {
-                    if (labelid) {
-
-
-                        if (eval('$("' + circleid + '").hasClass("node--leaf")') && currentnode) {
-                            eval('$("' + labelid + '").css("fill-opacity", "1")');
-                            eval('$("' + labelid + '").css("display", "inline")');
-                        }
-                    }
-                }
-
-                setTimeout(function () {
-                    d3.selectAll("text").filter(function (d) {
-                        return d.parent === focus || this.style.display === "inline";
-                    }).style("font-size", calculateTextFontSize);
-                }, 501)
-
-            }
-
-            function zoomTo(v) {
-                var k = diameter / v[2];
-                view = v;
-                node.attr("transform", function (d) {
-                    return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")";
-                });
-                circle.attr("r", function (d) {
-                    return d.r * k;
-                });
-            }
+            setBubble(findBubble[0], 'bubble', ["hsl(204,61%,77%)", "hsl(227,30%,40%)"]);
 
             OvCh = true;
             bubbleNotThere = false;
@@ -493,6 +301,200 @@ function loadOverview() {
         }
     }
 
+}
+
+function setBubble(data, container, colorRange) {
+
+    document.getElementById(container).setAttribute("width", svgWidth);
+    document.getElementById(container).setAttribute("height", svgWidth);
+
+    var svg = d3.select("#" + container),
+        margin = 5,
+        diameter = +svg.attr("width"),
+        g = svg.append("g").attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+
+    var color = d3.scaleLinear()
+        .domain([-1, 5])
+        .range(colorRange)
+        .interpolate(d3.interpolateHcl);
+
+    var calculateTextFontSize = function (d) {
+        var id = d.data.id;
+        //var radius = 0;
+        if (d.data.fontsize) {
+            var r = d3.selectAll("#c" + id).attr("r");
+            //if radius present in DOM use that
+            if (r) {
+                radius = r;
+            }
+            //calculate the font size and store it in object for future
+            d.data.fontsize = (2 * radius - 8) / d.data.computed * 24 + "px";
+            if (((2 * radius - 8) / d.data.computed * 24) < 0) d.data.fontsize = 0 + "px";
+            //if fontsize is already calculated use that.
+            return d.data.fontsize;
+        }
+
+        if (!d.data.computed) {
+            //if computed not present get & store the getComputedTextLength() of the text field
+            d.data.computed = this.getComputedTextLength();
+            if (d.data.computed != 0) {
+                //if computed is not 0 then get the visual radius of DOM
+                var r = d3.selectAll("#c" + id).attr("r");
+                //if radius present in DOM use that
+                if (r) {
+                    radius = r;
+                }
+                //calculate the font size and store it in object for future
+                d.data.fontsize = (2 * radius - 8) / d.data.computed * 24 + "px";
+                if (((2 * radius - 8) / d.data.computed * 24) < 0) d.data.fontsize = 0 + "px";
+                return d.data.fontsize;
+            }
+        }
+    }
+
+    var pack = d3.pack()
+        .size([diameter - margin, diameter - margin])
+        .padding(function (d) {
+            if (d.data.children.length === 1) {
+                return 10
+            } else {
+                return 2
+            }
+        });
+
+    root = data
+
+    root = d3.hierarchy(root)
+        .sum(function (d) {
+            return d.size;
+        })
+        .sort(function (a, b) {
+            return b.value - a.value;
+        });
+
+    var focus = root,
+        nodes = pack(root).descendants(),
+        view;
+
+    var circle = g.selectAll("circle")
+        .data(nodes)
+        .enter().append("circle")
+        .attr("class", function (d) {
+            return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root";
+        })
+
+        .style("fill", function (d) {
+            return d.children ? color(d.depth) : null;
+        })
+        .attr("r", function (d) {
+            return d.r;
+        })
+        .on("click", function (d) {
+            if (!d.data.children) {
+                labelid = "#" + d.data.id;
+                circleid = "#c" + d.data.id;
+                currentnode = true;
+            } else {
+                currentnode = false
+            }
+            if (focus !== d) zoom(d), d3.event.stopPropagation();
+        })
+        .attr("id", function (d) {
+            return "c" + d.data.id;
+        })
+
+
+    circle.append("svg:title")
+        .text(function (d) {
+            return d.data.name + ": " + d.value;
+        })
+
+
+    var text = g.selectAll("text")
+        .data(nodes)
+        .enter().append("text")
+        .attr("class", "label")
+        .attr("id", function (d) {
+            return d.data.id
+        })
+        .style("fill-opacity", function (d) {
+            return d.parent === root ? 1 : 0;
+        })
+        .style("display", function (d) {
+            return d.parent === root ? "inline" : "none";
+        })
+        .text(function (d) {
+            return d.data.name;
+        })
+        .style("font-size", calculateTextFontSize)
+        .attr("dy", ".35em");
+
+    var node = g.selectAll("circle,text");
+
+    svg
+        .style("background", "rgb(242 242 242)")
+        .on("click", function () {
+            zoom(root);
+        });
+
+    zoomTo([root.x, root.y, root.r * 2 + margin]);
+
+    function zoom(d) {
+        var focus0 = focus;
+        focus = d;
+
+        var transition = d3.transition()
+            .duration(d3.event.altKey ? 7500 : 500)
+            .tween("zoom", function (d) {
+                var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
+                return function (t) {
+                    zoomTo(i(t));
+                };
+            });
+
+        transition.selectAll("text")
+            .filter(function (d) {
+                return d.parent === focus || this.style.display === "inline";
+            })
+            .style("fill-opacity", function (d) {
+                return d.parent === focus || d === focus && !d.children ? 1 : 0;
+            })
+
+            .on("start", function (d) {
+                if (d.parent === focus || d === focus && !d.children) this.style.display = "inline";
+            })
+            .on("end", function (d) {
+                if (d.parent !== focus) this.style.display = "inline";
+            })
+        if (typeof (labelid) !== "undefined") {
+            if (labelid) {
+
+
+                if (eval('$("' + circleid + '").hasClass("node--leaf")') && currentnode) {
+                    eval('$("' + labelid + '").css("fill-opacity", "1")');
+                    eval('$("' + labelid + '").css("display", "inline")');
+                }
+            }
+        }
+
+        setTimeout(function () {
+            d3.selectAll("text").filter(function (d) {
+                return d.parent === focus || this.style.display === "inline";
+            }).style("font-size", calculateTextFontSize);
+        }, 501)
+
+    }
+
+    function zoomTo(v) {
+        var k = diameter / v[2];
+        view = v;
+        node.attr("transform", function (d) {
+            return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")";
+        });
+        circle.attr("r", function (d) {
+            return d.r * k;
+        });
+    }
 }
 
 function prepareSexData(data) {
@@ -615,16 +617,70 @@ function loadBurials() {
             $('#gender-chart-container').remove();
         }
         if (SexDepthData.datasets.length > 0) {
-            createStackedBarchart(removeStackedZeros(SexDepthData), 'Depth of graves by sex of individuals', 'sexdepth-chart')
+            createStackedBarchart(removeStackedZeros(SexDepthData), 'Sex of individuals by depth of graves', 'sexdepth-chart', '', '')
             BuCh = true
         } else {
             $('#sexdepth-chart-container').remove();
         }
+
+        if (PathobubbleNotThere && pathoBubble[0].children) {
+            setBubble(pathoBubble[0], 'pathology', ["hsl(9,100%,94%)", "hsl(17,100%,40%)"]);
+            //setBubble(findBubble[0], 'bubble', 'burialtypes-chart-container' );
+            BuCh = true
+            PathobubbleNotThere = false;
+        } else {
+            $("#pathocard").remove()
+        }
+
     }
     burialsmissing = false;
     if (BuCh === false) {
         $('#burialCharts').html('<div class="card-body">Not enough data for visualisations</div>')
     }
+}
+
+function loadFinds() {
+    $(".db-element").addClass('d-none');
+    $("#find-wrapper").removeClass('d-none');
+    if (findsmissing) {
+        var depthcount = (findsPerDepth.datasets.reduce((a, b) => a + b, 0))
+        if (depthcount > 0) {
+            createlinechart(removeDashboardZeros(JSON.parse(JSON.stringify(findsPerDepth))), 'Average count of finds per depth of graves', 'findDepth-chart');
+            FiCh = true;
+        } else {
+            $('#findDepth-chart-container').remove()
+        }
+
+        var depthcount = (preciousMetalfinds.datasets[0].data.reduce((a, b) => a + b, 0)) + preciousMetalfinds.datasets[1].data.reduce((a, b) => a + b, 0) + preciousMetalfinds.datasets[2].data.reduce((a, b) => a + b, 0)
+        if (depthcount > 0) {
+            createMultiLinechart(removeStackedZeros(JSON.parse(JSON.stringify(preciousMetalfinds))), 'Average count of non ferrous finds per depth of graves', 'metalDepth-chart', 'brewer.SetOne3');
+            FiCh = true;
+        } else {
+            $('#metalDepth-chart-container').remove()
+        }
+
+        var depthcount = getSumOfDatasets(prestigiousfinds)
+        if (depthcount > 0) {
+            createMultiLinechart(removeStackedZeros(JSON.parse(JSON.stringify(prestigiousfinds))), 'Average count of find types per depth of graves', 'findtypesDepth-chart', 'tableau.Tableau10');
+            FiCh = true;
+        } else {
+            $('#findtypesDepth-chart-container').remove()
+        }
+
+    }
+    findsmissing = false;
+    if (FiCh === false) {
+        $('#findCharts').html('<div class="card-body">Not enough data for visualisations</div>')
+    }
+}
+
+function getSumOfDatasets(data) {
+    var sum = 0
+    $.each(data.datasets, function (i, dataset) {
+        sum += dataset.data.reduce((a, b) => a + b, 0)
+        //console.log(sum)
+    })
+    return sum
 }
 
 function createAgeChart(data, container, title) {
@@ -774,6 +830,11 @@ function createbarchart(data, title, container, n) {
                 gridLines: {
                     display: false
                 }
+            }],
+            yAxes: [{
+                ticks: {
+                    precision: 0
+                }
             }]
         },
         plugins: {
@@ -800,7 +861,53 @@ function createbarchart(data, title, container, n) {
     var newchart = new Chart(ctx, config)
 }
 
-function createStackedBarchart(data, title, container) {
+function createlinechart(data, title, container, n) {
+
+    var Options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+            display: false,
+        },
+        title: {
+            display: true,
+            text: title
+        },
+        scales: {
+            xAxes: [{
+                scaleLabel: {
+                    display: false,
+                },
+                gridLines: {
+                    display: false
+                }
+            }],
+        },
+        plugins: {
+            colorschemes: {
+                scheme: 'tableau.Tableau20'
+            }
+        }
+    }
+
+
+    var config = {
+        // The type of chart we want to create
+        type: 'line',
+        // The data for our dataset
+        data: {
+            labels: data.labels,
+            datasets: [{data: data.datasets, borderWidth: 0}]
+        },
+        options: Options
+        // Configuration options go here
+
+    };
+    var ctx = document.getElementById(container).getContext('2d');
+    var newchart = new Chart(ctx, config)
+}
+
+function createStackedBarchart(data, title, container, xlabel, ylabel) {
 
     var barOptions = {
         responsive: true,
@@ -814,9 +921,17 @@ function createStackedBarchart(data, title, container) {
         },
         scales: {
             xAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: xlabel,
+                },
                 stacked: true,
             }],
             yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: ylabel,
+                },
                 stacked: true
             }]
         },
@@ -834,6 +949,44 @@ function createStackedBarchart(data, title, container) {
         // The data for our dataset
         data: data,
         options: barOptions
+        // Configuration options go here
+
+    };
+    var ctx = document.getElementById(container).getContext('2d');
+    var newchart = new Chart(ctx, config)
+}
+
+function createMultiLinechart(data, title, container, colorrange) {
+    //console.log(data);
+    var Options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+            display: true,
+        },
+        title: {
+            display: true,
+            text: title
+        },
+        scales: {
+            yAxes: [{
+                stacked: true,
+            }]
+        },
+        plugins: {
+            colorschemes: {
+                scheme: colorrange
+            }
+        }
+    }
+
+
+    var config = {
+        // The type of chart we want to create
+        type: 'line',
+        // The data for our dataset
+        data: data,
+        options: Options
         // Configuration options go here
 
     };

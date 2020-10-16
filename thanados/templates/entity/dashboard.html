@@ -26,6 +26,10 @@
         ValueAgeData = {{ ValueAgeData|tojson }};
         GenderData = {{ GenderData|tojson }};
         SexDepthData = {{ SexDepthData|tojson }};
+        pathoBubble = {{ pathoBubble|tojson }};
+        findsPerDepth = {{ findsPerDepth|tojson }};
+        preciousMetalfinds = {{ preciousMetalfinds|tojson }};
+        prestigiousfinds = {{ prestigiousfinds|tojson }};
     </script>
 
     <a id="sidebarCollapse" class="btn btn-secondary btn-sm" role="button"
@@ -64,6 +68,13 @@
             </li>
 
             <li>
+                <a onclick="loadFinds()">
+                    <i class="fab fa-sketch"></i>
+                    Finds
+                </a>
+            </li>
+
+            <li>
                 <a onclick="loadWordCloud()">
                     <i class="fas fa-cloud"></i>
                     Wordcloud
@@ -82,8 +93,10 @@
 
     <!-- Page Content  -->
     <div id="mycontent">
-        <h2 class="mb-3"><a class="btn-link" href="/entity/{{mysitejson.site_id}}">{{ mysitejson.name }}</a>
-        <button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary float-right" data-toggle="modal" data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button></h2>
+        <h2 class="mb-3"><a class="btn-link" href="/entity/{{ mysitejson.site_id }}">{{ mysitejson.name }}</a>
+            <button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary float-right" data-toggle="modal"
+                    data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>
+        </h2>
 
         <div class="db-element d-none" id="overview-wrapper">
             <h5>Overview</h5>
@@ -200,6 +213,38 @@
 
                         <div id="sexdepth-chart-container" class="col-xl-6">
                             <canvas class="chartcontainer" id="sexdepth-chart"></canvas>
+                        </div>
+
+                        <div id="pathocard" class="col-xl-6">
+                            <div class="chartcontainer overflow-auto text-center">
+                                <div class="row"><span class="mx-auto charttitle">Pathologies</span></div>
+                                <svg id="pathology" class="row mx-auto"></svg>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="db-element d-none" id="find-wrapper">
+            <h5>Finds</h5>
+            <div id="findCharts" class="card shadow dash-card">
+                <div class="card-body">
+                    <div class="row">
+
+                        <div id="findDepth-chart-container" class="col-xl-6">
+                            <canvas class="chartcontainer" id="findDepth-chart"></canvas>
+                        </div>
+
+                        <div id="metalDepth-chart-container" class="col-xl-6">
+                            <canvas class="chartcontainer" id="metalDepth-chart"></canvas>
+                        </div>
+
+                        <div id="findtypesDepth-chart-container" class="col-xl-6">
+                            <canvas class="chartcontainer" id="findtypesDepth-chart"></canvas>
                         </div>
 
                     </div>

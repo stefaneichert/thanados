@@ -522,6 +522,8 @@ SELECT
 
 INSERT INTO thanados.dimensiontypes SELECT id, parent_id, burial_id, name, description, value, path FROM thanados.graveDeg;
 
+DROP TABLE IF EXISTS thanados.graveDeg;
+
 DROP EXTENSION IF EXISTS postgis_sfcgal;
 CREATE EXTENSION postgis_sfcgal;
 DROP TABLE IF EXISTS thanados.giscleanup2;
@@ -553,6 +555,9 @@ CREATE TABLE thanados.derivedDeg AS
 	ST_EndPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS endP,
 	ST_AsText(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom))), child_id FROM thanados.giscleanup2 g WHERE system_type = 'feature') p);
 
+
+DROP TABLE IF EXISTS thanados.giscleanup2;
+
 -- get lower value of azimuth
 DROP TABLE IF EXISTS thanados.azimuth;
 CREATE TABLE thanados.azimuth AS (
@@ -566,6 +571,8 @@ UNION ALL
 	g.degB_A::integer AS Azimuth
 	FROM thanados.derivedDeg g WHERE degB_A <= degA_B);
 	
+DROP TABLE IF EXISTS thanados.derivedDeg;
+	
 --insert azimuth into dimensiontypes
 INSERT INTO thanados.dimensiontypes 
     SELECT
@@ -578,6 +585,7 @@ INSERT INTO thanados.dimensiontypes
         'Dimensions > Azimuth'
         FROM thanados.azimuth;
          
+DROP TABLE IF EXISTS thanados.azimuth;
 
 --hack for setting burial orientation to grave orientation if grave does not have any. Comment/Uncomment depending on your preferences
 /*INSERT INTO thanados.dimensiontypes (id, parent_id, entity_id, name, description, value, path)
@@ -685,6 +693,8 @@ WHERE begin_to IS NULL;
 UPDATE thanados.entities
 SET end_to = end_from
 WHERE end_to IS NULL;
+
+DROP TABLE IF EXISTS thanados.entitiestmp
             """
     g.cursor.execute(sql_1)
 
@@ -908,6 +918,8 @@ FROM (
               ON e.child_id = irgendwas.parent_id) f
 WHERE entity_id = f.child_id;
 
+DROP TABLE IF EXISTS thanados.extrefs;
+
 -- insert dimension data
 UPDATE thanados.types_and_files
 SET dimensions = dimtypes
@@ -945,6 +957,7 @@ FROM (
               ON e.child_id = irgendwas.entity_id) f
 WHERE entity_id = f.child_id;
 
+DROP TABLE IF EXISTS thanados.materialtypes;
 
 -- insert timespan data
 UPDATE thanados.types_and_files
@@ -968,6 +981,8 @@ CREATE TABLE thanados.tmp AS
     (SELECT *
      FROM thanados.entities e
               LEFT JOIN thanados.types_and_files t ON e.child_id = t.entity_id ORDER BY parent_id, child_name);
+
+DROP TABLE IF EXISTS thanados.types_and_files;
 
 UPDATE thanados.tmp
 SET timespan = NULL
@@ -1040,6 +1055,8 @@ SELECT id,
 FROM thanados.tbl_finds f;
 --ORDER BY f.properties -> 'name' asc;
 
+DROP TABLE IF EXISTS thanados.tbl_finds;
+
 ---humanremains json
 DROP TABLE IF EXISTS thanados.tbl_humanremains;
 CREATE TABLE thanados.tbl_humanremains
@@ -1095,6 +1112,7 @@ SELECT id,
 FROM thanados.tbl_humanremains f;
 --ORDER BY f.properties -> 'name' asc;
 
+DROP TABLE IF EXISTS thanados.tbl_humanremains;
 
 --burial
 DROP TABLE IF EXISTS thanados.tbl_burials;
@@ -1137,6 +1155,8 @@ GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.typ
          f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_type, f.reference, f.extrefs
 ORDER BY f.child_name;
 
+DROP TABLE IF EXISTS thanados.tbl_findscomplete;
+
 UPDATE thanados.tbl_burials f
 SET finds = NULL
 WHERE f.finds = '[null]';
@@ -1145,6 +1165,8 @@ UPDATE thanados.tbl_burials f
 SET humanremains = hr.humanremains FROM (SELECT parent_id,
                                                 jsonb_strip_nulls(jsonb_agg(humanremains)) AS humanremains
                                                     FROM thanados.tbl_humanremainscomplete GROUP BY parent_id) hr WHERE f.id = hr.parent_id;
+
+DROP TABLE IF EXISTS thanados.tbl_humanremainscomplete;
 
 UPDATE thanados.tbl_burials f
 SET humanremains = NULL
@@ -1170,6 +1192,8 @@ SELECT id,
            )) AS burials
 FROM thanados.tbl_burials f;
 --ORDER BY f.properties -> 'name' asc;
+
+DROP TABLE IF EXISTS thanados.tbl_burials;
 
 --graves
 DROP TABLE IF EXISTS thanados.tbl_graves;
@@ -1215,6 +1239,8 @@ GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.ref
          f.system_type
 ORDER BY f.child_name;
 
+DROP TABLE IF EXISTS thanados.tbl_burialscomplete;
+
 UPDATE thanados.tbl_graves f
 SET burials = NULL
 WHERE f.burials = '[
@@ -1250,6 +1276,8 @@ SELECT id,
            )) AS graves
 FROM thanados.tbl_graves f
 ORDER BY f.parent_id, f.name;
+
+DROP TABLE IF EXISTS thanados.tbl_graves;
 
 -- get data for sites
 DROP TABLE IF EXISTS thanados.tbl_sites;
@@ -1327,6 +1355,8 @@ GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.ref
          s.point, s.polygon
 ORDER BY f.child_name;
 
+DROP TABLE IF EXISTS thanados.tmp;
+
 
 DROP TABLE IF EXISTS thanados.tbl_thanados_data;
 CREATE TABLE thanados.tbl_thanados_data
@@ -1351,6 +1381,7 @@ FROM thanados.tbl_sitescomplete s
                    ON s.id = f.parent_id
 GROUP BY s.id, s.name, s.properties;
 
+DROP TABLE IF EXISTS thanados.tbl_sitescomplete;
 
 -- create table with all types for json
 DROP TABLE IF EXISTS thanados.typesforjson;
@@ -1444,35 +1475,35 @@ CREATE TABLE thanados.depth_labels AS (
           FROM (SELECT row_to_json(c.*)
                 FROM (
                          SELECT count(*) FILTER (WHERE VALUE <= 20)                  AS "0-20",
-                                count(*) FILTER (WHERE VALUE > 20 AND VALUE <= 40)   AS "20-40",
-                                count(*) FILTER (WHERE VALUE > 40 AND VALUE <= 60)   AS "40-60",
-                                count(*) FILTER (WHERE VALUE > 60 AND VALUE <= 80)   AS "60-80",
-                                count(*) FILTER (WHERE VALUE > 80 AND VALUE <= 100)  AS "80-100",
-                                count(*) FILTER (WHERE VALUE > 100 AND VALUE <= 120) AS "100-120",
-                                count(*) FILTER (WHERE VALUE > 120 AND VALUE <= 140) AS "120-140",
-                                count(*) FILTER (WHERE VALUE > 140 AND VALUE <= 160) AS "140-160",
-                                count(*) FILTER (WHERE VALUE > 160 AND VALUE <= 180) AS "160-180",
-                                count(*) FILTER (WHERE VALUE > 180 AND VALUE <= 200) AS "180-200",
-                                count(*) FILTER (WHERE VALUE > 200 AND VALUE <= 220) AS "200-220",
-                                count(*) FILTER (WHERE VALUE > 220 AND VALUE <= 240) AS "220-240",
-                                count(*) FILTER (WHERE VALUE > 240 AND VALUE <= 260) AS "240-260",
-                                count(*) FILTER (WHERE VALUE > 260 AND VALUE <= 280) AS "260-280",
-                                count(*) FILTER (WHERE VALUE > 280 AND VALUE <= 300) AS "280-300",
-                                count(*) FILTER (WHERE VALUE > 300 AND VALUE <= 320) AS "300-320",
-                                count(*) FILTER (WHERE VALUE > 320 AND VALUE <= 340) AS "320-340",
-                                count(*) FILTER (WHERE VALUE > 340 AND VALUE <= 360) AS "340-360",
-                                count(*) FILTER (WHERE VALUE > 360 AND VALUE <= 380) AS "360-380",
-                                count(*) FILTER (WHERE VALUE > 380 AND VALUE <= 400) AS "380-400",
-                                count(*) FILTER (WHERE VALUE > 300 AND VALUE <= 420) AS "400-420",
-                                count(*) FILTER (WHERE VALUE > 420 AND VALUE <= 440) AS "420-440",
-                                count(*) FILTER (WHERE VALUE > 440 AND VALUE <= 460) AS "440-460",
-                                count(*) FILTER (WHERE VALUE > 460 AND VALUE <= 480) AS "460-480",
-                                count(*) FILTER (WHERE VALUE > 480 AND VALUE <= 500) AS "480-500",
-                                count(*) FILTER (WHERE VALUE > 500 AND VALUE <= 520) AS "500-520",
-                                count(*) FILTER (WHERE VALUE > 520 AND VALUE <= 540) AS "520-540",
-                                count(*) FILTER (WHERE VALUE > 540 AND VALUE <= 560) AS "540-560",
-                                count(*) FILTER (WHERE VALUE > 560 AND VALUE <= 580) AS "560-580",
-                                count(*) FILTER (WHERE VALUE > 580 AND VALUE <= 600) AS "580-600",
+                                count(*) FILTER (WHERE VALUE > 20 AND VALUE <= 40)   AS "21-40",
+                                count(*) FILTER (WHERE VALUE > 40 AND VALUE <= 60)   AS "41-60",
+                                count(*) FILTER (WHERE VALUE > 60 AND VALUE <= 80)   AS "61-80",
+                                count(*) FILTER (WHERE VALUE > 80 AND VALUE <= 100)  AS "81-100",
+                                count(*) FILTER (WHERE VALUE > 100 AND VALUE <= 120) AS "101-120",
+                                count(*) FILTER (WHERE VALUE > 120 AND VALUE <= 140) AS "121-140",
+                                count(*) FILTER (WHERE VALUE > 140 AND VALUE <= 160) AS "141-160",
+                                count(*) FILTER (WHERE VALUE > 160 AND VALUE <= 180) AS "161-180",
+                                count(*) FILTER (WHERE VALUE > 180 AND VALUE <= 200) AS "181-200",
+                                count(*) FILTER (WHERE VALUE > 200 AND VALUE <= 220) AS "201-220",
+                                count(*) FILTER (WHERE VALUE > 220 AND VALUE <= 240) AS "221-240",
+                                count(*) FILTER (WHERE VALUE > 240 AND VALUE <= 260) AS "241-260",
+                                count(*) FILTER (WHERE VALUE > 260 AND VALUE <= 280) AS "261-280",
+                                count(*) FILTER (WHERE VALUE > 280 AND VALUE <= 300) AS "281-300",
+                                count(*) FILTER (WHERE VALUE > 300 AND VALUE <= 320) AS "301-320",
+                                count(*) FILTER (WHERE VALUE > 320 AND VALUE <= 340) AS "321-340",
+                                count(*) FILTER (WHERE VALUE > 340 AND VALUE <= 360) AS "341-360",
+                                count(*) FILTER (WHERE VALUE > 360 AND VALUE <= 380) AS "361-380",
+                                count(*) FILTER (WHERE VALUE > 380 AND VALUE <= 400) AS "381-400",
+                                count(*) FILTER (WHERE VALUE > 300 AND VALUE <= 420) AS "401-420",
+                                count(*) FILTER (WHERE VALUE > 420 AND VALUE <= 440) AS "421-440",
+                                count(*) FILTER (WHERE VALUE > 440 AND VALUE <= 460) AS "441-460",
+                                count(*) FILTER (WHERE VALUE > 460 AND VALUE <= 480) AS "461-480",
+                                count(*) FILTER (WHERE VALUE > 480 AND VALUE <= 500) AS "481-500",
+                                count(*) FILTER (WHERE VALUE > 500 AND VALUE <= 520) AS "501-520",
+                                count(*) FILTER (WHERE VALUE > 520 AND VALUE <= 540) AS "521-540",
+                                count(*) FILTER (WHERE VALUE > 540 AND VALUE <= 560) AS "541-560",
+                                count(*) FILTER (WHERE VALUE > 560 AND VALUE <= 580) AS "561-580",
+                                count(*) FILTER (WHERE VALUE > 580 AND VALUE <= 600) AS "581-600",
                                 count(*) FILTER (WHERE VALUE > 600)                  AS "over 600"
 
                          FROM (
@@ -1564,6 +1595,9 @@ FROM thanados.depth_labels dl,
      thanados.depth d
 GROUP BY dl.labels;
 
+DROP TABLE IF EXISTS thanados.depth;
+DROP TABLE IF EXISTS thanados.depth_labels;
+
 UPDATE thanados.chart_depth
 SET depth = REPLACE(depth, '"[', '[');
 UPDATE thanados.chart_depth
@@ -1572,6 +1606,8 @@ SET depth = REPLACE(depth, ']"', ']');
 INSERT INTO thanados.chart_data (depth)
 SELECT depth::JSONB
 FROM thanados.chart_depth;
+
+DROP TABLE IF EXISTS thanados.chart_depth;
 
 
 DROP TABLE IF EXISTS thanados.orientation_labels;
@@ -1583,23 +1619,23 @@ CREATE TABLE thanados.orientation_labels AS (
           FROM (SELECT row_to_json(c.*)
                 FROM (
                          SELECT count(*) FILTER (WHERE VALUE <= 20)                  AS "0-20",
-                                count(*) FILTER (WHERE VALUE > 20 AND VALUE <= 40)   AS "20-40",
-                                count(*) FILTER (WHERE VALUE > 40 AND VALUE <= 60)   AS "40-60",
-                                count(*) FILTER (WHERE VALUE > 60 AND VALUE <= 80)   AS "60-80",
-                                count(*) FILTER (WHERE VALUE > 80 AND VALUE <= 100)  AS "80-100",
-                                count(*) FILTER (WHERE VALUE > 100 AND VALUE <= 120) AS "100-120",
-                                count(*) FILTER (WHERE VALUE > 120 AND VALUE <= 140) AS "120-140",
-                                count(*) FILTER (WHERE VALUE > 140 AND VALUE <= 160) AS "140-160",
-                                count(*) FILTER (WHERE VALUE > 160 AND VALUE <= 180) AS "160-180",
-                                count(*) FILTER (WHERE VALUE > 180 AND VALUE <= 200) AS "180-200",
-                                count(*) FILTER (WHERE VALUE > 200 AND VALUE <= 220) AS "200-220",
-                                count(*) FILTER (WHERE VALUE > 220 AND VALUE <= 240) AS "220-240",
-                                count(*) FILTER (WHERE VALUE > 240 AND VALUE <= 260) AS "240-260",
-                                count(*) FILTER (WHERE VALUE > 260 AND VALUE <= 280) AS "260-280",
-                                count(*) FILTER (WHERE VALUE > 280 AND VALUE <= 300) AS "280-300",
-                                count(*) FILTER (WHERE VALUE > 300 AND VALUE <= 320) AS "300-320",
-                                count(*) FILTER (WHERE VALUE > 320 AND VALUE <= 340) AS "320-340",
-                                count(*) FILTER (WHERE VALUE > 340 AND VALUE <= 360) AS "340-360"
+                                count(*) FILTER (WHERE VALUE > 20 AND VALUE <= 40)   AS "21-40",
+                                count(*) FILTER (WHERE VALUE > 40 AND VALUE <= 60)   AS "41-60",
+                                count(*) FILTER (WHERE VALUE > 60 AND VALUE <= 80)   AS "61-80",
+                                count(*) FILTER (WHERE VALUE > 80 AND VALUE <= 100)  AS "81-100",
+                                count(*) FILTER (WHERE VALUE > 100 AND VALUE <= 120) AS "101-120",
+                                count(*) FILTER (WHERE VALUE > 120 AND VALUE <= 140) AS "121-140",
+                                count(*) FILTER (WHERE VALUE > 140 AND VALUE <= 160) AS "141-160",
+                                count(*) FILTER (WHERE VALUE > 160 AND VALUE <= 180) AS "161-180",
+                                count(*) FILTER (WHERE VALUE > 180 AND VALUE <= 200) AS "181-200",
+                                count(*) FILTER (WHERE VALUE > 200 AND VALUE <= 220) AS "201-220",
+                                count(*) FILTER (WHERE VALUE > 220 AND VALUE <= 240) AS "221-240",
+                                count(*) FILTER (WHERE VALUE > 240 AND VALUE <= 260) AS "241-260",
+                                count(*) FILTER (WHERE VALUE > 260 AND VALUE <= 280) AS "261-280",
+                                count(*) FILTER (WHERE VALUE > 280 AND VALUE <= 300) AS "281-300",
+                                count(*) FILTER (WHERE VALUE > 300 AND VALUE <= 320) AS "301-320",
+                                count(*) FILTER (WHERE VALUE > 320 AND VALUE <= 340) AS "321-340",
+                                count(*) FILTER (WHERE VALUE > 340 AND VALUE <= 360) AS "341-360"
                          FROM (
                                   SELECT g.parent_id,
                                          s.name AS site_name,
@@ -1660,6 +1696,9 @@ FROM thanados.orientation_labels dl,
      thanados.orientation d
 GROUP BY dl.labels;
 
+DROP TABLE IF EXISTS thanados.orientation_labels;
+DROP TABLE IF EXISTS thanados.orientation;
+
 UPDATE thanados.chart_orientation
 SET orientation = REPLACE(orientation, '"[', '[');
 UPDATE thanados.chart_orientation
@@ -1667,6 +1706,8 @@ SET orientation = REPLACE(orientation, ']"', ']');
 
 UPDATE thanados.chart_data
 SET orientation = (SELECT orientation::JSONB FROM thanados.chart_orientation);
+
+DROP TABLE IF EXISTS thanados.chart_orientation;
 
 DROP TABLE IF EXISTS thanados.azimuth_labels;
 CREATE TABLE thanados.azimuth_labels AS (
@@ -1677,23 +1718,23 @@ CREATE TABLE thanados.azimuth_labels AS (
           FROM (SELECT row_to_json(c.*)
                 FROM (
                          SELECT count(*) FILTER (WHERE VALUE <= 10)                  AS "0-10",
-                                count(*) FILTER (WHERE VALUE > 10 AND VALUE <= 20)   AS "10-20",
-                                count(*) FILTER (WHERE VALUE > 20 AND VALUE <= 30)   AS "20-30",
-                                count(*) FILTER (WHERE VALUE > 30 AND VALUE <= 40)   AS "30-40",
-                                count(*) FILTER (WHERE VALUE > 40 AND VALUE <= 50)   AS "40-50",
-                                count(*) FILTER (WHERE VALUE > 50 AND VALUE <= 60)   AS "50-60",
-                                count(*) FILTER (WHERE VALUE > 60 AND VALUE <= 70)   AS "60-70",
-                                count(*) FILTER (WHERE VALUE > 70 AND VALUE <= 80)   AS "70-80",
-                                count(*) FILTER (WHERE VALUE > 80 AND VALUE <= 90)   AS "80-90",
-                                count(*) FILTER (WHERE VALUE > 90 AND VALUE <= 100)  AS "90-100",
-                                count(*) FILTER (WHERE VALUE > 100 AND VALUE <= 110) AS "100-110",
-                                count(*) FILTER (WHERE VALUE > 110 AND VALUE <= 120) AS "110-120",
-                                count(*) FILTER (WHERE VALUE > 120 AND VALUE <= 130) AS "120-130",
-                                count(*) FILTER (WHERE VALUE > 130 AND VALUE <= 140) AS "130-140",
-                                count(*) FILTER (WHERE VALUE > 140 AND VALUE <= 150) AS "140-150",
-                                count(*) FILTER (WHERE VALUE > 150 AND VALUE <= 160) AS "150-160",
-                                count(*) FILTER (WHERE VALUE > 160 AND VALUE <= 170) AS "160-170",                                
-                                count(*) FILTER (WHERE VALUE > 170 AND VALUE <= 180) AS "170-180"                                
+                                count(*) FILTER (WHERE VALUE > 10 AND VALUE <= 20)   AS "11-20",
+                                count(*) FILTER (WHERE VALUE > 20 AND VALUE <= 30)   AS "21-30",
+                                count(*) FILTER (WHERE VALUE > 30 AND VALUE <= 40)   AS "31-40",
+                                count(*) FILTER (WHERE VALUE > 40 AND VALUE <= 50)   AS "41-50",
+                                count(*) FILTER (WHERE VALUE > 50 AND VALUE <= 60)   AS "51-60",
+                                count(*) FILTER (WHERE VALUE > 60 AND VALUE <= 70)   AS "61-70",
+                                count(*) FILTER (WHERE VALUE > 70 AND VALUE <= 80)   AS "71-80",
+                                count(*) FILTER (WHERE VALUE > 80 AND VALUE <= 90)   AS "81-90",
+                                count(*) FILTER (WHERE VALUE > 90 AND VALUE <= 100)  AS "91-100",
+                                count(*) FILTER (WHERE VALUE > 100 AND VALUE <= 110) AS "101-110",
+                                count(*) FILTER (WHERE VALUE > 110 AND VALUE <= 120) AS "111-120",
+                                count(*) FILTER (WHERE VALUE > 120 AND VALUE <= 130) AS "121-130",
+                                count(*) FILTER (WHERE VALUE > 130 AND VALUE <= 140) AS "131-140",
+                                count(*) FILTER (WHERE VALUE > 140 AND VALUE <= 150) AS "141-150",
+                                count(*) FILTER (WHERE VALUE > 150 AND VALUE <= 160) AS "151-160",
+                                count(*) FILTER (WHERE VALUE > 160 AND VALUE <= 170) AS "161-170",                                
+                                count(*) FILTER (WHERE VALUE > 170 AND VALUE <= 180) AS "171-180"                                
                          FROM (
                                   SELECT g.parent_id,
                                          s.name AS site_name,
@@ -1753,6 +1794,9 @@ FROM thanados.azimuth_labels dl,
      thanados.azimuth d
 GROUP BY dl.labels;
 
+DROP TABLE IF EXISTS thanados.azimuth_labels;
+DROP TABLE IF EXISTS thanados.azimuth;
+
 UPDATE thanados.chart_azimuth
 SET azimuth = REPLACE(azimuth, '"[', '[');
 UPDATE thanados.chart_azimuth
@@ -1760,6 +1804,8 @@ SET azimuth = REPLACE(azimuth, ']"', ']');
 
 UPDATE thanados.chart_data
 SET azimuth = (SELECT azimuth::JSONB FROM thanados.chart_azimuth);
+
+DROP TABLE IF EXISTS thanados.chart_azimuth;
 
 DROP TABLE IF EXISTS thanados.sex;
 CREATE TABLE thanados.sex AS (
@@ -1802,6 +1848,8 @@ INSERT INTO thanados.chart_sex (sex)
                     'datasets', jsonb_agg(d)
                 )
      FROM thanados.sex d);
+     
+DROP TABLE IF EXISTS thanados.sex;     
 
 UPDATE thanados.chart_sex
 SET sex = REPLACE(sex, '"[', '[');
@@ -1810,6 +1858,7 @@ SET sex = REPLACE(sex, ']"', ']');
 
 UPDATE thanados.chart_data
 SET sex = (SELECT sex::JSONB FROM thanados.chart_sex);
+DROP TABLE IF EXISTS thanados.chart_sex;
 
 --age at death estimation for boxplot/violin plot
 DROP TABLE IF EXISTS thanados.ageatdeath;
@@ -1969,26 +2018,8 @@ DROP TABLE thanados.searchData;
 CREATE TABLE thanados.searchData AS (
 SELECT * FROM thanados.searchData_tmp);
 DROP TABLE thanados.searchData_tmp;
-
-DROP TABLE IF EXISTS thanados.dashAge;
-CREATE TABLE thanados.dashAge AS (
-SELECT gre.site_id, jsonb_agg(jsonb_build_object(
-                     'name', gre.burial, 'from', gre.agemin, 'to', gre.agemax)) AS ages FROM (
-SELECT t.child_id AS site_id, t.burial,
-       (((t.age::jsonb) -> 0)::text)::double precision         AS agemin,
-       (((t.age::jsonb) -> 1)::text)::double precision         AS agemax
-                FROM (SELECT
-                             s.child_id,
-                             t.description AS age,
-                                b.child_name AS burial,
-                             s.child_id AS site_id
-                      FROM thanados.sites s
-                               JOIN thanados.graves g ON s.child_id = g.parent_id
-                               JOIN thanados.burials b ON b.parent_id = g.child_id
-                               JOIN thanados.types t ON t.entity_id = b.child_id
-                      WHERE t.path LIKE '%> Age >%' ) AS t ) gre GROUP BY gre.site_id);
-
     """
+
     g.cursor.execute(sql_4)
     return redirect(url_for('admin'))
 
@@ -2117,6 +2148,7 @@ SELECT 	e.system_type,
 	FROM thanados.entities e JOIN model.link l ON e.child_id = l.domain_id JOIN gis.polygon g ON l.range_id = g.entity_id JOIN gis.point g2 ON g.entity_id = g2.entity_id WHERE l.property_code = 'P53');
 
 DELETE FROM gis.point WHERE id IN (SELECT point_id FROM thanados.giscleanup);
+DROP TABLE IF EXISTS thanados.giscleanup;
     """
 
     g.cursor.execute(sql_5)
@@ -2218,6 +2250,7 @@ UPDATE thanados.idpath SET find_end_from = find_end_to;
     UPDATE model.entity SET end_from = find_end_from FROM (SELECT id, find_end_from FROM model.entity e JOIN thanados.idpath i ON id = find_id WHERE end_from != find_end_from) a WHERE a.id = model.entity.id;
     UPDATE model.entity SET end_to = find_end_to FROM (SELECT id, find_end_to FROM model.entity e JOIN thanados.idpath i ON id = find_id WHERE end_to != find_end_to) a WHERE a.id = model.entity.id;
     */
+    DROP TABLE IF EXISTS thanados.idpath;
     """
 
     g.cursor.execute(sql_6)
