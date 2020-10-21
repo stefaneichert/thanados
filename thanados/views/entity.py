@@ -1,4 +1,5 @@
 import ast
+import collections
 
 from flask import json, render_template, g
 
@@ -31,11 +32,11 @@ def entity_view(object_id: int, format_=None):
                                mysitejson=data, system_type=system_type, entity=entity, network=network)
     if format_ == 'dashboard':
 
-        def getBubbleData(treeName, topId):
+        def getBubbleData(treeName, topId, prefix):
 
             bubbletree = [{
                 'name': treeName,
-                'id': topId,
+                'id': prefix + str(topId),
                 'size': 0
             }]
 
@@ -67,15 +68,18 @@ def entity_view(object_id: int, format_=None):
                         FROM
                         	supertypes ORDER BY name_path;
 
-                UPDATE thanados.typeBubble t SET count = l.size FROM (SELECT name, id, COUNT(type_id) AS size FROM thanados.types_all t LEFT JOIN thanados.searchdata s ON t.id = s.type_id WHERE s.site_id = %(site_id)s GROUP BY name, id) l WHERE t.id = l.id;
+                UPDATE thanados.typeBubble t SET count = l.size 
+                FROM (SELECT name, id, COUNT(type_id) AS size 
+                    FROM thanados.types_all t LEFT JOIN thanados.searchdata s ON t.id = s.type_id 
+                    WHERE s.site_id = %(site_id)s GROUP BY name, id) l WHERE t.id = l.id;
                 """
             g.cursor.execute(sqlBubblePrepare, {'topId': topId, 'site_id': place_id})
 
-            def getBubblechildren(id, node):
+            def getBubblechildren(id, node, prefix):
                 sql_getChildren = """
                                     SELECT name, id, count AS size FROM thanados.typeBubble t WHERE t.parent_id = %(id)s;
                                 """
-                g.cursor.execute(sql_getChildren, {'id': id, 'site_id': place_id})
+                g.cursor.execute(sql_getChildren, {'id': str(id)[1:], 'site_id': place_id})
                 results = g.cursor.fetchall()
                 if results:
                     node['children'] = []
@@ -85,12 +89,12 @@ def entity_view(object_id: int, format_=None):
                         else:
                             size = 0
                         currentnode = {'name': row.name,
-                                       'id': row.id,
+                                       'id': prefix + str(row.id),
                                        'size': size}
                         node['children'].append(currentnode)
-                        getBubblechildren(row.id, currentnode)
+                        getBubblechildren(prefix + str(row.id), currentnode, prefix)
 
-            getBubblechildren(bubbletree[0]['id'], bubbletree[0])
+            getBubblechildren(bubbletree[0]['id'], bubbletree[0], prefix)
             return bubbletree
 
         def getFindsPerDim(_dim, term):
@@ -342,9 +346,9 @@ def entity_view(object_id: int, format_=None):
                                                JOIN thanados.graves g ON s.child_id = g.parent_id
                                                JOIN thanados.burials b ON b.parent_id = g.child_id
                                                JOIN thanados.types t ON t.entity_id = b.child_id
-                                      WHERE t.path LIKE '%%> Age >%%') AS t ) gre GROUP BY gre.site_id) a WHERE site_id = %(iwas)s                                                
+                                      WHERE t.path LIKE '%%> Age >%%') AS t ) gre GROUP BY gre.site_id) a WHERE site_id = %(place_id)s                                                
             """
-            g.cursor.execute(sql_age, {'iwas': place_id})
+            g.cursor.execute(sql_age, {'place_id': place_id})
             result = g.cursor.fetchone()
 
             if result:
@@ -353,30 +357,173 @@ def entity_view(object_id: int, format_=None):
             else:
                 return []
 
+        def getBoxPlotAges():
+
+            def BuildData(data):
+
+                _data = {'labels': [],
+                         'datasets': [{'label': 'min', 'data': []}, {'label': 'avg', 'data': []}, {'label': 'max', 'data': []}]
+                         }
+
+                myresult = collections.OrderedDict(sorted(data.myjson.items()))
+
+                for row in myresult:
+                    if myresult[row] is not None:
+                        if '_min' in row:
+                            _data['labels'].append(row[1:-4] + ' (' + str(len(myresult[row]))+ ')')
+                            _data['datasets'][0]['data'].append(myresult[row])
+                        if '_avg' in row:
+                            _data['datasets'][1]['data'].append(myresult[row])
+                        if '_max' in row:
+                            _data['datasets'][2]['data'].append(myresult[row])
+
+                return _data
+
+            sql_BPageBrackets = """
+                SELECT row_to_json(t)::JSONB AS myjson FROM
+                            (SELECT 
+            				jsonb_agg(minage) FILTER (WHERE xy.sex = 'Male') AS "2male_min",
+            				jsonb_agg(avgage) FILTER (WHERE xy.sex = 'Male') AS "2male_avg",
+            				jsonb_agg(maxage) FILTER (WHERE xy.sex = 'Male') AS "2male_max",
+            				jsonb_agg(minage) FILTER (WHERE xy.sex = 'Female') AS "1female_min",
+            				jsonb_agg(avgage) FILTER (WHERE xy.sex = 'Female') AS "1female_avg",
+            				jsonb_agg(maxage) FILTER (WHERE xy.sex = 'Female') AS "1female_max",
+            				jsonb_agg(minage) FILTER (WHERE xy.sex = 'Subadult') AS "0subadult_min",
+            				jsonb_agg(avgage) FILTER (WHERE xy.sex = 'Subadult') AS "0subadult_avg",
+            				jsonb_agg(maxage) FILTER (WHERE xy.sex = 'Subadult') AS "0subadult_max",
+            				jsonb_agg(minage) FILTER (WHERE xy.sex = 'indifferent') AS "3indifferent_min",
+            				jsonb_agg(avgage) FILTER (WHERE xy.sex = 'indifferent') AS "3indifferent_avg",
+            				jsonb_agg(maxage) FILTER (WHERE xy.sex = 'indifferent') AS "3indifferent_max",
+            				jsonb_agg(minage) FILTER (WHERE xy.sex = 'Undetermined') AS "4undetermined_min",
+            				jsonb_agg(avgage) FILTER (WHERE xy.sex = 'Undetermined') AS "4undetermined_avg",
+            				jsonb_agg(maxage) FILTER (WHERE xy.sex = 'Undetermined') AS "4undetermined_max",
+            				jsonb_agg(minage) AS "5total_min",
+            				jsonb_agg(avgage) AS "5total_avg",
+            				jsonb_agg(maxage) AS "5total_max"
+            				FROM
+            
+                            (SELECT 
+                          	(((age::jsonb) -> 0)::text)::double precision AS minage,
+                          	(((age::jsonb) -> 1)::text)::double precision AS maxage,
+                          	ROUND((((((age::jsonb) -> 0)::text)::double precision + (((age::jsonb) -> 1)::text)::double precision)/2)::numeric, 2) AS avgage,
+                          	sex AS before, 
+              	CASE
+                         WHEN sex = 'Female'
+                              AND (((age::jsonb) -> 0)::text)::double precision >= 18 THEN 'Female'
+                         WHEN sex = 'Male'
+                              AND (((age::jsonb) -> 0)::text)::double precision >= 18 THEN 'Male'
+                         WHEN sex = 'indifferent'
+                              AND (((age::jsonb) -> 0)::text)::double precision >= 18 THEN 'indifferent'
+              	    WHEN (((age::jsonb) -> 0)::text)::double precision < 18 THEN 'Subadult'
+                          ELSE 'Undetermined'
+                          
+                        END sex FROM               
+                        (SELECT age, burial_id, COALESCE(REPLACE(name, '?', ''), 'undetermined') AS sex FROM (SELECT a.age, a.burial_id FROM (SELECT
+                                                                     s.child_id,
+                                                                     t.description AS age,
+                                                                     b.child_name AS burial,
+                        					     b.child_id AS burial_id
+                                                FROM thanados.sites s
+                                                         JOIN thanados.graves g ON s.child_id = g.parent_id
+                                                         JOIN thanados.burials b ON b.parent_id = g.child_id
+                                                         JOIN thanados.types t ON t.entity_id = b.child_id
+                                                         
+                                                         
+                                                WHERE t.path LIKE '%%> Age >%%' AND g.parent_id = %(place_id)s) a) y  
+                                                LEFT JOIN (SELECT name, entity_id, path FROM thanados.types WHERE path LIKE '%%Sex >%%') x 
+                                                ON y.burial_id = x.entity_id ORDER BY sex, age) a
+                        
+                                                ORDER BY sex, minage) xy) t                                             
+            """
+            g.cursor.execute(sql_BPageBrackets, {'place_id': place_id})
+            result = g.cursor.fetchone()
+            if result:
+                BracketData = BuildData(result)
+            else:
+                BracketData = {}
+
+
+            sql_BPageValues = """
+                            SELECT row_to_json(t)::JSONB AS myjson FROM
+                            (SELECT 
+            				jsonb_agg(minage) FILTER (WHERE xy.sex = 'Male') AS "2male_min",
+            				jsonb_agg(avgage) FILTER (WHERE xy.sex = 'Male') AS "2male_avg",
+            				jsonb_agg(maxage) FILTER (WHERE xy.sex = 'Male') AS "2male_max",
+            				jsonb_agg(minage) FILTER (WHERE xy.sex = 'Female') AS "1female_min",
+            				jsonb_agg(avgage) FILTER (WHERE xy.sex = 'Female') AS "1female_avg",
+            				jsonb_agg(maxage) FILTER (WHERE xy.sex = 'Female') AS "1female_max",
+            				jsonb_agg(minage) FILTER (WHERE xy.sex = 'Subadult') AS "0subadult_min",
+            				jsonb_agg(avgage) FILTER (WHERE xy.sex = 'Subadult') AS "0subadult_avg",
+            				jsonb_agg(maxage) FILTER (WHERE xy.sex = 'Subadult') AS "0subadult_max",
+            				jsonb_agg(minage) FILTER (WHERE xy.sex = 'indifferent') AS "3indifferent_min",
+            				jsonb_agg(avgage) FILTER (WHERE xy.sex = 'indifferent') AS "3indifferent_avg",
+            				jsonb_agg(maxage) FILTER (WHERE xy.sex = 'indifferent') AS "3indifferent_max",
+            				jsonb_agg(minage) FILTER (WHERE xy.sex = 'Undetermined') AS "4undetermined_min",
+            				jsonb_agg(avgage) FILTER (WHERE xy.sex = 'Undetermined') AS "4undetermined_avg",
+            				jsonb_agg(maxage) FILTER (WHERE xy.sex = 'Undetermined') AS "4undetermined_max",
+            				jsonb_agg(minage) AS "5total_min",
+            				jsonb_agg(avgage) AS "5total_avg",
+            				jsonb_agg(maxage) AS "5total_max"
+            				FROM
+            
+                            (SELECT 
+                          	(((age::jsonb) -> 0)::text)::double precision AS minage,
+                          	(((age::jsonb) -> 1)::text)::double precision AS maxage,
+                          	ROUND((((((age::jsonb) -> 0)::text)::double precision + (((age::jsonb) -> 1)::text)::double precision)/2)::numeric, 2) AS avgage,
+                          	sex AS before, 
+                          	CASE
+                                     WHEN sex = 'Female'
+                                          AND (((age::jsonb) -> 0)::text)::double precision >= 18 THEN 'Female'
+                                     WHEN sex = 'Male'
+                                          AND (((age::jsonb) -> 0)::text)::double precision >= 18 THEN 'Male'
+                                     WHEN sex = 'indifferent'
+                                          AND (((age::jsonb) -> 0)::text)::double precision >= 18 THEN 'indifferent'
+                          	    WHEN (((age::jsonb) -> 0)::text)::double precision < 18 THEN 'Subadult'
+                                      ELSE 'Undetermined'
+                                      
+                                    END sex FROM               
+                                    (SELECT age, burial_id, COALESCE(REPLACE(name, '?', ''), 'undetermined') AS sex FROM (SELECT a.age, a.burial_id 
+                                    FROM (SELECT burial_id, ('[' || min || ',' || max || ']')::JSONB AS age FROM thanados.valueAges) a) y  
+                                                            LEFT JOIN (SELECT name, entity_id, path FROM thanados.types WHERE path LIKE '%%Sex >%%') x 
+                                                            ON y.burial_id = x.entity_id ORDER BY sex, age) a
+                                    
+                                                            ORDER BY sex, minage) xy) t                                          
+                        """
+            g.cursor.execute(sql_BPageValues)
+            result = g.cursor.fetchone()
+
+            if result:
+                ValueData = BuildData(result)
+            else:
+                ValueData = {}
+
+            data = {'ValueData': ValueData, 'BracketData': BracketData}
+            return data
+
         def getValueAges():
             minAges = (118152, 118134, 117199)
             maxAges = (118151, 118132, 117200)
 
             sqlValueAges = """
-            DROP TABLE IF EXISTS thanados.valueAges;
-            CREATE TABLE thanados.valueAges AS
-            SELECT child_name, burial_id, count(burial_id), min, NULL::INT AS max 
-                FROM thanados.searchdata 
-                WHERE type_id IN (118152, 118134, 117199) 
-                AND site_id = %(place_id)s GROUP BY child_name, burial_id, min ORDER BY count DESC;
-
-            UPDATE thanados.valueAges v SET max = d.max FROM 
-            (SELECT child_name, burial_id, count(burial_id), min as max 
-            FROM thanados.searchdata WHERE type_id IN (118151, 118132, 117200)
-            AND site_id = %(place_id)s GROUP BY child_name, burial_id, min) d WHERE v.burial_id = d.burial_id;
-
-            DELETE FROM thanados.valueAges WHERE min ISNULL OR max ISNULL;
-
-            SELECT jsonb_agg(jsonb_build_object(
-                'name', v.name,
-                'from', v.from,
-                'to', v.to
-                )) AS ages FROM (SELECT child_name AS name, min AS from, max AS to FROM thanados.valueAges) v;
+                DROP TABLE IF EXISTS thanados.valueAges;
+                CREATE TABLE thanados.valueAges AS
+                SELECT child_name, burial_id, count(burial_id), min, NULL::INT AS max 
+                    FROM thanados.searchdata 
+                    WHERE type_id IN (118152, 118134, 117199) 
+                    AND site_id = %(place_id)s GROUP BY child_name, burial_id, min ORDER BY count DESC;
+    
+                UPDATE thanados.valueAges v SET max = d.max FROM 
+                (SELECT child_name, burial_id, count(burial_id), min as max 
+                FROM thanados.searchdata WHERE type_id IN (118151, 118132, 117200)
+                AND site_id = %(place_id)s GROUP BY child_name, burial_id, min) d WHERE v.burial_id = d.burial_id;
+    
+                DELETE FROM thanados.valueAges WHERE min ISNULL OR max ISNULL;
+    
+                SELECT jsonb_agg(jsonb_build_object(
+                    'name', v.name,
+                    'from', v.from,
+                    'to', v.to
+                    )) AS ages FROM (SELECT child_name AS name, min AS from, max AS to FROM thanados.valueAges) v;
             """
 
             g.cursor.execute(sqlValueAges, {'place_id': place_id})
@@ -555,24 +702,24 @@ def entity_view(object_id: int, format_=None):
         preciousMetalfinds = {"labels": getFindsPerDim('Height', 'Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get('labels'),
                               "datasets": [
                                   {'label': 'Gold',
-                                   #'backgroundColor': '#ffd700',
-                                   #'borderColor': '#ffd700',
-                                   #'pointBorderColor': '#666',
-                                   #'pointBackgroundColor': '#f2f2f2',
+                                   # 'backgroundColor': '#ffd700',
+                                   # 'borderColor': '#ffd700',
+                                   # 'pointBorderColor': '#666',
+                                   # 'pointBackgroundColor': '#f2f2f2',
                                    'data': getFindsPerDim('Height', 'Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get('datasets')},
                                   {'label': 'Silver',
-                                   #'backgroundColor': '#c0c0c0',
-                                   #'pointBorderColor': '#666',
-                                   #'borderColor': '#c0c0c0',
-                                   #'pointBackgroundColor': '#f2f2f2',
+                                   # 'backgroundColor': '#c0c0c0',
+                                   # 'pointBorderColor': '#666',
+                                   # 'borderColor': '#c0c0c0',
+                                   # 'pointBackgroundColor': '#f2f2f2',
                                    'data': getFindsPerDim('Height',
                                                           'Material > Metal > Non-Ferrous Metal > Precious Metal > Silver%').get(
                                        'datasets')},
                                   {'label': 'Copper/Copper Alloys',
-                                   #'backgroundColor': '#ffd6a2',
-                                   #'pointBorderColor': '#666',
-                                   #'borderColor': '#ffd6a2',
-                                   #'pointBackgroundColor': '#f2f2f2',
+                                   # 'backgroundColor': '#ffd6a2',
+                                   # 'pointBorderColor': '#666',
+                                   # 'borderColor': '#ffd6a2',
+                                   # 'pointBackgroundColor': '#f2f2f2',
                                    'data': getFindsPerDim('Height',
                                                           'Material > Metal > Non-Ferrous Metal > Copper%').get(
                                        'datasets')}
@@ -623,13 +770,14 @@ def entity_view(object_id: int, format_=None):
                      'datasets')}
             ]}
 
-
-        pathotree = getBubbleData('Pathologies', '119444')
-        findtree = getBubbleData('Finds', '13368')
+        pathotree = getBubbleData('Pathologies', '119444', 'p')
+        findtree = getBubbleData('Finds', '13368', 'f')
+        findtree2 = getBubbleData('Finds', '13368', 'i')
         SexDepthData = getSexDepth()
         SexData = getSex()
         GenderData = getgender()
         ValueAgeData = getValueAges()
+        BoxPlotData = getBoxPlotAges()
         DashAgeData = getAges()
         constrData = Data.get_type_data('grave', 'Grave Constr%', tuple(ast.literal_eval('[' + str(place_id) + ']')))[0]
         aziData = getAzimuth()
@@ -642,11 +790,11 @@ def entity_view(object_id: int, format_=None):
         network = Data.getNetwork(place_id)
         wordcloud = Data.get_wordcloud(place_id)
         return render_template('entity/dashboard.html', network=network, entity=entity, wordcloud=wordcloud,
-                               mysitejson=data, findBubble=findtree, depthData=depthData, widthData=widthData,
+                               mysitejson=data, findBubble=findtree, findBubble2=findtree2, depthData=depthData, widthData=widthData,
                                lengthData=lengthData, degData=degData, aziData=aziData, constrData=constrData,
                                DashAgeData=DashAgeData, ValueAgeData=ValueAgeData, SexData=SexData,
                                GenderData=GenderData, SexDepthData=SexDepthData, pathoBubble=pathotree, findsPerDepth=findsPerDepth,
-                               preciousMetalfinds=preciousMetalfinds, prestigiousfinds=prestigiousfinds)
+                               preciousMetalfinds=preciousMetalfinds, prestigiousfinds=prestigiousfinds, BoxPlotData=BoxPlotData)
 
     return render_template('entity/view.html', place_id=place_id, object_id=object_id,
                            mysitejson=data, system_type=system_type)

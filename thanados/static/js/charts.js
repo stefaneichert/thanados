@@ -315,7 +315,8 @@ function setcharts() {
                 yAxes: [{
                     scaleLabel: {
                         display: true,
-                        labelString: '%'
+                        labelString: '%',
+                        beginAtZero: true
                     }
                 }]
             },
@@ -351,7 +352,8 @@ function setcharts() {
                 yAxes: [{
                     scaleLabel: {
                         display: true,
-                        labelString: '%'
+                        labelString: '%',
+                        beginAtZero: true
                     }
                 }]
             },
@@ -388,7 +390,8 @@ function setcharts() {
                 yAxes: [{
                     scaleLabel: {
                         display: true,
-                        labelString: '%'
+                        labelString: '%',
+                        beginAtZero: true
                     }
                 }]
             },
@@ -422,7 +425,8 @@ function setcharts() {
                     stacked: true,
                     scaleLabel: {
                         display: true,
-                        labelString: '%'
+                        labelString: '%',
+                        beginAtZero: true
                     }
                 }]
             },
@@ -455,7 +459,8 @@ function setcharts() {
                     stacked: true,
                     scaleLabel: {
                         display: true,
-                        labelString: '%'
+                        labelString: '%',
+                        beginAtZero: true
                     }
                 }]
             },
@@ -488,7 +493,8 @@ function setcharts() {
                     stacked: true,
                     scaleLabel: {
                         display: true,
-                        labelString: '%'
+                        labelString: '%',
+                        beginAtZero: true
                     }
                 }]
             },
@@ -521,7 +527,8 @@ function setcharts() {
                     stacked: true,
                     scaleLabel: {
                         display: true,
-                        labelString: '%'
+                        labelString: '%',
+                        beginAtZero: true
                     }
                 }]
             },
@@ -554,7 +561,8 @@ function setcharts() {
                     stacked: true,
                     scaleLabel: {
                         display: true,
-                        labelString: '%'
+                        labelString: '%',
+                        beginAtZero: true
                     }
                 }]
             },

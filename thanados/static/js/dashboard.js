@@ -3,10 +3,12 @@ networkExistsNotYet = true;
 jsonmysite = repairJson(jsonmysite);
 sitename = jsonmysite.name;
 mycitation = '"' + sitename + '".';
+//mycitation2 = "unknown source";
 singleref = false;
 furtherRefs = false;
 bibfeature = jsonmysite;
 bubbleNotThere = true;
+FindbubbleNotThere = true;
 PathobubbleNotThere = true;
 overviewmissing = true;
 gravesmissing = true;
@@ -432,7 +434,7 @@ function setBubble(data, container, colorRange) {
     var node = g.selectAll("circle,text");
 
     svg
-        .style("background", "rgb(242 242 242)")
+        .style("background", "#f9f9f9")
         .on("click", function () {
             zoom(root);
         });
@@ -592,6 +594,23 @@ function loadBurials() {
         } else {
             $('#valueage-chart-container').remove();
         }
+
+        if (BoxPlotData.BracketData.labels.length > 0) {
+            createBoxChart(BoxPlotData.BracketData, 'boxplotBracket-chart', 'Age at death based on age bracket classifications');
+            //$('#valueage-chart-container').append('<div class="charttitle text-center text-muted" id="avgLegend"><b class="mr-2">- - - - - - - -</b> Average age at death: ' + AgeAvg + ' years</div>')
+            BuCh = true
+        } else {
+            $('#boxplotBracket-chart-container').remove();
+        }
+
+        if (BoxPlotData.ValueData.labels.length > 0) {
+            createBoxChart(BoxPlotData.ValueData, 'boxplot-chart', 'Age at death based on absolute age (min - max)');
+            //$('#valueage-chart-container').append('<div class="charttitle text-center text-muted" id="avgLegend"><b class="mr-2">- - - - - - - -</b> Average age at death: ' + AgeAvg + ' years</div>')
+            BuCh = true
+        } else {
+            $('#boxplot-chart-container').remove();
+        }
+
         if (SexData.length > 0) {
             sexBurials = {'name': 'no information', 'count': 0};
             $.each(SexData, function (i, dataset) {
@@ -604,6 +623,7 @@ function loadBurials() {
         } else {
             $('#sex-chart-container').remove();
         }
+
         if (GenderData.length > 0) {
             GenderBurials = {'name': 'no information', 'count': 0};
             $.each(GenderData, function (i, dataset) {
@@ -616,6 +636,7 @@ function loadBurials() {
         } else {
             $('#gender-chart-container').remove();
         }
+
         if (SexDepthData.datasets.length > 0) {
             createStackedBarchart(removeStackedZeros(SexDepthData), 'Sex of individuals by depth of graves', 'sexdepth-chart', '', '')
             BuCh = true
@@ -665,6 +686,16 @@ function loadFinds() {
             FiCh = true;
         } else {
             $('#findtypesDepth-chart-container').remove()
+        }
+
+        if (descriptionSummary.findtypes.length > 0 && FindbubbleNotThere && findBubble[0].children) {
+
+            setBubble(findBubble2[0], 'bubbleFinds', ["hsl(204,61%,77%)", "hsl(227,30%,40%)"]);
+
+            FiCh = true;
+            FindbubbleNotThere = false;
+        } else {
+            $("#bubblecardFinds").remove()
         }
 
     }
@@ -758,6 +789,34 @@ function createAgeChart(data, container, title) {
     chart = new Chart(ctx, dateconfig);
 }
 
+function createBoxChart(data, container, title) {
+    ageconfigBoxplot = {
+        type: 'boxplot',
+        data: data,
+        options: {
+            responsive: true,
+            legend: {
+                position: 'top',
+            },
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Years'
+                    }
+                }]
+            },
+            title: {
+                display: true,
+                text: title
+            }
+        }
+    };
+    var ctx = document.getElementById(container).getContext('2d');
+    var agechart = new Chart(ctx, JSON.parse(JSON.stringify(ageconfigBoxplot)));
+}
+
 function typedataPie(data) {
     var returndata = [prepareTypedata(data).labels, prepareTypedata(data).datasets[0].data]
     $.each(returndata[0], function (i, data) {
@@ -833,7 +892,8 @@ function createbarchart(data, title, container, n) {
             }],
             yAxes: [{
                 ticks: {
-                    precision: 0
+                    precision: 0,
+                    beginAtZero: true
                 }
             }]
         },

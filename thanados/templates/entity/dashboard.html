@@ -9,12 +9,14 @@
     <script src="/static/vendor/node_modules/chartjs-plugin-colorschemes/dist/chartjs-plugin-colorschemes.min.js"></script>
     <script src="/static/vendor/node_modules/d3/dist/d3.min.js"></script>
     <script src="/static/vendor/node_modules/chartjs-plugin-annotation/chartjs-plugin-annotation.min.js"></script>
+    <script src="/static/vendor/node_modules/chartjs-chart-box-and-violin-plot/build/Chart.BoxPlot.min.js"></script>
 
     <script>
         mynetwork = {{ network|tojson }};
         wordcloud = {{ wordcloud|tojson }};
         jsonmysite = {{ mysitejson|tojson }};
         findBubble = {{ findBubble|tojson }};
+        findBubble2 = {{ findBubble2|tojson }};
         depthData = {{ depthData|tojson }};
         lengthData = {{ lengthData|tojson }};
         widthData = {{ widthData|tojson }};
@@ -30,6 +32,7 @@
         findsPerDepth = {{ findsPerDepth|tojson }};
         preciousMetalfinds = {{ preciousMetalfinds|tojson }};
         prestigiousfinds = {{ prestigiousfinds|tojson }};
+        BoxPlotData = {{ BoxPlotData|tojson }};
     </script>
 
     <a id="sidebarCollapse" class="btn btn-secondary btn-sm" role="button"
@@ -203,6 +206,14 @@
                             <canvas class="chartcontainer" id="valueage-chart"></canvas>
                         </div>
 
+                        <div id="boxplotBracket-chart-container" class="col-xl-12">
+                            <canvas class="chartcontainer" id="boxplotBracket-chart"></canvas>
+                        </div>
+
+                        <div id="boxplot-chart-container" class="col-xl-12">
+                            <canvas class="chartcontainer" id="boxplot-chart"></canvas>
+                        </div>
+
                         <div id="sex-chart-container" class="col-xl-6">
                             <canvas class="chartcontainer" id="sex-chart"></canvas>
                         </div>
@@ -234,6 +245,13 @@
             <div id="findCharts" class="card shadow dash-card">
                 <div class="card-body">
                     <div class="row">
+
+                        <div id="bubblecardFinds" class="col-xl-6">
+                            <div class="chartcontainer overflow-auto text-center">
+                                <div class="row"><span class="mx-auto charttitle">Find distribution</span></div>
+                                <svg id="bubbleFinds" class="row mx-auto"></svg>
+                            </div>
+                        </div>
 
                         <div id="findDepth-chart-container" class="col-xl-6">
                             <canvas class="chartcontainer" id="findDepth-chart"></canvas>
