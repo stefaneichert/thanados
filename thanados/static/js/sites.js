@@ -9,9 +9,8 @@ $(window).resize(function () {
 });
 
 $.each(sitelist, function (e, data) {
-if (data.description !== null) data.description = ((data.description).replace(/'/g, ""));
+    if (data.description !== null) data.description = ((data.description).replace(/'/g, ""));
 });
-
 
 AccRemove();
 
@@ -96,14 +95,21 @@ $(document).ready(function () {
         data: sitelist,
         "pagingType": "numbers",
         "scrollX": true,
-        drawCallback: function () { if (loginTrue) $('.backendlink').removeClass('d-none')},
+        initComplete: function () {
+            $('div.dataTables_filter input').focus();
+        },
+        drawCallback: function () {
+            if (loginTrue) {
+                $('.backendlink').removeClass('d-none')
+            }
+        },
         columns: [
             {
                 data: "name",
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                     $(nTd).html(
                         "<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + ")' class='hovermarker' data-type='" + oData.type + "' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" +
-                        '<a title="Link to backend" class="backendlink d-none" href="'+ openAtlasUrl + oData.id +'" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a>' +
+                        '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + oData.id + '" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a>' +
                         "<a href='/map/" + oData.id + "' title='open map' class='btn-xs float-right'><i class=\"fas fa-map-marked-alt\"></i></a>"); //create links in rows
                 }
             },

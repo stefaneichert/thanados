@@ -1008,7 +1008,7 @@ function addFilterSearch() {
             '            </div>';
         return div;
     };
-    LeafletDropdownButton.addTo(map)
+    if (gravesthere) LeafletDropdownButton.addTo(map)
 }
 
 function getCitation() {

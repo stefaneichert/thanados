@@ -7,34 +7,38 @@ $(document).ready(function () {
 })
 
 function startsearch() {
-    $('#infoalert').empty();
-    initateQuery();
-    $('#mysearchform').empty();
-    appendSearch(1);
-    if ($('#visdialog').hasClass("ui-dialog-content")) {
-        if ($('#visdialog').dialog('isOpen') === true) $("#visdialog").dialog('close');
-    }
-    $("#dialog").dialog({
-        width: mymodalwith,
-        height: 450,
-        position: {my: "center", at: "center", of: "body"},
-        open: function () {
-            // Destroy Close Button (for subsequent opens)
-            $('#dialog-close').remove();
-            // Create the Close Button (this can be a link, an image etc.)
-            var link =
-                '<btn id="dialog-close" title="close" ' +
-                'class="btn btn-sm btn-secondary d-inline-block float-right text-decoration-none;">' +
-                '<i class="fas fa-times"></i></btn>';
-            // Create Close Button
-            $(".ui-dialog-title").css({'width': ''});
-            $(this).parent().find(".ui-dialog-titlebar").append(link);
-            // Add close event handler to link
-            $('#dialog-close').on('click', function () {
-                $("#dialog").dialog('close');
-            });
+    if (gravesthere) {
+        $('#infoalert').empty();
+        initateQuery();
+        $('#mysearchform').empty();
+        appendSearch(1);
+        if ($('#visdialog').hasClass("ui-dialog-content")) {
+            if ($('#visdialog').dialog('isOpen') === true) $("#visdialog").dialog('close');
         }
-    });
+        $("#dialog").dialog({
+            width: mymodalwith,
+            height: 450,
+            position: {my: "center", at: "center", of: "body"},
+            open: function () {
+                // Destroy Close Button (for subsequent opens)
+                $('#dialog-close').remove();
+                // Create the Close Button (this can be a link, an image etc.)
+                var link =
+                    '<btn id="dialog-close" title="close" ' +
+                    'class="btn btn-sm btn-secondary d-inline-block float-right text-decoration-none;">' +
+                    '<i class="fas fa-times"></i></btn>';
+                // Create Close Button
+                $(".ui-dialog-title").css({'width': ''});
+                $(this).parent().find(".ui-dialog-titlebar").append(link);
+                // Add close event handler to link
+                $('#dialog-close').on('click', function () {
+                    $("#dialog").dialog('close');
+                });
+            }
+        });
+    } else {
+        return false
+    }
 }
 
 
@@ -72,10 +76,10 @@ function appendSearch(Iter) {//append search form to dialog
         '</div>\n' +
         '<select class="custom-select empty" title="Select whether to search in graves, burials (=human remains) or finds" id="LevelSelect_' + Iter + '">\n' +
         '<option selected disabled>Select search level...</option>\n' +
-        '<option value="feature">Graves</option>\n' +
-        '<option value="strat">Burials</option>\n' +
-        '<option value="find">Finds</option>\n' +
-        '<option value="osteology">Osteology</option>\n' +
+        ((gravesthere) ? '<option value="feature">Graves</option>\n' : '') +
+        ((burialsthere) ? '<option value="strat">Burials</option>\n' : '') +
+        ((findsthere) ? '<option value="find">Finds</option>\n' : '') +
+        ((bonesthere) ? '<option value="osteology">Osteology</option>\n' : '') +
         '</select>\n' +
         '</div>');
 

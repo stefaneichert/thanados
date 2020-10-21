@@ -2163,8 +2163,13 @@ function getHierarchyData(id, div) {
 
 //set maintype to default if no one is given
 function repairJson(data) {
+    bonesthere = false;
+    findsthere = false;
+    burialsthere = false;
+    gravesthere = false;
 
     $.each(data.features, function (i, feature) {
+        if (feature.id !== 0) {gravesthere = true}
         if (typeof (feature.properties.maintype.id) === "undefined" && feature.id !== 0) {
             feature.properties.maintype = {
                 "systemtype": "feature",
@@ -2175,6 +2180,7 @@ function repairJson(data) {
             }
         }
         if (feature.burials) {
+            burialsthere = true;
             $.each(feature.burials, function (i, burial) {
                 if (typeof (burial.properties.maintype.id) === "undefined") {
                     burial.properties.maintype = {
@@ -2187,6 +2193,7 @@ function repairJson(data) {
                 }
 
                 if (burial.finds) {
+                    findsthere = true;
                     $.each(burial.finds, function (i, find) {
                         if (typeof (find.properties.maintype.id) === "undefined") {
                             find.properties.maintype = {
@@ -2195,6 +2202,20 @@ function repairJson(data) {
                                 "id": 13368,
                                 "parent_id": 13368,
                                 "path": "Find"
+                            }
+                        }
+                    });
+                }
+                if (burial.humanremains) {
+                    bonesthere = true;
+                    $.each(burial.humanremains, function (i, bone) {
+                        if (typeof (bone.properties.maintype.id) === "undefined") {
+                            bone.properties.maintype = {
+                                "systemtype": "human remains",
+                                "name": "Human Remains",
+                                "id": 119334,
+                                "parent_id": 119334,
+                                "path": "Human Remains"
                             }
                         }
                     });
