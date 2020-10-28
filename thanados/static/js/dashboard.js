@@ -21,6 +21,28 @@ BuCh = false;
 FiCh = false;
 if (typeof (bibfeature.properties.references) !== 'undefined' && bibfeature.properties.references.length === 1) singleref = true;
 
+$('.chart-help-btn').click(function (i) {
+    currentChart = (($(this).parent().attr('id')).replace('-chart-container', ''));
+
+    currentChartDescription = 'no Description available';
+    currentChartTitle = 'no Title available';
+    currentChartData = [];
+
+    $.each(DashboardInfo, function (i, info) {
+        if (info.chart === currentChart) {
+            currentChartDescription = info.description;
+            currentChartTitle = info.title;
+            currentChartData = info.data;
+        }
+    })
+
+    $('#chartDescr').empty();
+    $('#chartDescr').text(currentChartDescription);
+    $('#chartTitle').empty();
+    $('#chartTitle').text(currentChartTitle);
+    $('#chart-xl').modal();
+})
+
 $.each(bibfeature.properties.references, function (t, ref) {
     if (typeof (ref.title) !== 'undefined') {
         title = ref.title;
@@ -638,7 +660,7 @@ function loadBurials() {
         }
 
         if (SexDepthData.datasets.length > 0) {
-            createStackedBarchart(removeStackedZeros(SexDepthData), 'Sex of individuals by depth of graves', 'sexdepth-chart', '', '')
+            createMultiLinechart(removeStackedZeros(SexDepthData), 'Sex of individuals by depth of graves', 'sexdepth-chart', 'brewer.SetOne3')
             BuCh = true
         } else {
             $('#sexdepth-chart-container').remove();
@@ -672,6 +694,38 @@ function loadFinds() {
             $('#findDepth-chart-container').remove()
         }
 
+        var depthcount = (findAges.datasets.reduce((a, b) => a + b, 0))
+        if (depthcount > 0) {
+            createlinechart(removeDashboardZeros(JSON.parse(JSON.stringify(findAges))), 'Average count of finds per age at death (min/max age) ', 'findAge-chart');
+            FiCh = true;
+        } else {
+            $('#findAge-chart-container').remove()
+        }
+
+        var depthcount = (findBracketAges.datasets.reduce((a, b) => a + b, 0))
+        if (depthcount > 0) {
+            createlinechart(removeDashboardZeros(JSON.parse(JSON.stringify(findBracketAges))), 'Average count of finds per age at death (bracket classes) ', 'findBracketAge-chart');
+            FiCh = true;
+        } else {
+            $('#findBracketAge-chart-container').remove()
+        }
+
+        var depthcount = (preciousMetalfindsAgeValue.datasets[0].data.reduce((a, b) => a + b, 0)) + preciousMetalfindsAgeValue.datasets[1].data.reduce((a, b) => a + b, 0) + preciousMetalfindsAgeValue.datasets[2].data.reduce((a, b) => a + b, 0)
+        if (depthcount > 0) {
+            createMultiLinechart(removeStackedZeros(JSON.parse(JSON.stringify(preciousMetalfindsAgeValue))), 'Average count of non ferrous finds per age at death (min/max)', 'metalAgeValue-chart', 'brewer.SetOne3');
+            FiCh = true;
+        } else {
+            $('#metalAgeValue-chart-container').remove()
+        }
+
+        var depthcount = (preciousMetalfindsAgeBracket.datasets[0].data.reduce((a, b) => a + b, 0)) + preciousMetalfindsAgeBracket.datasets[1].data.reduce((a, b) => a + b, 0) + preciousMetalfindsAgeBracket.datasets[2].data.reduce((a, b) => a + b, 0)
+        if (depthcount > 0) {
+            createMultiLinechart(removeStackedZeros(JSON.parse(JSON.stringify(preciousMetalfindsAgeBracket))), 'Average count of non ferrous finds per age at death (bracket classes)', 'metalAgeBracket-chart', 'brewer.SetOne3');
+            FiCh = true;
+        } else {
+            $('#metalAgeBracket-chart-container').remove()
+        }
+
         var depthcount = (preciousMetalfinds.datasets[0].data.reduce((a, b) => a + b, 0)) + preciousMetalfinds.datasets[1].data.reduce((a, b) => a + b, 0) + preciousMetalfinds.datasets[2].data.reduce((a, b) => a + b, 0)
         if (depthcount > 0) {
             createMultiLinechart(removeStackedZeros(JSON.parse(JSON.stringify(preciousMetalfinds))), 'Average count of non ferrous finds per depth of graves', 'metalDepth-chart', 'brewer.SetOne3');
@@ -686,6 +740,22 @@ function loadFinds() {
             FiCh = true;
         } else {
             $('#findtypesDepth-chart-container').remove()
+        }
+
+        var depthcount = getSumOfDatasets(prestigiousfindsValueAge)
+        if (depthcount > 0) {
+            createMultiLinechart(removeStackedZeros(JSON.parse(JSON.stringify(prestigiousfindsValueAge))), 'Average count of find types per age at death (min/max)', 'findtypesAgeValue-chart', 'tableau.Tableau10');
+            FiCh = true;
+        } else {
+            $('#findtypesAgeValue-chart-container').remove()
+        }
+
+        var depthcount = getSumOfDatasets(prestigiousfindsBracketAge)
+        if (depthcount > 0) {
+            createMultiLinechart(removeStackedZeros(JSON.parse(JSON.stringify(prestigiousfindsBracketAge))), 'Average count of find types per age at death (bracket classes)', 'findtypesAgeBracket-chart', 'tableau.Tableau10');
+            FiCh = true;
+        } else {
+            $('#findtypesAgeBracket-chart-container').remove()
         }
 
         if (descriptionSummary.findtypes.length > 0 && FindbubbleNotThere && findBubble[0].children) {
@@ -709,7 +779,6 @@ function getSumOfDatasets(data) {
     var sum = 0
     $.each(data.datasets, function (i, dataset) {
         sum += dataset.data.reduce((a, b) => a + b, 0)
-        //console.log(sum)
     })
     return sum
 }
@@ -864,6 +933,10 @@ function createchart(data, title, container) {
         // Configuration options go here
 
     };
+    console.log(config.data)
+    $.each(DashboardInfo, function (i, info) {
+        if (info.chart === container.replace('-chart', '')) info.data = JSON.parse(JSON.stringify(config.data))
+    })
     var ctx = document.getElementById(container).getContext('2d');
     var newchart = new Chart(ctx, config)
 }
@@ -1106,5 +1179,11 @@ function setAgeData(SourceData, sorttype, sortdirection) {
         }]
     }
     return returndata
+}
+
+function scrollContentTop() {
+    $('#mycontent').animate({
+        scrollTop: 0
+    }, 0);
 }
 

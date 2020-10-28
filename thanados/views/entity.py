@@ -346,7 +346,7 @@ def entity_view(object_id: int, format_=None):
                                                JOIN thanados.graves g ON s.child_id = g.parent_id
                                                JOIN thanados.burials b ON b.parent_id = g.child_id
                                                JOIN thanados.types t ON t.entity_id = b.child_id
-                                      WHERE t.path LIKE '%%> Age >%%') AS t ) gre GROUP BY gre.site_id) a WHERE site_id = %(place_id)s                                                
+                                      WHERE t.path LIKE 'Anthropology > Age%%') AS t ) gre GROUP BY gre.site_id) a WHERE site_id = %(place_id)s                                                
             """
             g.cursor.execute(sql_age, {'place_id': place_id})
             result = g.cursor.fetchone()
@@ -429,7 +429,7 @@ def entity_view(object_id: int, format_=None):
                                                          JOIN thanados.types t ON t.entity_id = b.child_id
                                                          
                                                          
-                                                WHERE t.path LIKE '%%> Age >%%' AND g.parent_id = %(place_id)s) a) y  
+                                                WHERE t.path LIKE 'Anthropology > Age%%' AND g.parent_id = %(place_id)s) a) y  
                                                 LEFT JOIN (SELECT name, entity_id, path FROM thanados.types WHERE path LIKE '%%Sex >%%') x 
                                                 ON y.burial_id = x.entity_id ORDER BY sex, age) a
                         
@@ -507,7 +507,7 @@ def entity_view(object_id: int, format_=None):
             sqlValueAges = """
                 DROP TABLE IF EXISTS thanados.valueAges;
                 CREATE TABLE thanados.valueAges AS
-                SELECT child_name, burial_id, count(burial_id), min, NULL::INT AS max 
+                SELECT child_name, burial_id, count(burial_id), min, NULL::DOUBLE PRECISION AS max 
                     FROM thanados.searchdata 
                     WHERE type_id IN (118152, 118134, 117199) 
                     AND site_id = %(place_id)s GROUP BY child_name, burial_id, min ORDER BY count DESC;
@@ -518,7 +518,7 @@ def entity_view(object_id: int, format_=None):
                 AND site_id = %(place_id)s GROUP BY child_name, burial_id, min) d WHERE v.burial_id = d.burial_id;
     
                 DELETE FROM thanados.valueAges WHERE min ISNULL OR max ISNULL;
-    
+                    
                 SELECT jsonb_agg(jsonb_build_object(
                     'name', v.name,
                     'from', v.from,
@@ -596,6 +596,169 @@ def entity_view(object_id: int, format_=None):
                 return _data
             else:
                 return []
+
+
+        def getAgeBracketFindsPerTerm(term):
+            sql_gender = """
+                    SELECT
+                        string_to_array('0-10 yrs, 11-20 yrs, 21-30 yrs, 31-40 yrs, 41-50 yrs, 51-60 yrs, 61-70 yrs, 71-80 yrs, 81-90 yrs, over 90 yrs', ',') AS labels,
+                        string_to_array(
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg <= 10)),  0)::numeric, 2) || ',' ||
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg > 10 AND avg >=20)),  0)::numeric, 2) || ',' ||
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg > 20 AND avg >=30)),  0)::numeric, 2) || ',' ||
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg > 30 AND avg >=40)),  0)::numeric, 2) || ',' ||
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg > 40 AND avg >=50)),  0)::numeric, 2) || ',' ||
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg > 50 AND avg >=60)),  0)::numeric, 2) || ',' ||
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg > 60 AND avg >=70)),  0)::numeric, 2) || ',' ||
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg > 70 AND avg >=80)),  0)::numeric, 2) || ',' ||
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg > 80 AND avg >=90)),  0)::numeric, 2) || ',' ||
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg > 90)),  0)::numeric, 2), ',')::numeric[] AS data
+                        
+                        FROM
+                        (SELECT avg, count FROM
+                        (SELECT ages.burial_id, ROUND(((ages.min+ages.max)/2)::numeric, 2) AS avg, COUNT(s.burial_id) AS count
+                            FROM
+                        (SELECT a.burial_id, (((age::jsonb) -> 0)::text)::double precision AS min, (((age::jsonb) -> 1)::text)::double precision AS max
+                            FROM (SELECT
+                                                                                             t.description AS age,
+                                                                                             b.child_id AS burial_id
+                                                                        FROM thanados.sites s
+                                                                                 JOIN thanados.graves g ON s.child_id = g.parent_id
+                                                                                 JOIN thanados.burials b ON b.parent_id = g.child_id
+                                                                                 JOIN thanados.types t ON t.entity_id = b.child_id
+
+
+                                                                        WHERE t.path LIKE 'Anthropology > Age%%' AND g.parent_id = %(place_id)s) a) ages
+                        LEFT JOIN (SELECT burial_id FROM thanados.searchdata WHERE path LIKE %(term)s) s ON s.burial_id = ages.burial_id GROUP BY ages.burial_id, avg) c) d                        
+                    """
+
+            g.cursor.execute(sql_gender, {'place_id': place_id, 'term': term})
+            result = g.cursor.fetchone()
+
+            if result:
+                _data = {"labels": result.labels,
+                         "datasets": result.data}
+                return _data
+            else:
+                return {"labels": [],
+                        "datasets": []}
+
+        def getAgeValueFindsPerTerm(term):
+            sql_gender = """
+                    SELECT
+                        string_to_array('0-10 yrs, 11-20 yrs, 21-30 yrs, 31-40 yrs, 41-50 yrs, 51-60 yrs, 61-70 yrs, 71-80 yrs, 81-90 yrs, over 90 yrs', ',') AS labels,
+                        string_to_array(
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg <= 10)),  0)::numeric, 2) || ',' ||
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg > 10 AND avg >=20)),  0)::numeric, 2) || ',' ||
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg > 20 AND avg >=30)),  0)::numeric, 2) || ',' ||
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg > 30 AND avg >=40)),  0)::numeric, 2) || ',' ||
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg > 40 AND avg >=50)),  0)::numeric, 2) || ',' ||
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg > 50 AND avg >=60)),  0)::numeric, 2) || ',' ||
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg > 60 AND avg >=70)),  0)::numeric, 2) || ',' ||
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg > 70 AND avg >=80)),  0)::numeric, 2) || ',' ||
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg > 80 AND avg >=90)),  0)::numeric, 2) || ',' ||
+                        ROUND(COALESCE((avg(count) FILTER (WHERE avg > 90)),  0)::numeric, 2), ',')::numeric[] AS data
+
+                        FROM 
+                        (SELECT v.min, ROUND(((v.min+v.max)/2)::numeric, 2) AS avg, v.max, v.burial_id, COUNT(s.burial_id)
+                        FROM thanados.valueages v
+                        LEFT JOIN (SELECT burial_id FROM thanados.searchdata WHERE path LIKE %(term)s) s
+                            ON s.burial_id = v.burial_id
+                        GROUP BY v.min, v.max, avg, v.burial_id) c
+                    """
+
+            g.cursor.execute(sql_gender, {'term': term})
+            result = g.cursor.fetchone()
+
+            if result:
+                _data = {"labels": result.labels,
+                         "datasets": result.data}
+                return _data
+            else:
+                return {"labels": [],
+                        "datasets": []}
+
+
+
+
+        def getFindAges():
+            sql_Findages = """
+            SELECT
+                   string_to_array('0-10 yrs, 11-20 yrs, 21-30 yrs, 31-40 yrs, 41-50 yrs, 51-60 yrs, 61-70 yrs, 71-80 yrs, 81-90 yrs, over 90 yrs', ',') AS labels,
+                   string_to_array(
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg <= 10)),  0)::numeric, 2) || ',' ||
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg > 10 AND avg >=20)),  0)::numeric, 2) || ',' ||
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg > 20 AND avg >=30)),  0)::numeric, 2) || ',' ||
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg > 30 AND avg >=40)),  0)::numeric, 2) || ',' ||
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg > 40 AND avg >=50)),  0)::numeric, 2) || ',' ||
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg > 50 AND avg >=60)),  0)::numeric, 2) || ',' ||
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg > 60 AND avg >=70)),  0)::numeric, 2) || ',' ||
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg > 70 AND avg >=80)),  0)::numeric, 2) || ',' ||
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg > 80 AND avg >=90)),  0)::numeric, 2) || ',' ||
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg > 90)),  0)::numeric, 2), ',')::numeric[] AS data
+            
+                   FROM
+            
+            
+            (SELECT g.parent_id AS grave_id, a.burial_id, a.avg, COUNT(f.parent_id)
+            FROM (SELECT child_name, burial_id, min, ROUND(((min+max)/2)::numeric, 2) AS avg, max FROM thanados.valueages) a
+                LEFT JOIN thanados.burials g ON g.child_id = a.burial_id
+                LEFT JOIN thanados.finds f ON f.parent_id = a.burial_id
+            GROUP BY g.parent_id, a.burial_id, a.avg) c
+            """
+            g.cursor.execute(sql_Findages)
+            result = g.cursor.fetchone()
+            if result:
+                _data = {"labels": result.labels,
+                         "datasets": result.data}
+                return _data
+            else:
+                return {"labels": [],
+                        "datasets": []}
+
+        def getBracketFindAges():
+            sql_Findages = """
+            SELECT
+                   string_to_array('0-10 yrs, 11-20 yrs, 21-30 yrs, 31-40 yrs, 41-50 yrs, 51-60 yrs, 61-70 yrs, 71-80 yrs, 81-90 yrs, over 90 yrs', ',') AS labels,
+                   string_to_array(
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg <= 10)),  0)::numeric, 2) || ',' ||
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg > 10 AND avg >=20)),  0)::numeric, 2) || ',' ||
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg > 20 AND avg >=30)),  0)::numeric, 2) || ',' ||
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg > 30 AND avg >=40)),  0)::numeric, 2) || ',' ||
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg > 40 AND avg >=50)),  0)::numeric, 2) || ',' ||
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg > 50 AND avg >=60)),  0)::numeric, 2) || ',' ||
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg > 60 AND avg >=70)),  0)::numeric, 2) || ',' ||
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg > 70 AND avg >=80)),  0)::numeric, 2) || ',' ||
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg > 80 AND avg >=90)),  0)::numeric, 2) || ',' ||
+                   ROUND(COALESCE((avg(count) FILTER (WHERE avg > 90)),  0)::numeric, 2), ',')::numeric[] AS data
+
+                   FROM
+                    (SELECT g.parent_id AS grave_id, ages.burial_id, ROUND(((ages.min+ages.max)/2)::numeric, 2) AS avg, COUNT(f.parent_id)
+                        FROM
+                    (SELECT a.burial, a.burial_id, (((age::jsonb) -> 0)::text)::double precision AS min, (((age::jsonb) -> 1)::text)::double precision AS max   FROM (SELECT
+                                                                                         t.description AS age,
+                                                                                         b.child_name AS burial,
+                                            					     b.child_id AS burial_id
+                                                                    FROM thanados.sites s
+                                                                             JOIN thanados.graves g ON s.child_id = g.parent_id
+                                                                             JOIN thanados.burials b ON b.parent_id = g.child_id
+                                                                             JOIN thanados.types t ON t.entity_id = b.child_id
+                    
+                    
+                                                                    WHERE t.path LIKE 'Anthropology > Age%%' AND g.parent_id = %(place_id)s) a) ages
+                    LEFT JOIN thanados.burials g ON g.child_id = ages.burial_id
+                        LEFT JOIN thanados.finds f ON f.parent_id = ages.burial_id
+                    GROUP BY g.parent_id, burial_id, avg) t
+            """
+            g.cursor.execute(sql_Findages, {'place_id': place_id})
+            result = g.cursor.fetchone()
+            if result:
+                _data = {"labels": result.labels,
+                         "datasets": result.data}
+                return _data
+            else:
+                return {"labels": [],
+                        "datasets": []}
 
         def getSexDepth():
             sqlSexDepth = """
@@ -702,72 +865,100 @@ def entity_view(object_id: int, format_=None):
         preciousMetalfinds = {"labels": getFindsPerDim('Height', 'Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get('labels'),
                               "datasets": [
                                   {'label': 'Gold',
-                                   # 'backgroundColor': '#ffd700',
-                                   # 'borderColor': '#ffd700',
-                                   # 'pointBorderColor': '#666',
-                                   # 'pointBackgroundColor': '#f2f2f2',
                                    'data': getFindsPerDim('Height', 'Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get('datasets')},
                                   {'label': 'Silver',
-                                   # 'backgroundColor': '#c0c0c0',
-                                   # 'pointBorderColor': '#666',
-                                   # 'borderColor': '#c0c0c0',
-                                   # 'pointBackgroundColor': '#f2f2f2',
                                    'data': getFindsPerDim('Height',
                                                           'Material > Metal > Non-Ferrous Metal > Precious Metal > Silver%').get(
                                        'datasets')},
                                   {'label': 'Copper/Copper Alloys',
-                                   # 'backgroundColor': '#ffd6a2',
-                                   # 'pointBorderColor': '#666',
-                                   # 'borderColor': '#ffd6a2',
-                                   # 'pointBackgroundColor': '#f2f2f2',
                                    'data': getFindsPerDim('Height',
                                                           'Material > Metal > Non-Ferrous Metal > Copper%').get(
                                        'datasets')}
                               ]}
+
+        preciousMetalfindsAgeValue = {
+            "labels": getAgeValueFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get(
+                'labels'),
+            "datasets": [
+                {'label': 'Gold',
+                 'data': getAgeValueFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get(
+                     'datasets')},
+                {'label': 'Silver',
+                 'data': getAgeValueFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Silver%').get(
+                     'datasets')},
+                {'label': 'Copper/Copper Alloys',
+                 'data': getAgeValueFindsPerTerm('Material > Metal > Non-Ferrous Metal > Copper%').get(
+                     'datasets')}
+            ]}
+
+        preciousMetalfindsAgeBracket = {
+            "labels": getAgeBracketFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get(
+                'labels'),
+            "datasets": [
+                {'label': 'Gold',
+                 'data': getAgeBracketFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get(
+                     'datasets')},
+                {'label': 'Silver',
+                 'data': getAgeBracketFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Silver%').get(
+                     'datasets')},
+                {'label': 'Copper/Copper Alloys',
+                 'data': getAgeBracketFindsPerTerm('Material > Metal > Non-Ferrous Metal > Copper%').get(
+                     'datasets')}
+            ]}
 
         prestigiousfinds = {
             "labels": getFindsPerDim('Height', 'Finds > %').get(
                 'labels'),
             "datasets": [
                 {'label': 'Weapons/Riding Equipment',
-                 # 'backgroundColor': '#ffd700',
-                 # 'borderColor': '#ffd700',
-                 # 'pointBorderColor': '#666',
-                 # 'pointBackgroundColor': '#f2f2f2',
                  'data': getFindsPerDim('Height', 'Find > Weapons/Armour/Riding%').get(
                      'datasets')},
                 {'label': 'Jewellery',
-                 # 'backgroundColor': '#c0c0c0',
-                 # 'pointBorderColor': '#666',
-                 # 'borderColor': '#c0c0c0',
-                 # 'pointBackgroundColor': '#f2f2f2',
                  'data': getFindsPerDim('Height',
                                         'Find > Accessories > Jewellery%').get(
                      'datasets')},
                 {'label': 'Belt Accessories',
-                 # 'backgroundColor': '#ffd6a2',
-                 # 'pointBorderColor': '#666',
-                 # 'borderColor': '#ffd6a2',
-                 # 'pointBackgroundColor': '#f2f2f2',
                  'data': getFindsPerDim('Height',
                                         'Find > Accessories > Belt Accessories%').get(
                      'datasets')},
                 {'label': 'Pottery',
-                 # 'backgroundColor': '#ffd6a2',
-                 # 'pointBorderColor': '#666',
-                 # 'borderColor': '#ffd6a2',
-                 # 'pointBackgroundColor': '#f2f2f2',
                  'data': getFindsPerDim('Height',
                                         'Find > Pottery%').get(
                      'datasets')},
                 {'label': 'Knife',
-                 # 'backgroundColor': '#ffd6a2',
-                 # 'pointBorderColor': '#666',
-                 # 'borderColor': '#ffd6a2',
-                 # 'pointBackgroundColor': '#f2f2f2',
                  'data': getFindsPerDim('Height',
                                         'Find > Equipment > Knife%').get(
                      'datasets')}
+            ]}
+
+        prestigiousfindsValueAge = {
+            "labels": getAgeValueFindsPerTerm('Finds > Weapons/Armour/Riding%').get('labels'),
+            "datasets": [
+                {'label': 'Weapons/Riding Equipment',
+                 'data': getAgeValueFindsPerTerm('Find > Weapons/Armour/Riding%').get('datasets')},
+                {'label': 'Jewellery',
+                 'data': getAgeValueFindsPerTerm('Find > Accessories > Jewellery%').get('datasets')},
+                {'label': 'Belt Accessories',
+                 'data': getAgeValueFindsPerTerm('Find > Accessories > Belt Accessories%').get('datasets')},
+                {'label': 'Pottery',
+                 'data': getAgeValueFindsPerTerm('Find > Pottery%').get('datasets')},
+                {'label': 'Knife',
+                 'data': getAgeValueFindsPerTerm('Find > Equipment > Knife%').get('datasets')}
+            ]}
+
+        prestigiousfindsBracketAge = {
+            "labels": getAgeBracketFindsPerTerm('Finds > Weapons/Armour/Riding%').get('labels'),
+            "datasets": [
+                {'label': 'Weapons/Riding Equipment',
+                 'data': getAgeBracketFindsPerTerm('Find > Weapons/Armour/Riding%').get('datasets')},
+                {'label': 'Jewellery',
+                 'data': getAgeBracketFindsPerTerm('Find > Accessories > Jewellery%').get('datasets')},
+                {'label': 'Belt Accessories',
+                 'data': getAgeBracketFindsPerTerm('Find > Accessories > Belt Accessories%').get('datasets')},
+                {'label': 'Pottery',
+                 'data': getAgeBracketFindsPerTerm('Find > Pottery%').get('datasets')},
+                {'label': 'Knife',
+                 'data': getAgeBracketFindsPerTerm('Find > Equipment > Knife%').get('datasets')}
             ]}
 
         pathotree = getBubbleData('Pathologies', '119444', 'p')
@@ -786,6 +977,8 @@ def entity_view(object_id: int, format_=None):
         widthData = getDims('Width')
         lengthData = getDims('Length')
         findsPerDepth = getFindsPerDim('Height', 'Find >%')
+        findAges = getFindAges()
+        findBracketAges = getBracketFindAges()
 
         network = Data.getNetwork(place_id)
         wordcloud = Data.get_wordcloud(place_id)
@@ -794,7 +987,10 @@ def entity_view(object_id: int, format_=None):
                                lengthData=lengthData, degData=degData, aziData=aziData, constrData=constrData,
                                DashAgeData=DashAgeData, ValueAgeData=ValueAgeData, SexData=SexData,
                                GenderData=GenderData, SexDepthData=SexDepthData, pathoBubble=pathotree, findsPerDepth=findsPerDepth,
-                               preciousMetalfinds=preciousMetalfinds, prestigiousfinds=prestigiousfinds, BoxPlotData=BoxPlotData)
+                               preciousMetalfinds=preciousMetalfinds, prestigiousfinds=prestigiousfinds, BoxPlotData=BoxPlotData,
+                               findAges=findAges, findBracketAges=findBracketAges, preciousMetalfindsAgeValue=preciousMetalfindsAgeValue,
+                               preciousMetalfindsAgeBracket=preciousMetalfindsAgeBracket, prestigiousfindsValueAge=prestigiousfindsValueAge,
+                               prestigiousfindsBracketAge=prestigiousfindsBracketAge)
 
     return render_template('entity/view.html', place_id=place_id, object_id=object_id,
                            mysitejson=data, system_type=system_type)
