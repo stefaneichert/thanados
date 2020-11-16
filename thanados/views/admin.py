@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 
 from flask import render_template, g, url_for, abort, flash
@@ -43,8 +44,9 @@ def jsonprepare_execute():  # pragma: no cover
     if current_user.group not in ['admin']:
         abort(403)
 
+
     start = datetime.now()
-    print(start)
+    print("starting processing basic queries at: " + str(start.strftime("%H:%M:%S")))
 
     sql_1 = """ 
 DROP SCHEMA IF EXISTS thanados CASCADE;
@@ -562,6 +564,7 @@ CREATE TABLE thanados.derivedDeg AS
 	--41sec before, 14sec after... 
 
 DROP TABLE IF EXISTS thanados.giscleanup2;
+DROP TABLE IF EXISTS thanados.derivedDegtmp;
 
 -- get lower value of azimuth
 DROP TABLE IF EXISTS thanados.azimuth;
@@ -705,11 +708,9 @@ DROP TABLE IF EXISTS thanados.entitiestmp
     g.cursor.execute(sql_1)
 
     endfirst = datetime.now()
-    print("first queries done at:")
-    print(endfirst)
-    print("time elapsed:")
-    print(endfirst - start)
-    print("files:")
+    print("time elapsed:" + str((endfirst - start)))
+
+    print("processing files")
     sql_2 = """
     DROP TABLE IF EXISTS thanados.files;
 CREATE TABLE thanados.files AS
@@ -757,6 +758,8 @@ CREATE TABLE thanados.files AS
      FROM thanados.filestmp);
     """
     g.cursor.execute(sql_2)
+    filesfound = 0
+    filesmissing = 0
 
     sql_3 = 'SELECT id FROM thanados.files'
     g.cursor.execute(sql_3)
@@ -765,23 +768,20 @@ CREATE TABLE thanados.files AS
         file_name = (Data.get_file_path(row.id))
         row_id = (row.id)
         if file_name:
-            print(file_name)
+            filesfound = filesfound + 1
         else:
-            print(row.id)
-            print('missing')
+            filesmissing = filesmissing +1
         g.cursor.execute("UPDATE thanados.files SET filename = %(file_name)s WHERE id = %(row_id)s",
                          {'file_name': file_name, 'row_id': row_id})
+        sys.stdout.write("\rfiles found: "  +  str(filesfound) + " files missing: " + str(filesmissing))
+        sys.stdout.flush()
 
     g.cursor.execute('DELETE FROM thanados.files WHERE filename = NULL')
 
-    print("files done at:")
+    print("")
     filesdone = datetime.now()
-    print(filesdone)
-    print("time elapsed:")
-    print(filesdone - endfirst)
-
-
-    print("references")
+    print("time elapsed:" + str((filesdone - endfirst)))
+    print("processing types and files")
 
     sql_4 = """
     --references
@@ -853,15 +853,7 @@ SET name = NULL
 WHERE name = '';
     """
     g.cursor.execute(sql_4)
-    print("references done at:")
-    refsdone = datetime.now()
-    print(refsdone)
-    print("time elapsed:")
-    print(refsdone - filesdone)
 
-    #return redirect(url_for('admin'))
-
-    print("types and files")
     sql_5 = """
 -- create table with types and files of all entities
 DROP TABLE IF EXISTS thanados.types_and_files;
@@ -916,8 +908,6 @@ SELECT t.entity_id, f.files
                             GROUP BY parent_id) AS irgendwas
                            ON e.child_id = irgendwas.parent_id) f JOIN thanados.types_and_files t ON f.child_id = t.entity_id;
 
-SELECT * FROM thanados.testins;
-
 UPDATE thanados.types_and_files f SET files = t.files FROM thanados.testins t WHERE f.entity_id = t.entity_id;
              --1:45min before after: 4,3s
 
@@ -942,7 +932,7 @@ CREATE TABLE thanados.testins AS
                                ON e.child_id = irgendwas.parent_id) f
                  );
 
- UPDATE thanados.types_and_files
+UPDATE thanados.types_and_files
 SET reference = (SELECT reference from thanados.testins f
                  WHERE entity_id = f.child_id);
                  --1:35 min before, 5sec after
@@ -964,7 +954,7 @@ CREATE TABLE thanados.testins AS
                GROUP BY parent_id) AS irgendwas
               ON e.child_id = irgendwas.parent_id);
 
- UPDATE thanados.types_and_files
+UPDATE thanados.types_and_files
 SET extrefs = (SELECT extref from thanados.testins f
                  WHERE entity_id = f.child_id);
                  DROP TABLE IF EXISTS thanados.extrefs;
@@ -1055,12 +1045,9 @@ UPDATE thanados.tmp SET description = (SELECT split_part(description, '##Deutsch
 """
 
     g.cursor.execute(sql_5)
-    print("files and types done at:")
     filetypesdone = datetime.now()
-    print(filetypesdone)
-    print("time elapsed:")
-    print(filetypesdone - refsdone)
-    print("create GeoJSONs")
+    print("time elapsed: " + str((filetypesdone - filesdone)))
+    print("processing GeoJSONs")
 
     sql_6 = """
 ---finds json
@@ -1447,12 +1434,10 @@ GROUP BY s.id, s.name, s.properties;
 DROP TABLE IF EXISTS thanados.tbl_sitescomplete;
 """
     g.cursor.execute(sql_6)
-    print("Jsons done at:")
     jsonsdone = datetime.now()
-    print(jsonsdone)
-    print("time elapsed:")
-    print(jsonsdone - filetypesdone)
-    print("other tables")
+    print("time elapsed: " + str((jsonsdone - filetypesdone)))
+
+    print("processing other tables")
 
     sql7 = """
 -- create table with all types for json
@@ -2093,61 +2078,87 @@ DROP TABLE thanados.searchData_tmp;
     """
 
     g.cursor.execute(sql7)
-    print("rest done at:")
     restdone = datetime.now()
-    print(restdone)
-    print("time elapsed:")
-    print(restdone - jsonsdone)
+    print("time elapsed: " + str((restdone - jsonsdone)))
 
-    print("totaltime:")
-    endtime = datetime.now()
-    print(endtime - start)
+    print("processing nearest neighbour:")
+    nntime = datetime.now()
 
     sql = """
-        DROP TABLE IF EXISTS thanados.knn;
-        CREATE TABLE thanados.knn AS
+                DROP TABLE IF EXISTS thanados.knn;
+                CREATE TABLE thanados.knn AS
 
-        SELECT DISTINCT
-               g.parent_id,
-               e.name,
-               e.id,
-               (st_pointonsurface(pl.geom)) AS centerpoint,
-               NULL::INTEGER AS nid,
-               NULL::TEXT AS nname,
-               NULL::DOUBLE PRECISION AS distance,
-               NULL::geometry AS npoint
+                SELECT DISTINCT
+                       g.parent_id,
+                       e.name,
+                       e.id,
+                       (st_pointonsurface(pl.geom)) AS centerpoint,
+                       NULL::INTEGER AS nid,
+                       NULL::TEXT AS nname,
+                       NULL::DOUBLE PRECISION AS distance,
+                       NULL::geometry AS npoint
 
-              FROM model.entity e
-                       JOIN model.link l ON e.id = l.domain_id
-                        JOIN thanados.graves g ON e.id = g.child_id
-                       JOIN gis.polygon pl ON l.range_id = pl.entity_id
-              WHERE l.property_code = 'P53';
+                      FROM model.entity e
+                               JOIN model.link l ON e.id = l.domain_id
+                                JOIN thanados.graves g ON e.id = g.child_id
+                               JOIN gis.polygon pl ON l.range_id = pl.entity_id
+                      WHERE l.property_code = 'P53';
 
-        SELECT * FROM thanados.knn;
-        """
-    #g.cursor.execute(sql)
-    #result = g.cursor.fetchall()
+                      --delete sites with  only one grave
+                      DELETE FROM thanados.knn WHERE parent_id IN (
+                      SELECT parent_id FROM (SELECT parent_id, COUNT(parent_id) FROM (SELECT DISTINCT
+                       g.parent_id,
+                       e.name,
+                       e.id,
+                       (st_pointonsurface(pl.geom)) AS centerpoint,
+                       NULL::INTEGER AS nid,
+                       NULL::TEXT AS nname,
+                       NULL::DOUBLE PRECISION AS distance,
+                       NULL::geometry AS npoint
+
+                      FROM model.entity e
+                               JOIN model.link l ON e.id = l.domain_id
+                                JOIN thanados.graves g ON e.id = g.child_id
+                               JOIN gis.polygon pl ON l.range_id = pl.entity_id
+                      WHERE l.property_code = 'P53') a GROUP BY parent_id) b WHERE b.count <= 1 ORDER BY b.count ASC);
+
+                SELECT * FROM thanados.knn;
+                """
+    g.cursor.execute(sql)
+    result = g.cursor.fetchall()
 
     sql2 = """
-        UPDATE thanados.knn ok SET nid=n.id, nname=n.name, npoint=n.npoint FROM 
-        (SELECT 
-            id,
-            name,
-            centerpoint AS npoint
-        FROM
-          thanados.knn WHERE id != %(polyId)s 
-        ORDER BY
-          knn.centerpoint <->
-          (SELECT DISTINCT centerpoint FROM thanados.knn WHERE id = %(polyId)s AND id NOT IN (SELECT id FROM (SELECT id, count(centerpoint) FROM thanados.knn GROUP BY id ORDER BY count DESC) a WHERE count > 1))
-        LIMIT 1) n WHERE ok.id = %(polyId)s;
-
-        UPDATE thanados.knn SET distance = ROUND(st_distancesphere(st_astext(centerpoint), st_astext(npoint))::numeric, 2);            
+                UPDATE thanados.knn ok SET nid=n.id, nname=n.name, npoint=n.npoint FROM 
+                (SELECT 
+                    id,
+                    name,
+                    parent_id,
+                    centerpoint AS npoint
+                FROM
+                  thanados.knn WHERE id != %(polyId)s 
+                ORDER BY
+                  knn.centerpoint <->
+                  (SELECT DISTINCT centerpoint FROM thanados.knn WHERE id = %(polyId)s AND parent_id = %(parentId)s AND id NOT IN (SELECT id FROM (SELECT id, count(centerpoint) FROM thanados.knn GROUP BY id ORDER BY count DESC) a WHERE count > 1))
+                LIMIT 1) n WHERE ok.id = %(polyId)s AND n.parent_id = %(parentId)s;
         """
+    nearestneighbour = 0
+    for row in result:
+        sys.stdout.write("\rneighbours found: " + str(nearestneighbour))
+        sys.stdout.flush()
+        g.cursor.execute(sql2, {'polyId': row.id, 'parentId': row.parent_id})
+        nearestneighbour = nearestneighbour + 1
 
-    #for row in result:
-    #    g.cursor.execute(sql2, {'polyId': row.id})
+    g.cursor.execute("DELETE FROM thanados.knn WHERE nid ISNULL")
+    g.cursor.execute("UPDATE thanados.knn SET distance = ROUND(st_distancesphere(st_astext(centerpoint), st_astext(npoint))::numeric, 2)")
+
+    print("")
+    nntimeend = datetime.now()
+    print('time elapsed: ' + str((nntimeend - nntime)))
 
 
+    endtime = datetime.now()
+    print("finished")
+    print("totaltime: " + str((endtime - start)))
     return redirect(url_for('admin'))
 
 
@@ -2228,7 +2239,66 @@ DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup where pare
             46313, -- Hochosterwitz
             47713, -- Höflein
             45867, -- Hundsdorf Rosental
-            45167, -- Kanzianiberg
+            45167, -- KanzianibergDROP TABLE IF EXISTS thanados.giscleanup;
+CREATE TABLE thanados.giscleanup AS
+ (
+SELECT 	e.system_type,
+	e.child_name,
+	e.parent_id,
+	e.child_id,
+	e.geom AS jsongeom,
+	l.property_code,
+	l.range_id,
+	g.id,
+	g.geom
+	FROM thanados.entities e JOIN model.link l ON e.child_id = l.domain_id JOIN gis.point g ON l.range_id = g.entity_id WHERE l.property_code = 'P53');
+
+DELETE FROM gis.point g WHERE g.id in (
+SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'stratigraphic unit' ORDER BY g1.system_type, g1.child_id, g2.child_name);
+
+DELETE FROM gis.point g WHERE g.id in (
+SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'feature' ORDER BY g1.system_type, g1.child_id, g2.child_name);
+
+DELETE FROM gis.point g WHERE g.id in (
+SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'place' ORDER BY g1.system_type, g1.child_id, g2.child_name);
+
+--Remove point geometries from stratigraphic units and finds
+/*
+DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup WHERE system_type NOT IN (
+'feature', 'place'));
+*/
+
+/*
+-- remove point coordinates from graves for selected sites
+DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup where parent_id IN (
+            47093, -- Althofen
+            46319, -- Atschalas
+            47079, -- Augsdorf
+            47831, -- Baardorf
+            45631, -- Baiersdorf
+            46385, -- Bleiburg Barracks
+            46295, -- Breitenstein
+            45615, -- Brückl
+            49177, -- Dellach - oldest house
+            49631, -- Dellach House No. 13
+            46409, -- Dellach House No. 38
+            45625, -- Dreulach
+            46325, -- Duel
+            46261, -- Dullach II
+            46301, -- Faak am See
+            46341, -- Faschendorf
+            49153, -- Feistritz an der Drau - Görz
+            45179, -- Feistritz Bleiburg
+            47571, -- Förk
+            45161, -- Friedlach
+            47883, -- Friesach Galgenbichl
+            45665, -- Friesach Olsa
+            46591, -- Gödersdorf
+            45143, -- Göriach
+            45675, -- Goritschach Brodnikkreuz
+            46747, -- Grafenstein
+            50565, -- Graßdorf
+            45797, -- Grassen
             45715, -- Kappel am Krappfeld
             45463, -- Kathreinkogel
             46359, -- Keutschach
