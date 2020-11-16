@@ -1,4 +1,6 @@
-from flask import render_template, g, url_for, abort
+from datetime import datetime
+
+from flask import render_template, g, url_for, abort, flash
 from flask_login import login_required, current_user
 from flask_wtf import FlaskForm
 from werkzeug.utils import redirect
@@ -40,6 +42,9 @@ def admin():  # pragma: no cover
 def jsonprepare_execute():  # pragma: no cover
     if current_user.group not in ['admin']:
         abort(403)
+
+    start = datetime.now()
+    print(start)
 
     sql_1 = """ 
 DROP SCHEMA IF EXISTS thanados CASCADE;
@@ -522,8 +527,6 @@ SELECT
 
 INSERT INTO thanados.dimensiontypes SELECT id, parent_id, burial_id, name, description, value, path FROM thanados.graveDeg;
 
-DROP TABLE IF EXISTS thanados.graveDeg;
-
 DROP EXTENSION IF EXISTS postgis_sfcgal;
 CREATE EXTENSION postgis_sfcgal;
 DROP TABLE IF EXISTS thanados.giscleanup2;
@@ -539,9 +542,15 @@ SELECT 	e.system_type,
 	g.geom
 	FROM thanados.graves e JOIN model.link l ON e.child_id = l.domain_id JOIN gis.polygon g ON l.range_id = g.entity_id WHERE l.property_code = 'P53');
 
+DROP TABLE IF EXISTS thanados.derivedDegtmp;
+CREATE TABLE thanados.derivedDegtmp AS
+(SELECT 
+	ST_StartPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS startP,
+	ST_EndPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS endP,
+	child_id FROM thanados.giscleanup2 g WHERE system_type = 'feature');
 
 
--- Get azimuth of grave if a polygon is known and  
+-- Get azimuth of grave if a polygon is known
 DROP TABLE IF EXISTS thanados.derivedDeg;
 CREATE TABLE thanados.derivedDeg AS
 (SELECT 
@@ -549,12 +558,8 @@ CREATE TABLE thanados.derivedDeg AS
     ST_X(endP) AS otherPoint,
 	degrees(ST_Azimuth(startP, endP)) AS degA_B,
 	degrees(ST_Azimuth(endP, startP)) AS degB_A,
-	child_id FROM
-(SELECT 
-	ST_StartPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS startP,
-	ST_EndPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS endP,
-	ST_AsText(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom))), child_id FROM thanados.giscleanup2 g WHERE system_type = 'feature') p);
-
+	child_id FROM thanados.derivedDegtmp);
+	--41sec before, 14sec after... 
 
 DROP TABLE IF EXISTS thanados.giscleanup2;
 
@@ -696,8 +701,15 @@ WHERE end_to IS NULL;
 
 DROP TABLE IF EXISTS thanados.entitiestmp
             """
+
     g.cursor.execute(sql_1)
 
+    endfirst = datetime.now()
+    print("first queries done at:")
+    print(endfirst)
+    print("time elapsed:")
+    print(endfirst - start)
+    print("files:")
     sql_2 = """
     DROP TABLE IF EXISTS thanados.files;
 CREATE TABLE thanados.files AS
@@ -752,10 +764,24 @@ CREATE TABLE thanados.files AS
     for row in result:
         file_name = (Data.get_file_path(row.id))
         row_id = (row.id)
+        if file_name:
+            print(file_name)
+        else:
+            print(row.id)
+            print('missing')
         g.cursor.execute("UPDATE thanados.files SET filename = %(file_name)s WHERE id = %(row_id)s",
                          {'file_name': file_name, 'row_id': row_id})
 
     g.cursor.execute('DELETE FROM thanados.files WHERE filename = NULL')
+
+    print("files done at:")
+    filesdone = datetime.now()
+    print(filesdone)
+    print("time elapsed:")
+    print(filesdone - endfirst)
+
+
+    print("references")
 
     sql_4 = """
     --references
@@ -825,7 +851,18 @@ WHERE description = '';
 UPDATE thanados.extrefs
 SET name = NULL
 WHERE name = '';
+    """
+    g.cursor.execute(sql_4)
+    print("references done at:")
+    refsdone = datetime.now()
+    print(refsdone)
+    print("time elapsed:")
+    print(refsdone - filesdone)
 
+    #return redirect(url_for('admin'))
+
+    print("types and files")
+    sql_5 = """
 -- create table with types and files of all entities
 DROP TABLE IF EXISTS thanados.types_and_files;
 CREATE TABLE thanados.types_and_files
@@ -858,8 +895,9 @@ FROM thanados.entities e
 
 
 -- insert file data
-UPDATE thanados.types_and_files
-SET files = (SELECT files
+DROP TABLE IF EXISTS thanados.testins;
+CREATE TABLE thanados.testins AS
+SELECT t.entity_id, f.files
              FROM (
                       SELECT e.child_id, files
                       FROM thanados.entities e
@@ -876,13 +914,18 @@ SET files = (SELECT files
                                        ))) AS files
                             FROM thanados.files t
                             GROUP BY parent_id) AS irgendwas
-                           ON e.child_id = irgendwas.parent_id) f
-             WHERE entity_id = f.child_id);
+                           ON e.child_id = irgendwas.parent_id) f JOIN thanados.types_and_files t ON f.child_id = t.entity_id;
+
+SELECT * FROM thanados.testins;
+
+UPDATE thanados.types_and_files f SET files = t.files FROM thanados.testins t WHERE f.entity_id = t.entity_id;
+             --1:45min before after: 4,3s
 
 
 -- insert bibliography data
-UPDATE thanados.types_and_files
-SET reference = (SELECT reference
+DROP TABLE IF EXISTS thanados.testins;
+CREATE TABLE thanados.testins AS
+(SELECT child_id, reference
                  FROM (
                           SELECT e.child_id, reference
                           FROM thanados.entities e
@@ -897,13 +940,17 @@ SET reference = (SELECT reference
                                 FROM thanados.reference t
                                 GROUP BY parent_id) AS irgendwas
                                ON e.child_id = irgendwas.parent_id) f
+                 );
+
+ UPDATE thanados.types_and_files
+SET reference = (SELECT reference from thanados.testins f
                  WHERE entity_id = f.child_id);
+                 --1:35 min before, 5sec after
 
 --insert external refs data
-UPDATE thanados.types_and_files
-SET extrefs = extref
-FROM (
-         SELECT e.child_id, extref
+DROP TABLE IF EXISTS thanados.testins;
+CREATE TABLE thanados.testins AS
+(SELECT e.child_id, extref
          FROM thanados.entities e
                   INNER JOIN
               (SELECT t.parent_id,
@@ -915,10 +962,13 @@ FROM (
                           ))) AS extref
                FROM thanados.extrefs t
                GROUP BY parent_id) AS irgendwas
-              ON e.child_id = irgendwas.parent_id) f
-WHERE entity_id = f.child_id;
+              ON e.child_id = irgendwas.parent_id);
 
-DROP TABLE IF EXISTS thanados.extrefs;
+ UPDATE thanados.types_and_files
+SET extrefs = (SELECT extref from thanados.testins f
+                 WHERE entity_id = f.child_id);
+                 DROP TABLE IF EXISTS thanados.extrefs;
+--31ms
 
 -- insert dimension data
 UPDATE thanados.types_and_files
@@ -938,6 +988,7 @@ FROM (
                GROUP BY entity_id) AS irgendwas
               ON e.child_id = irgendwas.entity_id) f
 WHERE entity_id = f.child_id;
+--354ms
 
 -- insert material data
 UPDATE thanados.types_and_files
@@ -958,6 +1009,7 @@ FROM (
 WHERE entity_id = f.child_id;
 
 DROP TABLE IF EXISTS thanados.materialtypes;
+--172 ms
 
 -- insert timespan data
 UPDATE thanados.types_and_files
@@ -973,6 +1025,7 @@ FROM (
                         'end_comment', f.end_comment)) AS time
          FROM thanados.entities f) AS irgendwas
 WHERE entity_id = irgendwas.child_id;
+--344ms
 
 
 --temp table with all info
@@ -998,8 +1051,18 @@ SET end_comment = NULL
 WHERE end_comment = '';
 UPDATE thanados.tmp SET description = (SELECT split_part(description, '##German', 1)); --hack to remove German descriptions
 UPDATE thanados.tmp SET description = (SELECT split_part(description, '##Deutsch', 1)); --hack to remove German descriptions
+--1,4s
+"""
 
+    g.cursor.execute(sql_5)
+    print("files and types done at:")
+    filetypesdone = datetime.now()
+    print(filetypesdone)
+    print("time elapsed:")
+    print(filetypesdone - refsdone)
+    print("create GeoJSONs")
 
+    sql_6 = """
 ---finds json
 DROP TABLE IF EXISTS thanados.tbl_finds;
 CREATE TABLE thanados.tbl_finds
@@ -1382,7 +1445,16 @@ FROM thanados.tbl_sitescomplete s
 GROUP BY s.id, s.name, s.properties;
 
 DROP TABLE IF EXISTS thanados.tbl_sitescomplete;
+"""
+    g.cursor.execute(sql_6)
+    print("Jsons done at:")
+    jsonsdone = datetime.now()
+    print(jsonsdone)
+    print("time elapsed:")
+    print(jsonsdone - filetypesdone)
+    print("other tables")
 
+    sql7 = """
 -- create table with all types for json
 DROP TABLE IF EXISTS thanados.typesforjson;
 CREATE TABLE thanados.typesforjson AS
@@ -2020,7 +2092,62 @@ SELECT * FROM thanados.searchData_tmp);
 DROP TABLE thanados.searchData_tmp;
     """
 
-    g.cursor.execute(sql_4)
+    g.cursor.execute(sql7)
+    print("rest done at:")
+    restdone = datetime.now()
+    print(restdone)
+    print("time elapsed:")
+    print(restdone - jsonsdone)
+
+    print("totaltime:")
+    endtime = datetime.now()
+    print(endtime - start)
+
+    sql = """
+        DROP TABLE IF EXISTS thanados.knn;
+        CREATE TABLE thanados.knn AS
+
+        SELECT DISTINCT
+               g.parent_id,
+               e.name,
+               e.id,
+               (st_pointonsurface(pl.geom)) AS centerpoint,
+               NULL::INTEGER AS nid,
+               NULL::TEXT AS nname,
+               NULL::DOUBLE PRECISION AS distance,
+               NULL::geometry AS npoint
+
+              FROM model.entity e
+                       JOIN model.link l ON e.id = l.domain_id
+                        JOIN thanados.graves g ON e.id = g.child_id
+                       JOIN gis.polygon pl ON l.range_id = pl.entity_id
+              WHERE l.property_code = 'P53';
+
+        SELECT * FROM thanados.knn;
+        """
+    #g.cursor.execute(sql)
+    #result = g.cursor.fetchall()
+
+    sql2 = """
+        UPDATE thanados.knn ok SET nid=n.id, nname=n.name, npoint=n.npoint FROM 
+        (SELECT 
+            id,
+            name,
+            centerpoint AS npoint
+        FROM
+          thanados.knn WHERE id != %(polyId)s 
+        ORDER BY
+          knn.centerpoint <->
+          (SELECT DISTINCT centerpoint FROM thanados.knn WHERE id = %(polyId)s AND id NOT IN (SELECT id FROM (SELECT id, count(centerpoint) FROM thanados.knn GROUP BY id ORDER BY count DESC) a WHERE count > 1))
+        LIMIT 1) n WHERE ok.id = %(polyId)s;
+
+        UPDATE thanados.knn SET distance = ROUND(st_distancesphere(st_astext(centerpoint), st_astext(npoint))::numeric, 2);            
+        """
+
+    #for row in result:
+    #    g.cursor.execute(sql2, {'polyId': row.id})
+
+
     return redirect(url_for('admin'))
 
 
