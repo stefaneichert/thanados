@@ -10,5 +10,11 @@ var DashboardInfo = [
         "title": "Types of burials/stratigraphic units",
         "description": "Here goes the description of the chart",
         "data": ""
+    },
+    {
+        "chart": "namegoeshere",
+        "title": "title goes here",
+        "description": "Here goes the description of the chart",
+        "data": ""
     }
 ]
