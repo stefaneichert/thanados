@@ -280,7 +280,6 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
             '<option value="26191">Diameter (cm)</option>\n' +
             '<option value="26190">Thickness (cm)</option>\n' +
             '<option title="Orientation represents the clockwise angle between North and the directed axis of the entity. E.g. between North and a skeleton\'s axis (from head to feet)" value="26192">Orientation (°)</option>' +
-            '<option title="Azimuth represents the smallest angle between north and the non directed axis of an entity. E.g. beetween North and a grave pit\'s axis" value="118730">Azimuth (°)</option>' +
             '<option value="15680">Weight (g)</option>\n' +
             '</select>\n' +
             '</div>'

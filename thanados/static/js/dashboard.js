@@ -933,7 +933,6 @@ function createchart(data, title, container) {
         // Configuration options go here
 
     };
-    console.log(config.data)
     $.each(DashboardInfo, function (i, info) {
         if (info.chart === container.replace('-chart', '')) info.data = JSON.parse(JSON.stringify(config.data))
     })

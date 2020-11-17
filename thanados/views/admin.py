@@ -471,9 +471,88 @@ UPDATE thanados.entitiestmp SET begin_to = begin_from WHERE begin_from IS NOT NU
 UPDATE thanados.entitiestmp SET begin_from = begin_to WHERE begin_to IS NOT NULL and begin_from IS NULL;
 UPDATE thanados.entitiestmp SET end_to = end_from WHERE end_from IS NOT NULL and end_to IS NULL;
 UPDATE thanados.entitiestmp SET end_from = end_to WHERE end_to IS NOT NULL and end_from IS NULL;
+"""
+    g.cursor.execute(sql_1)
 
+    endfirst = datetime.now()
+    print("time elapsed:" + str((endfirst - start)))
 
---types
+    print("processing nearest neighbour:")
+    nntime = datetime.now()
+
+    sql = """
+                    DROP TABLE IF EXISTS thanados.knn;
+                    CREATE TABLE thanados.knn AS
+
+                    SELECT DISTINCT
+                           g.parent_id,
+                           e.name,
+                           e.id,
+                           (st_pointonsurface(pl.geom)) AS centerpoint,
+                           NULL::INTEGER AS nid,
+                           NULL::TEXT AS nname,
+                           NULL::DOUBLE PRECISION AS distance,
+                           NULL::geometry AS npoint
+
+                          FROM model.entity e
+                                   JOIN model.link l ON e.id = l.domain_id
+                                    JOIN thanados.graves g ON e.id = g.child_id
+                                   JOIN gis.polygon pl ON l.range_id = pl.entity_id
+                          WHERE l.property_code = 'P53';
+
+                          --delete sites with  only one grave
+                          DELETE FROM thanados.knn WHERE parent_id IN (
+                          SELECT parent_id FROM (SELECT parent_id, COUNT(parent_id) FROM (SELECT DISTINCT
+                           g.parent_id,
+                           e.name,
+                           e.id,
+                           (st_pointonsurface(pl.geom)) AS centerpoint,
+                           NULL::INTEGER AS nid,
+                           NULL::TEXT AS nname,
+                           NULL::DOUBLE PRECISION AS distance,
+                           NULL::geometry AS npoint
+
+                          FROM model.entity e
+                                   JOIN model.link l ON e.id = l.domain_id
+                                    JOIN thanados.graves g ON e.id = g.child_id
+                                   JOIN gis.polygon pl ON l.range_id = pl.entity_id
+                          WHERE l.property_code = 'P53') a GROUP BY parent_id) b WHERE b.count <= 1 ORDER BY b.count ASC);
+
+                    SELECT * FROM thanados.knn;
+                    """
+    g.cursor.execute(sql)
+    result = g.cursor.fetchall()
+
+    sql2 = """
+                    UPDATE thanados.knn ok SET nid=n.id, nname=n.name, npoint=n.npoint FROM 
+                    (SELECT 
+                        id,
+                        name,
+                        parent_id,
+                        centerpoint AS npoint
+                    FROM
+                      thanados.knn WHERE id != %(polyId)s 
+                    ORDER BY
+                      knn.centerpoint <->
+                      (SELECT DISTINCT centerpoint FROM thanados.knn WHERE id = %(polyId)s AND parent_id = %(parentId)s AND id NOT IN (SELECT id FROM (SELECT id, count(centerpoint) FROM thanados.knn GROUP BY id ORDER BY count DESC) a WHERE count > 1))
+                    LIMIT 1) n WHERE ok.id = %(polyId)s AND n.parent_id = %(parentId)s;
+            """
+    nearestneighbour = 0
+    for row in result:
+        sys.stdout.write("\rneighbours found: " + str(nearestneighbour))
+        sys.stdout.flush()
+        g.cursor.execute(sql2, {'polyId': row.id, 'parentId': row.parent_id})
+        nearestneighbour = nearestneighbour + 1
+
+    g.cursor.execute("DELETE FROM thanados.knn WHERE nid ISNULL")
+    g.cursor.execute("UPDATE thanados.knn SET distance = ROUND(st_distancesphere(st_astext(centerpoint), st_astext(npoint))::numeric, 2)")
+
+    print("")
+    nntimeend = datetime.now()
+    print('time elapsed: ' + str((nntimeend - nntime)))
+
+    sqlTypes = """
+            --types
 DROP TABLE IF EXISTS thanados.types_main;
 CREATE TABLE thanados.types_main AS
 SELECT DISTINCT types_all.id,
@@ -660,6 +739,20 @@ WHERE DOMAIN || ':' || range NOT IN
              GROUP BY parent_id) c
        WHERE c.count > 1);*/
 
+--insert nearest neighbour distance 
+INSERT INTO thanados.dimensiontypes 
+    SELECT
+        148713,
+        15678,
+        id,
+        'Distance to nearest neighbour',
+        'm',
+        distance,
+        'Dimensions > Distance to nearest neighbour'
+        FROM thanados.knn;
+         
+--DROP TABLE IF EXISTS thanados.azimuth;
+
 
 --types material
 DROP TABLE IF EXISTS thanados.materialtypes;
@@ -704,11 +797,11 @@ WHERE end_to IS NULL;
 
 DROP TABLE IF EXISTS thanados.entitiestmp
             """
-
-    g.cursor.execute(sql_1)
-
-    endfirst = datetime.now()
-    print("time elapsed:" + str((endfirst - start)))
+    startnext = datetime.now()
+    print("Adding types and values")
+    g.cursor.execute(sqlTypes)
+    endnext = datetime.now()
+    print("time elapsed:" + str((endnext - startnext)))
 
     print("processing files")
     sql_2 = """
@@ -780,7 +873,7 @@ CREATE TABLE thanados.files AS
 
     print("")
     filesdone = datetime.now()
-    print("time elapsed:" + str((filesdone - endfirst)))
+    print("time elapsed:" + str((filesdone - endnext)))
     print("processing types and files")
 
     sql_4 = """
@@ -2075,86 +2168,15 @@ DROP TABLE thanados.searchData;
 CREATE TABLE thanados.searchData AS (
 SELECT * FROM thanados.searchData_tmp);
 DROP TABLE thanados.searchData_tmp;
+
+DROP TABLE IF EXISTS thanados.EntCount;
+CREATE TABLE thanados.EntCount AS
+    SELECT * FROM thanados.searchdata WHERE site_id IN (SELECT child_id from thanados.sites);
     """
 
     g.cursor.execute(sql7)
     restdone = datetime.now()
     print("time elapsed: " + str((restdone - jsonsdone)))
-
-    print("processing nearest neighbour:")
-    nntime = datetime.now()
-
-    sql = """
-                DROP TABLE IF EXISTS thanados.knn;
-                CREATE TABLE thanados.knn AS
-
-                SELECT DISTINCT
-                       g.parent_id,
-                       e.name,
-                       e.id,
-                       (st_pointonsurface(pl.geom)) AS centerpoint,
-                       NULL::INTEGER AS nid,
-                       NULL::TEXT AS nname,
-                       NULL::DOUBLE PRECISION AS distance,
-                       NULL::geometry AS npoint
-
-                      FROM model.entity e
-                               JOIN model.link l ON e.id = l.domain_id
-                                JOIN thanados.graves g ON e.id = g.child_id
-                               JOIN gis.polygon pl ON l.range_id = pl.entity_id
-                      WHERE l.property_code = 'P53';
-
-                      --delete sites with  only one grave
-                      DELETE FROM thanados.knn WHERE parent_id IN (
-                      SELECT parent_id FROM (SELECT parent_id, COUNT(parent_id) FROM (SELECT DISTINCT
-                       g.parent_id,
-                       e.name,
-                       e.id,
-                       (st_pointonsurface(pl.geom)) AS centerpoint,
-                       NULL::INTEGER AS nid,
-                       NULL::TEXT AS nname,
-                       NULL::DOUBLE PRECISION AS distance,
-                       NULL::geometry AS npoint
-
-                      FROM model.entity e
-                               JOIN model.link l ON e.id = l.domain_id
-                                JOIN thanados.graves g ON e.id = g.child_id
-                               JOIN gis.polygon pl ON l.range_id = pl.entity_id
-                      WHERE l.property_code = 'P53') a GROUP BY parent_id) b WHERE b.count <= 1 ORDER BY b.count ASC);
-
-                SELECT * FROM thanados.knn;
-                """
-    g.cursor.execute(sql)
-    result = g.cursor.fetchall()
-
-    sql2 = """
-                UPDATE thanados.knn ok SET nid=n.id, nname=n.name, npoint=n.npoint FROM 
-                (SELECT 
-                    id,
-                    name,
-                    parent_id,
-                    centerpoint AS npoint
-                FROM
-                  thanados.knn WHERE id != %(polyId)s 
-                ORDER BY
-                  knn.centerpoint <->
-                  (SELECT DISTINCT centerpoint FROM thanados.knn WHERE id = %(polyId)s AND parent_id = %(parentId)s AND id NOT IN (SELECT id FROM (SELECT id, count(centerpoint) FROM thanados.knn GROUP BY id ORDER BY count DESC) a WHERE count > 1))
-                LIMIT 1) n WHERE ok.id = %(polyId)s AND n.parent_id = %(parentId)s;
-        """
-    nearestneighbour = 0
-    for row in result:
-        sys.stdout.write("\rneighbours found: " + str(nearestneighbour))
-        sys.stdout.flush()
-        g.cursor.execute(sql2, {'polyId': row.id, 'parentId': row.parent_id})
-        nearestneighbour = nearestneighbour + 1
-
-    g.cursor.execute("DELETE FROM thanados.knn WHERE nid ISNULL")
-    g.cursor.execute("UPDATE thanados.knn SET distance = ROUND(st_distancesphere(st_astext(centerpoint), st_astext(npoint))::numeric, 2)")
-
-    print("")
-    nntimeend = datetime.now()
-    print('time elapsed: ' + str((nntimeend - nntime)))
-
 
     endtime = datetime.now()
     print("finished")

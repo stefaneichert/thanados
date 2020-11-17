@@ -527,7 +527,7 @@ def entity_view(object_id: int, format_=None):
             """
 
             g.cursor.execute(sqlValueAges, {'place_id': place_id})
-            result = g.cursor.fetchone();
+            result = g.cursor.fetchone()
 
             if result.ages:
                 _data = result.ages
@@ -862,6 +862,25 @@ def entity_view(object_id: int, format_=None):
 
             return (_data)
 
+        pathotree = getBubbleData('Pathologies', '119444', 'p')
+        findtree = getBubbleData('Finds', '13368', 'f')
+        findtree2 = getBubbleData('Finds', '13368', 'i')
+        SexDepthData = getSexDepth()
+        SexData = getSex()
+        GenderData = getgender()
+        ValueAgeData = getValueAges()
+        BoxPlotData = getBoxPlotAges()
+        DashAgeData = getAges()
+        constrData = Data.get_type_data('grave', 'Grave Constr%', tuple(ast.literal_eval('[' + str(place_id) + ']')))[0]
+        aziData = getAzimuth()
+        degData = getDegs()
+        depthData = getDims('Height')
+        widthData = getDims('Width')
+        lengthData = getDims('Length')
+        findsPerDepth = getFindsPerDim('Height', 'Find >%')
+        findAges = getFindAges()
+        findBracketAges = getBracketFindAges()
+
         preciousMetalfinds = {"labels": getFindsPerDim('Height', 'Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get('labels'),
                               "datasets": [
                                   {'label': 'Gold',
@@ -961,24 +980,6 @@ def entity_view(object_id: int, format_=None):
                  'data': getAgeBracketFindsPerTerm('Find > Equipment > Knife%').get('datasets')}
             ]}
 
-        pathotree = getBubbleData('Pathologies', '119444', 'p')
-        findtree = getBubbleData('Finds', '13368', 'f')
-        findtree2 = getBubbleData('Finds', '13368', 'i')
-        SexDepthData = getSexDepth()
-        SexData = getSex()
-        GenderData = getgender()
-        ValueAgeData = getValueAges()
-        BoxPlotData = getBoxPlotAges()
-        DashAgeData = getAges()
-        constrData = Data.get_type_data('grave', 'Grave Constr%', tuple(ast.literal_eval('[' + str(place_id) + ']')))[0]
-        aziData = getAzimuth()
-        degData = getDegs()
-        depthData = getDims('Height')
-        widthData = getDims('Width')
-        lengthData = getDims('Length')
-        findsPerDepth = getFindsPerDim('Height', 'Find >%')
-        findAges = getFindAges()
-        findBracketAges = getBracketFindAges()
 
         network = Data.getNetwork(place_id)
         wordcloud = Data.get_wordcloud(place_id)
