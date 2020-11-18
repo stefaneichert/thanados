@@ -745,10 +745,10 @@ INSERT INTO thanados.dimensiontypes
         148713,
         15678,
         id,
-        'Distance to nearest neighbour',
+        'Nearest Neighbour',
         'm',
         distance,
-        'Dimensions > Distance to nearest neighbour'
+        'Dimensions > Distance > Nearest Neighbour'
         FROM thanados.knn;
          
 --DROP TABLE IF EXISTS thanados.azimuth;

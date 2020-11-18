@@ -862,6 +862,69 @@ def entity_view(object_id: int, format_=None):
 
             return (_data)
 
+        def knn():
+            sql = """
+                    SELECT
+				                    parent_id,
+                                    string_to_array('0-0.20 m, 0.21-0.40 m, 0.41-0.60 m, 0.61-0.80 m, 0.81-1.00 m, ' ||
+                                    '1.01-1.20 m, 1.21-1.40 m, 1.41-1.60 m, 1.61-1.80 m, 1.81-2.00 m, '||
+                                    '2.01-2.20 m, 2.21-2.40 m, 2.41-2.60 m, 2.61-2.80 m, 2.81-3.00 m, '||
+                                    '3.01-3.20 m, 3.21-3.40 m, 3.41-3.60 m, 3.61-3.80 m, 3.81-4.00 m, '||
+                                    '4.01-4.20 m, 4.21-4.40 m, 4.41-4.60 m, 4.61-4.80 m, 4.81-5.00 m, '||
+                                    '5.01-10.00 m, 10.01-20.00 m, 20.01-30.00 m, 30.01-40.00 m, 40.01-50.00 m, over 50.00 m', ',') AS labels,
+                                    string_to_array(count(parent_id) FILTER (WHERE distance <= 0.20 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 0.20 AND distance <= 0.40 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 0.40 AND distance <= 0.60 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 0.60 AND distance <= 0.80 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 0.80 AND distance <= 0.100 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 1.00 AND distance <= 1.20 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 1.20 AND distance <= 1.40 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 1.40 AND distance <= 1.60 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 1.60 AND distance <= 1.80 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 1.80 AND distance <= 2.00 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 2.00 AND distance <= 2.20 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 2.20 AND distance <= 2.40 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 2.40 AND distance <= 2.60 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 2.60 AND distance <= 2.80 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 2.80 AND distance <= 3.00 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 3.00 AND distance <= 3.20 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 3.20 AND distance <= 3.40 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 3.40 AND distance <= 3.60 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 3.60 AND distance <= 3.80 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 3.80 AND distance <= 4.00 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 3.00 AND distance <= 4.20 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 4.20 AND distance <= 4.40 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 4.40 AND distance <= 4.60 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 4.60 AND distance <= 4.80 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 4.80 AND distance <= 5.00 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 5.00 AND distance <= 10.00 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 10.00 AND distance <= 20.00 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 20.00 AND distance <= 30.00 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 30.00 AND distance <= 40.00 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 40.00 AND distance <= 50.00 ) || ',' ||
+                                    count(parent_id) FILTER (WHERE distance > 50.00) , ',')::int[] AS data
+                    
+                                    FROM thanados.knn WHERE parent_id = %(place_id)s GROUP BY parent_id;
+            """
+            g.cursor.execute(sql, {'place_id': place_id})
+            result = g.cursor.fetchone()
+            if result:
+                _data = {}
+                _data['datasets'] = result.data
+                _data['labels'] = result.labels
+
+            sql = """
+            SELECT jsonb_agg(distance) AS values FROM (
+            SELECT distance FROM thanados.knn WHERE parent_id = %(place_id)s ORDER BY distance) d
+            """
+            g.cursor.execute(sql, {'place_id': place_id})
+            result = g.cursor.fetchone()
+            if result:
+                _data['values'] = result.values
+
+            return (_data)
+
+        knn = knn()
         pathotree = getBubbleData('Pathologies', '119444', 'p')
         findtree = getBubbleData('Finds', '13368', 'f')
         findtree2 = getBubbleData('Finds', '13368', 'i')
@@ -991,7 +1054,7 @@ def entity_view(object_id: int, format_=None):
                                preciousMetalfinds=preciousMetalfinds, prestigiousfinds=prestigiousfinds, BoxPlotData=BoxPlotData,
                                findAges=findAges, findBracketAges=findBracketAges, preciousMetalfindsAgeValue=preciousMetalfindsAgeValue,
                                preciousMetalfindsAgeBracket=preciousMetalfindsAgeBracket, prestigiousfindsValueAge=prestigiousfindsValueAge,
-                               prestigiousfindsBracketAge=prestigiousfindsBracketAge)
+                               prestigiousfindsBracketAge=prestigiousfindsBracketAge, knn=knn)
 
     return render_template('entity/view.html', place_id=place_id, object_id=object_id,
                            mysitejson=data, system_type=system_type)
