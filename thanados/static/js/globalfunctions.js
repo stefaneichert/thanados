@@ -1550,7 +1550,7 @@ function getBasemaps() {
 
 
     OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
+        maxZoom: 25,
         attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
             '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</div>'
     });

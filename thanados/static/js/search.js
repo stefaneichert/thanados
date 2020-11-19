@@ -662,14 +662,14 @@ function setmymap(markers, heatmarkers, graveIds) {
     eval('markers' + Iter + '= markers;')
 
 
-    eval('map' + Iter + ' = L.map(\'map\' + Iter, {fullscreenControl: true, maxZoom: 25, zoomControl: false, layers: [landscape' + Iter + ']}).fitBounds(markers.getBounds());')
+    eval('map' + Iter + ' = L.map(\'map\' + Iter, {fullscreenControl: true, maxZoom: 25, zoomControl: false, layers: [natural' + Iter + ']}).fitBounds(markers.getBounds());')
 
     clustermarkers.addTo((eval('map' + Iter)));
 
 
     var myMap = eval('map' + Iter);
     var mydiv = '#map' + Iter;
-    eval('var attrib' + Iter + ' = landscape' + Iter + '.options.attribution;')
+    eval('var attrib' + Iter + ' = natural' + Iter + '.options.attribution;')
     MultAttributionChange(myMap, mydiv, eval('attrib' + Iter));
 
     (eval('map' + Iter)).on('baselayerchange', function (layer) {

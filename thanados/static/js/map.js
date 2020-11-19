@@ -128,12 +128,12 @@ function setmap(myjson) {
     map = L.map('map', {
         zoom: 22,
         zoomControl: false,
-        layers: [landscape, satellite, streets]
+        layers: [natural]
     });
 
     //hack to show landscape first
-    map.removeLayer(streets);
-    map.removeLayer(Esri_WorldImagery);
+    //map.removeLayer(streets);
+    //map.removeLayer(Esri_WorldImagery);
 
 
     //style polygons
