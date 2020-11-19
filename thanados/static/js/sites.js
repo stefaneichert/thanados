@@ -28,7 +28,7 @@ $(document).ready(function () {
         zoom: 18,
         maxZoom: 18,
         zoomControl: false,
-        layers: [landscape]
+        layers: [natural]
     }).setView([51.505, -0.09], 13);
 
     //hack for right order of basemaps

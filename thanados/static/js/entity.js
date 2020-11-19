@@ -817,7 +817,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         scrollWheelZoom: false,
         tap: false,
         touchZoom: false,
-        layers: [landscape]
+        layers: [natural]
     });
 
 //add graves

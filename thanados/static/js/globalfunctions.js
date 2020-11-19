@@ -1551,6 +1551,7 @@ function getBasemaps() {
 
     OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 25,
+        maxNativeZoom: 19,
         attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
             '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</div>'
     });
@@ -1574,19 +1575,21 @@ function getBasemaps() {
         attribution:
             '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
             '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a></div>',
-        maxZoom: 25
+        maxZoom: 25,
+        maxNativeZoom: 21
     });
 
     //mapbox
     mapboxnatural = L.tileLayer(
         'https://api.mapbox.com/styles/v1/thanados/ck6cakwq308tr1ioi58wkddsx/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGhhbmFkb3MiLCJhIjoiY2s0NGFieHZxMDhqcjNubjA1bzJqMWFrdyJ9.JkTrwwm87S2yRFqRnMkpUw', {
-        tileSize: 512,
-        zoomOffset: -1,
-        attribution:
-            '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-            '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles: &copy; <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a></div>',
-        maxZoom: 25
-    });
+            tileSize: 512,
+            zoomOffset: -1,
+            attribution:
+                '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+                '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles: &copy; <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a></div>',
+            maxZoom: 25,
+            maxNativeZoom: 22
+        });
 
 //czech basemap
     basemap_cz = L.tileLayer.wms('http://geoportal.cuzk.cz/WMS_ZM10_PUB/WMService.aspx', {
@@ -1607,11 +1610,13 @@ function getBasemaps() {
     };
 
     //define basemap for Minimap
-    miniBaseMap = new L.TileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=' + thunderforestAPIkey,
+    miniBaseMap = new L.TileLayer('https://api.mapbox.com/styles/v1/thanados/ck6cakwq308tr1ioi58wkddsx/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGhhbmFkb3MiLCJhIjoiY2s0NGFieHZxMDhqcjNubjA1bzJqMWFrdyJ9.JkTrwwm87S2yRFqRnMkpUw',
         {
             minZoom: 0,
             maxZoom: 20,
-            attribution: 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            tileSize: 512,
+            zoomOffset: -1,
+            attribution: 'Tiles: &copy; <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         }
     );
 }
@@ -2182,7 +2187,9 @@ function repairJson(data) {
     gravesthere = false;
 
     $.each(data.features, function (i, feature) {
-        if (feature.id !== 0) {gravesthere = true}
+        if (feature.id !== 0) {
+            gravesthere = true
+        }
         if (typeof (feature.properties.maintype.id) === "undefined" && feature.id !== 0) {
             feature.properties.maintype = {
                 "systemtype": "feature",
@@ -3356,7 +3363,7 @@ function removeDashboardZeros(data) {
     Zeros = [];
     $.each(data.datasets, function (i, number) {
         if (number > 0) Zeros.push(i);
-        })
+    })
 
     var newdata = (data.datasets.slice(getMinMax(Zeros)[0], (getMinMax(Zeros)[1] + 1)));
     data.datasets = newdata;
