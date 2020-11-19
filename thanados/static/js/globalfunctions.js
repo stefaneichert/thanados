@@ -1577,6 +1577,17 @@ function getBasemaps() {
         maxZoom: 25
     });
 
+    //mapbox
+    mapboxnatural = L.tileLayer(
+        'https://api.mapbox.com/styles/v1/thanados/ck6cakwq308tr1ioi58wkddsx/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGhhbmFkb3MiLCJhIjoiY2s0NGFieHZxMDhqcjNubjA1bzJqMWFrdyJ9.JkTrwwm87S2yRFqRnMkpUw', {
+        tileSize: 512,
+        zoomOffset: -1,
+        attribution:
+            '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+            '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles: &copy; <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a></div>',
+        maxZoom: 25
+    });
+
 //czech basemap
     basemap_cz = L.tileLayer.wms('http://geoportal.cuzk.cz/WMS_ZM10_PUB/WMService.aspx', {
         layers: 'GR_ZM10',
@@ -1585,10 +1596,12 @@ function getBasemaps() {
 
     satellite = Esri_WorldImagery; //define aerial image layer
     landscape = thunderforestlandscape; // define topography layer
+    natural = mapboxnatural //mapboxnatural
     streets = OpenStreetMap_Mapnik // define streets Layer
 
     baseLayers = {
         "Landscape": landscape,
+        "Natural": natural,
         "Satellite": satellite,
         "Streets": streets
     };

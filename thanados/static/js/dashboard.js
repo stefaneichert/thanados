@@ -581,6 +581,13 @@ function loadGraves() {
         } else {
             $('#graveconstr-chart-container').remove()
         }
+        var knncount = (knn.values.length)
+        if (knncount > 0) {
+            createbarchart(removeDashboardZeros(JSON.parse(JSON.stringify(knn))), 'Distance to nearest Neighbour (m)', 'graveknn-chart', knncount);
+            GrCh = true;
+        } else {
+            $('#graveknn-chart-container').remove()
+        }
     }
     if (GrCh === false) {
         $('#GraveCharts').html('<div class="card-body">Not enough data for visualisations</div>')

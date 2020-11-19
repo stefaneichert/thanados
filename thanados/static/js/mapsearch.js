@@ -104,7 +104,8 @@ function appendSearch(Iter) {//append search form to dialog
             '<option title="Main type of ' + appendLevelName + '" value="maintype">Maintype</option>' +
             (checkAvailable(appendLevel, 'type') ? '<option title="Classifications, typology and other named types associated with ' + appendLevelName + '" value="type">Properties</option>' : '') +
             '<option title="Date range of ' + appendLevelName + '" value="timespan">Timespan</option>' +
-            (checkAvailable(appendLevel, 'dimensions') ? '<option title="Dimensions and certain other measured values concerning the spatial extend of ' + appendLevelName + '" value="dimension">Dimensions</option>' : '') +
+            //(checkAvailable(appendLevel, 'dimensions') ? '<option title="Dimensions and certain other measured values concerning the spatial extend of ' + appendLevelName + '" value="dimension">Dimensions</option>' : '') +
+            '<option title="Dimensions and certain other measured values concerning the spatial extend of ' + appendLevelName + '" value="dimension">Dimensions</option>'+
             (checkAvailable(appendLevel, 'material') ? '<option title="Materials (like copper, iron, ceramics etc.) of ' + appendLevelName + '" value="material">Material</option>' : '') +
             (checkAvailable(appendLevel, 'value') ? '<option title="Classifications of entities that are connected with values (e.g. maximum age, body height etc.)" value="value">Value Properties</option>' : '') +
             '</select>' +
