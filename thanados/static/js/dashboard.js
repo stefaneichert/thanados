@@ -24,8 +24,8 @@ if (typeof (bibfeature.properties.references) !== 'undefined' && bibfeature.prop
 $('.chart-help-btn').click(function (i) {
     currentChart = (($(this).parent().attr('id')).replace('-chart-container', ''));
 
-    currentChartDescription = 'no Description available';
-    currentChartTitle = 'no Title available';
+    currentChartDescription = 'Detailed description will be available soon';
+    currentChartTitle = 'Work in progress';
     currentChartData = [];
 
     $.each(DashboardInfo, function (i, info) {
