@@ -126,14 +126,15 @@ function setmap(myjson) {
 
     //define map
     map = L.map('map', {
+        renderer: L.canvas(),
         zoom: 22,
         zoomControl: false,
-        layers: [landscape, satellite, streets]
+        layers: [landscape]
     });
 
     //hack to show landscape first
-    map.removeLayer(streets);
-    map.removeLayer(Esri_WorldImagery);
+    //map.removeLayer(streets);
+    //map.removeLayer(Esri_WorldImagery);
 
 
     //style polygons
@@ -1008,7 +1009,7 @@ function addFilterSearch() {
             '            </div>';
         return div;
     };
-    LeafletDropdownButton.addTo(map)
+    if (gravesthere) LeafletDropdownButton.addTo(map)
 }
 
 function getCitation() {

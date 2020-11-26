@@ -7,34 +7,38 @@ $(document).ready(function () {
 })
 
 function startsearch() {
-    $('#infoalert').empty();
-    initateQuery();
-    $('#mysearchform').empty();
-    appendSearch(1);
-    if ($('#visdialog').hasClass("ui-dialog-content")) {
-        if ($('#visdialog').dialog('isOpen') === true) $("#visdialog").dialog('close');
-    }
-    $("#dialog").dialog({
-        width: mymodalwith,
-        height: 450,
-        position: {my: "center", at: "center", of: "body"},
-        open: function () {
-            // Destroy Close Button (for subsequent opens)
-            $('#dialog-close').remove();
-            // Create the Close Button (this can be a link, an image etc.)
-            var link =
-                '<btn id="dialog-close" title="close" ' +
-                'class="btn btn-sm btn-secondary d-inline-block float-right text-decoration-none;">' +
-                '<i class="fas fa-times"></i></btn>';
-            // Create Close Button
-            $(".ui-dialog-title").css({'width': ''});
-            $(this).parent().find(".ui-dialog-titlebar").append(link);
-            // Add close event handler to link
-            $('#dialog-close').on('click', function () {
-                $("#dialog").dialog('close');
-            });
+    if (gravesthere) {
+        $('#infoalert').empty();
+        initateQuery();
+        $('#mysearchform').empty();
+        appendSearch(1);
+        if ($('#visdialog').hasClass("ui-dialog-content")) {
+            if ($('#visdialog').dialog('isOpen') === true) $("#visdialog").dialog('close');
         }
-    });
+        $("#dialog").dialog({
+            width: mymodalwith,
+            height: 450,
+            position: {my: "center", at: "center", of: "body"},
+            open: function () {
+                // Destroy Close Button (for subsequent opens)
+                $('#dialog-close').remove();
+                // Create the Close Button (this can be a link, an image etc.)
+                var link =
+                    '<btn id="dialog-close" title="close" ' +
+                    'class="btn btn-sm btn-secondary d-inline-block float-right text-decoration-none;">' +
+                    '<i class="fas fa-times"></i></btn>';
+                // Create Close Button
+                $(".ui-dialog-title").css({'width': ''});
+                $(this).parent().find(".ui-dialog-titlebar").append(link);
+                // Add close event handler to link
+                $('#dialog-close').on('click', function () {
+                    $("#dialog").dialog('close');
+                });
+            }
+        });
+    } else {
+        return false
+    }
 }
 
 
@@ -72,10 +76,10 @@ function appendSearch(Iter) {//append search form to dialog
         '</div>\n' +
         '<select class="custom-select empty" title="Select whether to search in graves, burials (=human remains) or finds" id="LevelSelect_' + Iter + '">\n' +
         '<option selected disabled>Select search level...</option>\n' +
-        '<option value="feature">Graves</option>\n' +
-        '<option value="strat">Burials</option>\n' +
-        '<option value="find">Finds</option>\n' +
-        '<option value="osteology">Osteology</option>\n' +
+        ((gravesthere) ? '<option value="feature">Graves</option>\n' : '') +
+        ((burialsthere) ? '<option value="strat">Burials</option>\n' : '') +
+        ((findsthere) ? '<option value="find">Finds</option>\n' : '') +
+        ((bonesthere) ? '<option value="osteology">Osteology</option>\n' : '') +
         '</select>\n' +
         '</div>');
 
@@ -100,7 +104,8 @@ function appendSearch(Iter) {//append search form to dialog
             '<option title="Main type of ' + appendLevelName + '" value="maintype">Maintype</option>' +
             (checkAvailable(appendLevel, 'type') ? '<option title="Classifications, typology and other named types associated with ' + appendLevelName + '" value="type">Properties</option>' : '') +
             '<option title="Date range of ' + appendLevelName + '" value="timespan">Timespan</option>' +
-            (checkAvailable(appendLevel, 'dimensions') ? '<option title="Dimensions and certain other measured values concerning the spatial extend of ' + appendLevelName + '" value="dimension">Dimensions</option>' : '') +
+            //(checkAvailable(appendLevel, 'dimensions') ? '<option title="Dimensions and certain other measured values concerning the spatial extend of ' + appendLevelName + '" value="dimension">Dimensions</option>' : '') +
+            '<option title="Dimensions and certain other measured values concerning the spatial extend of ' + appendLevelName + '" value="dimension">Dimensions</option>'+
             (checkAvailable(appendLevel, 'material') ? '<option title="Materials (like copper, iron, ceramics etc.) of ' + appendLevelName + '" value="material">Material</option>' : '') +
             (checkAvailable(appendLevel, 'value') ? '<option title="Classifications of entities that are connected with values (e.g. maximum age, body height etc.)" value="value">Value Properties</option>' : '') +
             '</select>' +
@@ -175,6 +180,7 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
             '<option value="26190">Thickness (cm)</option>' +
             '<option title="Orientation represents the clockwise angle between North and the directed axis of the entity. E.g. between North and a skeleton\'s axis (from head to feet)" value="26192">Orientation (°)</option>' +
             '<option title="Azimuth represents the smallest angle between north and the non directed axis of an entity. E.g. beetween North and a grave pit\'s axis" value="118730">Azimuth (°)</option>' +
+            '<option title="Distance to the nearest grave" value="148713">Nearest Neighbour (m)</option>' +
             '<option value="15680">Weight (g)</option>' +
             '</select>' +
             '</div>'

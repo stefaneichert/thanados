@@ -23,16 +23,14 @@ h3, h4 {
 }
 
 .card-body {
-    background: #f2f2f2;
+    background: #f9f9f9;
     color: #666;
 }
 
 .chartcontainer {
     max-height: 600px;
     min-height: 400px;
-    padding: 1em;
-}
-
+    }
 
 .manualbox {
     margin-bottom: 1em;
@@ -352,4 +350,18 @@ text {
     font-size: 12px;
     font-weight: bold;
     color: #666;
+}
+
+.chart-help-btn {
+    float: right;
+    font-size: 0.875em;
+    cursor: pointer;
+    position: absolute;
+    right: 20px;
+    top: 7px;
+    color: #a4b1bc;
+}
+
+.chart-help-btn:hover {
+    color: #007bff;
 }

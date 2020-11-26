@@ -1,0 +1,55 @@
+<html>
+    <head>
+        <script src="https://npmcdn.com/chart.js@latest/dist/Chart.bundle.min.js"></script>
+        <script src="../chartjs-plugin-titleclick.js"></script>
+        <style type="text/css">
+            #myChart {
+                max-width: 600px;
+                max-height: 400px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="myChartDiv">
+            <canvas id="myChart" width="600" height="400"></canvas>
+            <span id="hoverDetails"></span>
+        </div>
+        <script type="text/javascript">
+            var ctx = document.getElementById("myChart"),
+                hoverDetails = document.getElementById("hoverDetails");
+
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+                    datasets: [{
+                        label: '# of Votes',
+                        data: [12, 19, 3, 5, 2, 3]
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    },
+                    title: {
+                        display: true,
+                        text: "Example Title (Click Me!)",
+
+                        onClick: function(e, titleBlock) {
+                            console.log("Clicked title!");
+                            alert("Clicked!");
+                        },
+                        onHover: function(e, titleBlock) {
+                            console.log("Hovered title!");
+                            hoverDetails.innerHTML = "x: " + e.x + ", y: " + e.y;
+                        },
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>
