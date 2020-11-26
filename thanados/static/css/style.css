@@ -1243,7 +1243,7 @@ input {
 
 .fullscreen-icon {
     display: contents;
-    background-image: none;
+    /*background-image: none;*/
 }
 
 .static-loading-image {

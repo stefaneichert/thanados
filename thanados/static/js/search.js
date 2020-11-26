@@ -653,6 +653,7 @@ function setmymap(markers, heatmarkers, graveIds) {
     });
 
     eval('landscape' + Iter + ' = jQuery.extend(true, {}, landscape);');
+    //eval('natural' + Iter + ' = jQuery.extend(true, {}, natural);');
     eval('streets' + Iter + ' = jQuery.extend(true, {}, streets);');
     eval('satellite' + Iter + ' = jQuery.extend(true, {}, satellite);');
 
@@ -661,7 +662,7 @@ function setmymap(markers, heatmarkers, graveIds) {
     eval('markers' + Iter + '= markers;')
 
 
-    eval('map' + Iter + ' = L.map(\'map\' + Iter, {fullscreenControl: true, maxZoom: 25, zoomControl: false, layers: [landscape' + Iter + ']}).fitBounds(markers.getBounds());')
+    eval('map' + Iter + ' = L.map(\'map\' + Iter, {renderer: L.canvas(), fullscreenControl: true, maxZoom: 25, zoomControl: false, layers: [landscape' + Iter + ']}).fitBounds(markers.getBounds());')
 
     clustermarkers.addTo((eval('map' + Iter)));
 

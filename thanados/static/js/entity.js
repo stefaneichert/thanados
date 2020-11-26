@@ -808,6 +808,7 @@ function getEntityData(parentName, parentId, currentfeature) {
     };
 
     mymap = L.map('myMapcontainer', {
+        renderer: L.canvas(),
         zoom: 18,
         keyboard: false,
         dragging: false,

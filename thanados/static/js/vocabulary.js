@@ -142,6 +142,7 @@ if (data.entities_recursive) {
         baseLayers = {"Landscape": landscape, "Satellite": satellite, "Streets": streets}
 
         map = L.map('map', {
+            renderer: L.canvas(),
             zoom: 18,
             maxZoom: 18,
             layers: [landscape]
