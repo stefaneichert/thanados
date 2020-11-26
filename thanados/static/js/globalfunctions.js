@@ -1604,19 +1604,17 @@ function getBasemaps() {
 
     baseLayers = {
         "Landscape": landscape,
-        "Natural": natural,
+        //"Natural": natural,
         "Satellite": satellite,
         "Streets": streets
     };
 
     //define basemap for Minimap
-    miniBaseMap = new L.TileLayer('https://api.mapbox.com/styles/v1/thanados/ck6cakwq308tr1ioi58wkddsx/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGhhbmFkb3MiLCJhIjoiY2s0NGFieHZxMDhqcjNubjA1bzJqMWFrdyJ9.JkTrwwm87S2yRFqRnMkpUw',
+    miniBaseMap = new L.TileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=' + thunderforestAPIkey,
         {
             minZoom: 0,
             maxZoom: 20,
-            tileSize: 512,
-            zoomOffset: -1,
-            attribution: 'Tiles: &copy; <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            attribution: 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         }
     );
 }

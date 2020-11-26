@@ -24,11 +24,12 @@ $(document).ready(function () {
 
 //define basemaps
     map = L.map('map', {
+        renderer: L.canvas(),
         fullscreenControl: true,
         zoom: 18,
         maxZoom: 18,
         zoomControl: false,
-        layers: [natural]
+        layers: [landscape]
     }).setView([51.505, -0.09], 13);
 
     //hack for right order of basemaps

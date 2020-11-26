@@ -34,19 +34,14 @@ if ($('#map').length) {
     getBasemaps();
 
     map = L.map('map', {
+        //renderer: L.canvas(),
         maxZoom: 12,
         scrollWheelZoom: false,
         dragging: false,
         zoomControl: false
     });
 
-    L.tileLayer(
-        'https://api.mapbox.com/styles/v1/thanados/ck6cakwq308tr1ioi58wkddsx/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGhhbmFkb3MiLCJhIjoiY2s0NGFieHZxMDhqcjNubjA1bzJqMWFrdyJ9.JkTrwwm87S2yRFqRnMkpUw', {
-            attribution:
-                '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-                '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles: &copy; <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a></div>',
-            maxZoom: 25
-        }).addTo(map);
+    landscape.addTo(map);
 
     $('#counters').html(
         '<div class="col-sm">' +

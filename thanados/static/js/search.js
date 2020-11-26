@@ -653,7 +653,7 @@ function setmymap(markers, heatmarkers, graveIds) {
     });
 
     eval('landscape' + Iter + ' = jQuery.extend(true, {}, landscape);');
-    eval('natural' + Iter + ' = jQuery.extend(true, {}, natural);');
+    //eval('natural' + Iter + ' = jQuery.extend(true, {}, natural);');
     eval('streets' + Iter + ' = jQuery.extend(true, {}, streets);');
     eval('satellite' + Iter + ' = jQuery.extend(true, {}, satellite);');
 
@@ -662,14 +662,14 @@ function setmymap(markers, heatmarkers, graveIds) {
     eval('markers' + Iter + '= markers;')
 
 
-    eval('map' + Iter + ' = L.map(\'map\' + Iter, {fullscreenControl: true, maxZoom: 25, zoomControl: false, layers: [natural' + Iter + ']}).fitBounds(markers.getBounds());')
+    eval('map' + Iter + ' = L.map(\'map\' + Iter, {renderer: L.canvas(), fullscreenControl: true, maxZoom: 25, zoomControl: false, layers: [landscape' + Iter + ']}).fitBounds(markers.getBounds());')
 
     clustermarkers.addTo((eval('map' + Iter)));
 
 
     var myMap = eval('map' + Iter);
     var mydiv = '#map' + Iter;
-    eval('var attrib' + Iter + ' = natural' + Iter + '.options.attribution;')
+    eval('var attrib' + Iter + ' = landscape' + Iter + '.options.attribution;')
     MultAttributionChange(myMap, mydiv, eval('attrib' + Iter));
 
     (eval('map' + Iter)).on('baselayerchange', function (layer) {
@@ -701,7 +701,7 @@ function setmymap(markers, heatmarkers, graveIds) {
         groupCheckboxes: false
     };
 
-    eval('MyBaseLayers' + Iter + ' = {"Landscape": landscape' + Iter + ', "Natural": natural' + Iter + ', "Satellite": satellite' + Iter + ', "Streets": streets' + Iter + '};');
+    eval('MyBaseLayers' + Iter + ' = {"Landscape": landscape' + Iter + ', "Satellite": satellite' + Iter + ', "Streets": streets' + Iter + '};');
     if (mylevel == 'burial_site') getAllGraves();
     if (mylevel !== 'burial_site') createFeatureCollection(graveIds)
     // Use the custom grouped layer control, not "L.control.layers"

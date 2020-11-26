@@ -139,12 +139,13 @@ if (data.entities_recursive) {
             exclusiveGroups: ['Entities']
         };
 
-        baseLayers = {"Landscape": landscape, "Natural": natural, "Satellite": satellite, "Streets": streets}
+        baseLayers = {"Landscape": landscape, "Satellite": satellite, "Streets": streets}
 
         map = L.map('map', {
+            renderer: L.canvas(),
             zoom: 18,
             maxZoom: 18,
-            layers: [natural]
+            layers: [landscape]
         });
         entPoints.addTo(map)
         map.fitBounds(entPoints.getBounds())
