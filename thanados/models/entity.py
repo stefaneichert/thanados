@@ -69,6 +69,22 @@ class Data:
         return g.cursor.fetchall()
 
     @staticmethod
+    def get_wordcloud(place_id):
+        sql =   """
+                SELECT types FROM
+                    (SELECT jsonb_agg(jsonb_build_object(
+                     'weight', t.weight,
+                     'text', t.type)) AS types FROM
+                        (SELECT type, COUNT(type) AS weight 
+                            FROM thanados.searchdata 
+                            WHERE site_id = %(place_id)s AND site_id IN %(sites)s 
+                            GROUP BY type order by weight desc) t) w
+                """
+        g.cursor.execute(sql, {'place_id': place_id, 'sites': tuple(g.site_list)})
+        result = g.cursor.fetchone()
+        return result[0]
+
+    @staticmethod
     def get_typedata(object_id):
         sql = 'SELECT * FROM model.entity WHERE id = %(object_id)s;'
         g.cursor.execute(sql, {'object_id': object_id})
@@ -148,7 +164,7 @@ class Data:
         return place_id
 
     @staticmethod
-    def get_type_data(level, searchterm):
+    def get_type_data(level, searchterm, site_id):
         if level == 'grave':
             sql = """
                 SELECT jsonb_agg(jsonb_build_object (
@@ -165,10 +181,10 @@ class Data:
 		        FROM model.entity m 
 		        JOIN thanados.entities e ON e.parent_id = m.id 
 		        JOIN thanados.types_main t ON e.child_id = t.entity_id
-		        WHERE t.path LIKE %(term)s
+		        WHERE t.path LIKE %(term)s AND m.id IN %(site_ids)s
 		        GROUP BY m.id, sitename, type
 		        ORDER BY 1) as t;"""
-            g.cursor.execute(sql, {"term": searchterm})
+            g.cursor.execute(sql, {"term": searchterm, "site_ids": site_id})
             return g.cursor.fetchall()
         if level == 'burial':
             sql = """
@@ -187,10 +203,10 @@ class Data:
             		        JOIN thanados.entities e ON e.parent_id = m.id
             		        JOIN thanados.entities e1 ON e1.parent_id = e.child_id
             		        JOIN thanados.types_main t ON e1.child_id = t.entity_id
-            		        WHERE t.path LIKE %(term)s
+            		        WHERE t.path LIKE %(term)s AND m.id IN %(site_ids)s
             		        GROUP BY m.id, sitename, type
             		        ORDER BY 1) as t;"""
-            g.cursor.execute(sql, {"term": searchterm})
+            g.cursor.execute(sql, {"term": searchterm, "site_ids": site_id})
             return g.cursor.fetchall()
 
     @staticmethod
@@ -245,9 +261,6 @@ class Data:
             	superunits) su
         """
 
-
-
-
         g.cursor.execute(sql, {"id": id})
         result = g.cursor.fetchall()
 
@@ -258,8 +271,7 @@ class Data:
             entities.append(row.domain_id)
             entities.append(row.range_id)
 
-
-        entities=list(dict.fromkeys(entities))
+        entities = list(dict.fromkeys(entities))
         entities = tuple(entities)
 
         sqltypes = """
@@ -306,7 +318,8 @@ class Data:
                     group = 'classification'
                 nodes.append({'label': row.name, 'id': row.id, 'group': group, 'title': group})
             else:
-                nodes.append({'label': row.name, 'id': row.id, 'group': row.system_type, 'title': row.system_type, 'size': 30})
+                nodes.append(
+                    {'label': row.name, 'id': row.id, 'group': row.system_type, 'title': row.system_type, 'size': 30})
 
         network = {}
         network['nodes'] = nodes

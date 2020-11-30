@@ -14,10 +14,10 @@ $.each(sitelist, function (i, dataset) {
     }
 )
 
-maxGraves.sort(function(a, b) {
-  return a - b;
+maxGraves.sort(function (a, b) {
+    return a - b;
 });
-maxGraves = maxGraves.slice(maxGraves.length-10);
+maxGraves = maxGraves.slice(maxGraves.length - 10);
 
 mysite_ids = site_ids;
 if (site_ids.length > 10) {
@@ -26,7 +26,7 @@ if (site_ids.length > 10) {
         if (dataset.graves >= maxGraves[0]) mysite_ids.push(dataset.id);
     })
     if (mysite_ids.length > 10) {
-        mysite_ids = mysite_ids.slice(mysite_ids.length-10)
+        mysite_ids = mysite_ids.slice(mysite_ids.length - 10)
     }
 }
 CurrentSelection = mysite_ids;
@@ -74,7 +74,7 @@ table = $('#sitelist').DataTable({
         {
             data: "id",
             "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                $(nTd).html('<input class="siteselector" type="checkbox" id="' + oData.id +'" value="' + oData.id + '"><label for="' + oData.id +'"></label>');
+                $(nTd).html('<input class="siteselector" type="checkbox" id="' + oData.id + '" value="' + oData.id + '"><label for="' + oData.id + '"></label>');
             },
             "orderDataType": "dom-checkbox",
         },
@@ -249,6 +249,51 @@ function checkTheBoxes() {
 
 function setcharts() {
 
+    sorttype = 'beginend';
+    sortdirection = false;
+    bigDatechart = false;
+
+
+//date of sites: Data contains site and chronological range
+    mydatedata = setDating(sorttype, sortdirection);
+    dateconfig = {
+        // The type of chart we want to create
+        type: 'bar',
+        // The data for our dataset
+        data: mydatedata,
+        // Configuration options go here
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                xAxes: [{
+                    scaleLabel: {
+                        display: false,
+                        labelString: 'Site'
+                    }
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Years'
+                    }
+                }]
+            },
+            legend: false,
+            plugins: {
+                colorschemes: {
+                    scheme: 'tableau.Tableau20'
+                }
+            }
+        }
+    };
+
+    if (typeof (datechart) != 'undefined') datechart.destroy();
+    var ctx = document.getElementById('date-chart').getContext('2d');
+
+    datechart = new Chart(ctx, dateconfig);
+
+
 //depth of graves: Data contains site and no of graves of a depth interval of 20cm
     mydepthdata = setChartData(depth_data, false, true, true);
     depthconfig = {
@@ -270,7 +315,8 @@ function setcharts() {
                 yAxes: [{
                     scaleLabel: {
                         display: true,
-                        labelString: '%'
+                        labelString: '%',
+                        beginAtZero: true
                     }
                 }]
             },
@@ -306,7 +352,8 @@ function setcharts() {
                 yAxes: [{
                     scaleLabel: {
                         display: true,
-                        labelString: '%'
+                        labelString: '%',
+                        beginAtZero: true
                     }
                 }]
             },
@@ -343,7 +390,8 @@ function setcharts() {
                 yAxes: [{
                     scaleLabel: {
                         display: true,
-                        labelString: '%'
+                        labelString: '%',
+                        beginAtZero: true
                     }
                 }]
             },
@@ -377,7 +425,8 @@ function setcharts() {
                     stacked: true,
                     scaleLabel: {
                         display: true,
-                        labelString: '%'
+                        labelString: '%',
+                        beginAtZero: true
                     }
                 }]
             },
@@ -410,7 +459,8 @@ function setcharts() {
                     stacked: true,
                     scaleLabel: {
                         display: true,
-                        labelString: '%'
+                        labelString: '%',
+                        beginAtZero: true
                     }
                 }]
             },
@@ -443,7 +493,8 @@ function setcharts() {
                     stacked: true,
                     scaleLabel: {
                         display: true,
-                        labelString: '%'
+                        labelString: '%',
+                        beginAtZero: true
                     }
                 }]
             },
@@ -476,7 +527,8 @@ function setcharts() {
                     stacked: true,
                     scaleLabel: {
                         display: true,
-                        labelString: '%'
+                        labelString: '%',
+                        beginAtZero: true
                     }
                 }]
             },
@@ -509,7 +561,8 @@ function setcharts() {
                     stacked: true,
                     scaleLabel: {
                         display: true,
-                        labelString: '%'
+                        labelString: '%',
+                        beginAtZero: true
                     }
                 }]
             },
@@ -574,6 +627,92 @@ function setcharts() {
         change('boxplot', 'agechart', 'age-chart', ageconfigBoxplot);
     });
 
+}
+
+function setChronVars() {
+
+    if (sorttype === 'beginend') {
+        sorttype = 'endbegin'
+    } else {
+        sorttype = 'beginend'
+
+    }
+
+
+    if (bigDatechart) {
+        updateChron(bigchart, sorttype, sortdirection);
+    } else {
+        updateChron(datechart, sorttype, sortdirection);
+    }
+    bigDatechart = false
+}
+
+function setChronDir() {
+    if (sortdirection) {
+        sortdirection = false
+    } else {
+        sortdirection = true
+    }
+    if (bigDatechart) {
+        updateChron(bigchart, sorttype, sortdirection);
+    } else {
+        updateChron(datechart, sorttype, sortdirection);
+    }
+    bigDatechart = false
+}
+
+function setDating(sorttype, sortdirection) {
+    var sites = [];
+    var labels = [];
+    var data = [];
+
+    $.each(sitelist, function (i, site) {
+        if (CurrentSelection.includes(site.id)) {
+            if (site.begin && site.end) {
+                sites.push({'name': site.name, 'begin': site.begin, 'end': site.end})
+            }
+        }
+    })
+
+    if (sorttype === 'beginend') {
+
+        sites = sites.sort(function (a, b) {
+            return parseFloat(a.end) - parseFloat(b.end);
+        });
+
+        sites = sites.sort(function (a, b) {
+            return parseFloat(a.begin) - parseFloat(b.begin);
+        });
+    }
+
+    if (sorttype === 'endbegin') {
+
+        sites = sites.sort(function (a, b) {
+            return parseFloat(a.begin) - parseFloat(b.begin);
+        });
+
+        sites = sites.sort(function (a, b) {
+            return parseFloat(a.end) - parseFloat(b.end);
+        });
+    }
+
+    if (sortdirection) {
+        sites = sites.reverse()
+    }
+
+
+    $.each(sites, function (i, site) {
+        labels.push(site.name);
+        data.push([site.begin, site.end])
+    })
+
+    var returndata = {
+        labels: labels,
+        datasets: [{
+            data: data
+        }]
+    }
+    return returndata
 }
 
 function setage(data) {
@@ -651,28 +790,6 @@ function change(newType, chartvar, canvasid, config) {
     eval(chartvar + ' = new Chart(ctx, temp)');
 }
 
-//remove trailing zeros from data with intervals after highest values of site with highest values
-function removeZeros(data) {
-    $.each(data.datasets, function (i, dataset) {
-        arraylength = dataset.data.length;
-        $.each(dataset.data, function (i, number) {
-            if (number > 0)
-                valueindex = (i + 1);
-            if (i === (arraylength - 1))
-                lastvalueindex = valueindex;
-        })
-        var newdata = (dataset.data.slice(0, valueindex));
-        dataset.data = newdata;
-        if (i == 0) {
-            newvalueindex = lastvalueindex;
-        } else {
-            if (lastvalueindex > newvalueindex)
-                newvalueindex = lastvalueindex
-        }
-    })
-    data.labels = data.labels.slice(0, newvalueindex)
-    return data;
-}
 
 function filtersites(data) {
     mynewdata = {
@@ -690,105 +807,6 @@ function filtersites(data) {
     return mynewdata;
 }
 
-//switch axes of data
-function switchaxes(datatoswitch) {
-    newdata = {
-        "datasets": [],
-        "labels": []
-    };
-
-    $.each(datatoswitch.datasets, function (i, dataset) {
-        newdata.labels.push(dataset.label);
-
-    });
-
-    $.each(datatoswitch.labels, function (i, label) {
-        data1 = {};
-        data1.label = datatoswitch.labels[i];
-        data1.data = [];
-        index = i;
-        $.each(datatoswitch.datasets, function (i, dataset) {
-            data2 = dataset.data;
-            $.each(data2, function (i, value) {
-                if (index === i) {
-                    data1.data.push(value);
-                }
-            })
-        })
-        newdata.datasets.push(data1);
-    });
-    return newdata;
-}
-
-//convert values of data to percentage
-function getPercentage(datatoswitch) {
-    $.each(datatoswitch.datasets, function (i, dataset) {
-        sum = dataset.data.reduce(
-            function (total, num) {
-                return total + num
-            }
-            , 0);
-        newArray = [];
-        $.each(dataset.data, function (i, value) {
-            var perValue = parseFloat(Math.round((value / sum * 100) * 100) / 100);
-            newArray.push(perValue)
-        });
-        dataset.data = newArray;
-    })
-    return datatoswitch;
-}
-
-//prepare typedata as chartdata
-function prepareTypedata(mytypedata) {
-    typelabels = [];
-    $.each(mytypedata.types, function (i, types) {
-        typelabels.push(types.type)
-    });
-    typelabels = Array.from(new Set(typelabels));
-    typedata = {
-        'labels': typelabels,
-        'datasets': []
-    };
-    datalabels = [];
-    $.each(mytypedata.types, function (i, types) {
-        datalabels.push(types.site)
-    });
-    datalabels = Array.from(new Set(datalabels));
-    $.each(datalabels, function (i, label) {
-        var typedatasets = {
-            "data": [],
-            "label": label
-        };
-        typedata.datasets.push(typedatasets);
-    });
-    $.each(typedata.datasets, function (i, dataset) {
-        $.each(typedata.labels, function (i, label) {
-            dataset.data.push(0)
-        });
-    });
-    $.each(mytypedata.types, function (i, type) {
-        mysite = type.site;
-        mysiteid = type.site_id;
-        mytype = type.type;
-        mycount = type.count;
-        $.each(typedata.labels, function (i, label) {
-            if (mytype === label) {
-                myindex = i;
-                $.each(typedata.datasets, function (i, dataset) {
-                    if (dataset.label === mysite) {
-                        $.each(dataset.data, function (e, data) {
-                            if (e === myindex) {
-                                dataset.data[myindex] = mycount;
-                                dataset.site_id = mysiteid;
-                            }
-                        });
-                    }
-                });
-            }
-        })
-    });
-    return typedata;
-}
 
 //change chart from absolute values to percentage
 function updateChart(chart, data, percentageset) {
@@ -801,16 +819,12 @@ function updateChart(chart, data, percentageset) {
     chart.update();
 }
 
-//set data
-function setChartData(originalData, axesswitch, percentageset, zeroslice, preparetypes) {
-    dataToWorkWith = JSON.parse(JSON.stringify(originalData));
-    if (preparetypes) dataToWorkWith = prepareTypedata(dataToWorkWith);
-    dataToWorkWith = filtersites(dataToWorkWith);
-    if (zeroslice) dataToWorkWith = removeZeros(dataToWorkWith);
-    if (percentageset) dataToWorkWith = getPercentage(dataToWorkWith);
-    if (axesswitch) dataToWorkWith = switchaxes(dataToWorkWith);
-    return dataToWorkWith;
+//change chart from absolute values to percentage
+function updateChron(chart, sorttype, sortdirection) {
+    chart.data = setDating(sorttype, sortdirection);
+    chart.update();
 }
+
 
 //some css fixes for the window/container size
 $(window).resize(function () {
@@ -845,6 +859,7 @@ $('#collapseFilter').on('shown.bs.collapse', function () {
 function enlargeChart(currentConfig) {
     $('.boxBtn').addClass('d-none')
     $('.absBtn').addClass('d-none')
+    $('.chronBtn').addClass('d-none')
     $('.modal-title').text(currentTitle);
     $('#chart-xl').modal();
     if (typeof (bigchart) !== 'undefined') {
@@ -854,7 +869,11 @@ function enlargeChart(currentConfig) {
     var ctx = document.getElementById('bigchart-container').getContext('2d');
     bigchart = new Chart(ctx, currentConfig);
     if (percScript !== '') {
-        $('.absBtn').removeClass('d-none')
+        if (percScript.includes('Chron') === false) {
+            $('.absBtn').removeClass('d-none')
+        } else {
+            $('.chronBtn').removeClass('d-none')
+        }
         percScript = percScript.substring(percScript.indexOf(",") + 1);
         percScript = 'updateChart(bigchart,' + percScript;
         absScript = absScript.substring(absScript.indexOf(",") + 1);

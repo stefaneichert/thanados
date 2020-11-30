@@ -1,0 +1,367 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <link href="/static/css/dashboard.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/vendor/node_modules/jqcloud2/dist/jqcloud.min.css"/>
+    <script src="/static/vendor/node_modules/jqcloud2/dist/jqcloud.min.js"></script>
+    <script src="/static/vendor/node_modules/vis-network/dist/vis-network.min.js"></script>
+    <script src="/static/vendor/node_modules/chart.js/dist/Chart.bundle.min.js"></script>
+    <script src="/static/vendor/node_modules/chartjs-plugin-colorschemes/dist/chartjs-plugin-colorschemes.min.js"></script>
+    <script src="/static/vendor/node_modules/d3/dist/d3.min.js"></script>
+    <script src="/static/vendor/node_modules/chartjs-plugin-annotation/chartjs-plugin-annotation.min.js"></script>
+    <script src="/static/vendor/node_modules/chartjs-chart-box-and-violin-plot/build/Chart.BoxPlot.min.js"></script>
+    <script src="/static/js/dashboardInfo.js"></script>
+
+    <script>
+        mynetwork = {{ network|tojson }};
+        wordcloud = {{ wordcloud|tojson }};
+        jsonmysite = {{ mysitejson|tojson }};
+        findBubble = {{ findBubble|tojson }};
+        findBubble2 = {{ findBubble2|tojson }};
+        depthData = {{ depthData|tojson }};
+        lengthData = {{ lengthData|tojson }};
+        widthData = {{ widthData|tojson }};
+        degData = {{ degData|tojson }};
+        aziData = {{ aziData|tojson }};
+        knn = {{ knn|tojson }};
+        SexData = {{ SexData|tojson }};
+        constrData = {{ constrData|tojson }};
+        DashAgeData = {{ DashAgeData|tojson }};
+        ValueAgeData = {{ ValueAgeData|tojson }};
+        GenderData = {{ GenderData|tojson }};
+        SexDepthData = {{ SexDepthData|tojson }};
+        pathoBubble = {{ pathoBubble|tojson }};
+        findsPerDepth = {{ findsPerDepth|tojson }};
+        preciousMetalfinds = {{ preciousMetalfinds|tojson }};
+        prestigiousfinds = {{ prestigiousfinds|tojson }};
+        BoxPlotData = {{ BoxPlotData|tojson }};
+        findAges = {{ findAges|tojson }};
+        findBracketAges = {{ findBracketAges|tojson }};
+        preciousMetalfindsAgeValue = {{ preciousMetalfindsAgeValue|tojson }};
+        preciousMetalfindsAgeBracket = {{ preciousMetalfindsAgeBracket|tojson }};
+        prestigiousfindsValueAge = {{ prestigiousfindsValueAge|tojson }};
+        prestigiousfindsBracketAge = {{ prestigiousfindsBracketAge|tojson }};
+    </script>
+
+    <a id="sidebarCollapse" class="btn btn-secondary btn-sm" role="button"
+       title="Toggle sidebar"
+       data-placement="left"><i id="toggleIcon" class="fas fa-chevron-left"></i></a>
+
+    <div class="wrapper">
+
+    <nav id="sidebar">
+
+        <div class="sidebar-header">
+            <h3 class="p-0">Dashboard</h3>
+        </div>
+
+        <ul class="list-unstyled components">
+
+            <li>
+                <a onclick="scrollContentTop(); loadOverview()">
+                    <i class="fas fa-info-circle"></i>
+                    Overview
+                </a>
+            </li>
+
+            <li>
+                <a onclick="scrollContentTop(); loadGraves()">
+                    <i class="fas fa-monument"></i>
+                    Graves
+                </a>
+            </li>
+
+            <li>
+                <a onclick="scrollContentTop(); loadBurials()">
+                    <i class="fas fa-skull"></i>
+                    Burials
+                </a>
+            </li>
+
+            <li>
+                <a onclick="scrollContentTop(); loadFinds()">
+                    <i class="fab fa-sketch"></i>
+                    Finds
+                </a>
+            </li>
+
+            <li>
+                <a onclick="scrollContentTop(); loadWordCloud()">
+                    <i class="fas fa-cloud"></i>
+                    Wordcloud
+                </a>
+            </li>
+
+            <li>
+                <a onclick="scrollContentTop(); loadnetwork()">
+                    <i class="fas fa-project-diagram"></i>
+                    Network
+                </a>
+            </li>
+        </ul>
+
+    </nav>
+
+    <!-- Page Content  -->
+    <div id="mycontent">
+        <h2 class="mb-3"><a class="btn-link" href="/entity/{{ mysitejson.site_id }}">{{ mysitejson.name }}</a>
+            <button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary float-right" data-toggle="modal"
+                    data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>
+        </h2>
+
+        <div class="db-element d-none" id="overview-wrapper">
+            <h5>Overview</h5>
+            <div class="card shadow dash-card">
+                <div class="card-body">
+                    <div id="counters" class="row text-center pt-3"></div>
+                </div>
+            </div>
+            <div id="overviewCharts" class="card shadow dash-card">
+                <div class="card-body">
+                    <div class="row">
+                        <div id="gravetypes-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="gravetypes-chart"></canvas>
+                        </div>
+                        <div id="burialtypes-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="burialtypes-chart"></canvas>
+                        </div>
+                        <div id="gravegoods-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="gravegoods-chart"></canvas>
+                        </div>
+                        <div id="bubblecard" class="mb-4 col-xl-6">
+                            <i title="Detailed info" style="top: 0;" class="fas fa-info chart-help-btn"></i>
+                            <div class="row"><span class="mx-auto charttitle">Find distribution</span></div>
+                            <div class="chartcontainer overflow-auto text-center">
+                                <svg id="bubble" class="row mx-auto"></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="db-element d-none" id="wordcloud-wrapper">
+            <h5>Wordcloud</h5>
+            <div class="card shadow dash-card">
+                <div id="wordcloud" class="card-body" style="height: 70vh">
+
+                </div>
+            </div>
+        </div>
+
+        <div class="db-element d-none" id="network-wrapper">
+            <h5>Network</h5>
+            <div class="card shadow dash-card" style="height: 70vh">
+                    <span class="mt-5 text-center card-body" id="loadingspinner">
+                                <div class="spinner-border card-body text-primary"
+                                     style="width: 1.3em; height: 1.3em;" role="status">
+                                </div>
+                    Loading network
+                    </span>
+                <div id="network" class="card-body p-0">
+
+                </div>
+            </div>
+        </div>
+
+        <div class="db-element d-none" id="grave-wrapper">
+            <h5>Graves</h5>
+            <div id="GraveCharts" class="card shadow dash-card">
+                <div class="card-body">
+                    <div class="row">
+
+                        <div id="gravedepth-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="gravedepth-chart"></canvas>
+                        </div>
+
+                        <div id="gravelength-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="gravelength-chart"></canvas>
+                        </div>
+
+                        <div id="gravewidth-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="gravewidth-chart"></canvas>
+                        </div>
+
+                        <div id="graveconstr-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="graveconstr-chart"></canvas>
+                        </div>
+
+                        <div id="gravedeg-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="gravedeg-chart"></canvas>
+                        </div>
+
+                        <div id="graveazi-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="graveazi-chart"></canvas>
+                        </div>
+
+                        <div id="gravenn-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="graveknn-chart"></canvas>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="db-element d-none" id="burial-wrapper">
+            <h5>Burials</h5>
+            <div id="burialCharts" class="card shadow dash-card">
+                <div class="card-body">
+                    <div class="row">
+
+                        <div id="burialage-chart-container" class="mb-4 col-xl-12">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="burialage-chart"></canvas>
+                        </div>
+
+                        <div id="valueage-chart-container" class="mb-4 col-xl-12">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="valueage-chart"></canvas>
+                        </div>
+
+                        <div id="boxplotBracket-chart-container" class="mb-4 col-xl-12">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="boxplotBracket-chart"></canvas>
+                        </div>
+
+                        <div id="boxplot-chart-container" class="mb-4 col-xl-12">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="boxplot-chart"></canvas>
+                        </div>
+
+                        <div id="sex-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="sex-chart"></canvas>
+                        </div>
+
+                        <div id="gender-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="gender-chart"></canvas>
+                        </div>
+
+                        <div id="sexdepth-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="sexdepth-chart"></canvas>
+                        </div>
+
+                        <div id="pathocard" class="mb-4 col-xl-6">
+                            <i title="Detailed info" style="top: 0;" class="fas fa-info chart-help-btn"></i>
+                            <div class="row"><span class="mx-auto charttitle">Pathologies</span></div>
+                            <div class="chartcontainer overflow-auto text-center">
+                                <svg id="pathology" class="row mx-auto"></svg>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="db-element d-none" id="find-wrapper">
+            <h5>Finds</h5>
+            <div id="findCharts" class="card shadow dash-card">
+                <div class="card-body">
+                    <div class="row">
+
+                        <div id="bubblecardFinds" class="mb-4 col-xl-6">
+                            <i title="Detailed info" style="top: 0;" class="fas fa-info chart-help-btn"></i>
+                            <div class="row"><span class="mx-auto charttitle">Find distribution</span></div>
+                            <div class="chartcontainer overflow-auto text-center">
+                                <svg id="bubbleFinds" class="row mx-auto"></svg>
+                            </div>
+                        </div>
+
+                        <div id="findAge-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="findAge-chart"></canvas>
+                        </div>
+
+                        <div id="findBracketAge-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="findBracketAge-chart"></canvas>
+                        </div>
+
+                        <div id="metalAgeValue-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="metalAgeValue-chart"></canvas>
+                        </div>
+
+                        <div id="metalAgeBracket-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="metalAgeBracket-chart"></canvas>
+                        </div>
+
+                        <div id="findtypesAgeValue-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="findtypesAgeValue-chart"></canvas>
+                        </div>
+
+                        <div id="findtypesAgeBracket-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="findtypesAgeBracket-chart"></canvas>
+                        </div>
+
+                        <div id="findDepth-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="findDepth-chart"></canvas>
+                        </div>
+
+                        <div id="metalDepth-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="metalDepth-chart"></canvas>
+                        </div>
+
+                        <div id="findtypesDepth-chart-container" class="mb-4 col-xl-6">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="findtypesDepth-chart"></canvas>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div id="chart-xl" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header custom-header-bg">
+                    <h5 id="chartTitle" class="modal-title"></h5>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id="chartDescr" class="modal-body">
+                    body
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="/static/js/dashboard.js"></script>
+
+{% endblock %}
+</div>

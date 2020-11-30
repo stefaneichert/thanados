@@ -34,6 +34,7 @@ if ($('#map').length) {
     getBasemaps();
 
     map = L.map('map', {
+        //renderer: L.canvas(),
         maxZoom: 12,
         scrollWheelZoom: false,
         dragging: false,

@@ -1,4 +1,7 @@
-from flask import render_template, g, url_for, abort
+import sys
+from datetime import datetime
+
+from flask import render_template, g, url_for, abort, flash
 from flask_login import login_required, current_user
 from flask_wtf import FlaskForm
 from werkzeug.utils import redirect
@@ -40,6 +43,10 @@ def admin():  # pragma: no cover
 def jsonprepare_execute():  # pragma: no cover
     if current_user.group not in ['admin']:
         abort(403)
+
+
+    start = datetime.now()
+    print("starting processing basic queries at: " + str(start.strftime("%H:%M:%S")))
 
     sql_1 = """ 
 DROP SCHEMA IF EXISTS thanados CASCADE;
@@ -447,20 +454,110 @@ UPDATE thanados.entitiestmp
 SET end_comment = NULL
 WHERE end_comment = '';
 UPDATE thanados.entitiestmp
+SET begin_comment = NULL
+WHERE begin_comment = 'None';
+UPDATE thanados.entitiestmp
+SET end_comment = NULL
+WHERE end_comment = 'None';
+UPDATE thanados.entitiestmp
 SET description = NULL
 WHERE description = '';
 UPDATE thanados.entitiestmp
 SET description = (SELECT split_part(description, '##German', 1)); --remove German descriptions. Replace ##German with characters of string. This string and the following characters will be removed in the description
 UPDATE thanados.entitiestmp
 SET description = (SELECT split_part(description, '##Deutsch', 1)); --remove German descriptions. See above
+UPDATE thanados.entitiestmp
+SET description = (SELECT split_part(description, '##german', 1)); --remove German descriptions. See above
+UPDATE thanados.entitiestmp
+SET description = (SELECT split_part(description, '##deutsch', 1)); --remove German descriptions. See above
+
 -- fill timespan dates if NULL with from_values
 UPDATE thanados.entitiestmp SET begin_to = begin_from WHERE begin_from IS NOT NULL and begin_to IS NULL;
 UPDATE thanados.entitiestmp SET begin_from = begin_to WHERE begin_to IS NOT NULL and begin_from IS NULL;
 UPDATE thanados.entitiestmp SET end_to = end_from WHERE end_from IS NOT NULL and end_to IS NULL;
 UPDATE thanados.entitiestmp SET end_from = end_to WHERE end_to IS NOT NULL and end_from IS NULL;
+"""
+    g.cursor.execute(sql_1)
 
+    endfirst = datetime.now()
+    print("time elapsed:" + str((endfirst - start)))
 
---types
+    print("processing nearest neighbour:")
+    nntime = datetime.now()
+
+    sql = """
+                    DROP TABLE IF EXISTS thanados.knn;
+                    CREATE TABLE thanados.knn AS
+
+                    SELECT DISTINCT
+                           g.parent_id,
+                           e.name,
+                           e.id,
+                           (st_pointonsurface(pl.geom)) AS centerpoint,
+                           NULL::INTEGER AS nid,
+                           NULL::TEXT AS nname,
+                           NULL::DOUBLE PRECISION AS distance,
+                           NULL::geometry AS npoint
+
+                          FROM model.entity e
+                                   JOIN model.link l ON e.id = l.domain_id
+                                    JOIN thanados.graves g ON e.id = g.child_id
+                                   JOIN gis.polygon pl ON l.range_id = pl.entity_id
+                          WHERE l.property_code = 'P53';
+
+                          --delete sites with  only one grave
+                          DELETE FROM thanados.knn WHERE parent_id IN (
+                          SELECT parent_id FROM (SELECT parent_id, COUNT(parent_id) FROM (SELECT DISTINCT
+                           g.parent_id,
+                           e.name,
+                           e.id,
+                           (st_pointonsurface(pl.geom)) AS centerpoint,
+                           NULL::INTEGER AS nid,
+                           NULL::TEXT AS nname,
+                           NULL::DOUBLE PRECISION AS distance,
+                           NULL::geometry AS npoint
+
+                          FROM model.entity e
+                                   JOIN model.link l ON e.id = l.domain_id
+                                    JOIN thanados.graves g ON e.id = g.child_id
+                                   JOIN gis.polygon pl ON l.range_id = pl.entity_id
+                          WHERE l.property_code = 'P53') a GROUP BY parent_id) b WHERE b.count <= 1 ORDER BY b.count ASC);
+
+                    SELECT * FROM thanados.knn;
+                    """
+    g.cursor.execute(sql)
+    result = g.cursor.fetchall()
+
+    sql2 = """
+                    UPDATE thanados.knn ok SET nid=n.id, nname=n.name, npoint=n.npoint FROM 
+                    (SELECT 
+                        id,
+                        name,
+                        parent_id,
+                        centerpoint AS npoint
+                    FROM
+                      thanados.knn WHERE id != %(polyId)s 
+                    ORDER BY
+                      knn.centerpoint <->
+                      (SELECT DISTINCT centerpoint FROM thanados.knn WHERE id = %(polyId)s AND parent_id = %(parentId)s AND id NOT IN (SELECT id FROM (SELECT id, count(centerpoint) FROM thanados.knn GROUP BY id ORDER BY count DESC) a WHERE count > 1))
+                    LIMIT 1) n WHERE ok.id = %(polyId)s AND n.parent_id = %(parentId)s;
+            """
+    nearestneighbour = 0
+    for row in result:
+        sys.stdout.write("\rneighbours found: " + str(nearestneighbour))
+        sys.stdout.flush()
+        g.cursor.execute(sql2, {'polyId': row.id, 'parentId': row.parent_id})
+        nearestneighbour = nearestneighbour + 1
+
+    g.cursor.execute("DELETE FROM thanados.knn WHERE nid ISNULL")
+    g.cursor.execute("UPDATE thanados.knn SET distance = ROUND(st_distancesphere(st_astext(centerpoint), st_astext(npoint))::numeric, 2)")
+
+    print("")
+    nntimeend = datetime.now()
+    print('time elapsed: ' + str((nntimeend - nntime)))
+
+    sqlTypes = """
+            --types
 DROP TABLE IF EXISTS thanados.types_main;
 CREATE TABLE thanados.types_main AS
 SELECT DISTINCT types_all.id,
@@ -531,9 +628,15 @@ SELECT 	e.system_type,
 	g.geom
 	FROM thanados.graves e JOIN model.link l ON e.child_id = l.domain_id JOIN gis.polygon g ON l.range_id = g.entity_id WHERE l.property_code = 'P53');
 
+DROP TABLE IF EXISTS thanados.derivedDegtmp;
+CREATE TABLE thanados.derivedDegtmp AS
+(SELECT 
+	ST_StartPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS startP,
+	ST_EndPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS endP,
+	child_id FROM thanados.giscleanup2 g WHERE system_type = 'feature');
 
 
--- Get azimuth of grave if a polygon is known and  
+-- Get azimuth of grave if a polygon is known
 DROP TABLE IF EXISTS thanados.derivedDeg;
 CREATE TABLE thanados.derivedDeg AS
 (SELECT 
@@ -541,11 +644,11 @@ CREATE TABLE thanados.derivedDeg AS
     ST_X(endP) AS otherPoint,
 	degrees(ST_Azimuth(startP, endP)) AS degA_B,
 	degrees(ST_Azimuth(endP, startP)) AS degB_A,
-	child_id FROM
-(SELECT 
-	ST_StartPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS startP,
-	ST_EndPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS endP,
-	ST_AsText(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom))), child_id FROM thanados.giscleanup2 g WHERE system_type = 'feature') p);
+	child_id FROM thanados.derivedDegtmp);
+	--41sec before, 14sec after... 
+
+DROP TABLE IF EXISTS thanados.giscleanup2;
+DROP TABLE IF EXISTS thanados.derivedDegtmp;
 
 -- get lower value of azimuth
 DROP TABLE IF EXISTS thanados.azimuth;
@@ -560,6 +663,8 @@ UNION ALL
 	g.degB_A::integer AS Azimuth
 	FROM thanados.derivedDeg g WHERE degB_A <= degA_B);
 	
+DROP TABLE IF EXISTS thanados.derivedDeg;
+	
 --insert azimuth into dimensiontypes
 INSERT INTO thanados.dimensiontypes 
     SELECT
@@ -572,6 +677,7 @@ INSERT INTO thanados.dimensiontypes
         'Dimensions > Azimuth'
         FROM thanados.azimuth;
          
+DROP TABLE IF EXISTS thanados.azimuth;
 
 --hack for setting burial orientation to grave orientation if grave does not have any. Comment/Uncomment depending on your preferences
 /*INSERT INTO thanados.dimensiontypes (id, parent_id, entity_id, name, description, value, path)
@@ -638,6 +744,20 @@ WHERE DOMAIN || ':' || range NOT IN
              GROUP BY parent_id) c
        WHERE c.count > 1);*/
 
+--insert nearest neighbour distance 
+INSERT INTO thanados.dimensiontypes 
+    SELECT
+        148713,
+        15678,
+        id,
+        'Nearest Neighbour',
+        'm',
+        distance,
+        'Dimensions > Distance > Nearest Neighbour'
+        FROM thanados.knn;
+         
+--DROP TABLE IF EXISTS thanados.azimuth;
+
 
 --types material
 DROP TABLE IF EXISTS thanados.materialtypes;
@@ -679,9 +799,16 @@ WHERE begin_to IS NULL;
 UPDATE thanados.entities
 SET end_to = end_from
 WHERE end_to IS NULL;
-            """
-    g.cursor.execute(sql_1)
 
+DROP TABLE IF EXISTS thanados.entitiestmp
+            """
+    startnext = datetime.now()
+    print("Adding types and values")
+    g.cursor.execute(sqlTypes)
+    endnext = datetime.now()
+    print("time elapsed:" + str((endnext - startnext)))
+
+    print("processing files")
     sql_2 = """
     DROP TABLE IF EXISTS thanados.files;
 CREATE TABLE thanados.files AS
@@ -729,6 +856,8 @@ CREATE TABLE thanados.files AS
      FROM thanados.filestmp);
     """
     g.cursor.execute(sql_2)
+    filesfound = 0
+    filesmissing = 0
 
     sql_3 = 'SELECT id FROM thanados.files'
     g.cursor.execute(sql_3)
@@ -736,10 +865,21 @@ CREATE TABLE thanados.files AS
     for row in result:
         file_name = (Data.get_file_path(row.id))
         row_id = (row.id)
+        if file_name:
+            filesfound = filesfound + 1
+        else:
+            filesmissing = filesmissing +1
         g.cursor.execute("UPDATE thanados.files SET filename = %(file_name)s WHERE id = %(row_id)s",
                          {'file_name': file_name, 'row_id': row_id})
+        sys.stdout.write("\rfiles found: "  +  str(filesfound) + " files missing: " + str(filesmissing))
+        sys.stdout.flush()
 
     g.cursor.execute('DELETE FROM thanados.files WHERE filename = NULL')
+
+    print("")
+    filesdone = datetime.now()
+    print("time elapsed:" + str((filesdone - endnext)))
+    print("processing types and files")
 
     sql_4 = """
     --references
@@ -809,7 +949,10 @@ WHERE description = '';
 UPDATE thanados.extrefs
 SET name = NULL
 WHERE name = '';
+    """
+    g.cursor.execute(sql_4)
 
+    sql_5 = """
 -- create table with types and files of all entities
 DROP TABLE IF EXISTS thanados.types_and_files;
 CREATE TABLE thanados.types_and_files
@@ -842,8 +985,9 @@ FROM thanados.entities e
 
 
 -- insert file data
-UPDATE thanados.types_and_files
-SET files = (SELECT files
+DROP TABLE IF EXISTS thanados.testins;
+CREATE TABLE thanados.testins AS
+SELECT t.entity_id, f.files
              FROM (
                       SELECT e.child_id, files
                       FROM thanados.entities e
@@ -860,13 +1004,16 @@ SET files = (SELECT files
                                        ))) AS files
                             FROM thanados.files t
                             GROUP BY parent_id) AS irgendwas
-                           ON e.child_id = irgendwas.parent_id) f
-             WHERE entity_id = f.child_id);
+                           ON e.child_id = irgendwas.parent_id) f JOIN thanados.types_and_files t ON f.child_id = t.entity_id;
+
+UPDATE thanados.types_and_files f SET files = t.files FROM thanados.testins t WHERE f.entity_id = t.entity_id;
+             --1:45min before after: 4,3s
 
 
 -- insert bibliography data
-UPDATE thanados.types_and_files
-SET reference = (SELECT reference
+DROP TABLE IF EXISTS thanados.testins;
+CREATE TABLE thanados.testins AS
+(SELECT child_id, reference
                  FROM (
                           SELECT e.child_id, reference
                           FROM thanados.entities e
@@ -881,13 +1028,17 @@ SET reference = (SELECT reference
                                 FROM thanados.reference t
                                 GROUP BY parent_id) AS irgendwas
                                ON e.child_id = irgendwas.parent_id) f
+                 );
+
+UPDATE thanados.types_and_files
+SET reference = (SELECT reference from thanados.testins f
                  WHERE entity_id = f.child_id);
+                 --1:35 min before, 5sec after
 
 --insert external refs data
-UPDATE thanados.types_and_files
-SET extrefs = extref
-FROM (
-         SELECT e.child_id, extref
+DROP TABLE IF EXISTS thanados.testins;
+CREATE TABLE thanados.testins AS
+(SELECT e.child_id, extref
          FROM thanados.entities e
                   INNER JOIN
               (SELECT t.parent_id,
@@ -899,8 +1050,13 @@ FROM (
                           ))) AS extref
                FROM thanados.extrefs t
                GROUP BY parent_id) AS irgendwas
-              ON e.child_id = irgendwas.parent_id) f
-WHERE entity_id = f.child_id;
+              ON e.child_id = irgendwas.parent_id);
+
+UPDATE thanados.types_and_files
+SET extrefs = (SELECT extref from thanados.testins f
+                 WHERE entity_id = f.child_id);
+                 DROP TABLE IF EXISTS thanados.extrefs;
+--31ms
 
 -- insert dimension data
 UPDATE thanados.types_and_files
@@ -920,6 +1076,7 @@ FROM (
                GROUP BY entity_id) AS irgendwas
               ON e.child_id = irgendwas.entity_id) f
 WHERE entity_id = f.child_id;
+--354ms
 
 -- insert material data
 UPDATE thanados.types_and_files
@@ -939,6 +1096,8 @@ FROM (
               ON e.child_id = irgendwas.entity_id) f
 WHERE entity_id = f.child_id;
 
+DROP TABLE IF EXISTS thanados.materialtypes;
+--172 ms
 
 -- insert timespan data
 UPDATE thanados.types_and_files
@@ -954,6 +1113,7 @@ FROM (
                         'end_comment', f.end_comment)) AS time
          FROM thanados.entities f) AS irgendwas
 WHERE entity_id = irgendwas.child_id;
+--344ms
 
 
 --temp table with all info
@@ -962,6 +1122,8 @@ CREATE TABLE thanados.tmp AS
     (SELECT *
      FROM thanados.entities e
               LEFT JOIN thanados.types_and_files t ON e.child_id = t.entity_id ORDER BY parent_id, child_name);
+
+DROP TABLE IF EXISTS thanados.types_and_files;
 
 UPDATE thanados.tmp
 SET timespan = NULL
@@ -977,8 +1139,15 @@ SET end_comment = NULL
 WHERE end_comment = '';
 UPDATE thanados.tmp SET description = (SELECT split_part(description, '##German', 1)); --hack to remove German descriptions
 UPDATE thanados.tmp SET description = (SELECT split_part(description, '##Deutsch', 1)); --hack to remove German descriptions
+--1,4s
+"""
 
+    g.cursor.execute(sql_5)
+    filetypesdone = datetime.now()
+    print("time elapsed: " + str((filetypesdone - filesdone)))
+    print("processing GeoJSONs")
 
+    sql_6 = """
 ---finds json
 DROP TABLE IF EXISTS thanados.tbl_finds;
 CREATE TABLE thanados.tbl_finds
@@ -1033,6 +1202,8 @@ SELECT id,
            )) AS finds
 FROM thanados.tbl_finds f;
 --ORDER BY f.properties -> 'name' asc;
+
+DROP TABLE IF EXISTS thanados.tbl_finds;
 
 ---humanremains json
 DROP TABLE IF EXISTS thanados.tbl_humanremains;
@@ -1089,6 +1260,7 @@ SELECT id,
 FROM thanados.tbl_humanremains f;
 --ORDER BY f.properties -> 'name' asc;
 
+DROP TABLE IF EXISTS thanados.tbl_humanremains;
 
 --burial
 DROP TABLE IF EXISTS thanados.tbl_burials;
@@ -1131,6 +1303,8 @@ GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.typ
          f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_type, f.reference, f.extrefs
 ORDER BY f.child_name;
 
+DROP TABLE IF EXISTS thanados.tbl_findscomplete;
+
 UPDATE thanados.tbl_burials f
 SET finds = NULL
 WHERE f.finds = '[null]';
@@ -1139,6 +1313,8 @@ UPDATE thanados.tbl_burials f
 SET humanremains = hr.humanremains FROM (SELECT parent_id,
                                                 jsonb_strip_nulls(jsonb_agg(humanremains)) AS humanremains
                                                     FROM thanados.tbl_humanremainscomplete GROUP BY parent_id) hr WHERE f.id = hr.parent_id;
+
+DROP TABLE IF EXISTS thanados.tbl_humanremainscomplete;
 
 UPDATE thanados.tbl_burials f
 SET humanremains = NULL
@@ -1164,6 +1340,8 @@ SELECT id,
            )) AS burials
 FROM thanados.tbl_burials f;
 --ORDER BY f.properties -> 'name' asc;
+
+DROP TABLE IF EXISTS thanados.tbl_burials;
 
 --graves
 DROP TABLE IF EXISTS thanados.tbl_graves;
@@ -1209,6 +1387,8 @@ GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.ref
          f.system_type
 ORDER BY f.child_name;
 
+DROP TABLE IF EXISTS thanados.tbl_burialscomplete;
+
 UPDATE thanados.tbl_graves f
 SET burials = NULL
 WHERE f.burials = '[
@@ -1244,6 +1424,8 @@ SELECT id,
            )) AS graves
 FROM thanados.tbl_graves f
 ORDER BY f.parent_id, f.name;
+
+DROP TABLE IF EXISTS thanados.tbl_graves;
 
 -- get data for sites
 DROP TABLE IF EXISTS thanados.tbl_sites;
@@ -1321,6 +1503,8 @@ GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.ref
          s.point, s.polygon
 ORDER BY f.child_name;
 
+DROP TABLE IF EXISTS thanados.tmp;
+
 
 DROP TABLE IF EXISTS thanados.tbl_thanados_data;
 CREATE TABLE thanados.tbl_thanados_data
@@ -1345,7 +1529,15 @@ FROM thanados.tbl_sitescomplete s
                    ON s.id = f.parent_id
 GROUP BY s.id, s.name, s.properties;
 
+DROP TABLE IF EXISTS thanados.tbl_sitescomplete;
+"""
+    g.cursor.execute(sql_6)
+    jsonsdone = datetime.now()
+    print("time elapsed: " + str((jsonsdone - filetypesdone)))
 
+    print("processing other tables")
+
+    sql7 = """
 -- create table with all types for json
 DROP TABLE IF EXISTS thanados.typesforjson;
 CREATE TABLE thanados.typesforjson AS
@@ -1438,35 +1630,35 @@ CREATE TABLE thanados.depth_labels AS (
           FROM (SELECT row_to_json(c.*)
                 FROM (
                          SELECT count(*) FILTER (WHERE VALUE <= 20)                  AS "0-20",
-                                count(*) FILTER (WHERE VALUE > 20 AND VALUE <= 40)   AS "20-40",
-                                count(*) FILTER (WHERE VALUE > 40 AND VALUE <= 60)   AS "40-60",
-                                count(*) FILTER (WHERE VALUE > 60 AND VALUE <= 80)   AS "60-80",
-                                count(*) FILTER (WHERE VALUE > 80 AND VALUE <= 100)  AS "80-100",
-                                count(*) FILTER (WHERE VALUE > 100 AND VALUE <= 120) AS "100-120",
-                                count(*) FILTER (WHERE VALUE > 120 AND VALUE <= 140) AS "120-140",
-                                count(*) FILTER (WHERE VALUE > 140 AND VALUE <= 160) AS "140-160",
-                                count(*) FILTER (WHERE VALUE > 160 AND VALUE <= 180) AS "160-180",
-                                count(*) FILTER (WHERE VALUE > 180 AND VALUE <= 200) AS "180-200",
-                                count(*) FILTER (WHERE VALUE > 200 AND VALUE <= 220) AS "200-220",
-                                count(*) FILTER (WHERE VALUE > 220 AND VALUE <= 240) AS "220-240",
-                                count(*) FILTER (WHERE VALUE > 240 AND VALUE <= 260) AS "240-260",
-                                count(*) FILTER (WHERE VALUE > 260 AND VALUE <= 280) AS "260-280",
-                                count(*) FILTER (WHERE VALUE > 280 AND VALUE <= 300) AS "280-300",
-                                count(*) FILTER (WHERE VALUE > 300 AND VALUE <= 320) AS "300-320",
-                                count(*) FILTER (WHERE VALUE > 320 AND VALUE <= 340) AS "320-340",
-                                count(*) FILTER (WHERE VALUE > 340 AND VALUE <= 360) AS "340-360",
-                                count(*) FILTER (WHERE VALUE > 360 AND VALUE <= 380) AS "360-380",
-                                count(*) FILTER (WHERE VALUE > 380 AND VALUE <= 400) AS "380-400",
-                                count(*) FILTER (WHERE VALUE > 300 AND VALUE <= 420) AS "400-420",
-                                count(*) FILTER (WHERE VALUE > 420 AND VALUE <= 440) AS "420-440",
-                                count(*) FILTER (WHERE VALUE > 440 AND VALUE <= 460) AS "440-460",
-                                count(*) FILTER (WHERE VALUE > 460 AND VALUE <= 480) AS "460-480",
-                                count(*) FILTER (WHERE VALUE > 480 AND VALUE <= 500) AS "480-500",
-                                count(*) FILTER (WHERE VALUE > 500 AND VALUE <= 520) AS "500-520",
-                                count(*) FILTER (WHERE VALUE > 520 AND VALUE <= 540) AS "520-540",
-                                count(*) FILTER (WHERE VALUE > 540 AND VALUE <= 560) AS "540-560",
-                                count(*) FILTER (WHERE VALUE > 560 AND VALUE <= 580) AS "560-580",
-                                count(*) FILTER (WHERE VALUE > 580 AND VALUE <= 600) AS "580-600",
+                                count(*) FILTER (WHERE VALUE > 20 AND VALUE <= 40)   AS "21-40",
+                                count(*) FILTER (WHERE VALUE > 40 AND VALUE <= 60)   AS "41-60",
+                                count(*) FILTER (WHERE VALUE > 60 AND VALUE <= 80)   AS "61-80",
+                                count(*) FILTER (WHERE VALUE > 80 AND VALUE <= 100)  AS "81-100",
+                                count(*) FILTER (WHERE VALUE > 100 AND VALUE <= 120) AS "101-120",
+                                count(*) FILTER (WHERE VALUE > 120 AND VALUE <= 140) AS "121-140",
+                                count(*) FILTER (WHERE VALUE > 140 AND VALUE <= 160) AS "141-160",
+                                count(*) FILTER (WHERE VALUE > 160 AND VALUE <= 180) AS "161-180",
+                                count(*) FILTER (WHERE VALUE > 180 AND VALUE <= 200) AS "181-200",
+                                count(*) FILTER (WHERE VALUE > 200 AND VALUE <= 220) AS "201-220",
+                                count(*) FILTER (WHERE VALUE > 220 AND VALUE <= 240) AS "221-240",
+                                count(*) FILTER (WHERE VALUE > 240 AND VALUE <= 260) AS "241-260",
+                                count(*) FILTER (WHERE VALUE > 260 AND VALUE <= 280) AS "261-280",
+                                count(*) FILTER (WHERE VALUE > 280 AND VALUE <= 300) AS "281-300",
+                                count(*) FILTER (WHERE VALUE > 300 AND VALUE <= 320) AS "301-320",
+                                count(*) FILTER (WHERE VALUE > 320 AND VALUE <= 340) AS "321-340",
+                                count(*) FILTER (WHERE VALUE > 340 AND VALUE <= 360) AS "341-360",
+                                count(*) FILTER (WHERE VALUE > 360 AND VALUE <= 380) AS "361-380",
+                                count(*) FILTER (WHERE VALUE > 380 AND VALUE <= 400) AS "381-400",
+                                count(*) FILTER (WHERE VALUE > 300 AND VALUE <= 420) AS "401-420",
+                                count(*) FILTER (WHERE VALUE > 420 AND VALUE <= 440) AS "421-440",
+                                count(*) FILTER (WHERE VALUE > 440 AND VALUE <= 460) AS "441-460",
+                                count(*) FILTER (WHERE VALUE > 460 AND VALUE <= 480) AS "461-480",
+                                count(*) FILTER (WHERE VALUE > 480 AND VALUE <= 500) AS "481-500",
+                                count(*) FILTER (WHERE VALUE > 500 AND VALUE <= 520) AS "501-520",
+                                count(*) FILTER (WHERE VALUE > 520 AND VALUE <= 540) AS "521-540",
+                                count(*) FILTER (WHERE VALUE > 540 AND VALUE <= 560) AS "541-560",
+                                count(*) FILTER (WHERE VALUE > 560 AND VALUE <= 580) AS "561-580",
+                                count(*) FILTER (WHERE VALUE > 580 AND VALUE <= 600) AS "581-600",
                                 count(*) FILTER (WHERE VALUE > 600)                  AS "over 600"
 
                          FROM (
@@ -1558,6 +1750,9 @@ FROM thanados.depth_labels dl,
      thanados.depth d
 GROUP BY dl.labels;
 
+DROP TABLE IF EXISTS thanados.depth;
+DROP TABLE IF EXISTS thanados.depth_labels;
+
 UPDATE thanados.chart_depth
 SET depth = REPLACE(depth, '"[', '[');
 UPDATE thanados.chart_depth
@@ -1566,6 +1761,8 @@ SET depth = REPLACE(depth, ']"', ']');
 INSERT INTO thanados.chart_data (depth)
 SELECT depth::JSONB
 FROM thanados.chart_depth;
+
+DROP TABLE IF EXISTS thanados.chart_depth;
 
 
 DROP TABLE IF EXISTS thanados.orientation_labels;
@@ -1577,23 +1774,23 @@ CREATE TABLE thanados.orientation_labels AS (
           FROM (SELECT row_to_json(c.*)
                 FROM (
                          SELECT count(*) FILTER (WHERE VALUE <= 20)                  AS "0-20",
-                                count(*) FILTER (WHERE VALUE > 20 AND VALUE <= 40)   AS "20-40",
-                                count(*) FILTER (WHERE VALUE > 40 AND VALUE <= 60)   AS "40-60",
-                                count(*) FILTER (WHERE VALUE > 60 AND VALUE <= 80)   AS "60-80",
-                                count(*) FILTER (WHERE VALUE > 80 AND VALUE <= 100)  AS "80-100",
-                                count(*) FILTER (WHERE VALUE > 100 AND VALUE <= 120) AS "100-120",
-                                count(*) FILTER (WHERE VALUE > 120 AND VALUE <= 140) AS "120-140",
-                                count(*) FILTER (WHERE VALUE > 140 AND VALUE <= 160) AS "140-160",
-                                count(*) FILTER (WHERE VALUE > 160 AND VALUE <= 180) AS "160-180",
-                                count(*) FILTER (WHERE VALUE > 180 AND VALUE <= 200) AS "180-200",
-                                count(*) FILTER (WHERE VALUE > 200 AND VALUE <= 220) AS "200-220",
-                                count(*) FILTER (WHERE VALUE > 220 AND VALUE <= 240) AS "220-240",
-                                count(*) FILTER (WHERE VALUE > 240 AND VALUE <= 260) AS "240-260",
-                                count(*) FILTER (WHERE VALUE > 260 AND VALUE <= 280) AS "260-280",
-                                count(*) FILTER (WHERE VALUE > 280 AND VALUE <= 300) AS "280-300",
-                                count(*) FILTER (WHERE VALUE > 300 AND VALUE <= 320) AS "300-320",
-                                count(*) FILTER (WHERE VALUE > 320 AND VALUE <= 340) AS "320-340",
-                                count(*) FILTER (WHERE VALUE > 340 AND VALUE <= 360) AS "340-360"
+                                count(*) FILTER (WHERE VALUE > 20 AND VALUE <= 40)   AS "21-40",
+                                count(*) FILTER (WHERE VALUE > 40 AND VALUE <= 60)   AS "41-60",
+                                count(*) FILTER (WHERE VALUE > 60 AND VALUE <= 80)   AS "61-80",
+                                count(*) FILTER (WHERE VALUE > 80 AND VALUE <= 100)  AS "81-100",
+                                count(*) FILTER (WHERE VALUE > 100 AND VALUE <= 120) AS "101-120",
+                                count(*) FILTER (WHERE VALUE > 120 AND VALUE <= 140) AS "121-140",
+                                count(*) FILTER (WHERE VALUE > 140 AND VALUE <= 160) AS "141-160",
+                                count(*) FILTER (WHERE VALUE > 160 AND VALUE <= 180) AS "161-180",
+                                count(*) FILTER (WHERE VALUE > 180 AND VALUE <= 200) AS "181-200",
+                                count(*) FILTER (WHERE VALUE > 200 AND VALUE <= 220) AS "201-220",
+                                count(*) FILTER (WHERE VALUE > 220 AND VALUE <= 240) AS "221-240",
+                                count(*) FILTER (WHERE VALUE > 240 AND VALUE <= 260) AS "241-260",
+                                count(*) FILTER (WHERE VALUE > 260 AND VALUE <= 280) AS "261-280",
+                                count(*) FILTER (WHERE VALUE > 280 AND VALUE <= 300) AS "281-300",
+                                count(*) FILTER (WHERE VALUE > 300 AND VALUE <= 320) AS "301-320",
+                                count(*) FILTER (WHERE VALUE > 320 AND VALUE <= 340) AS "321-340",
+                                count(*) FILTER (WHERE VALUE > 340 AND VALUE <= 360) AS "341-360"
                          FROM (
                                   SELECT g.parent_id,
                                          s.name AS site_name,
@@ -1654,6 +1851,9 @@ FROM thanados.orientation_labels dl,
      thanados.orientation d
 GROUP BY dl.labels;
 
+DROP TABLE IF EXISTS thanados.orientation_labels;
+DROP TABLE IF EXISTS thanados.orientation;
+
 UPDATE thanados.chart_orientation
 SET orientation = REPLACE(orientation, '"[', '[');
 UPDATE thanados.chart_orientation
@@ -1661,6 +1861,8 @@ SET orientation = REPLACE(orientation, ']"', ']');
 
 UPDATE thanados.chart_data
 SET orientation = (SELECT orientation::JSONB FROM thanados.chart_orientation);
+
+DROP TABLE IF EXISTS thanados.chart_orientation;
 
 DROP TABLE IF EXISTS thanados.azimuth_labels;
 CREATE TABLE thanados.azimuth_labels AS (
@@ -1671,23 +1873,23 @@ CREATE TABLE thanados.azimuth_labels AS (
           FROM (SELECT row_to_json(c.*)
                 FROM (
                          SELECT count(*) FILTER (WHERE VALUE <= 10)                  AS "0-10",
-                                count(*) FILTER (WHERE VALUE > 10 AND VALUE <= 20)   AS "10-20",
-                                count(*) FILTER (WHERE VALUE > 20 AND VALUE <= 30)   AS "20-30",
-                                count(*) FILTER (WHERE VALUE > 30 AND VALUE <= 40)   AS "30-40",
-                                count(*) FILTER (WHERE VALUE > 40 AND VALUE <= 50)   AS "40-50",
-                                count(*) FILTER (WHERE VALUE > 50 AND VALUE <= 60)   AS "50-60",
-                                count(*) FILTER (WHERE VALUE > 60 AND VALUE <= 70)   AS "60-70",
-                                count(*) FILTER (WHERE VALUE > 70 AND VALUE <= 80)   AS "70-80",
-                                count(*) FILTER (WHERE VALUE > 80 AND VALUE <= 90)   AS "80-90",
-                                count(*) FILTER (WHERE VALUE > 90 AND VALUE <= 100)  AS "90-100",
-                                count(*) FILTER (WHERE VALUE > 100 AND VALUE <= 110) AS "100-110",
-                                count(*) FILTER (WHERE VALUE > 110 AND VALUE <= 120) AS "110-120",
-                                count(*) FILTER (WHERE VALUE > 120 AND VALUE <= 130) AS "120-130",
-                                count(*) FILTER (WHERE VALUE > 130 AND VALUE <= 140) AS "130-140",
-                                count(*) FILTER (WHERE VALUE > 140 AND VALUE <= 150) AS "140-150",
-                                count(*) FILTER (WHERE VALUE > 150 AND VALUE <= 160) AS "150-160",
-                                count(*) FILTER (WHERE VALUE > 160 AND VALUE <= 170) AS "160-170",                                
-                                count(*) FILTER (WHERE VALUE > 170 AND VALUE <= 180) AS "170-180"                                
+                                count(*) FILTER (WHERE VALUE > 10 AND VALUE <= 20)   AS "11-20",
+                                count(*) FILTER (WHERE VALUE > 20 AND VALUE <= 30)   AS "21-30",
+                                count(*) FILTER (WHERE VALUE > 30 AND VALUE <= 40)   AS "31-40",
+                                count(*) FILTER (WHERE VALUE > 40 AND VALUE <= 50)   AS "41-50",
+                                count(*) FILTER (WHERE VALUE > 50 AND VALUE <= 60)   AS "51-60",
+                                count(*) FILTER (WHERE VALUE > 60 AND VALUE <= 70)   AS "61-70",
+                                count(*) FILTER (WHERE VALUE > 70 AND VALUE <= 80)   AS "71-80",
+                                count(*) FILTER (WHERE VALUE > 80 AND VALUE <= 90)   AS "81-90",
+                                count(*) FILTER (WHERE VALUE > 90 AND VALUE <= 100)  AS "91-100",
+                                count(*) FILTER (WHERE VALUE > 100 AND VALUE <= 110) AS "101-110",
+                                count(*) FILTER (WHERE VALUE > 110 AND VALUE <= 120) AS "111-120",
+                                count(*) FILTER (WHERE VALUE > 120 AND VALUE <= 130) AS "121-130",
+                                count(*) FILTER (WHERE VALUE > 130 AND VALUE <= 140) AS "131-140",
+                                count(*) FILTER (WHERE VALUE > 140 AND VALUE <= 150) AS "141-150",
+                                count(*) FILTER (WHERE VALUE > 150 AND VALUE <= 160) AS "151-160",
+                                count(*) FILTER (WHERE VALUE > 160 AND VALUE <= 170) AS "161-170",                                
+                                count(*) FILTER (WHERE VALUE > 170 AND VALUE <= 180) AS "171-180"                                
                          FROM (
                                   SELECT g.parent_id,
                                          s.name AS site_name,
@@ -1747,6 +1949,9 @@ FROM thanados.azimuth_labels dl,
      thanados.azimuth d
 GROUP BY dl.labels;
 
+DROP TABLE IF EXISTS thanados.azimuth_labels;
+DROP TABLE IF EXISTS thanados.azimuth;
+
 UPDATE thanados.chart_azimuth
 SET azimuth = REPLACE(azimuth, '"[', '[');
 UPDATE thanados.chart_azimuth
@@ -1754,6 +1959,8 @@ SET azimuth = REPLACE(azimuth, ']"', ']');
 
 UPDATE thanados.chart_data
 SET azimuth = (SELECT azimuth::JSONB FROM thanados.chart_azimuth);
+
+DROP TABLE IF EXISTS thanados.chart_azimuth;
 
 DROP TABLE IF EXISTS thanados.sex;
 CREATE TABLE thanados.sex AS (
@@ -1796,6 +2003,8 @@ INSERT INTO thanados.chart_sex (sex)
                     'datasets', jsonb_agg(d)
                 )
      FROM thanados.sex d);
+     
+DROP TABLE IF EXISTS thanados.sex;     
 
 UPDATE thanados.chart_sex
 SET sex = REPLACE(sex, '"[', '[');
@@ -1804,6 +2013,7 @@ SET sex = REPLACE(sex, ']"', ']');
 
 UPDATE thanados.chart_data
 SET sex = (SELECT sex::JSONB FROM thanados.chart_sex);
+DROP TABLE IF EXISTS thanados.chart_sex;
 
 --age at death estimation for boxplot/violin plot
 DROP TABLE IF EXISTS thanados.ageatdeath;
@@ -1963,8 +2173,19 @@ DROP TABLE thanados.searchData;
 CREATE TABLE thanados.searchData AS (
 SELECT * FROM thanados.searchData_tmp);
 DROP TABLE thanados.searchData_tmp;
+
+DROP TABLE IF EXISTS thanados.EntCount;
+CREATE TABLE thanados.EntCount AS
+    SELECT * FROM thanados.searchdata WHERE site_id IN (SELECT child_id from thanados.sites);
     """
-    g.cursor.execute(sql_4)
+
+    g.cursor.execute(sql7)
+    restdone = datetime.now()
+    print("time elapsed: " + str((restdone - jsonsdone)))
+
+    endtime = datetime.now()
+    print("finished")
+    print("totaltime: " + str((endtime - start)))
     return redirect(url_for('admin'))
 
 
@@ -2045,7 +2266,66 @@ DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup where pare
             46313, -- Hochosterwitz
             47713, -- Höflein
             45867, -- Hundsdorf Rosental
-            45167, -- Kanzianiberg
+            45167, -- KanzianibergDROP TABLE IF EXISTS thanados.giscleanup;
+CREATE TABLE thanados.giscleanup AS
+ (
+SELECT 	e.system_type,
+	e.child_name,
+	e.parent_id,
+	e.child_id,
+	e.geom AS jsongeom,
+	l.property_code,
+	l.range_id,
+	g.id,
+	g.geom
+	FROM thanados.entities e JOIN model.link l ON e.child_id = l.domain_id JOIN gis.point g ON l.range_id = g.entity_id WHERE l.property_code = 'P53');
+
+DELETE FROM gis.point g WHERE g.id in (
+SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'stratigraphic unit' ORDER BY g1.system_type, g1.child_id, g2.child_name);
+
+DELETE FROM gis.point g WHERE g.id in (
+SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'feature' ORDER BY g1.system_type, g1.child_id, g2.child_name);
+
+DELETE FROM gis.point g WHERE g.id in (
+SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'place' ORDER BY g1.system_type, g1.child_id, g2.child_name);
+
+--Remove point geometries from stratigraphic units and finds
+/*
+DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup WHERE system_type NOT IN (
+'feature', 'place'));
+*/
+
+/*
+-- remove point coordinates from graves for selected sites
+DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup where parent_id IN (
+            47093, -- Althofen
+            46319, -- Atschalas
+            47079, -- Augsdorf
+            47831, -- Baardorf
+            45631, -- Baiersdorf
+            46385, -- Bleiburg Barracks
+            46295, -- Breitenstein
+            45615, -- Brückl
+            49177, -- Dellach - oldest house
+            49631, -- Dellach House No. 13
+            46409, -- Dellach House No. 38
+            45625, -- Dreulach
+            46325, -- Duel
+            46261, -- Dullach II
+            46301, -- Faak am See
+            46341, -- Faschendorf
+            49153, -- Feistritz an der Drau - Görz
+            45179, -- Feistritz Bleiburg
+            47571, -- Förk
+            45161, -- Friedlach
+            47883, -- Friesach Galgenbichl
+            45665, -- Friesach Olsa
+            46591, -- Gödersdorf
+            45143, -- Göriach
+            45675, -- Goritschach Brodnikkreuz
+            46747, -- Grafenstein
+            50565, -- Graßdorf
+            45797, -- Grassen
             45715, -- Kappel am Krappfeld
             45463, -- Kathreinkogel
             46359, -- Keutschach
@@ -2092,6 +2372,7 @@ SELECT 	e.system_type,
 	FROM thanados.entities e JOIN model.link l ON e.child_id = l.domain_id JOIN gis.polygon g ON l.range_id = g.entity_id JOIN gis.point g2 ON g.entity_id = g2.entity_id WHERE l.property_code = 'P53');
 
 DELETE FROM gis.point WHERE id IN (SELECT point_id FROM thanados.giscleanup);
+DROP TABLE IF EXISTS thanados.giscleanup;
     """
 
     g.cursor.execute(sql_5)
@@ -2193,6 +2474,7 @@ UPDATE thanados.idpath SET find_end_from = find_end_to;
     UPDATE model.entity SET end_from = find_end_from FROM (SELECT id, find_end_from FROM model.entity e JOIN thanados.idpath i ON id = find_id WHERE end_from != find_end_from) a WHERE a.id = model.entity.id;
     UPDATE model.entity SET end_to = find_end_to FROM (SELECT id, find_end_to FROM model.entity e JOIN thanados.idpath i ON id = find_id WHERE end_to != find_end_to) a WHERE a.id = model.entity.id;
     */
+    DROP TABLE IF EXISTS thanados.idpath;
     """
 
     g.cursor.execute(sql_6)
