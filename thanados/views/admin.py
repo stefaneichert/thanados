@@ -466,6 +466,11 @@ UPDATE thanados.entitiestmp
 SET description = (SELECT split_part(description, '##German', 1)); --remove German descriptions. Replace ##German with characters of string. This string and the following characters will be removed in the description
 UPDATE thanados.entitiestmp
 SET description = (SELECT split_part(description, '##Deutsch', 1)); --remove German descriptions. See above
+UPDATE thanados.entitiestmp
+SET description = (SELECT split_part(description, '##german', 1)); --remove German descriptions. See above
+UPDATE thanados.entitiestmp
+SET description = (SELECT split_part(description, '##deutsch', 1)); --remove German descriptions. See above
+
 -- fill timespan dates if NULL with from_values
 UPDATE thanados.entitiestmp SET begin_to = begin_from WHERE begin_from IS NOT NULL and begin_to IS NULL;
 UPDATE thanados.entitiestmp SET begin_from = begin_to WHERE begin_to IS NOT NULL and begin_from IS NULL;

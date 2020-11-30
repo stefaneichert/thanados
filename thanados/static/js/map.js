@@ -126,7 +126,6 @@ function setmap(myjson) {
 
     //define map
     map = L.map('map', {
-        renderer: L.canvas(),
         zoom: 22,
         zoomControl: false,
         layers: [landscape]
