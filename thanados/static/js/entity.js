@@ -53,8 +53,13 @@ descriptionSummary = {
     finds: 0,
 }
 
+showDashboard = true;
+
 $.each(jsonmysite.features, function (i, feature) {
-    if (feature.id === 0) descriptionSummary.graves = 0;
+    if (feature.id === 0) {
+        descriptionSummary.graves = 0;
+        showDashboard = false
+    }
     $.each(feature.burials, function (i, burial) {
         descriptionSummary.burials += 1;
         $.each(burial.finds, function (i, feature) {
@@ -62,6 +67,7 @@ $.each(jsonmysite.features, function (i, feature) {
         })
     })
 })
+console.log(showDashboard);
 
 
 $('#mybreadcrumb').append(
@@ -288,7 +294,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-secondary" title="Download data as GeoJSON"><i class="fas fa-download"></i></button>' +
         '<a style="margin-left: 0.1em" onclick="this.blur();" href="' + openAtlasUrl + entId + '" target="_blank" class="backendlink d-none btn btn-sm btn-secondary" title="Backend link"><i class="fas fa-database"></i></a>' +
         '<a style="margin-left: 0.1em" onclick="this.blur();" href="/entity/' + entId + '/network"class="btn btn-sm btn-secondary" title="Network visualisation"><i class="fas fa-project-diagram"></i></a>' +
-        '<a style="margin-left: 0.1em" onclick="this.blur();" href="/entity/' + place_id + '/dashboard" class="btn btn-sm btn-secondary" title="Dashborad"><i class="fas fa-chart-line"></i></a>' +
+        ((showDashboard) ? '<a style="margin-left: 0.1em" onclick="this.blur();" href="/entity/' + place_id + '/dashboard" class="btn btn-sm btn-secondary" title="Dashborad"><i class="fas fa-chart-line"></i></a>' : '') +
         '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" class="btn btn-sm btn-secondary" title="Open detailed map of this site">Map</button>' +
         '</div>' +
         '</div>' +
