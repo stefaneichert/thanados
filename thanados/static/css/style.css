@@ -1233,10 +1233,6 @@ input {
     content: ">";
 }
 
-#babyloncontainer {
-    height: 60vh;
-}
-
 .logo-button {
     display: none !important;
 }
@@ -1283,14 +1279,25 @@ input {
     padding: 0.3rem;
 }
 
-#annotation{
-    background-color: #888888;
-    position: absolute;
-    transform: translate(10px, 10px);
-    border-radius: 10px;
-    padding: 10px;
+.annotation{
+    cursor: pointer;
+    width: fit-content;
+    width: -moz-fit-content;
+    margin-top: 0.5em;
+    margin-right: 0.5em;
+    margin-left: auto!important;
   }
   /* This keeps child nodes hidden while the element loads */
   :not(:defined) > * {
     display: none;
   }
+
+.annotation:hover {
+      color: #6c757d;
+    font-weight: bold;
+  }
+
+.carousel-control-prev, .carousel-control-next {
+    top: 200px;
+    bottom: 200px;
+}

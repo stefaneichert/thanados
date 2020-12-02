@@ -2487,7 +2487,7 @@ function getImageHtml(files) {
     if (files.file_name.includes('.glb')) {
         console.log(files.file_name);
         imageHtml = '<model-viewer class="modalimg" style="min-height: 400px;" src="' + files.file_name + '" alt="3d" auto-rotate camera-controls>' +
-                    '<div style="" id="annotation" data-file="' + filestring + '" title="open 3d model" onclick="current3dFile = $(this).data(\'file\'); set3D(\'' + files.file_name + '\')">Enlarge</div></model-viewer>'
+                    '<div class="annotation" title="enlarge" data-file="' + filestring + '" onclick="current3dFile = $(this).data(\'file\'); set3D(\'' + files.file_name + '\')"><i class="fas fa-expand"></i></div></model-viewer>'
     } else {
         imageHtml = '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" alt="' + myImgSource + '"></a>'
     }
