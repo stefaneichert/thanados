@@ -362,7 +362,8 @@ def entity_view(object_id: int, format_=None):
             def BuildData(data):
 
                 _data = {'labels': [],
-                         'datasets': [{'label': 'min', 'data': []}, {'label': 'avg', 'data': []}, {'label': 'max', 'data': []}]
+                         'datasets': [{'label': 'min', 'data': []}, {'label': 'avg', 'data': []},
+                                      {'label': 'max', 'data': []}]
                          }
 
                 myresult = collections.OrderedDict(sorted(data.myjson.items()))
@@ -370,7 +371,7 @@ def entity_view(object_id: int, format_=None):
                 for row in myresult:
                     if myresult[row] is not None:
                         if '_min' in row:
-                            _data['labels'].append(row[1:-4] + ' (' + str(len(myresult[row]))+ ')')
+                            _data['labels'].append(row[1:-4] + ' (' + str(len(myresult[row])) + ')')
                             _data['datasets'][0]['data'].append(myresult[row])
                         if '_avg' in row:
                             _data['datasets'][1]['data'].append(myresult[row])
@@ -441,7 +442,6 @@ def entity_view(object_id: int, format_=None):
                 BracketData = BuildData(result)
             else:
                 BracketData = {}
-
 
             sql_BPageValues = """
                             SELECT row_to_json(t)::JSONB AS myjson FROM
@@ -597,7 +597,6 @@ def entity_view(object_id: int, format_=None):
             else:
                 return []
 
-
         def getAgeBracketFindsPerTerm(term):
             sql_gender = """
                     SELECT
@@ -677,9 +676,6 @@ def entity_view(object_id: int, format_=None):
             else:
                 return {"labels": [],
                         "datasets": []}
-
-
-
 
         def getFindAges():
             sql_Findages = """
@@ -908,19 +904,25 @@ def entity_view(object_id: int, format_=None):
             """
             g.cursor.execute(sql, {'place_id': place_id})
             result = g.cursor.fetchone()
+            _data = {
+                'datasets': [],
+                'labels': [],
+                'values': []
+            }
             if result:
-                _data = {}
                 _data['datasets'] = result.data
                 _data['labels'] = result.labels
 
-            sql = """
-            SELECT jsonb_agg(distance) AS values FROM (
-            SELECT distance FROM thanados.knn WHERE parent_id = %(place_id)s ORDER BY distance) d
-            """
-            g.cursor.execute(sql, {'place_id': place_id})
-            result = g.cursor.fetchone()
-            if result:
-                _data['values'] = result.values
+                sql = """
+                            SELECT jsonb_agg(distance) AS values FROM (
+                            SELECT distance FROM thanados.knn WHERE parent_id = %(place_id)s ORDER BY distance) d
+                            """
+
+                g.cursor.execute(sql, {'place_id': place_id})
+                result = g.cursor.fetchone()
+
+                if result:
+                    _data['values'] = result.values
 
             return (_data)
 
@@ -944,19 +946,22 @@ def entity_view(object_id: int, format_=None):
         findAges = getFindAges()
         findBracketAges = getBracketFindAges()
 
-        preciousMetalfinds = {"labels": getFindsPerDim('Height', 'Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get('labels'),
-                              "datasets": [
-                                  {'label': 'Gold',
-                                   'data': getFindsPerDim('Height', 'Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get('datasets')},
-                                  {'label': 'Silver',
-                                   'data': getFindsPerDim('Height',
-                                                          'Material > Metal > Non-Ferrous Metal > Precious Metal > Silver%').get(
-                                       'datasets')},
-                                  {'label': 'Copper/Copper Alloys',
-                                   'data': getFindsPerDim('Height',
-                                                          'Material > Metal > Non-Ferrous Metal > Copper%').get(
-                                       'datasets')}
-                              ]}
+        preciousMetalfinds = {
+            "labels": getFindsPerDim('Height', 'Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get(
+                'labels'),
+            "datasets": [
+                {'label': 'Gold',
+                 'data': getFindsPerDim('Height', 'Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get(
+                     'datasets')},
+                {'label': 'Silver',
+                 'data': getFindsPerDim('Height',
+                                        'Material > Metal > Non-Ferrous Metal > Precious Metal > Silver%').get(
+                     'datasets')},
+                {'label': 'Copper/Copper Alloys',
+                 'data': getFindsPerDim('Height',
+                                        'Material > Metal > Non-Ferrous Metal > Copper%').get(
+                     'datasets')}
+            ]}
 
         preciousMetalfindsAgeValue = {
             "labels": getAgeValueFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get(
@@ -981,7 +986,8 @@ def entity_view(object_id: int, format_=None):
                  'data': getAgeBracketFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get(
                      'datasets')},
                 {'label': 'Silver',
-                 'data': getAgeBracketFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Silver%').get(
+                 'data': getAgeBracketFindsPerTerm(
+                     'Material > Metal > Non-Ferrous Metal > Precious Metal > Silver%').get(
                      'datasets')},
                 {'label': 'Copper/Copper Alloys',
                  'data': getAgeBracketFindsPerTerm('Material > Metal > Non-Ferrous Metal > Copper%').get(
@@ -1043,17 +1049,21 @@ def entity_view(object_id: int, format_=None):
                  'data': getAgeBracketFindsPerTerm('Find > Equipment > Knife%').get('datasets')}
             ]}
 
-
         network = Data.getNetwork(place_id)
         wordcloud = Data.get_wordcloud(place_id)
         return render_template('entity/dashboard.html', network=network, entity=entity, wordcloud=wordcloud,
-                               mysitejson=data, findBubble=findtree, findBubble2=findtree2, depthData=depthData, widthData=widthData,
+                               mysitejson=data, findBubble=findtree, findBubble2=findtree2, depthData=depthData,
+                               widthData=widthData,
                                lengthData=lengthData, degData=degData, aziData=aziData, constrData=constrData,
                                DashAgeData=DashAgeData, ValueAgeData=ValueAgeData, SexData=SexData,
-                               GenderData=GenderData, SexDepthData=SexDepthData, pathoBubble=pathotree, findsPerDepth=findsPerDepth,
-                               preciousMetalfinds=preciousMetalfinds, prestigiousfinds=prestigiousfinds, BoxPlotData=BoxPlotData,
-                               findAges=findAges, findBracketAges=findBracketAges, preciousMetalfindsAgeValue=preciousMetalfindsAgeValue,
-                               preciousMetalfindsAgeBracket=preciousMetalfindsAgeBracket, prestigiousfindsValueAge=prestigiousfindsValueAge,
+                               GenderData=GenderData, SexDepthData=SexDepthData, pathoBubble=pathotree,
+                               findsPerDepth=findsPerDepth,
+                               preciousMetalfinds=preciousMetalfinds, prestigiousfinds=prestigiousfinds,
+                               BoxPlotData=BoxPlotData,
+                               findAges=findAges, findBracketAges=findBracketAges,
+                               preciousMetalfindsAgeValue=preciousMetalfindsAgeValue,
+                               preciousMetalfindsAgeBracket=preciousMetalfindsAgeBracket,
+                               prestigiousfindsValueAge=prestigiousfindsValueAge,
                                prestigiousfindsBracketAge=prestigiousfindsBracketAge, knn=knn)
 
     return render_template('entity/view.html', place_id=place_id, object_id=object_id,

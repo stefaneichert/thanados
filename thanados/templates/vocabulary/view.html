@@ -6,7 +6,6 @@
     <script src="/static/vendor/node_modules/leaflet-groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.js"></script>
     <script src="/static/vendor/node_modules/vis-network/dist/vis-network.min.js"></script>
     <link href="/static/css/charts.css" rel="stylesheet">
-    <script src="https://cdn.babylonjs.com/viewer/babylon.viewer.js"></script>
 
     <style>
         input[type="checkbox"] + label {
@@ -102,7 +101,8 @@
                                                     current3dFile = JSON.stringify({{ data.files[0] }});
                                                     set3D('{{ data.files[0].file_name }}')
                                                     " class="hoverfa float-right fas fa-expand-arrows-alt"></i></p>
-                                            <babylon model="{{ data.files[0].file_name }}"></babylon>
+                                            <model-viewer class="img-fluid card-img-bottom" src="{{ data.files[0].file_name }}" auto-rotate
+                                                          camera-controls style="min-height: 250px;"></model-viewer>
                                         {% else %}
                                             <a href="{{ data.files[0].file_name }}" data-featherlight>
                                                 <img class="card-img-bottom img-fluid"
@@ -256,13 +256,15 @@
                                         {% for row in data.files %}
                                             <div class="card ">
                                                 {% if ".glb" in row.file_name %}
-                                                    <img src="/static/images/icons/3d.png" alt="image"
-                                                         onclick="
-                                                                 current3dFile = JSON.stringify(JSON.parse('{{ row }}'));
-                                                                 set3D('{{ row.file_name }}'
-                                                                 )"
-                                                         title="open 3D model"
-                                                         class="img-fluid card-img-bottom">
+                                                    <model-viewer class="img-fluid card-img-bottom"
+                                                                  style="min-height: 250px;" src="{{ row.file_name }}"
+                                                                  alt="3d" auto-rotate camera-controls>
+                                                        <div class="annotation" title="enlarge"
+                                                             data-file="{{ row }}"
+                                                             onclick="current3dFile = $(this).data('file'); set3D('{{ row.file_name }}')">
+                                                            <i class="fas fa-expand"></i>
+                                                        </div>
+                                                    </model-viewer>
                                                 {% else %}
                                                     <a href="{{ row.file_name }}" data-featherlight>
                                                         <img src="{{ row.file_name }}" alt="image"
@@ -295,13 +297,15 @@
                                         {% for row in data.files %}
                                             <div class="card ">
                                                 {% if ".glb" in row.file_name %}
-                                                    <img src="/static/images/icons/3d.png" alt="image"
-                                                         onclick="
-                                                                 current3dFile = {{ row }};
-                                                                 set3D('{{ row.file_name }}');
-                                                                 "
-                                                         title="open 3D model"
-                                                         class="img-fluid ThreeDeeImage card-img-bottom">
+                                                    <model-viewer class="img-fluid card-img-bottom"
+                                                                  style="min-height: 250px;" src="{{ row.file_name }}"
+                                                                  alt="3d" auto-rotate camera-controls>
+                                                        <div class="annotation" title="enlarge"
+                                                             data-file="{{ row }}"
+                                                             onclick="current3dFile = $(this).data('file'); set3D('{{ row.file_name }}')">
+                                                            <i class="fas fa-expand"></i>
+                                                        </div>
+                                                    </model-viewer>
                                                 {% else %}
                                                     <a href="{{ row.file_name }}" data-featherlight>
                                                         <img src="{{ row.file_name }}" alt="image"

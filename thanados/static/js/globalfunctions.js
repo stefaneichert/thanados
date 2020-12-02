@@ -2439,14 +2439,12 @@ function getPopUp(feature) {
 
 function set3D(file) {
     $('body').append(
-        '<div class="modal fade bd-example-modal-lg" id="3DModal" tabindex="-1" role="dialog"\n' +
+        '<div class="modal modal-xxl fade bd-example-modal-lg" id="3DModal" tabindex="-1" role="dialog"\n' +
         '     aria-labelledby="3d-model" aria-hidden="true">\n' +
         '    <div class="modal-dialog" role="document">\n' +
         '        <div class="modal-content">\n' +
-        '            <div class="modal-body">\n' +
-        '               <div id="babyloncontainer">\n' +
-        '                    <div id="babylon"></div>\n' +
-        '               </div>\n' +
+        '            <div class="modal-body">' +
+        '               <model-viewer style="width: 100%; height: 80vh" src="' + file +'" alt="3d" auto-rotate camera-controls></model-viewer>' +
         '               <div class="modal-footer pt-2 pl-0 pr-0">\n' +
         '                   <div style="width: 100%">\n' +
         '                       <button type="button" title="show metadata" class="btn btn-primary float-left ml-2" onclick="$(\'#3dmetadata\').toggleClass(\'d-none\')"><i class="fas fa-info"></i></button>\n' +
@@ -2469,24 +2467,7 @@ function set3D(file) {
     })
 
 
-    $('#3DModal').on('shown.bs.modal', function () {
-        let domElement = document.getElementById('babylon');
 
-        let viewer = new BabylonViewer.DefaultViewer(domElement, {
-            scene: {
-                debug: false
-            },
-            camera: {
-                behaviors: {
-                    autoRotate: 0
-                }
-            },
-            model: {
-                url: threeDfilename
-            }
-        });
-        //wireframeMe()
-    })
 
     $('#3DModal').on('hide.bs.modal', function () {
         $('#3DModal').remove();
@@ -2504,60 +2485,13 @@ function getImageHtml(files) {
     if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
     var imageHtml
     if (files.file_name.includes('.glb')) {
-        imageHtml = '<img class="modalimg ThreeDeeImage" data-file="' + filestring + '" title="open 3d model" src="/static/images/icons/3d.png" alt="3d" onclick="current3dFile = $(this).data(\'file\'); set3D(\'' + files.file_name + '\')">'
+        console.log(files.file_name);
+        imageHtml = '<model-viewer class="modalimg" style="min-height: 400px;" src="' + files.file_name + '" alt="3d" auto-rotate camera-controls>' +
+                    '<div class="annotation" title="enlarge" data-file="' + filestring + '" onclick="current3dFile = $(this).data(\'file\'); set3D(\'' + files.file_name + '\')"><i class="fas fa-expand"></i></div></model-viewer>'
     } else {
         imageHtml = '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" alt="' + myImgSource + '"></a>'
     }
     return imageHtml
-}
-
-function wireframeMe() {
-    BabylonViewer.viewerManager
-        .getViewerPromiseById("babylon")
-        .then(function (viewer) {
-            /*
-            Each viewer has its own model loader.
-            The loader has an internal plugin system, based on observables.
-            Each event in the loading process will trigger an event that will call the plugin,
-            if the plugin has this event implemented.
-            The plugin interface looks like this:
-
-        interface ILoaderPlugin {
-          onInit?: (loader: ISceneLoaderPlugin | ISceneLoaderPluginAsync, model: ViewerModel) => void;
-          onLoaded?: (model: ViewerModel) => void;
-          onError?: (message: string, exception?: any) => void;
-          onProgress?: (progressEvent: SceneLoaderProgressEvent) => void;
-          onExtensionLoaded?: (extension: IGLTFLoaderExtension) => void;
-          onParsed?: (parsedData: IGLTFLoaderData) => void;
-          onMeshLoaded?: (mesh: AbstractMesh) => void;
-          onTextureLoaded?: (texture: BaseTexture) => void;
-          onMaterialLoaded?: (material: Material) => void;
-          onComplete?: () => void;
-        }
-
-          All functions are optional and only triggered if implemented.
-          */
-
-            // create a new plugin, using javascript
-
-            // This plugin will change all loaded materials to wireframe.
-            let myLoaderPlugin = {
-                onInit: function (loader, model) {
-                    // Log that a model started loading
-                    console.log("model loading initialized");
-                },
-                // we will register the onMaterialLoaded function to change each material to wireframe
-                onMaterialLoaded: function (material) {
-                    material.diffuseTexture = false;
-                    material.wireframe = true;
-                    console.log("changed material " + material.name + " to wireframe");
-                }
-            };
-
-            // add the plugin to the loader
-            viewer.modelLoader.addPlugin(myLoaderPlugin);
-        });
-
 }
 
 function bodyheight() {
