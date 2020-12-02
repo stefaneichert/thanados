@@ -1,5 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
+
+    <link href="/static/css/charts.css" rel="stylesheet">
+    <script>
+        tabledata = {{ sites|tojson }};
+    </script>
     <div id="mycontent">
         <div class="ml-5 mr-5">
             <h2 class="my-heading container">Admin</h2>
@@ -73,14 +78,62 @@
 
             </div>
             <div class="m-5 alert alert-info" role="alert" id="infotext"></div>
-            <form id="" method="post">
-                <div class="form-group mt-3">
-                    <h5><label for="site_list">List of sites</label></h5>
-                    {{ form.csrf_token|safe }}
-                    {{ form.site_list(class_="form-control", rows="15")|safe }}
-                    {{ form.save(class_="float-right mb-2 mt-2 btn btn-secondary")|safe }}
+
+            <div id="myFilter" class="card m-0 mt-4 mb-4">
+                <div class="card-header" id="headingFilter">
+                    <h5 class="mb-0">
+                        <a id="filterBtn" class="btn btn-link collapsed" type="button"
+                           data-toggle="collapse"
+                           data-target="#collapseFilter" aria-expanded="true"
+                           aria-controls="collapseFilter">
+                            Used/Unused Sites <span id="selectedSites"></span><i
+                                id="filterBtnArrow"
+                                class="ml-3 fas fa-chevron-down"></i>
+                        </a>
+
+                    </h5>
                 </div>
-            </form>
+                <div id="collapseFilter" class="collapse show" aria-labelledby="headingFilter">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+
+                                <table id="sitelist" class="display table table-striped table-bordered"
+                                       width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th><input id="selectall" type="checkbox"><label for="selectall"></label></th>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Id</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col input-group">
+                            <textarea readonly id="mySelectedSites" style="background: #f8f9fa" class="form-control"
+                                      aria-label="Selected sites"
+                                      placeholder="Selected sites"></textarea>
+                                <div class="input-group-append">
+                                    <button id="submitBtn" class="btn btn-sm btn-secondary float-right">
+                                        (0) Apply
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form id="" method="post" class="m-3">
+                    <div class="form-group mt-3">
+                        <h5><label for="site_list">List of sites</label></h5>
+                        {{ form.csrf_token|safe }}
+                        {{ form.site_list(class_="form-control", rows="15")|safe }}
+                        {{ form.save(class_="float-right mb-2 mt-2 btn btn-secondary")|safe }}
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
