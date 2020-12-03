@@ -13,6 +13,7 @@ app.config.from_pyfile('production.py')  # Load instance/INSTANCE_NAME.py
 
 thunderforest_API_key = app.config["THUNDERFOREST_API_KEY"]
 openatlas_url = app.config["OPENATLAS_URL"]
+api_url = app.config["API_URL"]
 
 from thanados.views import index, map, about, entity, charts, login, manual, sites, admin, \
     search, ajax, vocabulary
@@ -62,7 +63,7 @@ def teardown_request(exception):
 
 @app.context_processor
 def global_vars():
-    return dict(thunderforest=thunderforest_API_key, openAtlasUrl=openatlas_url)
+    return dict(thunderforest=thunderforest_API_key, openAtlasUrl=openatlas_url, api_url=api_url)
 
 if __name__ == "__main__":  # pragma: no cover
     app.run()
