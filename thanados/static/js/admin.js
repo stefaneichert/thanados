@@ -176,7 +176,8 @@ function setSiteInfo() {
     });
     var textarea = document.getElementById("mySelectedSites");
     textarea.value = CurrentSites.join(", ");
-    $('#submitBtn').html('Apply (' + CurrentSites.length + ')')
+    $('#submitBtn').html('Apply (' + CurrentSites.length + ')<br>\n' +
+        '                        <i class="fas fa-caret-down mx-auto"></i>')
 }
 
 

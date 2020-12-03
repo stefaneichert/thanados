@@ -113,23 +113,25 @@
                         </div>
                         <div class="row mt-3">
                             <div class="col input-group">
-                            <textarea readonly id="mySelectedSites" style="background: #f8f9fa" class="form-control"
+                            <textarea readonly id="mySelectedSites" style="background: #f8f9fa; min-height: 15em; font-size: 0.875em"
+                                      class="form-control"
                                       aria-label="Selected sites"
+                                      rows="15"
                                       placeholder="Selected sites"></textarea>
-                                <div class="input-group-append">
-                                    <button id="submitBtn" class="btn btn-sm btn-secondary float-right">
-                                        (0) Apply
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
+                <button id="submitBtn" class="btn btn-sm btn-secondary mt-2 mx-auto">
+                        (0) Apply<br>
+                        <i class="fas fa-caret-down mx-auto"></i>
+                </button>
                 <form id="" method="post" class="m-3">
                     <div class="form-group mt-3">
                         <h5><label for="site_list">List of sites</label></h5>
                         {{ form.csrf_token|safe }}
-                        {{ form.site_list(class_="form-control", rows="15")|safe }}
+                        {{ form.site_list(class_="form-control sitelistform", rows="15")|safe }}
                         {{ form.save(class_="float-right mb-2 mt-2 btn btn-secondary")|safe }}
                     </div>
                 </form>

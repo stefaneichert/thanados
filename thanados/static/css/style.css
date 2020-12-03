@@ -1301,3 +1301,8 @@ input {
     top: 200px;
     bottom: 200px;
 }
+
+.sitelistform {
+    font-size: 0.875em;
+    background: #f8f9fa;
+}
