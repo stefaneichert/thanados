@@ -1,5 +1,6 @@
 import ast
 import collections
+#import json,urllib.request
 
 from flask import json, render_template, g
 
@@ -14,6 +15,10 @@ def entity_view(object_id: int, format_=None):
     place_id = Data.get_parent_place_id(object_id)
     data = Data.get_data(place_id)[0].data
     entity = {}
+    #api_url = app.config["API_URL"]
+    #url = api_url + str(object_id)
+    #jsondata = urllib.request.urlopen(url).read()
+    #output = json.loads(jsondata)
 
     sql = """
     SELECT name, description FROM model.entity WHERE id = %(id)s 
@@ -1067,4 +1072,4 @@ def entity_view(object_id: int, format_=None):
                                prestigiousfindsBracketAge=prestigiousfindsBracketAge, knn=knn)
 
     return render_template('entity/view.html', place_id=place_id, object_id=object_id,
-                           mysitejson=data, system_type=system_type)
+                           mysitejson=data, system_type=system_type) #, jsonld=output)
