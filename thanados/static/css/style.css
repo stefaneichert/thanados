@@ -1306,3 +1306,15 @@ input {
     font-size: 0.875em;
     background: #f8f9fa;
 }
+
+#entbuttons a, #entbuttons button {
+    min-width: 34px;
+}
+
+#entbuttons .dropdown-item {
+    color: #fff!important;
+}
+
+#entbuttons .dropdown-item:hover {
+    background-color: rgba(108, 117, 125, 0.90) !important;
+}

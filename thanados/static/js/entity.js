@@ -289,13 +289,24 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myData_' + entId + '" class="col-lg">' +
         '<div class="row mb-3">' +
         '<h4 style="margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '" title="Name of entity">' + entName + '&nbsp;</h4>' +
-        '<div style="margin-top: 0.6em; margin-left: 1em; padding-bottom: 0.6em;">' +
+        '<div id="entbuttons" style="margin-top: 0.6em; margin-left: 1em; padding-bottom: 0.6em;">' +
         '<button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>' +
-        '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-secondary" title="Download data as GeoJSON"><i class="fas fa-download"></i></button>' +
-        '<a style="margin-left: 0.1em" onclick="this.blur();" href="' + openAtlasUrl + entId + '" target="_blank" class="backendlink d-none btn btn-sm btn-secondary" title="Backend link"><i class="fas fa-database"></i></a>' +
-        '<a style="margin-left: 0.1em" onclick="this.blur();" href="/entity/' + entId + '/network"class="btn btn-sm btn-secondary" title="Network visualisation"><i class="fas fa-project-diagram"></i></a>' +
-        ((showDashboard) ? '<a style="margin-left: 0.1em" onclick="this.blur();" href="/entity/' + place_id + '/dashboard" class="btn btn-sm btn-secondary" title="Dashborad"><i class="fas fa-chart-line"></i></a>' : '') +
-        '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" class="btn btn-sm btn-secondary" title="Open detailed map of this site">Map</button>' +
+        ((showDashboard) ? '<a style="margin-left: 0.2em" onclick="this.blur();" href="/entity/' + place_id + '/dashboard" class="btn btn-sm btn-secondary" title="Dashboard"><i class="fas fa-chart-line"></i></a>' : '') +
+        '<button type="button" style="margin-left: 0.2em" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" class="btn btn-sm btn-secondary" title="Open detailed map of this site"><i class="fas fa-map-marked-alt"></i></button>' +
+
+        '<a style="margin-left: 0.2em" onclick="this.blur();" href="' + openAtlasUrl + entId + '" target="_blank" class="backendlink d-none btn btn-sm btn-secondary" title="Backend link"><i class="fas fa-database"></i></a>' +
+
+        '<div class="dropdown" style="display: inline-block; margin-left: 0.2em;" >\n' +
+        '  <button class="btn btn-sm btn-secondary" type="button" id="dropdownMenuButton" title="More" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
+        '  <i class="fas fa-ellipsis-v"></i>  ' +
+        '  </button>' +
+        '   <div class="dropdown-menu" aria-labelledby="dropdownMenu">' +
+        '       <a class="dropdown-item" onclick="this.blur(); exportToJsonFile(myjson)" title="Download data as GeoJSON" href="#">' +
+        '       <i class="fas fa-download mr-1"></i>GeoJSON</a>' +
+        '       <a class="dropdown-item" title="Network visualisation" href="/entity/' + entId + '/network">' +
+                '<i class="fas fa-project-diagram mr-1"></i>Network</a>' +
+        '   </div>' +
+        '</div>' +
         '</div>' +
         '</div>' +
         '<div type="button" data-value="' + entTypeId + '" class="modalrowitem typebutton"' +
