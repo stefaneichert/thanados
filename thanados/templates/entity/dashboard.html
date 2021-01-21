@@ -154,16 +154,16 @@
         </div>
 
         <div class="db-element d-none" id="network-wrapper">
-            <h5>Network</h5>
+                <h5>Network</h5>
             <div class="card shadow dash-card" style="height: 70vh">
-                    <span class="mt-5 text-center card-body" id="loadingspinner">
+                    <span style="position: absolute; z-index: 5000" class="mt-5 mx-auto text-center card-body" id="loadingspinner">
                                 <div class="spinner-border card-body text-primary"
                                      style="width: 1.3em; height: 1.3em;" role="status">
                                 </div>
                     Loading network
                     </span>
+                <a href="/entity/{{ place_id }}/network" style="position: absolute; margin: 1em!important; z-index: 5000" class="btn btn-sm btn-secondary ml-4" title="Detailed network with legend"><i class="fas fa-project-diagram"></i></a>
                 <div id="network" class="card-body p-0">
-
                 </div>
             </div>
         </div>

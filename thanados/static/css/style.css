@@ -690,6 +690,14 @@ a:hover {
     color: #0060b4;
 }
 
+.entlink {
+    color: #007bff!important;
+}
+
+.entlink:hover {
+    color: #003db3!important;
+}
+
 .custom-header-bg {
     background-color: #f2f2f2;
 }

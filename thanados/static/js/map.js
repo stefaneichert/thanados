@@ -731,7 +731,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         '<div class="modal-header">' +
         '<h5 class="modal-title">' +
         '<img src="' + iconpath + '" width="30" height="30" class="modaltitleicon" alt="my image">' +
-        '' + entName + '<div class="float-right mt-1" id="myModalPermalink' +
+        '<a href="../entity/' + entId + '" title="Permalink to this entity" style="display: contents" class="entlink float-right ml-2">' + entName +'</a><div class="float-right mt-1" id="myModalPermalink' +
         '' + entId + '"></div></h5>' + closebutton +
         '</div>' +
         '<div class="modal-body">' +
@@ -757,7 +757,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     );
 
     $('#myModalPermalink' + entId).append(
-        '<a href="../entity/' + entId + '" title="Permalink to this entity" class="float-right ml-2"><h6><i class="fas fa-link"></i></h6></a>' +
+        //'<a href="../entity/' + entId + '" title="Permalink to this entity" class="float-right ml-2"><h6><i class="fas fa-link"></i></h6></a>' +
         '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + entId + '" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a>'
     );
 

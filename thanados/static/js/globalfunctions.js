@@ -1551,6 +1551,7 @@ function getBasemaps() {
 
 
     OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        crossOrigin: "anonymous",
         maxZoom: 25,
         maxNativeZoom: 19,
         attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
@@ -1560,12 +1561,14 @@ function getBasemaps() {
     Stamen_Terrain = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}', {
         attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         subdomains: 'abcd',
+        crossOrigin: "anonymous",
         minZoom: 0,
         maxZoom: 14,
         ext: 'png'
     });
 
     Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        crossOrigin: "anonymous",
         attribution:
             '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
             '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community</div>',
@@ -1573,6 +1576,7 @@ function getBasemaps() {
     });
 
     thunderforestlandscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=' + thunderforestAPIkey, {
+        crossOrigin: "anonymous",
         attribution:
             '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
             '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a></div>',
@@ -1583,6 +1587,7 @@ function getBasemaps() {
     //mapbox
     mapboxnatural = L.tileLayer(
         'https://api.mapbox.com/styles/v1/thanados/ck6cakwq308tr1ioi58wkddsx/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGhhbmFkb3MiLCJhIjoiY2s0NGFieHZxMDhqcjNubjA1bzJqMWFrdyJ9.JkTrwwm87S2yRFqRnMkpUw', {
+            crossOrigin: "anonymous",
             tileSize: 512,
             zoomOffset: -1,
             attribution:
@@ -1595,6 +1600,7 @@ function getBasemaps() {
 //czech basemap
     basemap_cz = L.tileLayer.wms('http://geoportal.cuzk.cz/WMS_ZM10_PUB/WMService.aspx', {
         layers: 'GR_ZM10',
+        crossOrigin: "anonymous",
         maxZoom: 25
     })
 
@@ -1602,12 +1608,14 @@ function getBasemaps() {
     landscape = thunderforestlandscape; // define topography layer
     natural = mapboxnatural //mapboxnatural
     streets = OpenStreetMap_Mapnik // define streets Layer
+    blank = L.tileLayer('',{crossOrigin: "anonymous", maxZoom: 25})
 
     baseLayers = {
         "Landscape": landscape,
         //"Natural": natural,
         "Satellite": satellite,
-        "Streets": streets
+        "Streets": streets,
+        "Blank": blank
     };
 
     //define basemap for Minimap

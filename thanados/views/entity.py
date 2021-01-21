@@ -867,12 +867,12 @@ def entity_view(object_id: int, format_=None):
             sql = """
                     SELECT
 				                    parent_id,
-                                    string_to_array('0-0.2, 0.2-0.4, 0.4-0.6, 0.6-0.8, 0.8-1, ' ||
-                                    '1-1.2, 1.2-1.4, 1.4-1.6, 1.6-1.8, 1.8-2, '||
-                                    '2-2.2, 2.2-2.4, 2.4-2.6, 2.6-2.8, 2.8-3, '||
-                                    '3-3.2, 3.2-3.4, 3.4-3.6, 3.6-3.8, 3.8-4, '||
-                                    '4-4.2, 4.2-4.4, 4.4-4.6, 4.6-4.8, 4.8-5, '||
-                                    '5-10, 10-20, 20-30, 30-40, 40-50, over 50', ',') AS labels,
+                                    string_to_array('0-0.2 m, 0.2-0.4 m, 0.4-0.6 m, 0.6-0.8 m, 0.8-1 m, ' ||
+                                    '1-1.2 m, 1.2-1.4 m, 1.4-1.6 m, 1.6-1.8 m, 1.8-2 m, '||
+                                    '2-2.2 m, 2.2-2.4 m, 2.4-2.6 m, 2.6-2.8 m, 2.8-3 m, '||
+                                    '3-3.2 m, 3.2-3.4 m, 3.4-3.6 m, 3.6-3.8 m, 3.8-4 m, '||
+                                    '4-4.2 m, 4.2-4.4 m, 4.4-4.6 m, 4.6-4.8 m, 4.8-5 m, '||
+                                    '5-10 m, 10-20 m, 20-30 m, 30-40 m, 40-50 m, over 50 m', ',') AS labels,
                                     string_to_array(count(parent_id) FILTER (WHERE distance <= 0.20 ) || ',' ||
                                     count(parent_id) FILTER (WHERE distance > 0.20 AND distance <= 0.40 ) || ',' ||
                                     count(parent_id) FILTER (WHERE distance > 0.40 AND distance <= 0.60 ) || ',' ||
@@ -1069,7 +1069,7 @@ def entity_view(object_id: int, format_=None):
                                preciousMetalfindsAgeValue=preciousMetalfindsAgeValue,
                                preciousMetalfindsAgeBracket=preciousMetalfindsAgeBracket,
                                prestigiousfindsValueAge=prestigiousfindsValueAge,
-                               prestigiousfindsBracketAge=prestigiousfindsBracketAge, knn=knn)
+                               prestigiousfindsBracketAge=prestigiousfindsBracketAge, knn=knn, place_id=place_id)
 
     return render_template('entity/view.html', place_id=place_id, object_id=object_id,
                            mysitejson=data, system_type=system_type, jsonld_url=url) #, jsonld=output)
