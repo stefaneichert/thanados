@@ -2096,7 +2096,7 @@ function hoverMarker(linkid, currentmap) {
     }
     hovermarker._bringToFront();
     if (thismap.getBounds().contains(latlng) === false) {
-        thismap.panTo(latlng);
+        thismap.flyTo(latlng, 9, {duration: 0.5});
     }
 }
 
