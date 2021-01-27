@@ -131,6 +131,52 @@ function setmap(myjson) {
         layers: [landscape]
     });
 
+    //define map controls
+    //sidebar toggle button
+    L.easyButton({
+        id: 'SidebarButton',  // an id for the generated button
+        position: 'topleft',      // inherited from L.Control -- the corner it goes in
+        type: 'replace',          // set to animate when you're comfy with css
+        leafletClasses: true,     // use leaflet classes to style the button?
+        states: [{                 // specify different icons and responses for your button
+            stateName: 'sidebar',
+            onClick: function (button, map) {
+                animateSidebar();
+            },
+            title: 'toggle sidebar',
+            icon: 'fas fa-exchange-alt'
+        }]
+    }).addTo(map);
+
+    L.easyButton({
+        id: 'CiteMeButton',  // an id for the generated button
+        position: 'topleft',      // inherited from L.Control -- the corner it goes in
+        type: 'replace',          // set to animate when you're comfy with css
+        leafletClasses: true,     // use leaflet classes to style the button?
+        states: [{                 // specify different icons and responses for your button
+            stateName: 'citeme',
+            onClick: function (button, map) {
+                getCitation();
+            },
+            title: 'how to cite this/copyright',
+            icon: 'fas fa-quote-right'
+        }]
+    }).addTo(map);
+
+    //add option button and exportbutton for map as image
+    printMapbutton('map', 'topleft');
+
+    //add filter/Search button
+    addFilterSearch();
+
+    //add layer control
+    baseControl = L.control.layers(baseLayers).addTo(map);
+
+    //add scalebar
+    L.control.scale({imperial: false}).addTo(map);
+
+    loadingControl.addTo(map);
+
     //hack to show landscape first
     //map.removeLayer(streets);
     //map.removeLayer(Esri_WorldImagery);
@@ -286,53 +332,9 @@ function setmap(myjson) {
     choroplethLayer = new L.LayerGroup();
     choroplethLayer.addTo(map);
 
-
-//define map controls
-    //sidebar toggle button
-    L.easyButton({
-        id: 'SidebarButton',  // an id for the generated button
-        position: 'topleft',      // inherited from L.Control -- the corner it goes in
-        type: 'replace',          // set to animate when you're comfy with css
-        leafletClasses: true,     // use leaflet classes to style the button?
-        states: [{                 // specify different icons and responses for your button
-            stateName: 'sidebar',
-            onClick: function (button, map) {
-                animateSidebar();
-            },
-            title: 'toggle sidebar',
-            icon: 'fas fa-exchange-alt'
-        }]
-    }).addTo(map);
-
-    L.easyButton({
-        id: 'CiteMeButton',  // an id for the generated button
-        position: 'topleft',      // inherited from L.Control -- the corner it goes in
-        type: 'replace',          // set to animate when you're comfy with css
-        leafletClasses: true,     // use leaflet classes to style the button?
-        states: [{                 // specify different icons and responses for your button
-            stateName: 'citeme',
-            onClick: function (button, map) {
-                getCitation();
-            },
-            title: 'how to cite this/copyright',
-            icon: 'fas fa-quote-right'
-        }]
-    }).addTo(map);
-
-    //add option button and exportbutton for map as image
-    printMapbutton('map', 'topleft');
-
-    //add filter/Search button
-    addFilterSearch();
-
-    //add layer control
-    baseControl = L.control.layers(baseLayers).addTo(map);
-
-    //add scalebar
-    L.control.scale({imperial: false}).addTo(map);
-
     //initiate selection of clicked polygons
     polygonSelect();
+
 
     //initiate map attribution
     map.on('baselayerchange', function (e) {

@@ -40,8 +40,9 @@ if ($('#map').length) {
         dragging: false,
         zoomControl: false
     });
-
     landscape.addTo(map);
+    loadingControl.addTo(map);
+
 
     $('#counters').html(
         '<div class="col-sm">' +

@@ -835,8 +835,12 @@ function getEntityData(parentName, parentId, currentfeature) {
         scrollWheelZoom: false,
         tap: false,
         touchZoom: false,
-        layers: [landscape]
+        layers: landscape
+
     });
+    loadingControl.addTo(mymap);
+
+
 
 //add graves
     if (jsonmysite.features[0].id !== 0) {
@@ -954,6 +958,7 @@ function getEntityData(parentName, parentId, currentfeature) {
     mymap.panTo(mapcenter);
     if ((mymap.getZoom()) > 20) mymap.setZoom(20);
 
+    $('.leaflet-control-attribution').html('&copy; OpenStreetMap')
 
     var miniMap = new L.Control.MiniMap(osm2,
         {
@@ -965,7 +970,9 @@ function getEntityData(parentName, parentId, currentfeature) {
             aimingRectOptions: rect1
         }).addTo(mymap);
 
-    attributionChange();
+    mymap.addControl(loadingControl);
+
+
 
 }
 

@@ -147,6 +147,7 @@ if (data.entities_recursive) {
             maxZoom: 18,
             layers: [landscape]
         });
+        loadingControl.addTo(map);
         entPoints.addTo(map)
         map.fitBounds(entPoints.getBounds())
         attributionChange()
@@ -156,7 +157,8 @@ if (data.entities_recursive) {
             attrib = layer.layer.options.attribution
             MultAttributionChange(map, '#map', attrib)
         });
-        $('#occurence').append(occCount)
+        $('#occurence').append(occCount);
+
 
     }
 

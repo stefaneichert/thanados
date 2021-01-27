@@ -754,6 +754,7 @@ function setmymap(markers, heatmarkers, graveIds) {
     L.control.batn({position: 'topleft'}).addTo(eval('map' + Iter));
 
 
+
     printMapbutton(('map' + Iter), 'topleft');
 
     $('.jsonDownload').click(function f() {
@@ -765,6 +766,10 @@ function setmymap(markers, heatmarkers, graveIds) {
         var currentId = $(this).data('iter');
         createCSV(eval('myGeoJSON' + currentId));
     })
+
+    eval('loadingControl' + Iter + ' = L.Control.loading({separate: true, delayIndicator: 250, position: \'bottomleft\'});');
+    //eval('loadingControl' + Iter + '.addTo(\'map\'' + Iter + ');');
+    eval('loadingControl' + Iter + '.addTo(map' + Iter + ');');
 }
 
 function createResult(data, iter) { //finish query and show results on map
