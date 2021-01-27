@@ -7,7 +7,6 @@
     <title>THANADOS</title>
 
     <link rel="icon" href="/static/favicon.ico">
-    <script type="text/plain" SameSite=Lax></script>
     <link href="/static/vendor/node_modules/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
     <link href="/static/vendor/node_modules/leaflet/dist/leaflet.css" rel="stylesheet"/>
     <script src="/static/vendor/node_modules/leaflet/dist/leaflet.js"></script>
@@ -55,12 +54,15 @@
     <script src="/static/vendor/node_modules/shave/dist/jquery.shave.min.js"></script>
     <script src="/static/vendor/L.TileLayer.NoGap.js"></script>
     <link href="/static/css/datatables.css" rel="stylesheet">
+{#    <link rel="stylesheet" href="/static/vendor/node_modules/leaflet-loading/src/Control.Loading.css"/>#}
+    <script src="/static/vendor/node_modules/leaflet-loading/src/Control.Loading.js"></script>
     <script type="module"
-    src="/static/vendor/node_modules/@google/model-viewer/dist/model-viewer.min.js">
-</script>
+            src="/static/vendor/node_modules/@google/model-viewer/dist/model-viewer.min.js">
+    </script>
 
     <script> thunderforestAPIkey = "{{ thunderforest }}"</script>
     <script> openAtlasUrl = "{{ openAtlasUrl }}"</script>
+    <script> api_url = "{{ api_url }}"</script>
 
 
 </head>

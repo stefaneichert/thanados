@@ -27,6 +27,7 @@ def admin():  # pragma: no cover
         try:
             with open("./instance/site_list.txt", 'w') as file:
                 file.write(form.site_list.data)
+                return redirect(url_for('admin'))
         except Exception as e:  # pragma: no cover
             pass
 
@@ -35,7 +36,25 @@ def admin():  # pragma: no cover
             form.site_list.data = file.read()
     except Exception as e:  # pragma: no cover
         pass
-    return render_template('admin/index.html', form=form)
+
+    sql = """
+            SELECT jsonb_agg(jsonb_build_object(
+                'id', child_id,
+                'name', child_name,
+                'type', type,
+                'used', used)) as sites
+                FROM (
+                        SELECT child_id, child_name, type, 1 AS used FROM thanados.searchdata WHERE path LIKE 'Place >%%' AND child_id IN %(site_ids)s
+                        UNION all
+                        SELECT child_id, child_name, type, 0 AS used FROM thanados.searchdata WHERE path LIKE 'Place >%%' AND child_id NOT IN %(site_ids)s
+                        ) AS allsites 
+                    
+    """
+    g.cursor.execute(sql, {'site_ids': tuple(g.site_list)})
+    currentsitelist = g.cursor.fetchone()
+
+
+    return render_template('admin/index.html', form=form, sites=currentsitelist)
 
 
 @app.route('/admin/execute/')

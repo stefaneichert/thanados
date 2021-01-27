@@ -3,6 +3,8 @@
 
     <script src="/static/vendor/node_modules/chart.js/dist/Chart.bundle.min.js"></script>
     <script src="/static/vendor/node_modules/chartjs-plugin-annotation/chartjs-plugin-annotation.min.js"></script>
+{#    <script type="application/ld+json">{{ jsonld|tojson }}</script>#}
+    <script type="application/ld+json" src="{{ jsonld_url }}"></script>
 
     <div id="containerPermalink">
         <div id="mybreadcrumb"></div>

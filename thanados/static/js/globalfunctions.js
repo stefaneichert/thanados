@@ -23,6 +23,7 @@ $(document).ready(function () {
         setTimeout(function () {
             $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
         }, 0);
+        $('#back-to-top').css("display", "none")
     });
 
 })
@@ -1544,37 +1545,60 @@ function printMapbutton(id, position) {
 //basemaps
 //set attribution title
 function getBasemaps() {
-    mywindowtitle = 'THANADOS: ';
+    mywindowtitle = 'THANADOS&nbsp ';
     if (typeof (myjson) != "undefined") mywindowtitle = 'THANADOS: ' + myjson.name + '. ';
     if (typeof (jsonmysite) != "undefined") mywindowtitle = 'THANADOS: ' + jsonmysite.name + '. ';
 
 
     OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        crossOrigin: "",
         maxZoom: 25,
         maxNativeZoom: 19,
         attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-            '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</div>'
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + 'Tiles &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</div>'
+    });
+
+    OpenStreetMap_HOT = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+        crossOrigin: "",
+        maxZoom: 25,
+        maxNativeZoom: 20,
+        attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + 'Tiles &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a></div>'
     });
 
     Stamen_Terrain = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}', {
         attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         subdomains: 'abcd',
+        crossOrigin: "anonymous",
         minZoom: 0,
-        maxZoom: 14,
+        maxZoom: 25,
+        maxNativeZoom: 16,
         ext: 'png'
     });
 
     Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        crossOrigin: "anonymous",
         attribution:
             '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-            '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community</div>',
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community</div>',
         maxZoom: 25,
+        maxNativeZoom: 19
+    });
+
+    Esri_WorldTopoMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+        crossOrigin: "anonymous",
+        attribution:
+            '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community</div>',
+        maxZoom: 25,
+        maxNativeZoom: 19
     });
 
     thunderforestlandscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=' + thunderforestAPIkey, {
+        crossOrigin: "anonymous",
         attribution:
             '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-            '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a></div>',
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a></div>',
         maxZoom: 25,
         maxNativeZoom: 21
     });
@@ -1582,11 +1606,12 @@ function getBasemaps() {
     //mapbox
     mapboxnatural = L.tileLayer(
         'https://api.mapbox.com/styles/v1/thanados/ck6cakwq308tr1ioi58wkddsx/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGhhbmFkb3MiLCJhIjoiY2s0NGFieHZxMDhqcjNubjA1bzJqMWFrdyJ9.JkTrwwm87S2yRFqRnMkpUw', {
+            crossOrigin: "anonymous",
             tileSize: 512,
             zoomOffset: -1,
             attribution:
                 '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-                '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles: &copy; <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a></div>',
+                '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + 'Tiles: &copy; <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a></div>',
             maxZoom: 25,
             maxNativeZoom: 22
         });
@@ -1594,34 +1619,50 @@ function getBasemaps() {
 //czech basemap
     basemap_cz = L.tileLayer.wms('http://geoportal.cuzk.cz/WMS_ZM10_PUB/WMService.aspx', {
         layers: 'GR_ZM10',
+        crossOrigin: "anonymous",
         maxZoom: 25
     })
 
     satellite = Esri_WorldImagery; //define aerial image layer
-    landscape = thunderforestlandscape; // define topography layer
+    landscape = OpenStreetMap_HOT; // define topography layer
     natural = mapboxnatural //mapboxnatural
     streets = OpenStreetMap_Mapnik // define streets Layer
+    blank = L.tileLayer('', {
+        crossOrigin: "anonymous",
+        maxZoom: 25, attribution:
+            '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '</div>'
+    })
 
     baseLayers = {
         "Landscape": landscape,
         //"Natural": natural,
         "Satellite": satellite,
-        "Streets": streets
+        "Streets": streets,
+        "Blank": blank
     };
 
     //define basemap for Minimap
-    miniBaseMap = new L.TileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=' + thunderforestAPIkey,
-        {
+    miniBaseMap = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+            crossOrigin: "anonymous",
             minZoom: 0,
             maxZoom: 20,
-            attribution: 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        }
+        attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + 'Tiles &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a></div>'
+            }
     );
+
+    loadingControl = L.Control.loading({
+        separate: true,
+        delayIndicator: 250,
+        position: 'bottomleft'
+    });
 }
 
 function attributionChange() {
     //$(".leaflet-control-attribution").find(':first-child').remove();
     var val = $(".leaflet-control-attribution").html();
+    //console.log(val)
     $(".leaflet-control-attribution").html(val.substring(87, val.length));
     $('#myattr').toggle();
 }
@@ -2055,7 +2096,7 @@ function hoverMarker(linkid, currentmap) {
     }
     hovermarker._bringToFront();
     if (thismap.getBounds().contains(latlng) === false) {
-        thismap.panTo(latlng);
+        thismap.flyTo(latlng, 9, {duration: 0.5});
     }
 }
 
@@ -2444,7 +2485,7 @@ function set3D(file) {
         '    <div class="modal-dialog" role="document">\n' +
         '        <div class="modal-content">\n' +
         '            <div class="modal-body">' +
-        '               <model-viewer style="width: 100%; height: 80vh" src="' + file +'" alt="3d" auto-rotate camera-controls></model-viewer>' +
+        '               <model-viewer style="width: 100%; height: 80vh" src="' + file + '" alt="3d" auto-rotate camera-controls></model-viewer>' +
         '               <div class="modal-footer pt-2 pl-0 pr-0">\n' +
         '                   <div style="width: 100%">\n' +
         '                       <button type="button" title="show metadata" class="btn btn-primary float-left ml-2" onclick="$(\'#3dmetadata\').toggleClass(\'d-none\')"><i class="fas fa-info"></i></button>\n' +
@@ -2467,8 +2508,6 @@ function set3D(file) {
     })
 
 
-
-
     $('#3DModal').on('hide.bs.modal', function () {
         $('#3DModal').remove();
     })
@@ -2485,9 +2524,9 @@ function getImageHtml(files) {
     if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
     var imageHtml
     if (files.file_name.includes('.glb')) {
-        console.log(files.file_name);
+        //console.log(files.file_name);
         imageHtml = '<model-viewer class="modalimg" style="min-height: 400px;" src="' + files.file_name + '" alt="3d" auto-rotate camera-controls>' +
-                    '<div class="annotation" title="enlarge" data-file="' + filestring + '" onclick="current3dFile = $(this).data(\'file\'); set3D(\'' + files.file_name + '\')"><i class="fas fa-expand"></i></div></model-viewer>'
+            '<div class="annotation" title="enlarge" data-file="' + filestring + '" onclick="current3dFile = $(this).data(\'file\'); set3D(\'' + files.file_name + '\')"><i class="fas fa-expand"></i></div></model-viewer>'
     } else {
         imageHtml = '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" alt="' + myImgSource + '"></a>'
     }
