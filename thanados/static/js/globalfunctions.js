@@ -1662,7 +1662,7 @@ function getBasemaps() {
 function attributionChange() {
     //$(".leaflet-control-attribution").find(':first-child').remove();
     var val = $(".leaflet-control-attribution").html();
-    console.log(val)
+    //console.log(val)
     $(".leaflet-control-attribution").html(val.substring(87, val.length));
     $('#myattr').toggle();
 }
@@ -2524,7 +2524,7 @@ function getImageHtml(files) {
     if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
     var imageHtml
     if (files.file_name.includes('.glb')) {
-        console.log(files.file_name);
+        //console.log(files.file_name);
         imageHtml = '<model-viewer class="modalimg" style="min-height: 400px;" src="' + files.file_name + '" alt="3d" auto-rotate camera-controls>' +
             '<div class="annotation" title="enlarge" data-file="' + filestring + '" onclick="current3dFile = $(this).data(\'file\'); set3D(\'' + files.file_name + '\')"><i class="fas fa-expand"></i></div></model-viewer>'
     } else {

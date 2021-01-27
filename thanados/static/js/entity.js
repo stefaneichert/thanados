@@ -67,7 +67,7 @@ $.each(jsonmysite.features, function (i, feature) {
         })
     })
 })
-console.log(showDashboard);
+//console.log(showDashboard);
 
 
 $('#mybreadcrumb').append(
