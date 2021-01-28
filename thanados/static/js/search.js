@@ -653,7 +653,8 @@ function setmymap(markers, heatmarkers, graveIds) {
     });
 
     eval('landscape' + Iter + ' = jQuery.extend(true, {}, landscape);');
-    //eval('natural' + Iter + ' = jQuery.extend(true, {}, natural);');
+    eval('natural' + Iter + ' = jQuery.extend(true, {}, natural);');
+    eval('terrain' + Iter + ' = jQuery.extend(true, {}, terrain);');
     eval('blank' + Iter + ' = jQuery.extend(true, {}, blank);');
     eval('streets' + Iter + ' = jQuery.extend(true, {}, streets);');
     eval('satellite' + Iter + ' = jQuery.extend(true, {}, satellite);');
@@ -702,7 +703,7 @@ function setmymap(markers, heatmarkers, graveIds) {
         groupCheckboxes: false
     };
 
-    eval('MyBaseLayers' + Iter + ' = {"Landscape": landscape' + Iter + ', "Satellite": satellite' + Iter + ', "Streets": streets' + Iter + ', "Blank": blank' + Iter + '};');
+    eval('MyBaseLayers' + Iter + ' = {"Landscape": landscape' + Iter + ', "Satellite": satellite' + Iter + ', "Streetmap": streets' + Iter + ', "Basemap AT": natural' + Iter + ', "Terrain AT": terrain' + Iter + ', "Blank": blank' + Iter + '};');
     if (mylevel == 'burial_site') getAllGraves();
     if (mylevel !== 'burial_site') createFeatureCollection(graveIds)
     // Use the custom grouped layer control, not "L.control.layers"

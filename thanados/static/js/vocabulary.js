@@ -139,7 +139,6 @@ if (data.entities_recursive) {
             exclusiveGroups: ['Entities']
         };
 
-        baseLayers = {"Landscape": landscape, "Satellite": satellite, "Streets": streets, "Blank": blank}
 
         map = L.map('map', {
             renderer: L.canvas(),
