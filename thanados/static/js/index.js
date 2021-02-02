@@ -83,7 +83,7 @@ if ($('#map').length) {
             weight: 0,
             fillOpacity: 0,
             fillColor: "#ff3636"
-        }).bindPopup('<a href="/entity/' + dataset.id + '" title="' + dataset.description + '"><b>' + dataset.name + '</b></a><br><br>' + dataset.type);
+        });//.bindPopup('<a href="/entity/' + dataset.id + '" title="' + dataset.description + '"><b>' + dataset.name + '</b></a><br><br>' + dataset.type);
         marker.addTo(mymarkers);
     })
 
