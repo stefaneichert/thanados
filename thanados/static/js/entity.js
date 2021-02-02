@@ -39,7 +39,6 @@ $(document).ready(function () {
         });
 
     })
-
 });
 
 
@@ -304,7 +303,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '       <a class="dropdown-item" onclick="this.blur(); exportToJsonFile(myjson)" title="Download data as GeoJSON" href="#">' +
         '       <i class="fas fa-download mr-1"></i>GeoJSON</a>' +
         '       <a class="dropdown-item" title="Network visualisation" href="/entity/' + entId + '/network">' +
-                '<i class="fas fa-project-diagram mr-1"></i>Network</a>' +
+        '<i class="fas fa-project-diagram mr-1"></i>Network</a>' +
         '   </div>' +
         '</div>' +
         '</div>' +
@@ -824,9 +823,9 @@ function getEntityData(parentName, parentId, currentfeature) {
         "dashArray": [4, 4]
     };
 
-    mymap = L.map('myMapcontainer', {
-        renderer: L.canvas(),
-        zoom: 18,
+
+    map = L.map('myMapcontainer', {
+        zoom: 16,
         keyboard: false,
         dragging: false,
         zoomControl: false,
@@ -835,11 +834,10 @@ function getEntityData(parentName, parentId, currentfeature) {
         scrollWheelZoom: false,
         tap: false,
         touchZoom: false,
-        layers: landscape
-
+        layers: [OpenStreetMap_HOT, Esri_WorldHillshade]
     });
-    loadingControl.addTo(mymap);
-
+    L.control.scale({imperial: false}).addTo(map);
+    loadingControl.addTo(map);
 
 
 //add graves
@@ -861,7 +859,7 @@ function getEntityData(parentName, parentId, currentfeature) {
             style: myStyle
         });
 
-        graves.addTo(mymap);
+        graves.addTo(map);
 
 //if geometry is point create a rectangle around that point
         pointgraves = L.geoJSON(jsonmysite, {
@@ -873,7 +871,7 @@ function getEntityData(parentName, parentId, currentfeature) {
                 rightbottomlon = (latlng.lng + 0.000005);
                 bounds = [[lefttoplat, lefttoplon], [rightbottomlat, rightbottomlon]];
                 rect = L.rectangle(bounds).toGeoJSON(13);
-                //point = L.marker(latlng).addTo(mymap)
+                //point = L.marker(latlng).addTo(map)
                 L.extend(rect, {//add necessary properties from json
                     properties: feature.properties,
                     id: feature.id,
@@ -902,14 +900,14 @@ function getEntityData(parentName, parentId, currentfeature) {
         });
 
         if (setJson(jsonmysite)) {
-            mymap.fitBounds(graves.getBounds());
-            if ((mymap.getZoom()) > 18) mymap.setZoom(18);
+            map.fitBounds(graves.getBounds());
+            if ((map.getZoom()) > 18) map.setZoom(18);
         } else {
             var latlng = [jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]];
-            var marker = L.marker(latlng).addTo(mymap);
+            var marker = L.marker(latlng).addTo(map);
             centerpoint = latlng;
-            mymap.setZoom(18);
-            mymap.panTo(centerpoint);
+            map.setZoom(18);
+            map.panTo(centerpoint);
         }
 
 
@@ -918,7 +916,7 @@ function getEntityData(parentName, parentId, currentfeature) {
                 onEachFeature: function (feature, layer) {
                     if (graveId == feature.id) {
                         polyPoints = layer.getLatLngs();
-                        selectedpoly = L.polygon(polyPoints, {color: 'red'}).addTo(mymap);
+                        selectedpoly = L.polygon(polyPoints, {color: 'red'}).addTo(map);
                         boundscenter = (selectedpoly.getBounds()).getCenter();
                     }
 
@@ -931,12 +929,10 @@ function getEntityData(parentName, parentId, currentfeature) {
 
     if (children !== '') {
         if (children[0].id == 0) {
-            graves = L.marker([jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]]).addTo(mymap);
+            graves = L.marker([jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]]).addTo(map);
 
         }
     }
-
-    L.control.scale({imperial: false}).addTo(mymap);
 
 
     maximumHeight = (($(window).height() - $('#mynavbar').height()) - $('#mybreadcrumb').height());
@@ -951,14 +947,14 @@ function getEntityData(parentName, parentId, currentfeature) {
     var rect1 = {color: "#ff1100", weight: 15};
 
     if (setJson(jsonmysite)) {
-        mapcenter = mymap.getCenter();
+        mapcenter = map.getCenter();
     } else {
         mapcenter = [jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]]
     }
-    mymap.panTo(mapcenter);
-    if ((mymap.getZoom()) > 20) mymap.setZoom(20);
+    map.panTo(mapcenter);
+    if ((map.getZoom()) > 20) map.setZoom(20);
 
-    $('.leaflet-control-attribution').html('&copy; OpenStreetMap')
+
 
     var miniMap = new L.Control.MiniMap(osm2,
         {
@@ -968,11 +964,10 @@ function getEntityData(parentName, parentId, currentfeature) {
             collapsedWidth: 24,
             collapsedHeight: 24,
             aimingRectOptions: rect1
-        }).addTo(mymap);
-
-    mymap.addControl(loadingControl);
+        }).addTo(map);
 
 
+    $('.leaflet-control-attribution').html('&copy; OpenStreetMap')
 
 }
 

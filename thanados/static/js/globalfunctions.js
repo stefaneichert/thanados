@@ -1559,7 +1559,6 @@ function getBasemaps() {
     });
 
     OpenStreetMap_HOT = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-        crossOrigin: "",
         maxZoom: 25,
         maxNativeZoom: 20,
         attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
@@ -1642,6 +1641,7 @@ function getBasemaps() {
 
 
     BasemapAT_grau = L.tileLayer('https://maps{s}.wien.gv.at/basemap/bmapgrau/{type}/google3857/{z}/{y}/{x}.{format}', {
+        crossOrigin: "",
         maxZoom: 25,
         maxNativeZoom: 19,
         attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
@@ -1653,6 +1653,7 @@ function getBasemaps() {
     });
 
     BasemapAT_terrain = L.tileLayer('https://maps{s}.wien.gv.at/basemap/bmapgelaende/{type}/google3857/{z}/{y}/{x}.{format}', {
+        crossOrigin: "",
         maxNativeZoom: 17,
         maxZoom: 25,
         attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
@@ -1671,7 +1672,7 @@ function getBasemaps() {
         attribution: "",
         maxZoom: 25,
         maxNativeZoom: 15,
-        opacity: 0.3
+        opacity: 0.25
     });
 
     relief = new L.layerGroup([OpenStreetMap_HOT_ov, Esri_WorldHillshade], {attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
@@ -1702,7 +1703,6 @@ function getBasemaps() {
 
     //define basemap for Minimap
     miniBaseMap = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-            crossOrigin: "anonymous",
             minZoom: 0,
             maxZoom: 20,
             attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
@@ -1712,7 +1712,7 @@ function getBasemaps() {
 
     loadingControl = L.Control.loading({
         separate: true,
-        delayIndicator: 250,
+        delayIndicator: 0,
         position: 'bottomleft'
     });
 }
