@@ -638,7 +638,7 @@ a:hover {
     margin-left: 3em;
 }
 
-#myfooter {
+#myfooter, #myfooter2 {
     background-color: #f2f2f2;
     padding: 0.5em;
 }
