@@ -948,17 +948,19 @@ ORDER BY entities.child_id;
 
 INSERT INTO thanados.extrefs 
 SELECT entities.child_id  AS parent_id,
-       'https://www.geonames.org/' || entity.name  as url,
-       link.description   AS name,
+       reference_system.resolver_url || link.description   AS url,
+       entity.name  AS name,
        entity.description AS description,
        entity.id
 FROM thanados.entities,
      model.link,
-     model.entity
+     model.entity,
+     web.reference_system
 WHERE entities.child_id = link.range_id
   AND link.domain_id = entity.id
+  AND model.entity.id = web.reference_system.entity_id
   AND entities.child_id != 0
-  AND entity.system_type ~~ 'external reference geonames'::text
+  AND entity.id IN (SELECT entity_id from web.reference_system)
 ORDER BY entities.child_id;
 
 

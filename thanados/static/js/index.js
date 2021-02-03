@@ -38,9 +38,9 @@ if ($('#map').length) {
         maxZoom: 12,
         scrollWheelZoom: false,
         dragging: false,
-        zoomControl: false
+        zoomControl: false,
+        layers: [OpenStreetMap_HOT, Esri_WorldHillshade]
     });
-    landscape.addTo(map);
     loadingControl.addTo(map);
 
 
