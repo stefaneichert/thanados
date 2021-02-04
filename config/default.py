@@ -11,6 +11,7 @@ WEB_FOLDER_PATH = '/static/images/entities'
 UPLOAD_FOLDER_PATH = os.path.dirname(__file__) + '/../thanados' + WEB_FOLDER_PATH
 THUNDERFOREST_API_KEY = 'yourAPIKey'
 OPENATLAS_URL = 'https://url_to_database_backend + /entity/'
+API_URL = 'https://url_to_database_backend + /api/0.1/entity/'
 HIERARCHY_TYPES = 73, 13362, 13365, 13368, 119334
 SYSTEM_TYPES = 12935, 116219, 2
 CUSTOM_TYPES = 119049, 119444, 119472, 119497, 128046, 22276, 22308, 22320, 23, 23440, 25158, 5097, 5118, 8240
