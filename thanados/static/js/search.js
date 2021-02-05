@@ -653,7 +653,9 @@ function setmymap(markers, heatmarkers, graveIds) {
     });
 
     eval('landscape' + Iter + ' = jQuery.extend(true, {}, landscape);');
-    //eval('natural' + Iter + ' = jQuery.extend(true, {}, natural);');
+    eval('natural' + Iter + ' = jQuery.extend(true, {}, basemap_cz);');
+    eval('terrain' + Iter + ' = jQuery.extend(true, {}, Esri_WorldHillshadeNoOp);');
+    eval('blank' + Iter + ' = jQuery.extend(true, {}, blank);');
     eval('streets' + Iter + ' = jQuery.extend(true, {}, streets);');
     eval('satellite' + Iter + ' = jQuery.extend(true, {}, satellite);');
 
@@ -662,7 +664,7 @@ function setmymap(markers, heatmarkers, graveIds) {
     eval('markers' + Iter + '= markers;')
 
 
-    eval('map' + Iter + ' = L.map(\'map\' + Iter, {renderer: L.canvas(), fullscreenControl: true, maxZoom: 25, zoomControl: false, layers: [landscape' + Iter + ']}).fitBounds(markers.getBounds());')
+    eval('map' + Iter + ' = L.map(\'map\' + Iter, {fullscreenControl: true, maxZoom: 25, zoomControl: false, layers: [landscape' + Iter + ']}).fitBounds(markers.getBounds());')
 
     clustermarkers.addTo((eval('map' + Iter)));
 
@@ -701,7 +703,7 @@ function setmymap(markers, heatmarkers, graveIds) {
         groupCheckboxes: false
     };
 
-    eval('MyBaseLayers' + Iter + ' = {"Landscape": landscape' + Iter + ', "Satellite": satellite' + Iter + ', "Streets": streets' + Iter + '};');
+    eval('MyBaseLayers' + Iter + ' = {"Landscape": landscape' + Iter + ', "Satellite": satellite' + Iter + ', "Streetmap": streets' + Iter + ', "Basemap": natural' + Iter + ', "Terrain": terrain' + Iter + ', "Blank": blank' + Iter + '};');
     if (mylevel == 'burial_site') getAllGraves();
     if (mylevel !== 'burial_site') createFeatureCollection(graveIds)
     // Use the custom grouped layer control, not "L.control.layers"
@@ -753,6 +755,7 @@ function setmymap(markers, heatmarkers, graveIds) {
     L.control.batn({position: 'topleft'}).addTo(eval('map' + Iter));
 
 
+
     printMapbutton(('map' + Iter), 'topleft');
 
     $('.jsonDownload').click(function f() {
@@ -764,6 +767,10 @@ function setmymap(markers, heatmarkers, graveIds) {
         var currentId = $(this).data('iter');
         createCSV(eval('myGeoJSON' + currentId));
     })
+
+    eval('loadingControl' + Iter + ' = L.Control.loading({separate: true, delayIndicator: 250, position: \'bottomleft\'});');
+    //eval('loadingControl' + Iter + '.addTo(\'map\'' + Iter + ');');
+    eval('loadingControl' + Iter + '.addTo(map' + Iter + ');');
 }
 
 function createResult(data, iter) { //finish query and show results on map

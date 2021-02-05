@@ -72,6 +72,8 @@ $(document).ready(function () {
 
     L.control.scale({imperial: false}).addTo(map);//scale on map
 
+    map.addControl(loadingControl);
+
 
     //get minimum and maximum begin and end of sites
     beginArray = [];

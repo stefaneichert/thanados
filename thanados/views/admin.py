@@ -27,6 +27,7 @@ def admin():  # pragma: no cover
         try:
             with open("./instance/site_list.txt", 'w') as file:
                 file.write(form.site_list.data)
+                return redirect(url_for('admin'))
         except Exception as e:  # pragma: no cover
             pass
 
@@ -35,7 +36,25 @@ def admin():  # pragma: no cover
             form.site_list.data = file.read()
     except Exception as e:  # pragma: no cover
         pass
-    return render_template('admin/index.html', form=form)
+
+    sql = """
+            SELECT jsonb_agg(jsonb_build_object(
+                'id', child_id,
+                'name', child_name,
+                'type', type,
+                'used', used)) as sites
+                FROM (
+                        SELECT child_id, child_name, type, 1 AS used FROM thanados.searchdata WHERE path LIKE 'Place >%%' AND child_id IN %(site_ids)s
+                        UNION all
+                        SELECT child_id, child_name, type, 0 AS used FROM thanados.searchdata WHERE path LIKE 'Place >%%' AND child_id NOT IN %(site_ids)s
+                        ) AS allsites 
+                    
+    """
+    g.cursor.execute(sql, {'site_ids': tuple(g.site_list)})
+    currentsitelist = g.cursor.fetchone()
+
+
+    return render_template('admin/index.html', form=form, sites=currentsitelist)
 
 
 @app.route('/admin/execute/')
@@ -929,17 +948,19 @@ ORDER BY entities.child_id;
 
 INSERT INTO thanados.extrefs 
 SELECT entities.child_id  AS parent_id,
-       'https://www.geonames.org/' || entity.name  as url,
-       link.description   AS name,
+       reference_system.resolver_url || link.description   AS url,
+       entity.name  AS name,
        entity.description AS description,
        entity.id
 FROM thanados.entities,
      model.link,
-     model.entity
+     model.entity,
+     web.reference_system
 WHERE entities.child_id = link.range_id
   AND link.domain_id = entity.id
+  AND model.entity.id = web.reference_system.entity_id
   AND entities.child_id != 0
-  AND entity.system_type ~~ 'external reference geonames'::text
+  AND entity.id IN (SELECT entity_id from web.reference_system)
 ORDER BY entities.child_id;
 
 

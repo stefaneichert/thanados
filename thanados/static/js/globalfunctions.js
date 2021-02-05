@@ -23,6 +23,7 @@ $(document).ready(function () {
         setTimeout(function () {
             $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
         }, 0);
+        $('#back-to-top').css("display", "none")
     });
 
 })
@@ -1550,31 +1551,53 @@ function getBasemaps() {
 
 
     OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        crossOrigin: "",
         maxZoom: 25,
         maxNativeZoom: 19,
         attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-            '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</div>'
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</div>'
     });
 
-    Stamen_Terrain = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}', {
-        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        subdomains: 'abcd',
-        minZoom: 0,
-        maxZoom: 14,
-        ext: 'png'
+    OpenStreetMap_HOT = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+        maxZoom: 25,
+        maxNativeZoom: 20,
+        attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a></div>'
     });
+
+    /*Stamen_Terrain = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}', {
+        attribution: 'Map Tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        subdomains: 'abcd',
+        crossOrigin: "anonymous",
+        minZoom: 0,
+        maxZoom: 25,
+        maxNativeZoom: 16,
+        ext: 'png'
+    });*/
 
     Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        crossOrigin: "",
         attribution:
             '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-            '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community</div>',
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community</div>',
         maxZoom: 25,
+        maxNativeZoom: 19
+    });
+
+    Esri_WorldTopoMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+        crossOrigin: "",
+        attribution:
+            '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community</div>',
+        maxZoom: 25,
+        maxNativeZoom: 19
     });
 
     thunderforestlandscape = L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=' + thunderforestAPIkey, {
+        crossOrigin: "",
         attribution:
             '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-            '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a></div>',
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a></div>',
         maxZoom: 25,
         maxNativeZoom: 21
     });
@@ -1582,11 +1605,12 @@ function getBasemaps() {
     //mapbox
     mapboxnatural = L.tileLayer(
         'https://api.mapbox.com/styles/v1/thanados/ck6cakwq308tr1ioi58wkddsx/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGhhbmFkb3MiLCJhIjoiY2s0NGFieHZxMDhqcjNubjA1bzJqMWFrdyJ9.JkTrwwm87S2yRFqRnMkpUw', {
+            crossOrigin: "",
             tileSize: 512,
             zoomOffset: -1,
             attribution:
                 '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-                '<div id="myattr" class="mapAttr" style="display: inline-block">: ' + mywindowtitle + 'Tiles: &copy; <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a></div>',
+                '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://apps.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a></div>',
             maxZoom: 25,
             maxNativeZoom: 22
         });
@@ -1594,33 +1618,117 @@ function getBasemaps() {
 //czech basemap
     basemap_cz = L.tileLayer.wms('http://geoportal.cuzk.cz/WMS_ZM10_PUB/WMService.aspx', {
         layers: 'GR_ZM10',
+        crossOrigin: "anonymous",
         maxZoom: 25
     })
 
+    HikeBike_HillShading = L.tileLayer('https://tiles.wmflabs.org/hillshading/{z}/{x}/{y}.png', {
+        crossOrigin: "",
+        maxNativeZoom: 15,
+        opacity: 0.3,
+        //transparency: true,
+        maxZoom: 25,
+    });
+
+    OpenStreetMap_HOT_ov = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+        crossOrigin: "",
+        maxZoom: 25,
+        maxNativeZoom: 20,
+        //transparency: 'true',
+        //opacity: 1,
+        attribution: ""
+    });
+
+
+    BasemapAT_grau = L.tileLayer('https://maps{s}.wien.gv.at/basemap/bmapgrau/{type}/google3857/{z}/{y}/{x}.{format}', {
+        crossOrigin: "",
+        maxZoom: 25,
+        maxNativeZoom: 19,
+        attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: <a href="https://www.basemap.at">basemap.at</a> </div>',
+        subdomains: ["", "1", "2", "3", "4"],
+        type: 'normal',
+        format: 'png',
+        bounds: [[46.35877, 8.782379], [49.037872, 17.189532]]
+    });
+
+    BasemapAT_terrain = L.tileLayer('https://maps{s}.wien.gv.at/basemap/bmapgelaende/{type}/google3857/{z}/{y}/{x}.{format}', {
+        crossOrigin: "",
+        maxNativeZoom: 17,
+        maxZoom: 25,
+        attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: <a href="https://www.basemap.at">basemap.at</a> </div>',
+        subdomains: ["", "1", "2", "3", "4"],
+        type: 'grau',
+        format: 'jpeg',
+        bounds: [[46.35877, 8.782379], [49.037872, 17.189532]],
+        //opacity: 0.3,
+    });
+
+
+
+    Esri_WorldHillshade = L.tileLayer('https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}', {
+        crossOrigin: "",
+        attribution: "",
+        maxZoom: 25,
+        maxNativeZoom: 15,
+        opacity: 0.25
+    });
+
+    Esri_WorldHillshadeNoOp = L.tileLayer('https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}', {
+        crossOrigin: "",
+        maxZoom: 25,
+        maxNativeZoom: 15,
+        attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: Esri, Airbus DS, USGS, NGA, NASA, CGIAR, N Robinson, NCEAS, NLS, OS, NMA, Geodatastyrelsen, Rijkswaterstaat, GSA, Geoland, FEMA, Intermap, and the GIS user community</div>'
+    });
+
+    relief = new L.layerGroup([OpenStreetMap_HOT_ov, Esri_WorldHillshade], {attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>. Hillshade Sources: Esri, Airbus DS, USGS, NGA, NASA, CGIAR, N Robinson, NCEAS, NLS, OS, NMA, Geodatastyrelsen, Rijkswaterstaat, GSA, Geoland, FEMA, Intermap, and the GIS user community</div>'});
+
     satellite = Esri_WorldImagery; //define aerial image layer
-    landscape = thunderforestlandscape; // define topography layer
-    streets = basemap_cz // define streets Layer
+    landscape = relief; // define topography layer
+    natural = BasemapAT_grau //mapboxnatural
+    terrain = BasemapAT_terrain //mapboxnatural
+    streets = OpenStreetMap_Mapnik // define streets Layer
+    blank = L.tileLayer('', {
+        crossOrigin: "anonymous",
+        maxZoom: 25,
+        attribution:
+            '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '</div>'
+    })
+
 
     baseLayers = {
         "Landscape": landscape,
-        //"Natural": natural,
         "Satellite": satellite,
-        "Streets": streets
+        "Streetmap": streets,
+        "Basemap": basemap_cz,
+        "Terrain": Esri_WorldHillshadeNoOp,
+        "Blank": blank
     };
 
     //define basemap for Minimap
-    miniBaseMap = new L.TileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=' + thunderforestAPIkey,
-        {
+    miniBaseMap = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
             minZoom: 0,
             maxZoom: 20,
-            attribution: 'Tiles: &copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+                '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a></div>'
         }
     );
+
+    loadingControl = L.Control.loading({
+        separate: true,
+        delayIndicator: 0,
+        position: 'bottomleft'
+    });
 }
 
 function attributionChange() {
     //$(".leaflet-control-attribution").find(':first-child').remove();
     var val = $(".leaflet-control-attribution").html();
+    //console.log(val)
     $(".leaflet-control-attribution").html(val.substring(87, val.length));
     $('#myattr').toggle();
 }
@@ -2086,7 +2194,7 @@ $.featherlight.prototype.afterContent = function () {
 thisUrl = window.location.href;
 if (thisUrl.includes('#')) thisUrl = thisUrl.substring(0, thisUrl.indexOf('#'));
 
-mycitation1 = ' From: <a href="/about" target="_blank">MEDCEM:</a> <a' +
+mycitation1 = ' From: <a href="/about" target="_blank">THANADOS:</a> <a' +
     ' href="' + thisUrl + '">' + thisUrl + '</a> [Accessed: ' + today() + ']<br>' +
     'Licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a><br> After: ';
 

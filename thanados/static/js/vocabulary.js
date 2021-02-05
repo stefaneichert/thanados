@@ -139,7 +139,6 @@ if (data.entities_recursive) {
             exclusiveGroups: ['Entities']
         };
 
-        baseLayers = {"Landscape": landscape, "Satellite": satellite, "Streets": streets}
 
         map = L.map('map', {
             renderer: L.canvas(),
@@ -147,6 +146,7 @@ if (data.entities_recursive) {
             maxZoom: 18,
             layers: [landscape]
         });
+        loadingControl.addTo(map);
         entPoints.addTo(map)
         map.fitBounds(entPoints.getBounds())
         attributionChange()
@@ -156,7 +156,8 @@ if (data.entities_recursive) {
             attrib = layer.layer.options.attribution
             MultAttributionChange(map, '#map', attrib)
         });
-        $('#occurence').append(occCount)
+        $('#occurence').append(occCount);
+
 
     }
 

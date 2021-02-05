@@ -131,6 +131,52 @@ function setmap(myjson) {
         layers: [landscape]
     });
 
+    //define map controls
+    //sidebar toggle button
+    L.easyButton({
+        id: 'SidebarButton',  // an id for the generated button
+        position: 'topleft',      // inherited from L.Control -- the corner it goes in
+        type: 'replace',          // set to animate when you're comfy with css
+        leafletClasses: true,     // use leaflet classes to style the button?
+        states: [{                 // specify different icons and responses for your button
+            stateName: 'sidebar',
+            onClick: function (button, map) {
+                animateSidebar();
+            },
+            title: 'toggle sidebar',
+            icon: 'fas fa-exchange-alt'
+        }]
+    }).addTo(map);
+
+    L.easyButton({
+        id: 'CiteMeButton',  // an id for the generated button
+        position: 'topleft',      // inherited from L.Control -- the corner it goes in
+        type: 'replace',          // set to animate when you're comfy with css
+        leafletClasses: true,     // use leaflet classes to style the button?
+        states: [{                 // specify different icons and responses for your button
+            stateName: 'citeme',
+            onClick: function (button, map) {
+                getCitation();
+            },
+            title: 'how to cite this/copyright',
+            icon: 'fas fa-quote-right'
+        }]
+    }).addTo(map);
+
+    //add option button and exportbutton for map as image
+    printMapbutton('map', 'topleft');
+
+    //add filter/Search button
+    addFilterSearch();
+
+    //add layer control
+    baseControl = L.control.layers(baseLayers).addTo(map);
+
+    //add scalebar
+    L.control.scale({imperial: false}).addTo(map);
+
+    loadingControl.addTo(map);
+
     //hack to show landscape first
     //map.removeLayer(streets);
     //map.removeLayer(Esri_WorldImagery);
@@ -286,53 +332,9 @@ function setmap(myjson) {
     choroplethLayer = new L.LayerGroup();
     choroplethLayer.addTo(map);
 
-
-//define map controls
-    //sidebar toggle button
-    L.easyButton({
-        id: 'SidebarButton',  // an id for the generated button
-        position: 'topleft',      // inherited from L.Control -- the corner it goes in
-        type: 'replace',          // set to animate when you're comfy with css
-        leafletClasses: true,     // use leaflet classes to style the button?
-        states: [{                 // specify different icons and responses for your button
-            stateName: 'sidebar',
-            onClick: function (button, map) {
-                animateSidebar();
-            },
-            title: 'toggle sidebar',
-            icon: 'fas fa-exchange-alt'
-        }]
-    }).addTo(map);
-
-    L.easyButton({
-        id: 'CiteMeButton',  // an id for the generated button
-        position: 'topleft',      // inherited from L.Control -- the corner it goes in
-        type: 'replace',          // set to animate when you're comfy with css
-        leafletClasses: true,     // use leaflet classes to style the button?
-        states: [{                 // specify different icons and responses for your button
-            stateName: 'citeme',
-            onClick: function (button, map) {
-                getCitation();
-            },
-            title: 'how to cite this/copyright',
-            icon: 'fas fa-quote-right'
-        }]
-    }).addTo(map);
-
-    //add option button and exportbutton for map as image
-    printMapbutton('map', 'topleft');
-
-    //add filter/Search button
-    addFilterSearch();
-
-    //add layer control
-    baseControl = L.control.layers(baseLayers).addTo(map);
-
-    //add scalebar
-    L.control.scale({imperial: false}).addTo(map);
-
     //initiate selection of clicked polygons
     polygonSelect();
+
 
     //initiate map attribution
     map.on('baselayerchange', function (e) {
@@ -731,7 +733,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         '<div class="modal-header">' +
         '<h5 class="modal-title">' +
         '<img src="' + iconpath + '" width="30" height="30" class="modaltitleicon" alt="my image">' +
-        '' + entName + '<div class="float-right mt-1" id="myModalPermalink' +
+        '<a href="../entity/' + entId + '" title="Permalink to this entity" style="display: contents" class="entlink float-right ml-2">' + entName +'</a><div class="float-right mt-1" id="myModalPermalink' +
         '' + entId + '"></div></h5>' + closebutton +
         '</div>' +
         '<div class="modal-body">' +
@@ -757,7 +759,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     );
 
     $('#myModalPermalink' + entId).append(
-        '<a href="../entity/' + entId + '" title="Permalink to this entity" class="float-right ml-2"><h6><i class="fas fa-link"></i></h6></a>' +
+        //'<a href="../entity/' + entId + '" title="Permalink to this entity" class="float-right ml-2"><h6><i class="fas fa-link"></i></h6></a>' +
         '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + entId + '" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a>'
     );
 

@@ -38,10 +38,11 @@ if ($('#map').length) {
         maxZoom: 12,
         scrollWheelZoom: false,
         dragging: false,
-        zoomControl: false
+        zoomControl: false,
+        layers: [OpenStreetMap_HOT, Esri_WorldHillshade]
     });
+    loadingControl.addTo(map);
 
-    landscape.addTo(map);
 
     $('#counters').html(
         '<div class="col-sm">' +
@@ -82,7 +83,7 @@ if ($('#map').length) {
             weight: 0,
             fillOpacity: 0,
             fillColor: "#ff3636"
-        }).bindPopup('<a href="/entity/' + dataset.id + '" title="' + dataset.description + '"><b>' + dataset.name + '</b></a><br><br>' + dataset.type);
+        });//.bindPopup('<a href="/entity/' + dataset.id + '" title="' + dataset.description + '"><b>' + dataset.name + '</b></a><br><br>' + dataset.type);
         marker.addTo(mymarkers);
     })
 

@@ -39,7 +39,6 @@ $(document).ready(function () {
         });
 
     })
-
 });
 
 
@@ -53,8 +52,13 @@ descriptionSummary = {
     finds: 0,
 }
 
+showDashboard = true;
+
 $.each(jsonmysite.features, function (i, feature) {
-    if (feature.id === 0) descriptionSummary.graves = 0;
+    if (feature.id === 0) {
+        descriptionSummary.graves = 0;
+        showDashboard = false
+    }
     $.each(feature.burials, function (i, burial) {
         descriptionSummary.burials += 1;
         $.each(burial.finds, function (i, feature) {
@@ -62,6 +66,7 @@ $.each(jsonmysite.features, function (i, feature) {
         })
     })
 })
+//console.log(showDashboard);
 
 
 $('#mybreadcrumb').append(
@@ -283,13 +288,24 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myData_' + entId + '" class="col-lg">' +
         '<div class="row mb-3">' +
         '<h4 style="margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '" title="Name of entity">' + entName + '&nbsp;</h4>' +
-        '<div style="margin-top: 0.6em; margin-left: 1em; padding-bottom: 0.6em;">' +
+        '<div id="entbuttons" style="margin-top: 0.6em; margin-left: 1em; padding-bottom: 0.6em;">' +
         '<button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>' +
-        '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); exportToJsonFile(myjson)" class="btn btn-sm btn-secondary" title="Download data as GeoJSON"><i class="fas fa-download"></i></button>' +
-        '<a style="margin-left: 0.1em" onclick="this.blur();" href="' + openAtlasUrl + entId + '" target="_blank" class="backendlink d-none btn btn-sm btn-secondary" title="Backend link"><i class="fas fa-database"></i></a>' +
-        '<a style="margin-left: 0.1em" onclick="this.blur();" href="/entity/' + entId + '/network"class="btn btn-sm btn-secondary" title="Network visualisation"><i class="fas fa-project-diagram"></i></a>' +
-        '<a style="margin-left: 0.1em" onclick="this.blur();" href="/entity/' + place_id + '/dashboard" class="btn btn-sm btn-secondary" title="Dashborad"><i class="fas fa-chart-line"></i></a>' +
-        '<button type="button" style="margin-left: 0.1em" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" class="btn btn-sm btn-secondary" title="Open detailed map of this site">Map</button>' +
+        ((showDashboard) ? '<a style="margin-left: 0.2em" onclick="this.blur();" href="/entity/' + place_id + '/dashboard" class="btn btn-sm btn-secondary" title="Dashboard"><i class="fas fa-chart-line"></i></a>' : '') +
+        '<button type="button" style="margin-left: 0.2em" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" class="btn btn-sm btn-secondary" title="Open detailed map of this site"><i class="fas fa-map-marked-alt"></i></button>' +
+
+        '<a style="margin-left: 0.2em" onclick="this.blur();" href="' + openAtlasUrl + entId + '" target="_blank" class="backendlink d-none btn btn-sm btn-secondary" title="Backend link"><i class="fas fa-database"></i></a>' +
+
+        '<div class="dropdown" style="display: inline-block; margin-left: 0.2em;" >\n' +
+        '  <button class="btn btn-sm btn-secondary" type="button" id="dropdownMenuButton" title="More" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
+        '  <i class="fas fa-ellipsis-v"></i>  ' +
+        '  </button>' +
+        '   <div class="dropdown-menu" aria-labelledby="dropdownMenu">' +
+        '       <a class="dropdown-item" onclick="this.blur(); exportToJsonFile(myjson)" title="Download data as GeoJSON" href="#">' +
+        '       <i class="fas fa-download mr-1"></i>GeoJSON</a>' +
+        '       <a class="dropdown-item" title="Network visualisation" href="/entity/' + entId + '/network">' +
+        '<i class="fas fa-project-diagram mr-1"></i>Network</a>' +
+        '   </div>' +
+        '</div>' +
         '</div>' +
         '</div>' +
         '<div type="button" data-value="' + entTypeId + '" class="modalrowitem typebutton"' +
@@ -807,9 +823,9 @@ function getEntityData(parentName, parentId, currentfeature) {
         "dashArray": [4, 4]
     };
 
-    mymap = L.map('myMapcontainer', {
-        renderer: L.canvas(),
-        zoom: 18,
+
+    map = L.map('myMapcontainer', {
+        zoom: 16,
         keyboard: false,
         dragging: false,
         zoomControl: false,
@@ -818,8 +834,11 @@ function getEntityData(parentName, parentId, currentfeature) {
         scrollWheelZoom: false,
         tap: false,
         touchZoom: false,
-        layers: [landscape]
+        layers: [OpenStreetMap_HOT, Esri_WorldHillshade]
     });
+    L.control.scale({imperial: false}).addTo(map);
+    loadingControl.addTo(map);
+
 
 //add graves
     if (jsonmysite.features[0].id !== 0) {
@@ -840,7 +859,7 @@ function getEntityData(parentName, parentId, currentfeature) {
             style: myStyle
         });
 
-        graves.addTo(mymap);
+        graves.addTo(map);
 
 //if geometry is point create a rectangle around that point
         pointgraves = L.geoJSON(jsonmysite, {
@@ -852,7 +871,7 @@ function getEntityData(parentName, parentId, currentfeature) {
                 rightbottomlon = (latlng.lng + 0.000005);
                 bounds = [[lefttoplat, lefttoplon], [rightbottomlat, rightbottomlon]];
                 rect = L.rectangle(bounds).toGeoJSON(13);
-                //point = L.marker(latlng).addTo(mymap)
+                //point = L.marker(latlng).addTo(map)
                 L.extend(rect, {//add necessary properties from json
                     properties: feature.properties,
                     id: feature.id,
@@ -881,14 +900,14 @@ function getEntityData(parentName, parentId, currentfeature) {
         });
 
         if (setJson(jsonmysite)) {
-            mymap.fitBounds(graves.getBounds());
-            if ((mymap.getZoom()) > 18) mymap.setZoom(18);
+            map.fitBounds(graves.getBounds());
+            if ((map.getZoom()) > 18) map.setZoom(18);
         } else {
             var latlng = [jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]];
-            var marker = L.marker(latlng).addTo(mymap);
+            var marker = L.marker(latlng).addTo(map);
             centerpoint = latlng;
-            mymap.setZoom(18);
-            mymap.panTo(centerpoint);
+            map.setZoom(18);
+            map.panTo(centerpoint);
         }
 
 
@@ -897,7 +916,7 @@ function getEntityData(parentName, parentId, currentfeature) {
                 onEachFeature: function (feature, layer) {
                     if (graveId == feature.id) {
                         polyPoints = layer.getLatLngs();
-                        selectedpoly = L.polygon(polyPoints, {color: 'red'}).addTo(mymap);
+                        selectedpoly = L.polygon(polyPoints, {color: 'red'}).addTo(map);
                         boundscenter = (selectedpoly.getBounds()).getCenter();
                     }
 
@@ -910,12 +929,10 @@ function getEntityData(parentName, parentId, currentfeature) {
 
     if (children !== '') {
         if (children[0].id == 0) {
-            graves = L.marker([jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]]).addTo(mymap);
+            graves = L.marker([jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]]).addTo(map);
 
         }
     }
-
-    L.control.scale({imperial: false}).addTo(mymap);
 
 
     maximumHeight = (($(window).height() - $('#mynavbar').height()) - $('#mybreadcrumb').height());
@@ -930,12 +947,13 @@ function getEntityData(parentName, parentId, currentfeature) {
     var rect1 = {color: "#ff1100", weight: 15};
 
     if (setJson(jsonmysite)) {
-        mapcenter = mymap.getCenter();
+        mapcenter = map.getCenter();
     } else {
         mapcenter = [jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]]
     }
-    mymap.panTo(mapcenter);
-    if ((mymap.getZoom()) > 20) mymap.setZoom(20);
+    map.panTo(mapcenter);
+    if ((map.getZoom()) > 20) map.setZoom(20);
+
 
 
     var miniMap = new L.Control.MiniMap(osm2,
@@ -946,9 +964,10 @@ function getEntityData(parentName, parentId, currentfeature) {
             collapsedWidth: 24,
             collapsedHeight: 24,
             aimingRectOptions: rect1
-        }).addTo(mymap);
+        }).addTo(map);
 
-    attributionChange();
+
+    $('.leaflet-control-attribution').html('&copy; OpenStreetMap')
 
 }
 
