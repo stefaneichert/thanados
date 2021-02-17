@@ -214,6 +214,13 @@
                                        href="#references">External references</a>
                                 </li>
                             {% endif %}
+                            {% if data.gazetteers %}
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab"
+                                       href="#gazetteers">Gazetteers
+                                    </a>
+                                </li>
+                            {% endif %}
                             {% if data.files %}
                                 <li class="nav-item">
                                     {% if not data.entities_recursive %}
@@ -248,6 +255,15 @@
                         {% endif %}
                         {% if data.references %}
                             <div class="tab-pane" id="references">External References</div>
+                        {% endif %}
+                        {% if data.gazetteers %}
+                            <div class="tab-pane" id="gazetteers">
+                            <ul class="list-group">
+                            {% for row in data.gazetteers %}
+                                            <li class="list-group-item"><a href="{{ row.url }}" target="_blank" title="{{ row.about }}">{{ row.domain }}</a></li>
+                                        {% endfor %}
+                            </ul>
+                            </div>
                         {% endif %}
                         {% if data.files|length >= 1 %}
                             {% if not data.entities_recursive %}

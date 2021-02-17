@@ -13,6 +13,7 @@ def vocabulary():
     alltypesused = list(set().union(hierarchytypes, systemtypes, customtypes, valuetypes))
     parenttree = []
 
+
     sql_list = """
                    SELECT name, id, name_path FROM (
                     SELECT name, id::INTEGER, path, name_path, left(path, strpos(path, ' >') -1)::INTEGER AS 
@@ -82,6 +83,7 @@ def vocabulary_view(object_id: int, format_=None):
     if not object_id:
         return render_template('vocabulary/vocabulary.html')
 
+
     # get dataset for type entity
     sql_base = 'SELECT * FROM model.entity WHERE id = %(object_id)s;'
     g.cursor.execute(sql_base, {'object_id': object_id})
@@ -94,6 +96,20 @@ def vocabulary_view(object_id: int, format_=None):
     CRMclass = output_base.class_code
     if CRMclass not in ['E55']:
         abort(403)
+
+    extrefs = """
+            SELECT jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
+        'identifier', t.identifier,
+        'domain', t.name,
+        'about', t.description,
+        'SKOS', t.skos,
+        'url', t.url
+    ))) AS ext_types
+    FROM thanados.ext_types t
+    WHERE t.type_id = %(object_id)s;
+            """
+    g.cursor.execute(extrefs, {'object_id': object_id})
+    extresult = g.cursor.fetchone()
 
     # get top parent
     sql_topparent = """
@@ -185,6 +201,10 @@ def vocabulary_view(object_id: int, format_=None):
     if output_path_parent.parent_id:
         data['parent'] = output_path_parent.parent_id
         data['parent_name'] = output_parentname.name
+    if extresult:
+        print(extresult)
+        data['gazetteers'] = extresult.ext_types
+
 
     # get subtypes
     sql_children = 'SELECT id, name FROM thanados.types_all WHERE parent_id = %(object_id)s;'
@@ -336,7 +356,7 @@ def vocabulary_view(object_id: int, format_=None):
 
     def getTree(id):
         sql_getChildren = """
-            SELECT name, id FROM thanados.types_all WHERE parent_id = %(id)s ORDER BY name
+            SELECT DISTINCT name, id FROM thanados.types_all WHERE parent_id = %(id)s ORDER BY name
         """
         g.cursor.execute(sql_getChildren, {'id': id})
         results = g.cursor.fetchall()
@@ -359,6 +379,8 @@ def vocabulary_view(object_id: int, format_=None):
     data['topparent'] = topparent
     data['tree'] = tree
     data['hierarchy'] = hierarchy
+
+
 
 
     if format_ == 'json':

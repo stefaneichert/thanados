@@ -53,7 +53,6 @@ def admin():  # pragma: no cover
     g.cursor.execute(sql, {'site_ids': tuple(g.site_list)})
     currentsitelist = g.cursor.fetchone()
 
-
     return render_template('admin/index.html', form=form, sites=currentsitelist)
 
 
@@ -62,7 +61,6 @@ def admin():  # pragma: no cover
 def jsonprepare_execute():  # pragma: no cover
     if current_user.group not in ['admin']:
         abort(403)
-
 
     start = datetime.now()
     print("starting processing basic queries at: " + str(start.strftime("%H:%M:%S")))
@@ -96,7 +94,7 @@ WITH RECURSIVE path(id, path, parent, name, description, parent_id, name_path) A
                        link.property_code
                 FROM model.entity
                          LEFT JOIN model.link ON entity.id = link.domain_id
-                WHERE entity.class_code ~~ 'E55'::text) x
+                WHERE entity.class_code = 'E55') x
                    LEFT JOIN model.entity e ON x.parent_id = e.id
           ORDER BY e.name) types_all
     WHERE types_all.parent_name IS NULL
@@ -128,7 +126,7 @@ WITH RECURSIVE path(id, path, parent, name, description, parent_id, name_path) A
                        link.property_code
                 FROM model.entity
                          LEFT JOIN model.link ON entity.id = link.domain_id
-                WHERE entity.class_code ~~ 'E55'::text) x
+                WHERE entity.class_code ~~ 'E55'::text  AND link.property_code = 'P127') x
                    LEFT JOIN model.entity e ON x.parent_id = e.id
           ORDER BY e.name) types_all,
          path parentpath
@@ -141,12 +139,12 @@ SELECT path.name,
        path.parent_id,
        path.name_path,
        NULL AS topparent,
-       '[]'::JSONB AS forms 
+       '[]'::JSONB AS forms
 FROM path
 ORDER BY path.path;
           
 UPDATE thanados.types_all SET topparent = f.topparent, forms = f.forms 
-    FROM (SELECT tp.id, tp.name_path, tp.topparent, jsonb_agg(f.name) AS forms 
+    FROM (SELECT tp.id, tp.name_path, tp.topparent, jsonb_agg(DISTINCT f.name) AS forms 
         FROM (SELECT id::INTEGER, path, name_path, left(path, strpos(path, ' >') -1)::INTEGER AS 
             topparent FROM thanados.types_all WHERE path LIKE '%>%'
                     UNION ALL 
@@ -569,7 +567,8 @@ UPDATE thanados.entitiestmp SET end_from = end_to WHERE end_to IS NOT NULL and e
         nearestneighbour = nearestneighbour + 1
 
     g.cursor.execute("DELETE FROM thanados.knn WHERE nid ISNULL")
-    g.cursor.execute("UPDATE thanados.knn SET distance = ROUND(st_distancesphere(st_astext(centerpoint), st_astext(npoint))::numeric, 2)")
+    g.cursor.execute(
+        "UPDATE thanados.knn SET distance = ROUND(st_distancesphere(st_astext(centerpoint), st_astext(npoint))::numeric, 2)")
 
     print("")
     nntimeend = datetime.now()
@@ -887,10 +886,10 @@ CREATE TABLE thanados.files AS
         if file_name:
             filesfound = filesfound + 1
         else:
-            filesmissing = filesmissing +1
+            filesmissing = filesmissing + 1
         g.cursor.execute("UPDATE thanados.files SET filename = %(file_name)s WHERE id = %(row_id)s",
                          {'file_name': file_name, 'row_id': row_id})
-        sys.stdout.write("\rfiles found: "  +  str(filesfound) + " files missing: " + str(filesmissing))
+        sys.stdout.write("\rfiles found: " + str(filesfound) + " files missing: " + str(filesmissing))
         sys.stdout.flush()
 
     g.cursor.execute('DELETE FROM thanados.files WHERE filename = NULL')
@@ -987,6 +986,33 @@ CREATE TABLE thanados.types_and_files
     reference  jsonb,
     extrefs    jsonb
 );
+
+--external gazetteers for types
+DROP TABLE IF EXISTS thanados.ext_types;
+CREATE TABLE thanados.ext_types AS
+SELECT types_all.id                                      AS type_id,
+       reference_system.resolver_url || link.description AS url,
+       entity.name                                       AS name,
+       entity.description                                AS description,
+       entity.id,
+       link.description                                  AS identifier,
+       entitysk.name                                     AS SKOS
+FROM thanados.types_all,
+     model.link,
+     model.entity,
+     web.reference_system,
+     model.entity AS entitysk
+WHERE types_all.id = link.range_id
+  AND link.domain_id = entity.id
+  AND model.entity.id = web.reference_system.entity_id
+  AND types_all.id != 0
+  AND link.type_id = entitysk.id
+  AND entity.id IN (SELECT entity_id from web.reference_system)
+ORDER BY types_all.id;
+
+UPDATE thanados.ext_types
+SET description = NULL
+WHERE description = '';
 
 -- insert type data
 INSERT INTO thanados.types_and_files (entity_id, types)

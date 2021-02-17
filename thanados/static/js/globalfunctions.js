@@ -2201,6 +2201,15 @@ function getTypeData(id, div, hierarchy) {
             ' <a href="/vocabulary/' + data.topparent.id + '" target="_blank">' + data.topparent.name + '</a></span>';
         if (data.topparent.description) returnHtml = returnHtml + '<br><span><i' +
             ' class="text-muted">' + data.topparent.description + '</i></span>';
+        if (data.gazetteers) {
+            gazetteer = "<br><br>Gazetteers:<br>"
+            $.each(data.gazetteers, function(i, gaz){
+                console.log(gaz)
+                if (typeof gaz.about === "undefined") gaz.about = gaz.domain;
+                gazetteer = gazetteer + '<a href="'+ gaz.url +'" title="' + gaz.about + '" target="_blank">' + gaz.domain +'</a><br>'
+            })
+            returnHtml = returnHtml + gazetteer
+        }
         returnValue = returnHtml;
         if (hierarchy) {
             setHierarchyPopup(returnValue, div)
