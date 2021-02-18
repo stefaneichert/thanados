@@ -3,8 +3,10 @@ import json
 import psycopg2.extras
 from flask import Flask, g, request
 from flask_wtf.csrf import CSRFProtect
+from flask_cors import CORS
 
 app = Flask(__name__, instance_relative_config=True)
+CORS(app)
 csrf = CSRFProtect(app)  # Make sure all forms are CSRF protected
 csrf.init_app(app)
 

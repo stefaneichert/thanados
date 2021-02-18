@@ -1,11 +1,12 @@
 from flask import render_template, g
+from flask_cors import cross_origin
 
 from thanados import app
 from thanados.models.entity import Data
 
 
 @app.route('/')
-@app.route('/index')
+@cross_origin()
 def index():
     site_list = Data.get_list()
 

@@ -1666,7 +1666,6 @@ function getBasemaps() {
     });
 
 
-
     Esri_WorldHillshade = L.tileLayer('https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}', {
         crossOrigin: "",
         attribution: "",
@@ -1675,8 +1674,10 @@ function getBasemaps() {
         opacity: 0.25
     });
 
-    relief = new L.layerGroup([OpenStreetMap_HOT_ov, Esri_WorldHillshade], {attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>. Hillshade Sources: Esri, Airbus DS, USGS, NGA, NASA, CGIAR, N Robinson, NCEAS, NLS, OS, NMA, Geodatastyrelsen, Rijkswaterstaat, GSA, Geoland, FEMA, Intermap, and the GIS user community</div>'});
+    relief = new L.layerGroup([OpenStreetMap_HOT_ov, Esri_WorldHillshade], {
+        attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>. Hillshade Sources: Esri, Airbus DS, USGS, NGA, NASA, CGIAR, N Robinson, NCEAS, NLS, OS, NMA, Geodatastyrelsen, Rijkswaterstaat, GSA, Geoland, FEMA, Intermap, and the GIS user community</div>'
+    });
 
     satellite = Esri_WorldImagery; //define aerial image layer
     landscape = relief; // define topography layer
@@ -2203,10 +2204,10 @@ function getTypeData(id, div, hierarchy) {
             ' class="text-muted">' + data.topparent.description + '</i></span>';
         if (data.gazetteers) {
             gazetteer = "<br><br>Gazetteers:<br>"
-            $.each(data.gazetteers, function(i, gaz){
+            $.each(data.gazetteers, function (i, gaz) {
                 console.log(gaz)
                 if (typeof gaz.about === "undefined") gaz.about = gaz.domain;
-                gazetteer = gazetteer + '<a href="'+ gaz.url +'" title="' + gaz.about + '" target="_blank">' + gaz.domain +'</a><br>'
+                gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.about + '" target="_blank">' + gaz.domain + '</a><br>'
             })
             returnHtml = returnHtml + gazetteer
         }
@@ -2219,6 +2220,19 @@ function getTypeData(id, div, hierarchy) {
 
     });
 }
+
+function getWikiData(id) {
+    $.ajax({
+        type: 'GET',
+        url: "https://www.wikidata.org/w/api.php?action=wbgetclaims&format=json&property=P18&entity=" + id,
+        success: function (data) {
+            if (data) {
+                console.log(data)
+            } else {
+                console.log('nix')
+            }
+        }})};
+
 
 function logHTML(value, div) {
 
