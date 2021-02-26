@@ -326,3 +326,77 @@ class Data:
         network['edges'] = edges
 
         return network
+
+    @staticmethod
+    def getWikidataimage(id):
+        import urllib, json, hashlib, requests
+
+        with urllib.request.urlopen("https://www.wikidata.org/w/api.php?action=wbgetclaims&format=json&property=P18&entity=" + id) as url:
+            wdata = json.loads(url.read().decode())
+
+        if wdata['claims']:
+            wfilename = (wdata['claims']['P18'][0]['mainsnak']['datavalue']['value'])
+            newfile = (wfilename.replace(' ','_'))
+            #print(newfile)
+            md5 = (hashlib.md5(newfile.encode('utf-8')).hexdigest())
+            #print(md5)
+            print(newfile)
+
+            def extract_image_license(image_name):
+
+                start_of_end_point_str = 'https://commons.wikimedia.org' \
+                                         '/w/api.php?action=query&titles=File:'
+                end_of_end_point_str = '&prop=imageinfo&iiprop=extmetadata&format=json'
+                result = requests.get(start_of_end_point_str + image_name + end_of_end_point_str)
+                result = result.json()
+                page_id = next(iter(result['query']['pages']))
+                image_info = result['query']['pages'][page_id]['imageinfo']
+
+                return image_info
+            metadata = extract_image_license(newfile)
+
+
+            image = {
+                'url': 'https://upload.wikimedia.org/wikipedia/commons/' + md5[0:1]+'/'+md5[0:2] + '/'+newfile,
+                'urlthumb': 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + md5[0:1]+'/'+md5[0:2] + '/'+newfile + '/200px-' + newfile,
+                'metadata': metadata[0]['extmetadata'],
+                'origin': 'https://commons.wikimedia.org/wiki/File:' + newfile
+            }
+
+            return image
+        else:
+            return None
+
+    @staticmethod
+    def getWikidata(id):
+        import urllib, json
+
+        with urllib.request.urlopen(
+                "https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json&search="+ id + "&language=en") as url:
+            wdata = json.loads(url.read().decode())
+
+        try:
+            description = wdata['search'][0]['description']
+        except KeyError:
+            description = None
+        try:
+            label = wdata['search'][0]['label']
+        except KeyError:
+            label = None
+
+
+        return {'description': description, 'label': label}
+
+    @staticmethod
+    def getGettyData(id):
+        import requests
+        from bs4 import BeautifulSoup
+
+        url = "http://vocabsservices.getty.edu/AATService.asmx/AATGetSubject?subjectID=" + id
+        wdata = requests.get(url)
+        soup = BeautifulSoup(wdata.content, "lxml-xml")
+        GettyData= {}
+        GettyData['label'] = soup.find('Preferred_Term').Term_Text.string
+        GettyData['qualifier'] = soup.find('Qualifier').string
+        GettyData['description'] = soup.find('Descriptive_Note').Note_Text.string
+        return GettyData

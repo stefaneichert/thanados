@@ -2203,11 +2203,14 @@ function getTypeData(id, div, hierarchy) {
         if (data.topparent.description) returnHtml = returnHtml + '<br><span><i' +
             ' class="text-muted">' + data.topparent.description + '</i></span>';
         if (data.gazetteers) {
-            gazetteer = "<br><br>Gazetteers:<br>"
+            gazetteer = "<br><br>Identifiers:<br>"
             $.each(data.gazetteers, function (i, gaz) {
-                console.log(gaz)
                 if (typeof gaz.about === "undefined") gaz.about = gaz.domain;
-                gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.about + '" target="_blank">' + gaz.domain + '</a><br>'
+                if (typeof gaz.favicon !== "undefined") {
+                gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.about + '" target="_blank"><img class="mr-2" height="20px"src="' + gaz.favicon +'">' + gaz.domain + ': ' + gaz.identifier +'</a><br>'
+                } else {
+                gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.about + '" target="_blank">' + gaz.domain + ': ' + gaz.identifier +'</a><br>'
+                }
             })
             returnHtml = returnHtml + gazetteer
         }
@@ -2221,27 +2224,12 @@ function getTypeData(id, div, hierarchy) {
     });
 }
 
-function getWikiData(id) {
-    $.ajax({
-        type: 'GET',
-        url: "https://www.wikidata.org/w/api.php?action=wbgetclaims&format=json&property=P18&entity=" + id,
-        success: function (data) {
-            if (data) {
-                console.log(data)
-            } else {
-                console.log('nix')
-            }
-        }})};
-
-
 function logHTML(value, div) {
 
     div.popover({html: true, content: value, container: div.next()});
     div.popover('show');
     var btn = '<div> <button class="closePopover btn btn-xs mb-2 mt-2 btn-secondary float-right" onclick="$(this).popover(\'dispose\')">close</button></div>'
     $(div).next().find('.popover-body').append(btn);
-
-
 }
 
 function setHierarchyPopup(value, div) {

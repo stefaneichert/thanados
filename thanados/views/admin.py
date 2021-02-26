@@ -961,7 +961,7 @@ WHERE entities.child_id = link.range_id
   AND entities.child_id != 0
   AND entity.id IN (SELECT entity_id from web.reference_system)
 ORDER BY entities.child_id;
-
+       
 
 UPDATE thanados.extrefs
 SET description = NULL
@@ -969,7 +969,12 @@ WHERE description = '';
 UPDATE thanados.extrefs
 SET name = NULL
 WHERE name = '';
+
+DROP TABLE IF EXISTS thanados.refsys;
+    CREATE TABLE thanados.refsys AS
+    SELECT entity_id, name, website_url, '' AS icon_url FROM web.reference_system;
     """
+
     g.cursor.execute(sql_4)
 
     sql_5 = """
@@ -992,6 +997,7 @@ DROP TABLE IF EXISTS thanados.ext_types;
 CREATE TABLE thanados.ext_types AS
 SELECT types_all.id                                      AS type_id,
        reference_system.resolver_url || link.description AS url,
+       reference_system.website_url                      AS website,
        entity.name                                       AS name,
        entity.description                                AS description,
        entity.id,
@@ -1604,6 +1610,11 @@ WHERE --set types to display in jstree
    OR name_path LIKE 'Position of Find in Grave%'
    OR name_path LIKE 'Sex%'
    OR name_path LIKE 'Stylistic Classification%'
+   OR name_path LIKE 'Color%'
+   OR name_path LIKE 'Condition of Burial%'
+   OR name_path LIKE 'Discoloration Staining Adhesion%'
+   OR name_path LIKE 'Stylistic Classification%'
+   OR name_path LIKE 'Count%'
 UNION ALL
 SELECT DISTINCT 'dimensions' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
@@ -1617,6 +1628,8 @@ SELECT DISTINCT 'value' AS level, id::text, name AS text, parent_id::text AS par
 FROM thanados.types_all
 WHERE name_path LIKE 'Body Height%' OR
 name_path LIKE 'Isotopic Analyses%' OR
+name_path LIKE 'Count%' OR
+name_path LIKE 'Bone measurements%' OR
 name_path LIKE 'Absolute Age%'
 UNION ALL
 SELECT DISTINCT 'find' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
@@ -2242,188 +2255,29 @@ def geoclean_execute():  # pragma: no cover
     if current_user.group not in ['admin']:
         abort(403)
 
-    sql_5 = """
-    -- cleanup for geometries
--- remove point geom if it is the same as parent entity
-DROP TABLE IF EXISTS thanados.giscleanup;
-CREATE TABLE thanados.giscleanup AS
- (
-SELECT 	e.system_type,
-	e.child_name,
-	e.parent_id,
-	e.child_id,
-	e.geom AS jsongeom,
-	l.property_code,
-	l.range_id,
-	g.id,
-	g.geom
-	FROM thanados.entities e JOIN model.link l ON e.child_id = l.domain_id JOIN gis.point g ON l.range_id = g.entity_id WHERE l.property_code = 'P53');
+    g.cursor.execute("SELECT * FROM thanados.refsys")
+    resultRefs = g.cursor.fetchall();
+    import favicon, requests
+    user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
+    headers = {'User-Agent': user_agent}
+    for row in resultRefs:
+        icons = favicon.get(row.website_url, headers=headers, timeout=2)
+        ref_id = row.entity_id
+        print(row.website_url)
+        if icons:
+            print(icons[0].url)
+            print(icons[0].format)
 
-DELETE FROM gis.point g WHERE g.id in (
-SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'stratigraphic unit' ORDER BY g1.system_type, g1.child_id, g2.child_name);
+            response = requests.get(icons[0].url, stream=True)
+            with open('./thanados/static/images/favicons/' + str(ref_id) + '.{}'.format(icons[0].format), 'wb') as image:
+                for chunk in response.iter_content(1024):
+                    image.write(chunk)
+                fav_filename = '/static/images/favicons/' + str(ref_id) + '.' + icons[0].format
 
-DELETE FROM gis.point g WHERE g.id in (
-SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'feature' ORDER BY g1.system_type, g1.child_id, g2.child_name);
+            g.cursor.execute("UPDATE thanados.refsys SET icon_url = %(favicon_)s WHERE entity_id = %(ref_id)s",
+                          {'favicon_': fav_filename, 'ref_id': ref_id})
 
-DELETE FROM gis.point g WHERE g.id in (
-SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'place' ORDER BY g1.system_type, g1.child_id, g2.child_name);
-
---Remove point geometries from stratigraphic units and finds
-/*
-DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup WHERE system_type NOT IN (
-'feature', 'place'));
-*/
-
-/*
--- remove point coordinates from graves for selected sites
-DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup where parent_id IN (
-            47093, -- Althofen
-            46319, -- Atschalas
-            47079, -- Augsdorf
-            47831, -- Baardorf
-            45631, -- Baiersdorf
-            46385, -- Bleiburg Barracks
-            46295, -- Breitenstein
-            45615, -- Brückl
-            49177, -- Dellach - oldest house
-            49631, -- Dellach House No. 13
-            46409, -- Dellach House No. 38
-            45625, -- Dreulach
-            46325, -- Duel
-            46261, -- Dullach II
-            46301, -- Faak am See
-            46341, -- Faschendorf
-            49153, -- Feistritz an der Drau - Görz
-            45179, -- Feistritz Bleiburg
-            47571, -- Förk
-            45161, -- Friedlach
-            47883, -- Friesach Galgenbichl
-            45665, -- Friesach Olsa
-            46591, -- Gödersdorf
-            45143, -- Göriach
-            45675, -- Goritschach Brodnikkreuz
-            46747, -- Grafenstein
-            50565, -- Graßdorf
-            45797, -- Grassen
-            45837, -- Gratzerkogel
-            46307, -- Griffen
-            46267, -- Gurina
-            45723, -- Heiligenblut
-            47693, -- Hermagor
-            46313, -- Hochosterwitz
-            47713, -- Höflein
-            45867, -- Hundsdorf Rosental
-            45167, -- KanzianibergDROP TABLE IF EXISTS thanados.giscleanup;
-CREATE TABLE thanados.giscleanup AS
- (
-SELECT 	e.system_type,
-	e.child_name,
-	e.parent_id,
-	e.child_id,
-	e.geom AS jsongeom,
-	l.property_code,
-	l.range_id,
-	g.id,
-	g.geom
-	FROM thanados.entities e JOIN model.link l ON e.child_id = l.domain_id JOIN gis.point g ON l.range_id = g.entity_id WHERE l.property_code = 'P53');
-
-DELETE FROM gis.point g WHERE g.id in (
-SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'stratigraphic unit' ORDER BY g1.system_type, g1.child_id, g2.child_name);
-
-DELETE FROM gis.point g WHERE g.id in (
-SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'feature' ORDER BY g1.system_type, g1.child_id, g2.child_name);
-
-DELETE FROM gis.point g WHERE g.id in (
-SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'place' ORDER BY g1.system_type, g1.child_id, g2.child_name);
-
---Remove point geometries from stratigraphic units and finds
-/*
-DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup WHERE system_type NOT IN (
-'feature', 'place'));
-*/
-
-/*
--- remove point coordinates from graves for selected sites
-DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup where parent_id IN (
-            47093, -- Althofen
-            46319, -- Atschalas
-            47079, -- Augsdorf
-            47831, -- Baardorf
-            45631, -- Baiersdorf
-            46385, -- Bleiburg Barracks
-            46295, -- Breitenstein
-            45615, -- Brückl
-            49177, -- Dellach - oldest house
-            49631, -- Dellach House No. 13
-            46409, -- Dellach House No. 38
-            45625, -- Dreulach
-            46325, -- Duel
-            46261, -- Dullach II
-            46301, -- Faak am See
-            46341, -- Faschendorf
-            49153, -- Feistritz an der Drau - Görz
-            45179, -- Feistritz Bleiburg
-            47571, -- Förk
-            45161, -- Friedlach
-            47883, -- Friesach Galgenbichl
-            45665, -- Friesach Olsa
-            46591, -- Gödersdorf
-            45143, -- Göriach
-            45675, -- Goritschach Brodnikkreuz
-            46747, -- Grafenstein
-            50565, -- Graßdorf
-            45797, -- Grassen
-            45715, -- Kappel am Krappfeld
-            45463, -- Kathreinkogel
-            46359, -- Keutschach
-            46331, -- Kolbnitz
-            46371, -- Kosasmojach
-            46365, -- Köttmannsdorf
-            50577, -- Krainberg
-            45191, -- Lamprechtskogel
-            46255, -- Längdorf
-            45185, -- Launsdorf
-            47435, -- Lebmach
-            45423, -- Lendorf 1
-            45861, -- Lendorf 2
-            45651, -- Maria Rain
-            45197, -- Metschach
-            46421, -- Oberdorf
-            45843, -- Obermieger
-            45659, -- Plescherken
-            45761, -- Puch
-            50597, -- Pulst
-            45825, -- Puppitsch Obermühlbach
-            46415, -- Ratschitschach
-            50589, -- Reisberg
-            46753, -- Straßfried
-            45457, -- Tscheltschnigkogel
-            46275, -- Ulrichsberg I
-            46289 -- Ulrichsberg II
-    ));  
-*/
---remove point geom if polygon geom exists
-DROP TABLE IF EXISTS thanados.giscleanup;
-CREATE TABLE thanados.giscleanup AS
- (
-SELECT 	e.system_type,
-	e.child_name,
-	e.parent_id,
-	e.child_id,
-	l.property_code,
-	l.range_id,
-	g.id,
-	g.geom AS poly_id,
-	g2.id AS point_id,
-	g2.geom
-	FROM thanados.entities e JOIN model.link l ON e.child_id = l.domain_id JOIN gis.polygon g ON l.range_id = g.entity_id JOIN gis.point g2 ON g.entity_id = g2.entity_id WHERE l.property_code = 'P53');
-
-DELETE FROM gis.point WHERE id IN (SELECT point_id FROM thanados.giscleanup);
-DROP TABLE IF EXISTS thanados.giscleanup;
-    """
-
-    g.cursor.execute(sql_5)
-    return redirect(url_for('jsonprepare_execute'))
+    return redirect(url_for('admin'))
 
 
 @app.route('/admin/timeclean/')
