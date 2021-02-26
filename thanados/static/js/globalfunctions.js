@@ -1666,7 +1666,6 @@ function getBasemaps() {
     });
 
 
-
     Esri_WorldHillshade = L.tileLayer('https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}', {
         crossOrigin: "",
         attribution: "",
@@ -1675,8 +1674,10 @@ function getBasemaps() {
         opacity: 0.25
     });
 
-    relief = new L.layerGroup([OpenStreetMap_HOT_ov, Esri_WorldHillshade], {attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>. Hillshade Sources: Esri, Airbus DS, USGS, NGA, NASA, CGIAR, N Robinson, NCEAS, NLS, OS, NMA, Geodatastyrelsen, Rijkswaterstaat, GSA, Geoland, FEMA, Intermap, and the GIS user community</div>'});
+    relief = new L.layerGroup([OpenStreetMap_HOT_ov, Esri_WorldHillshade], {
+        attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>. Hillshade Sources: Esri, Airbus DS, USGS, NGA, NASA, CGIAR, N Robinson, NCEAS, NLS, OS, NMA, Geodatastyrelsen, Rijkswaterstaat, GSA, Geoland, FEMA, Intermap, and the GIS user community</div>'
+    });
 
     satellite = Esri_WorldImagery; //define aerial image layer
     landscape = relief; // define topography layer
@@ -2201,6 +2202,18 @@ function getTypeData(id, div, hierarchy) {
             ' <a href="/vocabulary/' + data.topparent.id + '" target="_blank">' + data.topparent.name + '</a></span>';
         if (data.topparent.description) returnHtml = returnHtml + '<br><span><i' +
             ' class="text-muted">' + data.topparent.description + '</i></span>';
+        if (data.gazetteers) {
+            gazetteer = "<br><br>Identifiers:<br>"
+            $.each(data.gazetteers, function (i, gaz) {
+                if (typeof gaz.about === "undefined") gaz.about = gaz.domain;
+                if (typeof gaz.favicon !== "undefined") {
+                gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.about + '" target="_blank"><img class="mr-2" height="20px"src="' + gaz.favicon +'">' + gaz.domain + ': ' + gaz.identifier +'</a><br>'
+                } else {
+                gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.about + '" target="_blank">' + gaz.domain + ': ' + gaz.identifier +'</a><br>'
+                }
+            })
+            returnHtml = returnHtml + gazetteer
+        }
         returnValue = returnHtml;
         if (hierarchy) {
             setHierarchyPopup(returnValue, div)
@@ -2217,8 +2230,6 @@ function logHTML(value, div) {
     div.popover('show');
     var btn = '<div> <button class="closePopover btn btn-xs mb-2 mt-2 btn-secondary float-right" onclick="$(this).popover(\'dispose\')">close</button></div>'
     $(div).next().find('.popover-body').append(btn);
-
-
 }
 
 function setHierarchyPopup(value, div) {

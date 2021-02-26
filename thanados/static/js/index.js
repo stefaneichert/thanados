@@ -55,11 +55,15 @@ if ($('#map').length) {
         '                            </div>' +
         '<div class="col-sm">' +
         '<h4 class="statistic-counter">' + entitycount[2] + '</h4>' +
-        '                                <p>Burials</p>\n' +
+        '                                <p>Individuals</p>\n' +
         '                            </div>' +
         '<div class="col-sm">' +
         '<h4 class="statistic-counter">' + entitycount[3] + '</h4>' +
         '                                <p>Finds</p>\n' +
+        '                            </div>' +
+        '<div class="col-sm">' +
+        '<h4 class="statistic-counter">' + entitycount[4] + '</h4>' +
+        '                                <p>Osteology Datasets</p>\n' +
         '                            </div>'
     )
 

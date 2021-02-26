@@ -5,7 +5,6 @@ from thanados.models.entity import Data
 
 
 @app.route('/')
-@app.route('/index')
 def index():
     site_list = Data.get_list()
 
@@ -18,7 +17,9 @@ def index():
 || (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_type = 'stratigraphic unit' 
         AND site_id IN %(site_ids)s AND Path LIKE 'Stratigraphic Unit > Burial%%') || ','
 || (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_type = 'find' 
-        AND site_id IN %(site_ids)s AND Path LIKE 'Find >%%') || ']'
+        AND site_id IN %(site_ids)s AND Path LIKE 'Find >%%') || ','
+|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_type = 'human remains' 
+        AND site_id IN %(site_ids)s AND Path LIKE 'Human Remains >%%') || ']'
     """
 
     g.cursor.execute(sql, {'site_ids': tuple(g.site_list)})
