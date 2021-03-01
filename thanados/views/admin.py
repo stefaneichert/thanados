@@ -50,8 +50,12 @@ def admin():  # pragma: no cover
                         ) AS allsites 
                     
     """
-    g.cursor.execute(sql, {'site_ids': tuple(g.site_list)})
-    currentsitelist = g.cursor.fetchone()
+
+    try:
+        g.cursor.execute(sql, {'site_ids': tuple(g.site_list)})
+        currentsitelist = g.cursor.fetchone()
+    except Exception:
+        currentsitelist = []
 
     return render_template('admin/index.html', form=form, sites=currentsitelist)
 
