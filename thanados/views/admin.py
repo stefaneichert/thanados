@@ -1,3 +1,4 @@
+import json
 import sys
 from datetime import datetime
 
@@ -57,7 +58,48 @@ def admin():  # pragma: no cover
     except Exception:
         currentsitelist = []
 
-    return render_template('admin/index.html', form=form, sites=currentsitelist)
+
+    sql_missing_refs = """
+        
+SELECT jsonb_agg(jsonb_build_object('id', parent_id::TEXT, 'name', child_name)) AS nm FROM (SELECT DISTINCT r.parent_id, e.child_name
+FROM thanados.reference r
+         JOIN thanados.sites e ON e.child_id = r.parent_id
+WHERE r.parent_id IN
+      (SELECT parent_id
+       FROM (SELECT parent_id
+             FROM (SELECT parent_id, COUNT(parent_id) AS number from thanados.reference GROUP BY parent_id) n
+             WHERE number > 1) d
+       WHERE d.parent_id NOT IN
+             (SELECT parent_id
+              FROM thanados.reference
+              WHERE parent_id IN
+                    (SELECT parent_id
+                     FROM (SELECT parent_id, COUNT(parent_id) AS number from thanados.reference GROUP BY parent_id) n
+                     WHERE number > 1)
+                AND reference LIKE '%%##main')
+ORDER BY parent_id)) nma WHERE nma.parent_id IN %(site_ids)s"""
+
+    try:
+        g.cursor.execute(sql_missing_refs, {'site_ids': tuple(g.site_list)})
+        missingrefs = g.cursor.fetchone()[0]
+        if missingrefs == None:
+            missingrefs = []
+        print (missingrefs)
+    except Exception:
+        print('no result')
+        missingrefs = []
+
+    sql_missing_geonames = """
+    SELECT jsonb_agg(jsonb_build_object('id', child_id::TEXT, 'name', child_name)) AS ng FROM (SELECT child_name, child_id FROM thanados.sites WHERE child_id NOT IN (
+SELECT parent_id FROM thanados.extrefs WHERE name = 'GeoNames')) ng1 WHERE ng1.child_id IN %(site_ids)s
+        """
+    try:
+        g.cursor.execute(sql_missing_geonames, {'site_ids': tuple(g.site_list)})
+        missingeonames = g.cursor.fetchone()[0]
+    except Exception:
+        missingeonames = []
+
+    return render_template('admin/index.html', form=form, sites=currentsitelist, openatlas_url = app.config["OPENATLAS_URL"].replace('update', 'entity'), missingrefs=missingrefs, missingeonames=missingeonames)
 
 
 @app.route('/admin/execute/')
@@ -1112,7 +1154,9 @@ CREATE TABLE thanados.testins AS
 UPDATE thanados.types_and_files
 SET extrefs = (SELECT extref from thanados.testins f
                  WHERE entity_id = f.child_id);
-                 DROP TABLE IF EXISTS thanados.extrefs;
+                 --DROP TABLE IF EXISTS thanados.extrefs;
+                 
+DROP TABLE IF EXISTS thanados.testins;                 
 --31ms
 
 -- insert dimension data

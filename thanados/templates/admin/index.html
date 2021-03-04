@@ -4,6 +4,8 @@
     <link href="/static/css/charts.css" rel="stylesheet">
     <script>
         tabledata = {{ sites|tojson }};
+        missingrefs = {{ missingrefs|tojson }};
+        missingeonames = {{ missingeonames|tojson }};
     </script>
     <div id="mycontent">
         <div class="ml-5 mr-5">
@@ -135,6 +137,64 @@
                         {{ form.save(class_="float-right mb-2 mt-2 btn btn-secondary")|safe }}
                     </div>
                 </form>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card mb-5">
+                        <div class="card-header">
+                            No distinct data source:
+                        </div>
+                        <div class="card-body">
+                            <table id="missingmain" class="table table-striped table-bordered" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                {% for row in missingrefs %}
+                                    <tr>
+                                        <td><a href="{{ openatlas_url + row.id }}" target="_blank">{{ row.name }}</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card mb-5">
+                        <div class="card-header">
+                            No GeoNames:
+                        </div>
+                        <div class="card-body">
+                            <table id="missingGeoNames" class="table table-striped table-bordered" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                {% for row in missingeonames %}
+                                    <tr>
+                                        <td><a href="{{ openatlas_url.replace('entity', 'update') + row.id }}" target="_blank">{{ row.name }}</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+
+
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

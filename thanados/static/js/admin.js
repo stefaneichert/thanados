@@ -6,7 +6,13 @@ $(window).resize(function () {
     $('#mycontent').css('max-height', (maximumHeight - 10) + 'px');
 });
 
+
+
 $(document).ready(function () {
+
+    $('#missingmain').DataTable();
+    $('#missingGeoNames').DataTable();
+
     $('#infotext').toggle();
     $("#jsonPrepBtn").click(function () {
         // disable button
