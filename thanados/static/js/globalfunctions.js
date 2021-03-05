@@ -1560,7 +1560,7 @@ function getBasemaps() {
 
     OpenStreetMap_HOT = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
         maxZoom: 25,
-        maxNativeZoom: 20,
+        maxNativeZoom: 17,
         attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
             '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a></div>'
     });
@@ -1633,7 +1633,7 @@ function getBasemaps() {
     OpenStreetMap_HOT_ov = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
         crossOrigin: "",
         maxZoom: 25,
-        maxNativeZoom: 20,
+        maxNativeZoom: 17,
         //transparency: 'true',
         //opacity: 1,
         attribution: ""

@@ -96,10 +96,23 @@ SELECT parent_id FROM thanados.extrefs WHERE name = 'GeoNames')) ng1 WHERE ng1.c
     try:
         g.cursor.execute(sql_missing_geonames, {'site_ids': tuple(g.site_list)})
         missingeonames = g.cursor.fetchone()[0]
+        if missingeonames == None:
+            missingeonames = []
     except Exception:
         missingeonames = []
 
-    return render_template('admin/index.html', form=form, sites=currentsitelist, openatlas_url = app.config["OPENATLAS_URL"].replace('update', 'entity'), missingrefs=missingrefs, missingeonames=missingeonames)
+    sql_missing_geo = """
+        SELECT jsonb_agg(jsonb_build_object('id', child_id::TEXT, 'name', child_name)) AS ng FROM (SELECT * FROM thanados.sites WHERE geom IS NULL) a
+            """
+    try:
+        g.cursor.execute(sql_missing_geo) #, {'site_ids': tuple(g.site_list)})
+        missingeo = g.cursor.fetchone()[0]
+        if missingeo == None:
+            missingeo = []
+    except Exception:
+        missingeo = []
+
+    return render_template('admin/index.html', form=form, sites=currentsitelist, openatlas_url = app.config["OPENATLAS_URL"].replace('update', 'entity'), missingrefs=missingrefs, missingeonames=missingeonames, missingeo=missingeo)
 
 
 @app.route('/admin/execute/')

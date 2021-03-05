@@ -12,6 +12,7 @@ $(document).ready(function () {
 
     $('#missingmain').DataTable();
     $('#missingGeoNames').DataTable();
+    $('#missingGeo').DataTable();
 
     $('#infotext').toggle();
     $("#jsonPrepBtn").click(function () {
