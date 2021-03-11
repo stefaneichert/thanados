@@ -256,22 +256,22 @@ function checkAvailable(appendLevel, type) {
     AvailableNodes = [];
     switch (appendLevel) {
         case "burial_site":
-            form = "Place";
+            form = "place";
             break;
         case "feature":
-            form = "Feature";
+            form = "feature";
             if (mapsearch) availables = availableTypes.gravetypes;
             break;
         case "strat":
-            form = "Stratigraphic Unit";
+            form = "stratigraphic_unit";
             if (mapsearch) availables = availableTypes.burialtypes;
             break;
         case "find":
-            form = "Find";
+            form = "find";
             if (mapsearch) availables = availableTypes.findtypes;
             break;
         case "osteology":
-            form = "Human Remains"
+            form = "human_remains"
             if (mapsearch) availables = availableTypes.bonetypes;
             break;
         default:
@@ -306,22 +306,22 @@ function initiateTree(Iter, appendLevel, criteria, targetField) {
     var form;
     switch (appendLevel) {
         case "burial_site":
-            form = "Place";
+            form = "place";
             break;
         case "feature":
-            form = "Feature";
+            form = "feature";
             if (mapsearch) availables = availableTypes.gravetypes;
             break;
         case "strat":
-            form = "Stratigraphic Unit";
+            form = "stratigraphic_unit";
             if (mapsearch) availables = availableTypes.burialtypes;
             break;
         case "find":
-            form = "Find";
+            form = "find";
             if (mapsearch) availables = availableTypes.findtypes;
             break;
         case "osteology":
-            form = "Human Remains"
+            form = "human_remains"
             if (mapsearch) availables = availableTypes.bonetypes;
             break;
         default:
@@ -2326,10 +2326,10 @@ function repairJson(data) {
                         if (typeof (find.properties.maintype.id) === "undefined") {
                             find.properties.maintype = {
                                 "systemtype": "find",
-                                "name": "Find",
-                                "id": 13368,
-                                "parent_id": 13368,
-                                "path": "Find"
+                                "name": "Artifact",
+                                "id": 157754,
+                                "parent_id": 157754,
+                                "path": "Artifact"
                             }
                         }
                     });
