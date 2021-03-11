@@ -174,7 +174,7 @@ function appendSearch() {//append search form to dialog
         '<div class="input-group-prepend">\n' +
         '<label class="input-group-text" for="LevelSelect_' + Iter + '">1. </label>\n' +
         '</div>\n' +
-        '<select class="custom-select empty" title="Select whether to search for cemeteries, graves, burials (=human remains) or finds" id="LevelSelect_' + Iter + '">\n' +
+        '<select class="custom-select empty" title="Select whether to search for cemeteries, graves, burials (=human_remains) or finds" id="LevelSelect_' + Iter + '">\n' +
         '<option selected disabled>Select search level...</option>\n' +
         '<option value="burial_site">Cemeteries</option>\n' +
         '<option value="feature">Graves</option>\n' +
@@ -410,17 +410,17 @@ function returnQuerystring() {
     mymin = $('#min' + Iter).val();
     mymax = $('#max' + Iter).val();
     mytypes = $('#type' + Iter).val();
-    system_type = mylevel;
-    if (mylevel === 'osteology') system_type = 'human remains'
-    if (mylevel === 'burial_site') system_type = 'place';
-    if (mylevel === 'strat') system_type = 'stratigraphic unit';
+    system_class = mylevel;
+    if (mylevel === 'osteology') system_class = 'human_remains'
+    if (mylevel === 'burial_site') system_class = 'place';
+    if (mylevel === 'strat') system_class = 'stratigraphic_unit';
     $('#headingb' + Iter).toggle();
     $('#Resultlist' + Iter).html('<span class="spinner-border spinner-border-sm mr-3" role="status" aria-hidden="true"></span>...Search in progress');
     $.ajax({
         type: 'POST',
         url: '/ajax/test',
         data: {
-            'system_type': system_type,
+            'system_class': system_class,
             'types': mytypes,
             'criteria': mycriteria,
             'min': mymin,
@@ -856,7 +856,7 @@ function createCSV(data) {
             newDataset.max = dataset.max;
             newDataset.path = dataset.path.replace(/"/g, '\'');
             newDataset.maintype = dataset.maintype.replace(/"/g, '\'');
-            newDataset.system_type = dataset.system_type;
+            newDataset.system_class = dataset.system_class;
             newDataset.context = dataset.context.replace(/"/g, '\'');
             newDataset.burial_id = dataset.burial_id;
             newDataset.grave_id = dataset.grave_id;

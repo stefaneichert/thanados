@@ -131,7 +131,7 @@ def vocabulary_view(object_id: int, format_=None):
     topparent = g.cursor.fetchone()
 
     sql_topparent_info = """
-        select e.name, e.description, e.id, h.multiple, h.standard AS system_type, h.value_type 
+        select e.name, e.description, e.id, h.multiple, h.standard AS system_class, h.value_type 
         from model.entity e JOIN web.hierarchy h ON e.id = h.id WHERE e.id = %(topparent)s
     """
 
@@ -150,11 +150,11 @@ def vocabulary_view(object_id: int, format_=None):
 
     type = ''
 
-    if result.system_type:
+    if result.system_class:
         type = 'System type'
     if result.value_type:
         type = 'Value type'
-    elif not result.system_type:
+    elif not result.system_class:
         type = 'Custom type'
 
     topparent['selection'] = multi
@@ -280,7 +280,7 @@ def vocabulary_view(object_id: int, format_=None):
     sql_files = """SELECT 
                 m.id
                 FROM model.entity m JOIN model.link l ON m.id = l.domain_id
-                WHERE l.range_id = %(object_id)s AND l.property_code = 'P67' AND m.system_type = 
+                WHERE l.range_id = %(object_id)s AND l.property_code = 'P67' AND m.system_class = 
                 'file' 
            """
     g.cursor.execute(sql_files, {'object_id': object_id})
@@ -350,7 +350,7 @@ def vocabulary_view(object_id: int, format_=None):
     # get all entitites with this type
     sql_entities = """
         SELECT child_id, child_name, maintype, type, type_id, min, lon, lat, context, 
-        filename, system_type FROM 
+        filename, system_class FROM 
         thanados.searchdata s
         WHERE type_id IN %(type_id)s AND s.site_id IN %(site_ids)s  
     """
@@ -363,8 +363,8 @@ def vocabulary_view(object_id: int, format_=None):
                 row.maintype, 'type': row.type, 'type_id': row.type_id, 'value': row.min,
                                      'lon': row.lon,
                                      'lat': row.lat, 'context': row.context, 'file': row.filename,
-                                     'system_type':
-                                         row.system_type})
+                                     'system_class':
+                                         row.system_class})
 
     g.cursor.execute(sql_entities, {'type_id': entlist, 'site_ids': tuple(g.site_list)})
     output_direct_ents = g.cursor.fetchall()
@@ -378,8 +378,8 @@ def vocabulary_view(object_id: int, format_=None):
                                                'lon': row.lon,
                                                'lat': row.lat, 'context': row.context,
                                                'file': row.filename,
-                                               'system_type':
-                                                   row.system_type})
+                                               'system_class':
+                                                   row.system_class})
 
     # get type tree
     def getchildren(id, node):

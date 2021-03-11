@@ -10,15 +10,15 @@ def index():
 
     sql = """
     SELECT '['
-|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_type = 'place' 
+|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'place' 
         AND site_id IN %(site_ids)s AND Path LIKE 'Place > Burial Site%%') || ','
-|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_type = 'feature' 
+|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'feature' 
         AND site_id IN %(site_ids)s AND Path LIKE 'Feature > Grave%%') || ','
-|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_type = 'stratigraphic unit' 
+|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'stratigraphic_unit' 
         AND site_id IN %(site_ids)s AND Path LIKE 'Stratigraphic Unit > Burial%%') || ','
-|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_type = 'find' 
+|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'find' 
         AND site_id IN %(site_ids)s AND Path LIKE 'Find >%%') || ','
-|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_type = 'human remains' 
+|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'human_remains' 
         AND site_id IN %(site_ids)s AND Path LIKE 'Human Remains >%%') || ']'
     """
 

@@ -2312,7 +2312,7 @@ function repairJson(data) {
             $.each(feature.burials, function (i, burial) {
                 if (typeof (burial.properties.maintype.id) === "undefined") {
                     burial.properties.maintype = {
-                        "systemtype": "stratigraphic unit",
+                        "systemtype": "stratigraphic_unit",
                         "name": "Stratigraphic Unit",
                         "id": 13365,
                         "parent_id": 13365,
@@ -2339,7 +2339,7 @@ function repairJson(data) {
                     $.each(burial.humanremains, function (i, bone) {
                         if (typeof (bone.properties.maintype.id) === "undefined") {
                             bone.properties.maintype = {
-                                "systemtype": "human remains",
+                                "systemtype": "human_remains",
                                 "name": "Human Remains",
                                 "id": 119334,
                                 "parent_id": 119334,
