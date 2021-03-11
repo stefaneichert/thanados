@@ -1722,7 +1722,7 @@ UPDATE thanados.typesforjson
 SET parent = '#'
 WHERE parent = '73'; --necessary for jstree
 INSERT INTO thanados.typesforjson (level, id, text, parent, path, name_path, forms, topparent)
-VALUES ('find', '13368', 'Artifact', '#', '13368', 'Artifact', '["Artifact"]', 13368);
+VALUES ('find', '157754', 'Artifact', '#', '157754', 'Artifact', '["Artifact"]', 157754);
 --hack because find has no parent
 
 -- create table with all types as json
