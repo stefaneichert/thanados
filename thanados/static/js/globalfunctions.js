@@ -2326,10 +2326,10 @@ function repairJson(data) {
                         if (typeof (find.properties.maintype.id) === "undefined") {
                             find.properties.maintype = {
                                 "systemtype": "find",
-                                "name": "Artifact",
+                                "name": "find",
                                 "id": 157754,
                                 "parent_id": 157754,
-                                "path": "Artifact"
+                                "path": "Find"
                             }
                         }
                     });
