@@ -663,9 +663,9 @@ SELECT *
 FROM thanados.types_main
 WHERE path LIKE 'Place >%'
    OR path LIKE 'Feature >%'
-   OR path LIKE 'Stratigraphic Unit >%'
+   OR path LIKE 'Stratigraphic unit >%'
    OR path LIKE 'Artifact >%'
-   OR path LIKE 'Human Remains >%'
+   OR path LIKE 'Human remains >%'
 ORDER BY entity_id, path;
 
 --types dimensions
@@ -853,8 +853,8 @@ FROM thanados.types_main
 WHERE path NOT LIKE 'Dimensions >%'
   AND path NOT LIKE 'Place >%'
   AND path NOT LIKE 'Feature >%'
-  AND path NOT LIKE 'Stratigraphic Unit >%'
-  AND path NOT LIKE 'Human Remains >%'
+  AND path NOT LIKE 'Stratigraphic unit >%'
+  AND path NOT LIKE 'Human remains >%'
   AND path NOT LIKE 'Artifact >%'
   AND path NOT LIKE 'Material >%'
 ORDER BY entity_id, path;
@@ -1699,11 +1699,11 @@ WHERE name_path LIKE 'Artifact >%'
 UNION ALL
 SELECT DISTINCT 'osteology' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
-WHERE name_path LIKE 'Human Remains%'
+WHERE name_path LIKE 'Human remains%'
 UNION ALL
 SELECT DISTINCT 'strat' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
-WHERE name_path LIKE 'Stratigraphic Unit%'
+WHERE name_path LIKE 'Stratigraphic unit%'
 UNION ALL
 SELECT DISTINCT 'burial_site' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all

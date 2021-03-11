@@ -15,11 +15,11 @@ def index():
 || (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'feature' 
         AND site_id IN %(site_ids)s AND Path LIKE 'Feature > Grave%%') || ','
 || (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'stratigraphic_unit' 
-        AND site_id IN %(site_ids)s AND Path LIKE 'Stratigraphic Unit > Burial%%') || ','
+        AND site_id IN %(site_ids)s AND Path LIKE 'Stratigraphic unit > Burial%%') || ','
 || (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'find' 
-        AND site_id IN %(site_ids)s AND Path LIKE 'Artifact >%%') || ','
+        AND site_id IN %(site_ids)s AND Path LIKE 'Find >%%') || ','
 || (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'human_remains' 
-        AND site_id IN %(site_ids)s AND Path LIKE 'Human Remains >%%') || ']'
+        AND site_id IN %(site_ids)s AND Path LIKE 'Human remains >%%') || ']'
     """
 
     g.cursor.execute(sql, {'site_ids': tuple(g.site_list)})

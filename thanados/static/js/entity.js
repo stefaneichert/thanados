@@ -405,7 +405,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         humanremains = sortByProperty(humanremains, 'path')
 
         $.each(humanremains, function (i, hr) {
-            hr_name = hr.properties.maintype.path.replace("Human Remains > ", "")
+            hr_name = hr.properties.maintype.path.replace("Human remains > ", "")
             svg_label = hr.properties.maintype.id;
             siding = ''
             if (hr.properties.types) {
