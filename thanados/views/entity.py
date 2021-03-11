@@ -948,7 +948,7 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
         depthData = getDims('Height')
         widthData = getDims('Width')
         lengthData = getDims('Length')
-        findsPerDepth = getFindsPerDim('Height', 'Find >%')
+        findsPerDepth = getFindsPerDim('Height', 'Artifact >%')
         findAges = getFindAges()
         findBracketAges = getBracketFindAges()
 
@@ -1005,23 +1005,23 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
                 'labels'),
             "datasets": [
                 {'label': 'Weapons/Riding Equipment',
-                 'data': getFindsPerDim('Height', 'Find > Weapons/Armour/Riding%').get(
+                 'data': getFindsPerDim('Height', 'Artifact > Weapons/Armour/Riding%').get(
                      'datasets')},
                 {'label': 'Jewellery',
                  'data': getFindsPerDim('Height',
-                                        'Find > Accessories > Jewellery%').get(
+                                        'Artifact > Accessories > Jewellery%').get(
                      'datasets')},
                 {'label': 'Belt Accessories',
                  'data': getFindsPerDim('Height',
-                                        'Find > Accessories > Belt Accessories%').get(
+                                        'Artifact > Accessories > Belt Accessories%').get(
                      'datasets')},
                 {'label': 'Pottery',
                  'data': getFindsPerDim('Height',
-                                        'Find > Pottery%').get(
+                                        'Artifact > Pottery%').get(
                      'datasets')},
                 {'label': 'Knife',
                  'data': getFindsPerDim('Height',
-                                        'Find > Equipment > Knife%').get(
+                                        'Artifact > Equipment > Knife%').get(
                      'datasets')}
             ]}
 
@@ -1029,30 +1029,30 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
             "labels": getAgeValueFindsPerTerm('Finds > Weapons/Armour/Riding%').get('labels'),
             "datasets": [
                 {'label': 'Weapons/Riding Equipment',
-                 'data': getAgeValueFindsPerTerm('Find > Weapons/Armour/Riding%').get('datasets')},
+                 'data': getAgeValueFindsPerTerm('Artifact > Weapons/Armour/Riding%').get('datasets')},
                 {'label': 'Jewellery',
-                 'data': getAgeValueFindsPerTerm('Find > Accessories > Jewellery%').get('datasets')},
+                 'data': getAgeValueFindsPerTerm('Artifact > Accessories > Jewellery%').get('datasets')},
                 {'label': 'Belt Accessories',
-                 'data': getAgeValueFindsPerTerm('Find > Accessories > Belt Accessories%').get('datasets')},
+                 'data': getAgeValueFindsPerTerm('Artifact > Accessories > Belt Accessories%').get('datasets')},
                 {'label': 'Pottery',
-                 'data': getAgeValueFindsPerTerm('Find > Pottery%').get('datasets')},
+                 'data': getAgeValueFindsPerTerm('Artifact > Pottery%').get('datasets')},
                 {'label': 'Knife',
-                 'data': getAgeValueFindsPerTerm('Find > Equipment > Knife%').get('datasets')}
+                 'data': getAgeValueFindsPerTerm('Artifact > Equipment > Knife%').get('datasets')}
             ]}
 
         prestigiousfindsBracketAge = {
             "labels": getAgeBracketFindsPerTerm('Finds > Weapons/Armour/Riding%').get('labels'),
             "datasets": [
                 {'label': 'Weapons/Riding Equipment',
-                 'data': getAgeBracketFindsPerTerm('Find > Weapons/Armour/Riding%').get('datasets')},
+                 'data': getAgeBracketFindsPerTerm('Artifact > Weapons/Armour/Riding%').get('datasets')},
                 {'label': 'Jewellery',
-                 'data': getAgeBracketFindsPerTerm('Find > Accessories > Jewellery%').get('datasets')},
+                 'data': getAgeBracketFindsPerTerm('Artifact > Accessories > Jewellery%').get('datasets')},
                 {'label': 'Belt Accessories',
-                 'data': getAgeBracketFindsPerTerm('Find > Accessories > Belt Accessories%').get('datasets')},
+                 'data': getAgeBracketFindsPerTerm('Artifact > Accessories > Belt Accessories%').get('datasets')},
                 {'label': 'Pottery',
-                 'data': getAgeBracketFindsPerTerm('Find > Pottery%').get('datasets')},
+                 'data': getAgeBracketFindsPerTerm('Artifact > Pottery%').get('datasets')},
                 {'label': 'Knife',
-                 'data': getAgeBracketFindsPerTerm('Find > Equipment > Knife%').get('datasets')}
+                 'data': getAgeBracketFindsPerTerm('Artifact > Equipment > Knife%').get('datasets')}
             ]}
 
         network = Data.getNetwork(place_id)

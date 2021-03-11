@@ -17,7 +17,7 @@ def index():
 || (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'stratigraphic_unit' 
         AND site_id IN %(site_ids)s AND Path LIKE 'Stratigraphic Unit > Burial%%') || ','
 || (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'find' 
-        AND site_id IN %(site_ids)s AND Path LIKE 'Find >%%') || ','
+        AND site_id IN %(site_ids)s AND Path LIKE 'Artifact >%%') || ','
 || (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'human_remains' 
         AND site_id IN %(site_ids)s AND Path LIKE 'Human Remains >%%') || ']'
     """

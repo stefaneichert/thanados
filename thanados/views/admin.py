@@ -664,7 +664,7 @@ FROM thanados.types_main
 WHERE path LIKE 'Place >%'
    OR path LIKE 'Feature >%'
    OR path LIKE 'Stratigraphic Unit >%'
-   OR path LIKE 'Find >%'
+   OR path LIKE 'Artifact >%'
    OR path LIKE 'Human Remains >%'
 ORDER BY entity_id, path;
 
@@ -855,7 +855,7 @@ WHERE path NOT LIKE 'Dimensions >%'
   AND path NOT LIKE 'Feature >%'
   AND path NOT LIKE 'Stratigraphic Unit >%'
   AND path NOT LIKE 'Human Remains >%'
-  AND path NOT LIKE 'Find >%'
+  AND path NOT LIKE 'Artifact >%'
   AND path NOT LIKE 'Material >%'
 ORDER BY entity_id, path;
 
@@ -1695,7 +1695,7 @@ name_path LIKE 'Absolute Age%'
 UNION ALL
 SELECT DISTINCT 'find' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
-WHERE name_path LIKE 'Find >%'
+WHERE name_path LIKE 'Artifact >%'
 UNION ALL
 SELECT DISTINCT 'osteology' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
@@ -1722,7 +1722,7 @@ UPDATE thanados.typesforjson
 SET parent = '#'
 WHERE parent = '73'; --necessary for jstree
 INSERT INTO thanados.typesforjson (level, id, text, parent, path, name_path, forms, topparent)
-VALUES ('find', '13368', 'Find', '#', '13368', 'Find', '["Find"]', 13368);
+VALUES ('find', '13368', 'Artifact', '#', '13368', 'Artifact', '["Artifact"]', 13368);
 --hack because find has no parent
 
 -- create table with all types as json

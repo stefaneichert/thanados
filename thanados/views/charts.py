@@ -57,7 +57,7 @@ SELECT '{"types": [' || string_agg (jsonstring, ', ') || ']}' AS mydata FROM
     JOIN thanados.entities e1 ON e1.parent_id = e.child_id
     JOIN thanados.entities e2 ON e2.parent_id = e1.child_id
     JOIN thanados.types_main t ON e2.child_id = t.entity_id
-    WHERE t.path LIKE 'Find%'
+    WHERE t.path LIKE 'Artifact%'
     --GROUP BY m.id, sitename, type, t.path
     ORDER BY 1, 4) t GROUP BY t.sitename, t.id) j)j
     """
