@@ -934,8 +934,8 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
 
         knn = knn()
         pathotree = getBubbleData('Pathologies', '119444', 'p')
-        findtree = getBubbleData('Finds', '13368', 'f')
-        findtree2 = getBubbleData('Finds', '13368', 'i')
+        findtree = getBubbleData('Finds', '157754', 'f')
+        findtree2 = getBubbleData('Finds', '157754', 'i')
         SexDepthData = getSexDepth()
         SexData = getSex()
         GenderData = getgender()
@@ -1001,7 +1001,7 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
             ]}
 
         prestigiousfinds = {
-            "labels": getFindsPerDim('Height', 'Finds > %').get(
+            "labels": getFindsPerDim('Height', 'Artifact > %').get(
                 'labels'),
             "datasets": [
                 {'label': 'Weapons/Riding Equipment',
@@ -1026,7 +1026,7 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
             ]}
 
         prestigiousfindsValueAge = {
-            "labels": getAgeValueFindsPerTerm('Finds > Weapons/Armour/Riding%').get('labels'),
+            "labels": getAgeValueFindsPerTerm('Artifact > Weapons/Armour/Riding%').get('labels'),
             "datasets": [
                 {'label': 'Weapons/Riding Equipment',
                  'data': getAgeValueFindsPerTerm('Artifact > Weapons/Armour/Riding%').get('datasets')},
@@ -1041,7 +1041,7 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
             ]}
 
         prestigiousfindsBracketAge = {
-            "labels": getAgeBracketFindsPerTerm('Finds > Weapons/Armour/Riding%').get('labels'),
+            "labels": getAgeBracketFindsPerTerm('Artifact > Weapons/Armour/Riding%').get('labels'),
             "datasets": [
                 {'label': 'Weapons/Riding Equipment',
                  'data': getAgeBracketFindsPerTerm('Artifact > Weapons/Armour/Riding%').get('datasets')},
