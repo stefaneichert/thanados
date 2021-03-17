@@ -652,12 +652,15 @@ function setmymap(markers, heatmarkers, graveIds) {
 
     });
 
-    eval('landscape' + Iter + ' = jQuery.extend(true, {}, landscape);');
-    eval('natural' + Iter + ' = jQuery.extend(true, {}, natural);');
-    eval('terrain' + Iter + ' = jQuery.extend(true, {}, terrain);');
+
+
+
+    eval('landscape' + Iter + ' = jQuery.extend(true, {}, reliefSearch);');
+    eval('natural' + Iter + ' = jQuery.extend(true, {}, BasemapAT_grau);');
+    eval('terrain' + Iter + ' = jQuery.extend(true, {}, BasemapAT_terrain);');
     eval('blank' + Iter + ' = jQuery.extend(true, {}, blank);');
-    eval('streets' + Iter + ' = jQuery.extend(true, {}, streets);');
-    eval('satellite' + Iter + ' = jQuery.extend(true, {}, satellite);');
+    eval('streets' + Iter + ' = jQuery.extend(true, {}, OpenStreetMap_Mapnik);');
+    eval('satellite' + Iter + ' = jQuery.extend(true, {}, Esri_WorldImagery);');
 
 
     markers.addTo(clustermarkers);
