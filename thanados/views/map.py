@@ -12,7 +12,7 @@ def map(object_id: int):
     types = g.cursor.fetchall()
 
     g.cursor.execute(
-        'SELECT DISTINCT t.id, s.system_type FROM thanados.typesforjson t LEFT JOIN thanados.searchdata s ON t.id::INT = s.type_id::INT WHERE s.site_id = %(id)s',
+        'SELECT DISTINCT t.id, s.system_class FROM thanados.typesforjson t LEFT JOIN thanados.searchdata s ON t.id::INT = s.type_id::INT WHERE s.site_id = %(id)s',
         {'id': object_id})
     jsontypes = g.cursor.fetchall()
     availabletypes = {
@@ -22,13 +22,13 @@ def map(object_id: int):
         'bonetypes': []
     }
     for row in jsontypes:
-        if row.system_type == 'feature':
+        if row.system_class == 'feature':
             availabletypes['gravetypes'].append(row.id)
-        if row.system_type == 'stratigraphic unit':
+        if row.system_class == 'stratigraphic_unit':
             availabletypes['burialtypes'].append(row.id)
-        if row.system_type == 'find':
+        if row.system_class == 'find':
             availabletypes['findtypes'].append(row.id)
-        if row.system_type == 'human remains':
+        if row.system_class == 'human_remains':
             availabletypes['bonetypes'].append(row.id)
 
     return render_template('map/map.html',

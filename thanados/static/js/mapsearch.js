@@ -74,7 +74,7 @@ function appendSearch(Iter) {//append search form to dialog
         '<div class="input-group-prepend">\n' +
         '<label class="input-group-text" for="LevelSelect_' + Iter + '">' + Iter + '. </label>\n' +
         '</div>\n' +
-        '<select class="custom-select empty" title="Select whether to search in graves, burials (=human remains) or finds" id="LevelSelect_' + Iter + '">\n' +
+        '<select class="custom-select empty" title="Select whether to search in graves, burials (=human_remains) or finds" id="LevelSelect_' + Iter + '">\n' +
         '<option selected disabled>Select search level...</option>\n' +
         ((gravesthere) ? '<option value="feature">Graves</option>\n' : '') +
         ((burialsthere) ? '<option value="strat">Burials</option>\n' : '') +
@@ -1084,7 +1084,7 @@ function prepareCSV(result, path, value, unit, feature, level, entity) {
     tmpValue.image = null;
 
 
-    if (tmpValue.ObjectClass === 'find' || tmpValue.ObjectClass === 'human remains') {
+    if (tmpValue.ObjectClass === 'find' || tmpValue.ObjectClass === 'human_remains') {
         $.each(myjson.features, function (i, feature) {
             if (feature.id === tmpValue.graveID) {
                 $.each(feature.burials, function (i, burial) {

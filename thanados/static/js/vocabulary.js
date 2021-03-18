@@ -201,7 +201,7 @@ if (data.entities_recursive) {
                 data: 'context'
             },
             {
-                data: 'system_type'
+                data: 'system_class'
             }
         ],
     });

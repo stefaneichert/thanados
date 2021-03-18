@@ -132,7 +132,7 @@ if (systemtype == 'feature') {
 }
 
 
-if (systemtype == 'stratigraphic unit') {
+if (systemtype == 'stratigraphic_unit') {
     subLabel = 'Finds';
     $.each(jsonmysite.features, function (f, feature) {
         var featureName = feature.properties.name;
@@ -165,7 +165,7 @@ if (systemtype == 'stratigraphic unit') {
 }
 
 
-if (systemtype === 'find' || systemtype === 'human remains') {
+if (systemtype === 'find' || systemtype === 'human_remains') {
     $.each(jsonmysite.features, function (f, feature) {
         var featureName = feature.properties.name;
         var featureID = feature.id;
@@ -261,7 +261,7 @@ function getEntityData(parentName, parentId, currentfeature) {
     }
 
 
-    if (currentfeature.properties.maintype.systemtype == 'stratigraphic unit') {
+    if (currentfeature.properties.maintype.systemtype == 'stratigraphic_unit') {
         if (typeof (currentfeature.finds) !== 'undefined') {
             children = currentfeature.finds;
         } else {
@@ -269,7 +269,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         }
     }
 
-    if (currentfeature.properties.maintype.systemtype == 'find' || currentfeature.properties.maintype.systemtype == 'human remains') {
+    if (currentfeature.properties.maintype.systemtype == 'find' || currentfeature.properties.maintype.systemtype == 'human_remains') {
         children = '';
     }
 
@@ -405,7 +405,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         humanremains = sortByProperty(humanremains, 'path')
 
         $.each(humanremains, function (i, hr) {
-            hr_name = hr.properties.maintype.path.replace("Human Remains > ", "")
+            hr_name = hr.properties.maintype.path.replace("Human remains > ", "")
             svg_label = hr.properties.maintype.id;
             siding = ''
             if (hr.properties.types) {
@@ -772,7 +772,7 @@ function getEntityData(parentName, parentId, currentfeature) {
             ]
         });
 
-        if (systemtype == "stratigraphic unit") table.column(4).visible(false);
+        if (systemtype == "stratigraphic_unit") table.column(4).visible(false);
     } else {
         if (typeof (currentfeature.humanremains) === 'undefined') {
             $('#nav-tab').toggle();
@@ -784,7 +784,7 @@ function getEntityData(parentName, parentId, currentfeature) {
                 //$('#nav-humanremains-tab').addClass('active');
                 //$('#nav-humanremains-tab').removeClass('d-none');
             } else {
-                if (systemtype == "human remains") {
+                if (systemtype == "human_remains") {
                     $('#nav-tab').toggle();
                 }
             }

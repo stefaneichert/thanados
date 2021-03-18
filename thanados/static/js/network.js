@@ -71,7 +71,7 @@ if (systemtype == 'feature') {
     $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Feature/Grave) </div>');
 }
 
-if (systemtype == 'stratigraphic unit') {
+if (systemtype == 'stratigraphic_unit') {
     subLabel = 'Finds';
     $.each(jsonmysite.features, function (f, feature) {
         var featureName = feature.properties.name;
@@ -103,7 +103,7 @@ if (systemtype == 'stratigraphic unit') {
 }
 
 
-if (systemtype === 'find' || systemtype === 'human remains') {
+if (systemtype === 'find' || systemtype === 'human_remains') {
     $.each(jsonmysite.features, function (f, feature) {
         var featureName = feature.properties.name;
         var featureID = feature.id;
@@ -208,17 +208,17 @@ networkLegend = network.groups.groups
 network.on("doubleClick", function (params) {
     if (params.nodes.length === 1) {
         var node = nodes.get(params.nodes[0]);
-        var entities = ['place', 'feature', 'stratigraphic unit', 'find', 'human remains'];
+        var entities = ['place', 'feature', 'stratigraphic_unit', 'find', 'human_remains'];
         if (entities.includes(node.group)) window.open('/entity/' + node.id);
         if (node.group === 'classification' ) window.open('/vocabulary/' + node.id);
-        if (node.group === 'external reference geonames' ) window.open('https://www.geonames.org/' + node.label);
-        if (['bibliography', 'place location', 'file'].includes(node.group)) window.open('/entity/' + entId);
+        if (node.group === 'external_reference geonames' ) window.open('https://www.geonames.org/' + node.label);
+        if (['bibliography', 'place_location', 'file'].includes(node.group)) window.open('/entity/' + entId);
     }
 });
 
 Object.keys(networkLegend).forEach(function(key) {
     var value = networkLegend[key];
-    var data = {'name': key.replace('external reference ', ''), 'color': value.color.border, 'background': value.color.background}
+    var data = {'name': key.replace('external_reference ', ''), 'color': value.color.border, 'background': value.color.background}
     $('#mylegend').append('<li class="list-group-item" style="padding: 0 0.7em"><div style="display: inline-flex; height: 20px; width: 20px; border: 2px solid ' + data.color + '; background: '+ data.background +'; '+
         '                              border-radius: 50%; margin-top: 0.5em;"></div><span class="text-muted" style="margin-left: 1em; vertical-align: super; font-size: 0.875rem;">' + data.name +'</span></li>')
 });

@@ -12,7 +12,7 @@ def charts():
     constr = Data.get_type_data('grave', 'Grave Constr%', site_ids)
     gravetypes = Data.get_type_data('grave', 'Feature%', site_ids)
     graveshape = Data.get_type_data('grave', 'Grave Shape%', site_ids)
-    burialtype = Data.get_type_data('burial', 'Stratigraphic Unit%', site_ids)
+    burialtype = Data.get_type_data('burial', 'Stratigraphic unit%', site_ids)
     sex = Data.get_sex()
     site_list = Data.get_list()
     orientation = Data.get_orientation()
@@ -57,7 +57,7 @@ SELECT '{"types": [' || string_agg (jsonstring, ', ') || ']}' AS mydata FROM
     JOIN thanados.entities e1 ON e1.parent_id = e.child_id
     JOIN thanados.entities e2 ON e2.parent_id = e1.child_id
     JOIN thanados.types_main t ON e2.child_id = t.entity_id
-    WHERE t.path LIKE 'Find%'
+    WHERE t.path LIKE 'Artifact%'
     --GROUP BY m.id, sitename, type, t.path
     ORDER BY 1, 4) t GROUP BY t.sitename, t.id) j)j
     """

@@ -10,16 +10,16 @@ def index():
 
     sql = """
     SELECT '['
-|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_type = 'place' 
+|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'place' 
         AND site_id IN %(site_ids)s AND Path LIKE 'Place > Burial Site%%') || ','
-|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_type = 'feature' 
+|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'feature' 
         AND site_id IN %(site_ids)s AND Path LIKE 'Feature > Grave%%') || ','
-|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_type = 'stratigraphic unit' 
-        AND site_id IN %(site_ids)s AND Path LIKE 'Stratigraphic Unit > Burial%%') || ','
-|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_type = 'find' 
-        AND site_id IN %(site_ids)s AND Path LIKE 'Find >%%') || ','
-|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_type = 'human remains' 
-        AND site_id IN %(site_ids)s AND Path LIKE 'Human Remains >%%') || ']'
+|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'stratigraphic_unit' 
+        AND site_id IN %(site_ids)s AND Path LIKE 'Stratigraphic unit > Burial%%') || ','
+|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'find' 
+        AND site_id IN %(site_ids)s AND Path LIKE 'Artifact >%%') || ','
+|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'human_remains' 
+        AND site_id IN %(site_ids)s AND Path LIKE 'Human remains >%%') || ']'
     """
 
     g.cursor.execute(sql, {'site_ids': tuple(g.site_list)})

@@ -710,7 +710,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
             globalentName = entName;
         }
 
-        if (currentfeature.properties.maintype.systemtype == 'stratigraphic unit') {
+        if (currentfeature.properties.maintype.systemtype == 'stratigraphic_unit') {
             var children = currentfeature.finds;
             var iconpath = '/static/images/icons/burial.png';
         }

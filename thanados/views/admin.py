@@ -228,7 +228,7 @@ CREATE TABLE thanados.sites AS (
            s.end_from,
            s.end_to,
            s.end_comment,
-           s.system_type,
+           s.system_class,
            NULL::TEXT    as geom,
            NULL::TEXT as lon,
            NULL::TEXT as lat
@@ -241,12 +241,12 @@ CREATE TABLE thanados.sites AS (
                  date_part('year', e.end_from)::integer   AS end_from,
                  date_part('year', e.end_to)::integer     AS end_to,
                  e.end_comment,
-                 e.system_type,
+                 e.system_class,
                  l.range_id
           FROM model.entity e
                    JOIN model.link l ON e.id = l.domain_id
           WHERE l.property_code = 'P2'
-            AND e.system_type = 'place'
+            AND e.system_class = 'place'
             )
              AS s
              JOIN thanados.types_all t ON t.id = s.range_id
@@ -312,7 +312,7 @@ SELECT parent.id                                    AS parent_id,
        date_part('year', child.end_from)::integer   AS end_from,
        date_part('year', child.end_to)::integer     AS end_to,
        child.end_comment,
-       child.system_type,
+       child.system_class,
        NULL::TEXT                                   as geom,
        NULL::TEXT as lon,
        NULL::TEXT as lat
@@ -321,7 +321,7 @@ FROM model.entity parent
          JOIN model.entity child ON l_p_c.range_id = child.id
 WHERE parent.id in (SELECT child_id FROM thanados.sites)
   AND l_p_c.property_code = 'P46'
-ORDER BY child.system_type, parent.id, child.name;
+ORDER BY child.system_class, parent.id, child.name;
 
 -- if no graves are available create an intermediate feature to be displayed on the map
 INSERT INTO thanados.graves (
@@ -336,7 +336,7 @@ SELECT
     end_from,
     end_to,
     end_comment,
-    'feature' AS system_type,
+    'feature' AS system_class,
     geom,
     NULL as lon,
     NULL as lat
@@ -380,7 +380,7 @@ SELECT parent.id                                    AS parent_id,
        date_part('year', child.end_from)::integer   AS end_from,
        date_part('year', child.end_to)::integer     AS end_to,
        child.end_comment,
-       child.system_type,
+       child.system_class,
        NULL::TEXT                                   as geom,
        NULL::TEXT as lon,
        NULL::TEXT as lat
@@ -389,7 +389,7 @@ FROM model.entity parent
          JOIN model.entity child ON l_p_c.range_id = child.id
 WHERE parent.id in (SELECT child_id FROM thanados.graves)
   AND l_p_c.property_code = 'P46'
-ORDER BY child.system_type, parent.id, child.name;
+ORDER BY child.system_class, parent.id, child.name;
 
 
 UPDATE thanados.burials
@@ -426,7 +426,7 @@ SELECT parent.id                                    AS parent_id,
        date_part('year', child.end_from)::integer   AS end_from,
        date_part('year', child.end_to)::integer     AS end_to,
        child.end_comment,
-       child.system_type,
+       child.system_class,
        NULL::TEXT                                   as geom,
        NULL::TEXT as lon,
        NULL::TEXT as lat
@@ -434,8 +434,8 @@ FROM model.entity parent
          JOIN model.link l_p_c ON parent.id = l_p_c.domain_id
          JOIN model.entity child ON l_p_c.range_id = child.id
 WHERE parent.id in (SELECT child_id FROM thanados.burials)
-  AND l_p_c.property_code = 'P46' AND child.system_type = 'find'
-ORDER BY child.system_type, parent.id, child.name;
+  AND l_p_c.property_code = 'P46' AND child.system_class = 'find'
+ORDER BY child.system_class, parent.id, child.name;
 
 
 UPDATE thanados.finds
@@ -472,7 +472,7 @@ SELECT parent.id                                    AS parent_id,
        date_part('year', child.end_from)::integer   AS end_from,
        date_part('year', child.end_to)::integer     AS end_to,
        child.end_comment,
-       child.system_type,
+       child.system_class,
        NULL::TEXT                                   as geom,
        NULL::TEXT as lon,
        NULL::TEXT as lat
@@ -480,8 +480,8 @@ FROM model.entity parent
          JOIN model.link l_p_c ON parent.id = l_p_c.domain_id
          JOIN model.entity child ON l_p_c.range_id = child.id
 WHERE parent.id in (SELECT child_id FROM thanados.burials)
-  AND l_p_c.property_code = 'P46' AND child.system_type = 'human remains'
-ORDER BY child.system_type, parent.id, child.name;
+  AND l_p_c.property_code = 'P46' AND child.system_class = 'human_remains'
+ORDER BY child.system_class, parent.id, child.name;
 
 
 UPDATE thanados.humanremains
@@ -663,9 +663,9 @@ SELECT *
 FROM thanados.types_main
 WHERE path LIKE 'Place >%'
    OR path LIKE 'Feature >%'
-   OR path LIKE 'Stratigraphic Unit >%'
-   OR path LIKE 'Find >%'
-   OR path LIKE 'Human Remains >%'
+   OR path LIKE 'Stratigraphic unit >%'
+   OR path LIKE 'Artifact >%'
+   OR path LIKE 'Human remains >%'
 ORDER BY entity_id, path;
 
 --types dimensions
@@ -681,7 +681,7 @@ DROP TABLE IF EXISTS thanados.graveDeg;
 CREATE TABLE thanados.graveDeg AS
 SELECT 
 	d.*,
-	e.system_type,
+	e.system_class,
 	b.child_id AS burial_id
 	FROM thanados.dimensiontypes d JOIN model.entity e ON d.entity_id = e.id JOIN thanados.burials b ON e.id = b.parent_id WHERE d.id = 26192 AND b.child_id NOT IN 
 		(SELECT 
@@ -695,7 +695,7 @@ CREATE EXTENSION postgis_sfcgal;
 DROP TABLE IF EXISTS thanados.giscleanup2;
 CREATE TABLE thanados.giscleanup2 AS
  (
-SELECT 	e.system_type,
+SELECT 	e.system_class,
 	e.child_name,
 	e.parent_id,
 	e.child_id,
@@ -710,7 +710,7 @@ CREATE TABLE thanados.derivedDegtmp AS
 (SELECT 
 	ST_StartPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS startP,
 	ST_EndPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS endP,
-	child_id FROM thanados.giscleanup2 g WHERE system_type = 'feature');
+	child_id FROM thanados.giscleanup2 g WHERE system_class = 'feature');
 
 
 -- Get azimuth of grave if a polygon is known
@@ -853,9 +853,9 @@ FROM thanados.types_main
 WHERE path NOT LIKE 'Dimensions >%'
   AND path NOT LIKE 'Place >%'
   AND path NOT LIKE 'Feature >%'
-  AND path NOT LIKE 'Stratigraphic Unit >%'
-  AND path NOT LIKE 'Human Remains >%'
-  AND path NOT LIKE 'Find >%'
+  AND path NOT LIKE 'Stratigraphic unit >%'
+  AND path NOT LIKE 'Human remains >%'
+  AND path NOT LIKE 'Artifact >%'
   AND path NOT LIKE 'Material >%'
 ORDER BY entity_id, path;
 
@@ -899,7 +899,7 @@ FROM thanados.entities,
 WHERE entities.child_id = link.range_id
   AND link.domain_id = entity.id
   AND entities.child_id != 0
-  AND entity.system_type ~~ 'file'::text
+  AND entity.system_class ~~ 'file'::text
 ORDER BY entities.child_id;
 
 UPDATE thanados.files SET description = NULL WHERE description = '';
@@ -973,7 +973,7 @@ FROM thanados.entities,
 WHERE entities.child_id = link.range_id
   AND link.domain_id = entity.id
   AND entities.child_id != 0
-  AND entity.system_type ~~ 'bibliography'::text
+  AND entity.system_class ~~ 'bibliography'::text
 ORDER BY entities.child_id;
 
 
@@ -1001,7 +1001,7 @@ FROM thanados.entities,
 WHERE entities.child_id = link.range_id
   AND link.domain_id = entity.id
   AND entities.child_id != 0
-  AND entity.system_type ~~ 'external reference'::text
+  AND entity.system_class ~~ 'external_reference'::text
 ORDER BY entities.child_id;
 
 INSERT INTO thanados.extrefs 
@@ -1283,7 +1283,7 @@ SELECT f.child_id,
                        'path', f.path,
                        'id', f.type_id,
                        'parent_id', f.parenttype_id,
-                       'systemtype', f.system_type
+                       'systemtype', f.system_class
                    ),
                'types', f.types,
                'description', f.description,
@@ -1293,7 +1293,7 @@ SELECT f.child_id,
                'references', f.reference,
                'externalreference', f.extrefs
            )) AS finds
-FROM (SELECT * FROM thanados.tmp WHERE system_type LIKE 'find') f
+FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'find') f
 ORDER BY f.child_name;
 
 
@@ -1340,7 +1340,7 @@ SELECT f.child_id,
                        'path', f.path,
                        'id', f.type_id,
                        'parent_id', f.parenttype_id,
-                       'systemtype', f.system_type
+                       'systemtype', f.system_class
                    ),
                'types', f.types,
                'description', f.description,
@@ -1350,7 +1350,7 @@ SELECT f.child_id,
                'references', f.reference,
                'externalreference', f.extrefs
            )) AS humanremains
-FROM (SELECT * FROM thanados.tmp WHERE system_type LIKE 'human remains') f
+FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'human_remains') f
 ORDER BY f.child_name;
 
 
@@ -1399,7 +1399,7 @@ SELECT f.child_id AS id,
                        'path', f.path,
                        'id', f.type_id,
                        'parent_id', f.parenttype_id,
-                       'systemtype', f.system_type
+                       'systemtype', f.system_class
                    ),
                'types', f.types,
                'description', f.description,
@@ -1411,10 +1411,10 @@ SELECT f.child_id AS id,
 
            ))     AS burials,
        jsonb_strip_nulls(jsonb_agg(fi.find))--,
-FROM (SELECT * FROM thanados.tmp WHERE system_type LIKE 'stratigraphic unit') f
+FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'stratigraphic_unit') f
          LEFT JOIN thanados.tbl_findscomplete fi ON f.child_id = fi.parent_id         
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.typename, f.path,
-         f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_type, f.reference, f.extrefs
+         f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_class, f.reference, f.extrefs
 ORDER BY f.child_name;
 
 DROP TABLE IF EXISTS thanados.tbl_findscomplete;
@@ -1483,7 +1483,7 @@ SELECT f.child_id,
                        'path', f.path,
                        'id', f.type_id,
                        'parent_id', f.parenttype_id,
-                       'systemtype', f.system_type
+                       'systemtype', f.system_class
                    ),
                'types', f.types,
                'description', f.description,
@@ -1494,11 +1494,11 @@ SELECT f.child_id,
                'externalreference', f.extrefs
            )) AS graves,
        jsonb_strip_nulls(jsonb_agg(fi.burial))
-FROM (SELECT * FROM thanados.tmp WHERE system_type LIKE 'feature') f
+FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'feature') f
          LEFT JOIN thanados.tbl_burialscomplete fi ON f.child_id = fi.parent_id
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.reference, f.extrefs,
          f.geom, f.typename, f.path, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files,
-         f.system_type
+         f.system_class
 ORDER BY f.child_name;
 
 DROP TABLE IF EXISTS thanados.tbl_burialscomplete;
@@ -1596,7 +1596,7 @@ SELECT s.id,
                        'path', f.path,
                        'id', f.type_id,
                        'parent_id', f.parenttype_id,
-                       'systemtype', f.system_type
+                       'systemtype', f.system_class
                    ),
                'types', f.types,
                'description', f.description,
@@ -1609,11 +1609,11 @@ SELECT s.id,
                'center', s.point::jsonb,
                'shape', s.polygon::jsonb
            )) AS sites
-FROM (SELECT * FROM thanados.tmp WHERE system_type LIKE 'place') f
+FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'place') f
          LEFT JOIN thanados.tbl_sites s ON f.child_id = s.id
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.reference, f.extrefs,
          f.geom, f.typename, f.path, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files,
-         f.system_type, s.id, s.name,
+         f.system_class, s.id, s.name,
          s.point, s.polygon
 ORDER BY f.child_name;
 
@@ -1695,15 +1695,15 @@ name_path LIKE 'Absolute Age%'
 UNION ALL
 SELECT DISTINCT 'find' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
-WHERE name_path LIKE 'Find >%'
+WHERE name_path LIKE 'Artifact%'
 UNION ALL
 SELECT DISTINCT 'osteology' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
-WHERE name_path LIKE 'Human Remains%'
+WHERE name_path LIKE 'Human remains%'
 UNION ALL
 SELECT DISTINCT 'strat' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
-WHERE name_path LIKE 'Stratigraphic Unit%'
+WHERE name_path LIKE 'Stratigraphic unit%'
 UNION ALL
 SELECT DISTINCT 'burial_site' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
@@ -1720,9 +1720,9 @@ SET parent = '#'
 WHERE parent ISNULL; --necessary for jstree
 UPDATE thanados.typesforjson
 SET parent = '#'
-WHERE parent = '73'; --necessary for jstree
-INSERT INTO thanados.typesforjson (level, id, text, parent, path, name_path, forms, topparent)
-VALUES ('find', '13368', 'Find', '#', '13368', 'Find', '["Find"]', 13368);
+WHERE parent = '73'; --necessary for jstree (removes parent from burial site type)
+--INSERT INTO thanados.typesforjson (level, id, text, parent, path, name_path, forms, topparent)
+--VALUES ('find', '157754', 'Artifact', '#', '157754', 'Artifact', '["artifact", "find"]', 157754);
 --hack because find has no parent
 
 -- create table with all types as json
@@ -2171,9 +2171,9 @@ CREATE TABLE thanados.ageatdeath AS (
           
     DROP TABLE IF EXISTS thanados.searchData;
     CREATE TABLE thanados.searchData AS
-    SELECT e.child_id, e.child_name, 'timespan' AS type, NULL AS path, 0 AS type_id, e.begin_from AS min, e.end_to AS max, e.system_type FROM thanados.entities e WHERE e.child_id != 0
+    SELECT e.child_id, e.child_name, 'timespan' AS type, NULL AS path, 0 AS type_id, e.begin_from AS min, e.end_to AS max, e.system_class FROM thanados.entities e WHERE e.child_id != 0
     UNION ALL
-    SELECT e.child_id, e.child_name, t.name AS type, t.path AS path, t.id AS type_id, t.value::double precision AS min, t.value::double precision AS max, e.system_type FROM thanados.entities e LEFT JOIN thanados.types_main t ON e.child_id = t.entity_id WHERE e.child_id != 0 ORDER BY child_id;
+    SELECT e.child_id, e.child_name, t.name AS type, t.path AS path, t.id AS type_id, t.value::double precision AS min, t.value::double precision AS max, e.system_class FROM thanados.entities e LEFT JOIN thanados.types_main t ON e.child_id = t.entity_id WHERE e.child_id != 0 ORDER BY child_id;
 
 
 DROP TABLE IF EXISTS thanados.searchData_tmp;
@@ -2195,7 +2195,7 @@ SELECT
 		JOIN thanados.burials b ON f.parent_id = b.child_id
 		JOIN thanados.graves g ON b.parent_id = g.child_id
 		JOIN thanados.sites s ON g.parent_id = s.child_id
-		WHERE se.system_type = 'find' AND s.lon != ''
+		WHERE se.system_class = 'find' AND s.lon != ''
 
 UNION ALL
 
@@ -2215,7 +2215,7 @@ SELECT
 		JOIN thanados.burials b ON f.parent_id = b.child_id
 		JOIN thanados.graves g ON b.parent_id = g.child_id
 		JOIN thanados.sites s ON g.parent_id = s.child_id
-		WHERE se.system_type = 'human remains' AND s.lon != ''
+		WHERE se.system_class = 'human_remains' AND s.lon != ''
 
 UNION ALL
 
@@ -2234,7 +2234,7 @@ SELECT
 		JOIN thanados.burials b ON se.child_id = b.child_id 
 		JOIN thanados.graves g ON b.parent_id = g.child_id 
 		JOIN thanados.sites s ON g.parent_id = s.child_id 
-		WHERE se.system_type = 'stratigraphic unit' AND s.lon != ''
+		WHERE se.system_class = 'stratigraphic_unit' AND s.lon != ''
 
 UNION ALL		
 
@@ -2252,7 +2252,7 @@ SELECT
 		JOIN thanados.maintype mt ON se.child_id = mt.entity_id
 		JOIN thanados.graves g ON se.child_id = g.child_id 
 		JOIN thanados.sites s ON g.parent_id = s.child_id 
-		WHERE se.system_type = 'feature' AND s.lon != ''
+		WHERE se.system_class = 'feature' AND s.lon != ''
 
 UNION ALL		
 
@@ -2269,7 +2269,7 @@ SELECT
 	FROM thanados.searchData se
 		JOIN thanados.maintype mt ON se.child_id = mt.entity_id
 		JOIN thanados.sites s ON se.child_id = s.child_id 
-		WHERE se.system_type = 'place' AND s.lon != ''); 
+		WHERE se.system_class = 'place' AND s.lon != ''); 
 
 DROP TABLE IF EXISTS thanados.searchData;
     CREATE TABLE thanados.searchData AS SELECT * FROM thanados.searchData_tmp;
@@ -2317,12 +2317,185 @@ def geoclean_execute():  # pragma: no cover
         abort(403)
 
     g.cursor.execute("SELECT * FROM thanados.refsys")
-    resultRefs = g.cursor.fetchall();
-    import favicon, requests
+    resultRefs = g.cursor.fetchall()
+
+    # -*- coding: utf-8 -*-
+    """favicon
+    :copyright: (c) 2019 by Scott Werner.
+    :license: MIT, see LICENSE for more details.
+    """
+    import os
+    import re
+    import warnings
+
+    from collections import namedtuple
+
+    from urllib.parse import urljoin, urlparse, urlunparse
+
+    import requests
+
+    from bs4 import BeautifulSoup
+
+    HEADERS = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) '
+                      'AppleWebKit/537.36 (KHTML, like Gecko) '
+                      'Chrome/33.0.1750.152 Safari/537.36'
+    }
+
+    LINK_RELS = [
+        'icon',
+        'shortcut icon',
+        'apple-touch-icon',
+        'apple-touch-icon-precomposed',
+    ]
+
+    META_NAMES = ['msapplication-TileImage', 'og:image']
+
+    SIZE_RE = re.compile(r'(?P<width>\d{2,4})x(?P<height>\d{2,4})', flags=re.IGNORECASE)
+
+    Icon = namedtuple('Icon', ['url', 'width', 'height', 'format'])
+
+    def get(url, *args, **request_kwargs):
+        """Get all fav icons for a url.
+        :param url: Homepage.
+        :type url: str
+        :param request_kwargs: Request headers argument.
+        :type request_kwargs: Dict
+        :return: List of fav icons found sorted by icon dimension.
+        :rtype: list[:class:`Icon`]
+        """
+        if args:  # backwards compatible with <= v0.6.0
+            warnings.warn(
+                "headers arg is deprecated. Use headers key in request_kwargs dict.",
+                DeprecationWarning
+            )
+            request_kwargs.setdefault('headers', args[0])
+
+        request_kwargs.setdefault('headers', HEADERS)
+        request_kwargs.setdefault('allow_redirects', True)
+
+        response = requests.get(url, **request_kwargs)
+        response.raise_for_status()
+
+        icons = set()
+
+        default_icon = default(response.url, **request_kwargs)
+        if default_icon:
+            icons.add(default_icon)
+
+        link_icons = tags(response.url, response.text)
+        if link_icons:
+            icons.update(link_icons)
+
+        return sorted(icons, key=lambda i: i.width + i.height, reverse=True)
+
+    def default(url, **request_kwargs):
+        """Get icon using default filename favicon.ico.
+        :param url: Url for site.
+        :type url: str
+        :param request_kwargs: Request headers argument.
+        :type request_kwargs: Dict
+        :return: Icon or None.
+        :rtype: :class:`Icon` or None
+        """
+        parsed = urlparse(url)
+        favicon_url = urlunparse((parsed.scheme, parsed.netloc, 'favicon.ico', '', '', ''))
+        response = requests.head(favicon_url, **request_kwargs)
+        if response.status_code == 200:
+            return Icon(response.url, 0, 0, 'ico')
+
+    def tags(url, html):
+        """Get icons from link and meta tags.
+        .. code-block:: html
+           <link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon.png">
+           <meta name="msapplication-TileImage" content="favicon.png">
+        :param url: Url for site.
+        :type url: str
+        :param html: Body of homepage.
+        :type html: str
+        :return: Icons found.
+        :rtype: set
+        """
+        soup = BeautifulSoup(html, features='html.parser')
+
+        link_tags = set()
+        for rel in LINK_RELS:
+            for link_tag in soup.find_all(
+                    'link', attrs={'rel': lambda r: r and r.lower() == rel, 'href': True}
+            ):
+                link_tags.add(link_tag)
+
+        meta_tags = set()
+        for meta_tag in soup.find_all('meta', attrs={'content': True}):
+            meta_type = meta_tag.get('name') or meta_tag.get('property') or ''
+            meta_type = meta_type.lower()
+            for name in META_NAMES:
+                if meta_type == name.lower():
+                    meta_tags.add(meta_tag)
+
+        icons = set()
+        for tag in link_tags | meta_tags:
+            href = tag.get('href', '') or tag.get('content', '')
+            href = href.strip()
+
+            if not href or href.startswith('data:image/'):
+                continue
+
+            if is_absolute(href):
+                url_parsed = href
+            else:
+                url_parsed = urljoin(url, href)
+
+            # repair '//cdn.network.com/favicon.png' or `icon.png?v2`
+            scheme = urlparse(url).scheme
+            url_parsed = urlparse(url_parsed, scheme=scheme)
+
+            width, height = dimensions(tag)
+            _, ext = os.path.splitext(url_parsed.path)
+
+            icon = Icon(url_parsed.geturl(), width, height, ext[1:].lower())
+            icons.add(icon)
+
+        return icons
+
+    def is_absolute(url):
+        """Check if url is absolute.
+        :param url: Url for site.
+        :type url: str
+        :return: True if homepage and false if it has a path.
+        :rtype: bool
+        """
+        return bool(urlparse(url).netloc)
+
+    def dimensions(tag):
+        """Get icon dimensions from size attribute or icon filename.
+        :param tag: Link or meta tag.
+        :type tag: :class:`bs4.element.Tag`
+        :return: If found, width and height, else (0,0).
+        :rtype: tuple(int, int)
+        """
+        sizes = tag.get('sizes', '')
+        if sizes and sizes != 'any':
+            size = sizes.split(' ')  # '16x16 32x32 64x64'
+            size.sort(reverse=True)
+            width, height = re.split(r'[x\xd7]', size[0])
+        else:
+            filename = tag.get('href') or tag.get('content')
+            size = SIZE_RE.search(filename)
+            if size:
+                width, height = size.group('width'), size.group('height')
+            else:
+                width, height = '0', '0'
+
+        # repair bad html attribute values: sizes='192x192+'
+        width = ''.join(c for c in width if c.isdigit())
+        height = ''.join(c for c in height if c.isdigit())
+        return int(width), int(height)
+
     user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
     headers = {'User-Agent': user_agent}
     for row in resultRefs:
-        icons = favicon.get(row.website_url, headers=headers, timeout=2)
+        icons = get(row.website_url, headers=headers, timeout=2)
         ref_id = row.entity_id
         print(row.website_url)
         if icons:
