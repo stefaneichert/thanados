@@ -1559,6 +1559,7 @@ function getBasemaps() {
     });
 
     OpenStreetMap_HOT = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+        crossOrigin: "",
         maxZoom: 25,
         maxNativeZoom: 17,
         attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +

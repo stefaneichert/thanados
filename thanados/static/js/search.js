@@ -655,7 +655,7 @@ function setmymap(markers, heatmarkers, graveIds) {
 
 
 
-    eval('landscape' + Iter + ' = jQuery.extend(true, {}, reliefSearch);');
+    eval('landscape' + Iter + ' = jQuery.extend(true, {}, OpenStreetMap_HOT);');
     eval('natural' + Iter + ' = jQuery.extend(true, {}, BasemapAT_grau);');
     eval('terrain' + Iter + ' = jQuery.extend(true, {}, BasemapAT_terrain);');
     eval('blank' + Iter + ' = jQuery.extend(true, {}, blank);');
