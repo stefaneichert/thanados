@@ -4,6 +4,8 @@
     <link href="/static/css/charts.css" rel="stylesheet">
     <script>
         tabledata = {{ sites|tojson }};
+        missingrefs = {{ missingrefs|tojson }};
+        missingeonames = {{ missingeonames|tojson }};
     </script>
     <div id="mycontent">
         <div class="ml-5 mr-5">
@@ -32,10 +34,9 @@
                                      alt="data_refresh"
                                      style="width: 50%; margin: auto">
                                 <div class="card-body">
-                                    <h5 class="card-title">Clean Geodata</h5>
-                                    <p class="card-text">Perform a cleanup for your geodata. This removes
-                                        redundant geometries from
-                                        subunits</p>
+                                    <h5 class="card-title">Icons for Identifiers</h5>
+                                    <p class="card-text">When using external identifiers/gazetteers, you can search for
+                                        icons and use them in your interface</p>
                                     <a id="GeoCleanBtn" href="{{ url_for('geoclean_execute') }}"
                                        class="sql_button btn btn-secondary m-auto" role="button">Go</a>
                                 </div>
@@ -113,7 +114,8 @@
                         </div>
                         <div class="row mt-3">
                             <div class="col input-group">
-                            <textarea readonly id="mySelectedSites" style="background: #f8f9fa; min-height: 15em; font-size: 0.875em"
+                            <textarea readonly id="mySelectedSites"
+                                      style="background: #f8f9fa; min-height: 15em; font-size: 0.875em"
                                       class="form-control"
                                       aria-label="Selected sites"
                                       rows="15"
@@ -124,8 +126,8 @@
 
                 </div>
                 <button id="submitBtn" class="btn btn-sm btn-secondary mt-2 mx-auto">
-                        (0) Apply<br>
-                        <i class="fas fa-caret-down mx-auto"></i>
+                    (0) Apply<br>
+                    <i class="fas fa-caret-down mx-auto"></i>
                 </button>
                 <form id="" method="post" class="m-3">
                     <div class="form-group mt-3">
@@ -135,6 +137,96 @@
                         {{ form.save(class_="float-right mb-2 mt-2 btn btn-secondary")|safe }}
                     </div>
                 </form>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card mb-5">
+                        <div class="card-header">
+                            No distinct data source:
+                        </div>
+                        <div class="card-body">
+                            <table id="missingmain" class="table table-striped table-bordered" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                {% for row in missingrefs %}
+                                    <tr>
+                                        <td><a href="{{ openatlas_url + row.id }}" target="_blank">{{ row.name }}</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card mb-5">
+                        <div class="card-header">
+                            No GeoNames:
+                        </div>
+                        <div class="card-body">
+                            <table id="missingGeoNames" class="table table-striped table-bordered" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                {% for row in missingeonames %}
+                                    <tr>
+                                        <td><a href="{{ openatlas_url.replace('entity', 'update') + row.id }}"
+                                               target="_blank">{{ row.name }}</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card mb-5">
+                        <div class="card-header">
+                            No Coordinates:
+                        </div>
+                        <div class="card-body">
+                            <table id="missingGeo" class="table table-striped table-bordered" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                {% for row in missingeo %}
+                                    <tr>
+                                        <td><a href="{{ openatlas_url.replace('entity', 'update') + row.id }}"
+                                               target="_blank">{{ row.name }}</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+
+
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -101,7 +101,8 @@
                                                     current3dFile = JSON.stringify({{ data.files[0] }});
                                                     set3D('{{ data.files[0].file_name }}')
                                                     " class="hoverfa float-right fas fa-expand-arrows-alt"></i></p>
-                                            <model-viewer class="img-fluid card-img-bottom" src="{{ data.files[0].file_name }}" auto-rotate
+                                            <model-viewer class="img-fluid card-img-bottom"
+                                                          src="{{ data.files[0].file_name }}" auto-rotate
                                                           camera-controls style="min-height: 250px;"></model-viewer>
                                         {% else %}
                                             <a href="{{ data.files[0].file_name }}" data-featherlight>
@@ -192,7 +193,7 @@
             </div>
             <div id="network-container"></div>
 
-            {% if data.entities_recursive or data.files %}
+            {% if data.entities_recursive or data.files or data.gazetteers %}
                 <div class="card mb-2">
                     <div class="card-header">
                         <ul class="nav nav-tabs card-header-tabs">
@@ -213,6 +214,19 @@
                                     <a class="nav-link" data-toggle="tab"
                                        href="#references">External references</a>
                                 </li>
+                            {% endif %}
+                            {% if data.gazetteers %}
+                                <li class="nav-item">
+                                    {% if not data.entities_recursive %}
+                                        <a id="gazNav" class="nav-link active" data-toggle="tab"
+                                           href="#gazetteers">Identifiers
+                                        </a>
+                                    {% else %}
+                                        <a id="gazNav" class="nav-link" data-toggle="tab"
+                                           href="#gazetteers">Identifiers
+                                        </a>
+                                        {% endif %}
+                                        </li>
                             {% endif %}
                             {% if data.files %}
                                 <li class="nav-item">
@@ -249,6 +263,60 @@
                         {% if data.references %}
                             <div class="tab-pane" id="references">External References</div>
                         {% endif %}
+                        {% if data.gazetteers %}
+                            {% if not data.entities_recursive %}
+                                <div class="tab-pane active" id="gazetteers">
+                            {% else %}
+                                <div class="tab-pane" id="gazetteers">
+                            {% endif %}
+                                <div class="card-columns">
+                                    {% for row in data.gazetteers %}
+
+                                        <div class="card text-center">
+
+                                            <div class="card-header">
+                                                {% if row.favicon %}
+                                                    <span><a title="{{ row.about }}" href="{{ row.url }}"
+                                                             target="_blank">{{ row.domain }}
+                                                    <img style="max-height: 30px" src="{{ row.favicon }}"></a></span>
+                                                {% else %}
+                                                    <span><a title="{{ row.about }}" href="{{ row.url }}"
+                                                             target="_blank">{{ row.domain }}
+                                                    </a></span>
+                                                {% endif %}
+                                            </div>
+                                            <div class="card-body">
+                                                <a title="Identifier from {{ row.domain }}" href="{{ row.url }}"
+                                                   target="_blank">{{ row.identifier }}</a>
+                                                {% if row.label %}
+                                                    <br><i>{{ row.label }}</i><br>
+                                                {% endif %}
+                                                {% if row.description %}
+                                                    <span class="card-text"><small
+                                                            class="text-muted">{{ row.description }}</small></span>
+                                                {% endif %}
+
+
+                                            </div>
+                                            {% if row.image %}
+                                                <a href="{{ row.image.origin }}" target="_blank"
+                                                   title="Image from: {{ row.image.origin }}. Click for details and licence information"><img
+                                                        class="card-img-bottom"
+                                                        src="{{ row.image.url }}"
+                                                        alt=""></a>
+                                                <span class="p-2">
+                                                <small><a class="mt-2" href="{{ row.image.origin }}" target="_blank"><i
+                                                        class="fas fa-info-circle mr-2"></i></a>
+                                                    {{ license|safe }}
+                                                <br><span>Image: {{ credit|safe }}</span></small>
+                                                </span>
+                                            {% endif %}
+                                        </div>
+
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
                         {% if data.files|length >= 1 %}
                             {% if not data.entities_recursive %}
                                 <div class="tab-pane active" id="images">
@@ -257,7 +325,8 @@
                                             <div class="card ">
                                                 {% if ".glb" in row.file_name %}
                                                     <model-viewer class="img-fluid card-img-bottom"
-                                                                  style="min-height: 250px;" src="{{ row.file_name }}"
+                                                                  style="min-height: 250px;"
+                                                                  src="{{ row.file_name }}"
                                                                   alt="3d" auto-rotate camera-controls>
                                                         <div class="annotation" title="enlarge"
                                                              data-file="{{ row }}"
@@ -298,7 +367,8 @@
                                             <div class="card ">
                                                 {% if ".glb" in row.file_name %}
                                                     <model-viewer class="img-fluid card-img-bottom"
-                                                                  style="min-height: 250px;" src="{{ row.file_name }}"
+                                                                  style="min-height: 250px;"
+                                                                  src="{{ row.file_name }}"
                                                                   alt="3d" auto-rotate camera-controls>
                                                         <div class="annotation" title="enlarge"
                                                              data-file="{{ row }}"

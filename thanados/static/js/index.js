@@ -55,11 +55,15 @@ if ($('#map').length) {
         '                            </div>' +
         '<div class="col-sm">' +
         '<h4 class="statistic-counter">' + entitycount[2] + '</h4>' +
-        '                                <p>Burials</p>\n' +
+        '                                <p>Individuals</p>\n' +
         '                            </div>' +
         '<div class="col-sm">' +
         '<h4 class="statistic-counter">' + entitycount[3] + '</h4>' +
         '                                <p>Finds</p>\n' +
+        '                            </div>' +
+        '<div class="col-sm">' +
+        '<h4 class="statistic-counter">' + entitycount[4] + '</h4>' +
+        '                                <p>Osteology Datasets</p>\n' +
         '                            </div>'
     )
 
@@ -99,19 +103,19 @@ if ($('#map').length) {
 
 
     if (sitelist.length > 15) {
-    zoom = map.getZoom() / 10 - 0.3;
-    if (zoom > 1) zoom = 1;
-    if (zoom < 0.1) zoom = 0.1;
-    map.on('zoomend', function () {
         zoom = map.getZoom() / 10 - 0.3;
         if (zoom > 1) zoom = 1;
         if (zoom < 0.1) zoom = 0.1;
-        $.each($('.leaflet-interactive'), function (i, el) {
-            $(el).animate({
-                'fillOpacity': zoom
-            }, 50);
-        })
-    });
+        map.on('zoomend', function () {
+            zoom = map.getZoom() / 10 - 0.3;
+            if (zoom > 1) zoom = 1;
+            if (zoom < 0.1) zoom = 0.1;
+            $.each($('.leaflet-interactive'), function (i, el) {
+                $(el).animate({
+                    'fillOpacity': zoom
+                }, 50);
+            })
+        });
     } else zoom = 0.7
 
     $.each($('.leaflet-interactive'), function (i, el) {

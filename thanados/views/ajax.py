@@ -11,7 +11,7 @@ def ajax_test() -> str:
     criteria = request.form['criteria']
     min = request.form['min']
     max = request.form['max']
-    system_type = request.form['system_type']
+    system_class = request.form['system_class']
     type_ids = tuple(ast.literal_eval('[' + request.form['types'] + ']'))
 
     if (criteria == 'maintype') or (criteria == 'type'):
@@ -27,14 +27,14 @@ def ajax_test() -> str:
            'max', d.max,
            'lon', d.lon,
            'lat', d.lat,
-           'system_type', d.system_type,
+           'system_class', d.system_class,
            'burial_id', d.burial_id,
            'grave_id', d.grave_id,
            'site_id', d.site_id,
            'context', d.context,
            'file', d.filename
            )) AS result FROM 
-           (SELECT * FROM thanados.searchData WHERE site_id IN %(site_ids)s AND system_type = %(system_type)s AND type_id IN %(type_ids)s) d
+           (SELECT * FROM thanados.searchData WHERE site_id IN %(site_ids)s AND system_class = %(system_class)s AND type_id IN %(type_ids)s) d
            """
 
     if (criteria == 'timespan'):
@@ -50,14 +50,14 @@ def ajax_test() -> str:
            'max', d.max,
            'lon', d.lon,
            'lat', d.lat,
-           'system_type', d.system_type,
+           'system_class', d.system_class,
            'burial_id', d.burial_id,
            'grave_id', d.grave_id,
            'site_id', d.site_id,
            'context', d.context,
            'file', d.filename
            )) AS result FROM 
-           (SELECT * FROM thanados.searchData WHERE site_id IN %(site_ids)s AND system_type = %(system_type)s AND type_id = 0 AND min >= %(min)s AND max <= %(max)s) d
+           (SELECT * FROM thanados.searchData WHERE site_id IN %(site_ids)s AND system_class = %(system_class)s AND type_id = 0 AND min >= %(min)s AND max <= %(max)s) d
            """
 
     if (criteria == 'dimension') or (criteria == 'material') or (criteria == 'value'):
@@ -73,18 +73,18 @@ def ajax_test() -> str:
                'max', d.max,
                'lon', d.lon,
                'lat', d.lat,
-               'system_type', d.system_type,
+               'system_class', d.system_class,
                'burial_id', d.burial_id,
                'grave_id', d.grave_id,
                'site_id', d.site_id,
                'context', d.context,
                'file', d.filename
                )) AS result FROM 
-               (SELECT * FROM thanados.searchData WHERE site_id IN %(site_ids)s AND  system_type = %(system_type)s AND type_id IN %(type_ids)s AND min >= %(min)s AND max <= %(max)s) d
+               (SELECT * FROM thanados.searchData WHERE site_id IN %(site_ids)s AND  system_class = %(system_class)s AND type_id IN %(type_ids)s AND min >= %(min)s AND max <= %(max)s) d
            """
 
     g.cursor.execute(sql, {'site_ids': tuple(g.site_list),
-                           'system_type': system_type,
+                           'system_class': system_class,
                            'type_ids': type_ids,
                            'min': min,
                            'max': max})

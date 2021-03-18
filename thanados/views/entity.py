@@ -10,8 +10,9 @@ from thanados.models.entity import Data
 
 @app.route('/entity/<int:object_id>')
 @app.route('/entity/<int:object_id>/<format_>')
-def entity_view(object_id: int, format_=None):
-    system_type = Data.get_system_type(object_id)
+@app.route('/<api_>/<type_>/<int:object_id>')
+def entity_view(object_id: int, format_=None, api_=None, type_=None):
+    system_class = Data.get_system_class(object_id)
     place_id = Data.get_parent_place_id(object_id)
     data = Data.get_data(place_id)[0].data
     entity = {}
@@ -34,7 +35,7 @@ def entity_view(object_id: int, format_=None):
     if format_ == 'network':
         network = Data.getNetwork(object_id)
         return render_template('entity/network.html', place_id=place_id, object_id=object_id,
-                               mysitejson=data, system_type=system_type, entity=entity, network=network)
+                               mysitejson=data, system_class=system_class, entity=entity, network=network)
     if format_ == 'dashboard':
 
         def getBubbleData(treeName, topId, prefix):
@@ -805,7 +806,7 @@ def entity_view(object_id: int, format_=None):
                     CREATE TABLE thanados.sexGraveDepth AS
                     
                     (SELECT s.type, g.min FROM thanados.sexDash s JOIN thanados.burials b ON s.burial_id = b.child_id JOIN thanados.searchdata g ON g.child_id = b.parent_id
-                    WHERE g.type = 'Height' AND g.system_type = 'feature');
+                    WHERE g.type = 'Height' AND g.system_class = 'feature');
                     
                     DROP TABLE IF EXISTS thanados.sexGraveDepthJSON;
                     CREATE TABLE thanados.sexGraveDepthJSON AS
@@ -933,8 +934,8 @@ def entity_view(object_id: int, format_=None):
 
         knn = knn()
         pathotree = getBubbleData('Pathologies', '119444', 'p')
-        findtree = getBubbleData('Finds', '13368', 'f')
-        findtree2 = getBubbleData('Finds', '13368', 'i')
+        findtree = getBubbleData('Finds', '157754', 'f')
+        findtree2 = getBubbleData('Finds', '157754', 'i')
         SexDepthData = getSexDepth()
         SexData = getSex()
         GenderData = getgender()
@@ -947,7 +948,7 @@ def entity_view(object_id: int, format_=None):
         depthData = getDims('Height')
         widthData = getDims('Width')
         lengthData = getDims('Length')
-        findsPerDepth = getFindsPerDim('Height', 'Find >%')
+        findsPerDepth = getFindsPerDim('Height', 'Artifact >%')
         findAges = getFindAges()
         findBracketAges = getBracketFindAges()
 
@@ -1000,58 +1001,58 @@ def entity_view(object_id: int, format_=None):
             ]}
 
         prestigiousfinds = {
-            "labels": getFindsPerDim('Height', 'Finds > %').get(
+            "labels": getFindsPerDim('Height', 'Artifact > %').get(
                 'labels'),
             "datasets": [
                 {'label': 'Weapons/Riding Equipment',
-                 'data': getFindsPerDim('Height', 'Find > Weapons/Armour/Riding%').get(
+                 'data': getFindsPerDim('Height', 'Artifact > Weapons/Armour/Riding%').get(
                      'datasets')},
                 {'label': 'Jewellery',
                  'data': getFindsPerDim('Height',
-                                        'Find > Accessories > Jewellery%').get(
+                                        'Artifact > Accessories > Jewellery%').get(
                      'datasets')},
                 {'label': 'Belt Accessories',
                  'data': getFindsPerDim('Height',
-                                        'Find > Accessories > Belt Accessories%').get(
+                                        'Artifact > Accessories > Belt Accessories%').get(
                      'datasets')},
                 {'label': 'Pottery',
                  'data': getFindsPerDim('Height',
-                                        'Find > Pottery%').get(
+                                        'Artifact > Pottery%').get(
                      'datasets')},
                 {'label': 'Knife',
                  'data': getFindsPerDim('Height',
-                                        'Find > Equipment > Knife%').get(
+                                        'Artifact > Equipment > Knife%').get(
                      'datasets')}
             ]}
 
         prestigiousfindsValueAge = {
-            "labels": getAgeValueFindsPerTerm('Finds > Weapons/Armour/Riding%').get('labels'),
+            "labels": getAgeValueFindsPerTerm('Artifact > Weapons/Armour/Riding%').get('labels'),
             "datasets": [
                 {'label': 'Weapons/Riding Equipment',
-                 'data': getAgeValueFindsPerTerm('Find > Weapons/Armour/Riding%').get('datasets')},
+                 'data': getAgeValueFindsPerTerm('Artifact > Weapons/Armour/Riding%').get('datasets')},
                 {'label': 'Jewellery',
-                 'data': getAgeValueFindsPerTerm('Find > Accessories > Jewellery%').get('datasets')},
+                 'data': getAgeValueFindsPerTerm('Artifact > Accessories > Jewellery%').get('datasets')},
                 {'label': 'Belt Accessories',
-                 'data': getAgeValueFindsPerTerm('Find > Accessories > Belt Accessories%').get('datasets')},
+                 'data': getAgeValueFindsPerTerm('Artifact > Accessories > Belt Accessories%').get('datasets')},
                 {'label': 'Pottery',
-                 'data': getAgeValueFindsPerTerm('Find > Pottery%').get('datasets')},
+                 'data': getAgeValueFindsPerTerm('Artifact > Pottery%').get('datasets')},
                 {'label': 'Knife',
-                 'data': getAgeValueFindsPerTerm('Find > Equipment > Knife%').get('datasets')}
+                 'data': getAgeValueFindsPerTerm('Artifact > Equipment > Knife%').get('datasets')}
             ]}
 
         prestigiousfindsBracketAge = {
-            "labels": getAgeBracketFindsPerTerm('Finds > Weapons/Armour/Riding%').get('labels'),
+            "labels": getAgeBracketFindsPerTerm('Artifact > Weapons/Armour/Riding%').get('labels'),
             "datasets": [
                 {'label': 'Weapons/Riding Equipment',
-                 'data': getAgeBracketFindsPerTerm('Find > Weapons/Armour/Riding%').get('datasets')},
+                 'data': getAgeBracketFindsPerTerm('Artifact > Weapons/Armour/Riding%').get('datasets')},
                 {'label': 'Jewellery',
-                 'data': getAgeBracketFindsPerTerm('Find > Accessories > Jewellery%').get('datasets')},
+                 'data': getAgeBracketFindsPerTerm('Artifact > Accessories > Jewellery%').get('datasets')},
                 {'label': 'Belt Accessories',
-                 'data': getAgeBracketFindsPerTerm('Find > Accessories > Belt Accessories%').get('datasets')},
+                 'data': getAgeBracketFindsPerTerm('Artifact > Accessories > Belt Accessories%').get('datasets')},
                 {'label': 'Pottery',
-                 'data': getAgeBracketFindsPerTerm('Find > Pottery%').get('datasets')},
+                 'data': getAgeBracketFindsPerTerm('Artifact > Pottery%').get('datasets')},
                 {'label': 'Knife',
-                 'data': getAgeBracketFindsPerTerm('Find > Equipment > Knife%').get('datasets')}
+                 'data': getAgeBracketFindsPerTerm('Artifact > Equipment > Knife%').get('datasets')}
             ]}
 
         network = Data.getNetwork(place_id)
@@ -1071,5 +1072,11 @@ def entity_view(object_id: int, format_=None):
                                prestigiousfindsValueAge=prestigiousfindsValueAge,
                                prestigiousfindsBracketAge=prestigiousfindsBracketAge, knn=knn, place_id=place_id)
 
+    if api_ == 'api':
+        if type_ == 'JSON-LD':
+            print('JSON-LD')
+        if type_ == 'JSON':
+            return json.dumps(data)
+
     return render_template('entity/view.html', place_id=place_id, object_id=object_id,
-                           mysitejson=data, system_type=system_type, jsonld_url=url) #, jsonld=output)
+                           mysitejson=data, system_class=system_class, jsonld_url=url) #, jsonld=output)

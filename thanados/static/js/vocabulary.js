@@ -144,7 +144,8 @@ if (data.entities_recursive) {
             renderer: L.canvas(),
             zoom: 18,
             maxZoom: 18,
-            layers: [landscape]
+            layers: [landscape],
+            scrollWheelZoom: false
         });
         loadingControl.addTo(map);
         entPoints.addTo(map)
@@ -200,7 +201,7 @@ if (data.entities_recursive) {
                 data: 'context'
             },
             {
-                data: 'system_type'
+                data: 'system_class'
             }
         ],
     });

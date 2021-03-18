@@ -1,3 +1,4 @@
+import json
 import sys
 from datetime import datetime
 
@@ -50,11 +51,68 @@ def admin():  # pragma: no cover
                         ) AS allsites 
                     
     """
-    g.cursor.execute(sql, {'site_ids': tuple(g.site_list)})
-    currentsitelist = g.cursor.fetchone()
+
+    try:
+        g.cursor.execute(sql, {'site_ids': tuple(g.site_list)})
+        currentsitelist = g.cursor.fetchone()
+    except Exception:
+        currentsitelist = []
 
 
-    return render_template('admin/index.html', form=form, sites=currentsitelist)
+    sql_missing_refs = """
+        
+SELECT jsonb_agg(jsonb_build_object('id', parent_id::TEXT, 'name', child_name)) AS nm FROM (SELECT DISTINCT r.parent_id, e.child_name
+FROM thanados.reference r
+         JOIN thanados.sites e ON e.child_id = r.parent_id
+WHERE r.parent_id IN
+      (SELECT parent_id
+       FROM (SELECT parent_id
+             FROM (SELECT parent_id, COUNT(parent_id) AS number from thanados.reference GROUP BY parent_id) n
+             WHERE number > 1) d
+       WHERE d.parent_id NOT IN
+             (SELECT parent_id
+              FROM thanados.reference
+              WHERE parent_id IN
+                    (SELECT parent_id
+                     FROM (SELECT parent_id, COUNT(parent_id) AS number from thanados.reference GROUP BY parent_id) n
+                     WHERE number > 1)
+                AND reference LIKE '%%##main')
+ORDER BY parent_id)) nma WHERE nma.parent_id IN %(site_ids)s"""
+
+    try:
+        g.cursor.execute(sql_missing_refs, {'site_ids': tuple(g.site_list)})
+        missingrefs = g.cursor.fetchone()[0]
+        if missingrefs == None:
+            missingrefs = []
+        print (missingrefs)
+    except Exception:
+        print('no result')
+        missingrefs = []
+
+    sql_missing_geonames = """
+    SELECT jsonb_agg(jsonb_build_object('id', child_id::TEXT, 'name', child_name)) AS ng FROM (SELECT child_name, child_id FROM thanados.sites WHERE child_id NOT IN (
+SELECT parent_id FROM thanados.extrefs WHERE name = 'GeoNames')) ng1 WHERE ng1.child_id IN %(site_ids)s
+        """
+    try:
+        g.cursor.execute(sql_missing_geonames, {'site_ids': tuple(g.site_list)})
+        missingeonames = g.cursor.fetchone()[0]
+        if missingeonames == None:
+            missingeonames = []
+    except Exception:
+        missingeonames = []
+
+    sql_missing_geo = """
+        SELECT jsonb_agg(jsonb_build_object('id', child_id::TEXT, 'name', child_name)) AS ng FROM (SELECT * FROM thanados.sites WHERE geom IS NULL) a
+            """
+    try:
+        g.cursor.execute(sql_missing_geo) #, {'site_ids': tuple(g.site_list)})
+        missingeo = g.cursor.fetchone()[0]
+        if missingeo == None:
+            missingeo = []
+    except Exception:
+        missingeo = []
+
+    return render_template('admin/index.html', form=form, sites=currentsitelist, openatlas_url = app.config["OPENATLAS_URL"].replace('update', 'entity'), missingrefs=missingrefs, missingeonames=missingeonames, missingeo=missingeo)
 
 
 @app.route('/admin/execute/')
@@ -62,7 +120,6 @@ def admin():  # pragma: no cover
 def jsonprepare_execute():  # pragma: no cover
     if current_user.group not in ['admin']:
         abort(403)
-
 
     start = datetime.now()
     print("starting processing basic queries at: " + str(start.strftime("%H:%M:%S")))
@@ -96,7 +153,7 @@ WITH RECURSIVE path(id, path, parent, name, description, parent_id, name_path) A
                        link.property_code
                 FROM model.entity
                          LEFT JOIN model.link ON entity.id = link.domain_id
-                WHERE entity.class_code ~~ 'E55'::text) x
+                WHERE entity.class_code = 'E55') x
                    LEFT JOIN model.entity e ON x.parent_id = e.id
           ORDER BY e.name) types_all
     WHERE types_all.parent_name IS NULL
@@ -128,7 +185,7 @@ WITH RECURSIVE path(id, path, parent, name, description, parent_id, name_path) A
                        link.property_code
                 FROM model.entity
                          LEFT JOIN model.link ON entity.id = link.domain_id
-                WHERE entity.class_code ~~ 'E55'::text) x
+                WHERE entity.class_code ~~ 'E55'::text  AND link.property_code = 'P127') x
                    LEFT JOIN model.entity e ON x.parent_id = e.id
           ORDER BY e.name) types_all,
          path parentpath
@@ -141,12 +198,12 @@ SELECT path.name,
        path.parent_id,
        path.name_path,
        NULL AS topparent,
-       '[]'::JSONB AS forms 
+       '[]'::JSONB AS forms
 FROM path
 ORDER BY path.path;
           
 UPDATE thanados.types_all SET topparent = f.topparent, forms = f.forms 
-    FROM (SELECT tp.id, tp.name_path, tp.topparent, jsonb_agg(f.name) AS forms 
+    FROM (SELECT tp.id, tp.name_path, tp.topparent, jsonb_agg(DISTINCT f.name) AS forms 
         FROM (SELECT id::INTEGER, path, name_path, left(path, strpos(path, ' >') -1)::INTEGER AS 
             topparent FROM thanados.types_all WHERE path LIKE '%>%'
                     UNION ALL 
@@ -171,7 +228,7 @@ CREATE TABLE thanados.sites AS (
            s.end_from,
            s.end_to,
            s.end_comment,
-           s.system_type,
+           s.system_class,
            NULL::TEXT    as geom,
            NULL::TEXT as lon,
            NULL::TEXT as lat
@@ -184,12 +241,12 @@ CREATE TABLE thanados.sites AS (
                  date_part('year', e.end_from)::integer   AS end_from,
                  date_part('year', e.end_to)::integer     AS end_to,
                  e.end_comment,
-                 e.system_type,
+                 e.system_class,
                  l.range_id
           FROM model.entity e
                    JOIN model.link l ON e.id = l.domain_id
           WHERE l.property_code = 'P2'
-            AND e.system_type = 'place'
+            AND e.system_class = 'place'
             )
              AS s
              JOIN thanados.types_all t ON t.id = s.range_id
@@ -255,7 +312,7 @@ SELECT parent.id                                    AS parent_id,
        date_part('year', child.end_from)::integer   AS end_from,
        date_part('year', child.end_to)::integer     AS end_to,
        child.end_comment,
-       child.system_type,
+       child.system_class,
        NULL::TEXT                                   as geom,
        NULL::TEXT as lon,
        NULL::TEXT as lat
@@ -264,7 +321,7 @@ FROM model.entity parent
          JOIN model.entity child ON l_p_c.range_id = child.id
 WHERE parent.id in (SELECT child_id FROM thanados.sites)
   AND l_p_c.property_code = 'P46'
-ORDER BY child.system_type, parent.id, child.name;
+ORDER BY child.system_class, parent.id, child.name;
 
 -- if no graves are available create an intermediate feature to be displayed on the map
 INSERT INTO thanados.graves (
@@ -279,7 +336,7 @@ SELECT
     end_from,
     end_to,
     end_comment,
-    'feature' AS system_type,
+    'feature' AS system_class,
     geom,
     NULL as lon,
     NULL as lat
@@ -323,7 +380,7 @@ SELECT parent.id                                    AS parent_id,
        date_part('year', child.end_from)::integer   AS end_from,
        date_part('year', child.end_to)::integer     AS end_to,
        child.end_comment,
-       child.system_type,
+       child.system_class,
        NULL::TEXT                                   as geom,
        NULL::TEXT as lon,
        NULL::TEXT as lat
@@ -332,7 +389,7 @@ FROM model.entity parent
          JOIN model.entity child ON l_p_c.range_id = child.id
 WHERE parent.id in (SELECT child_id FROM thanados.graves)
   AND l_p_c.property_code = 'P46'
-ORDER BY child.system_type, parent.id, child.name;
+ORDER BY child.system_class, parent.id, child.name;
 
 
 UPDATE thanados.burials
@@ -369,7 +426,7 @@ SELECT parent.id                                    AS parent_id,
        date_part('year', child.end_from)::integer   AS end_from,
        date_part('year', child.end_to)::integer     AS end_to,
        child.end_comment,
-       child.system_type,
+       child.system_class,
        NULL::TEXT                                   as geom,
        NULL::TEXT as lon,
        NULL::TEXT as lat
@@ -377,8 +434,8 @@ FROM model.entity parent
          JOIN model.link l_p_c ON parent.id = l_p_c.domain_id
          JOIN model.entity child ON l_p_c.range_id = child.id
 WHERE parent.id in (SELECT child_id FROM thanados.burials)
-  AND l_p_c.property_code = 'P46' AND child.system_type = 'find'
-ORDER BY child.system_type, parent.id, child.name;
+  AND l_p_c.property_code = 'P46' AND child.system_class = 'find'
+ORDER BY child.system_class, parent.id, child.name;
 
 
 UPDATE thanados.finds
@@ -415,7 +472,7 @@ SELECT parent.id                                    AS parent_id,
        date_part('year', child.end_from)::integer   AS end_from,
        date_part('year', child.end_to)::integer     AS end_to,
        child.end_comment,
-       child.system_type,
+       child.system_class,
        NULL::TEXT                                   as geom,
        NULL::TEXT as lon,
        NULL::TEXT as lat
@@ -423,8 +480,8 @@ FROM model.entity parent
          JOIN model.link l_p_c ON parent.id = l_p_c.domain_id
          JOIN model.entity child ON l_p_c.range_id = child.id
 WHERE parent.id in (SELECT child_id FROM thanados.burials)
-  AND l_p_c.property_code = 'P46' AND child.system_type = 'human remains'
-ORDER BY child.system_type, parent.id, child.name;
+  AND l_p_c.property_code = 'P46' AND child.system_class = 'human_remains'
+ORDER BY child.system_class, parent.id, child.name;
 
 
 UPDATE thanados.humanremains
@@ -569,7 +626,8 @@ UPDATE thanados.entitiestmp SET end_from = end_to WHERE end_to IS NOT NULL and e
         nearestneighbour = nearestneighbour + 1
 
     g.cursor.execute("DELETE FROM thanados.knn WHERE nid ISNULL")
-    g.cursor.execute("UPDATE thanados.knn SET distance = ROUND(st_distancesphere(st_astext(centerpoint), st_astext(npoint))::numeric, 2)")
+    g.cursor.execute(
+        "UPDATE thanados.knn SET distance = ROUND(st_distancesphere(st_astext(centerpoint), st_astext(npoint))::numeric, 2)")
 
     print("")
     nntimeend = datetime.now()
@@ -605,9 +663,9 @@ SELECT *
 FROM thanados.types_main
 WHERE path LIKE 'Place >%'
    OR path LIKE 'Feature >%'
-   OR path LIKE 'Stratigraphic Unit >%'
-   OR path LIKE 'Find >%'
-   OR path LIKE 'Human Remains >%'
+   OR path LIKE 'Stratigraphic unit >%'
+   OR path LIKE 'Artifact >%'
+   OR path LIKE 'Human remains >%'
 ORDER BY entity_id, path;
 
 --types dimensions
@@ -623,7 +681,7 @@ DROP TABLE IF EXISTS thanados.graveDeg;
 CREATE TABLE thanados.graveDeg AS
 SELECT 
 	d.*,
-	e.system_type,
+	e.system_class,
 	b.child_id AS burial_id
 	FROM thanados.dimensiontypes d JOIN model.entity e ON d.entity_id = e.id JOIN thanados.burials b ON e.id = b.parent_id WHERE d.id = 26192 AND b.child_id NOT IN 
 		(SELECT 
@@ -637,7 +695,7 @@ CREATE EXTENSION postgis_sfcgal;
 DROP TABLE IF EXISTS thanados.giscleanup2;
 CREATE TABLE thanados.giscleanup2 AS
  (
-SELECT 	e.system_type,
+SELECT 	e.system_class,
 	e.child_name,
 	e.parent_id,
 	e.child_id,
@@ -652,7 +710,7 @@ CREATE TABLE thanados.derivedDegtmp AS
 (SELECT 
 	ST_StartPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS startP,
 	ST_EndPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS endP,
-	child_id FROM thanados.giscleanup2 g WHERE system_type = 'feature');
+	child_id FROM thanados.giscleanup2 g WHERE system_class = 'feature');
 
 
 -- Get azimuth of grave if a polygon is known
@@ -795,9 +853,9 @@ FROM thanados.types_main
 WHERE path NOT LIKE 'Dimensions >%'
   AND path NOT LIKE 'Place >%'
   AND path NOT LIKE 'Feature >%'
-  AND path NOT LIKE 'Stratigraphic Unit >%'
-  AND path NOT LIKE 'Human Remains >%'
-  AND path NOT LIKE 'Find >%'
+  AND path NOT LIKE 'Stratigraphic unit >%'
+  AND path NOT LIKE 'Human remains >%'
+  AND path NOT LIKE 'Artifact >%'
   AND path NOT LIKE 'Material >%'
 ORDER BY entity_id, path;
 
@@ -841,7 +899,7 @@ FROM thanados.entities,
 WHERE entities.child_id = link.range_id
   AND link.domain_id = entity.id
   AND entities.child_id != 0
-  AND entity.system_type ~~ 'file'::text
+  AND entity.system_class ~~ 'file'::text
 ORDER BY entities.child_id;
 
 UPDATE thanados.files SET description = NULL WHERE description = '';
@@ -887,10 +945,10 @@ CREATE TABLE thanados.files AS
         if file_name:
             filesfound = filesfound + 1
         else:
-            filesmissing = filesmissing +1
+            filesmissing = filesmissing + 1
         g.cursor.execute("UPDATE thanados.files SET filename = %(file_name)s WHERE id = %(row_id)s",
                          {'file_name': file_name, 'row_id': row_id})
-        sys.stdout.write("\rfiles found: "  +  str(filesfound) + " files missing: " + str(filesmissing))
+        sys.stdout.write("\rfiles found: " + str(filesfound) + " files missing: " + str(filesmissing))
         sys.stdout.flush()
 
     g.cursor.execute('DELETE FROM thanados.files WHERE filename = NULL')
@@ -915,7 +973,7 @@ FROM thanados.entities,
 WHERE entities.child_id = link.range_id
   AND link.domain_id = entity.id
   AND entities.child_id != 0
-  AND entity.system_type ~~ 'bibliography'::text
+  AND entity.system_class ~~ 'bibliography'::text
 ORDER BY entities.child_id;
 
 
@@ -943,7 +1001,7 @@ FROM thanados.entities,
 WHERE entities.child_id = link.range_id
   AND link.domain_id = entity.id
   AND entities.child_id != 0
-  AND entity.system_type ~~ 'external reference'::text
+  AND entity.system_class ~~ 'external_reference'::text
 ORDER BY entities.child_id;
 
 INSERT INTO thanados.extrefs 
@@ -962,7 +1020,7 @@ WHERE entities.child_id = link.range_id
   AND entities.child_id != 0
   AND entity.id IN (SELECT entity_id from web.reference_system)
 ORDER BY entities.child_id;
-
+       
 
 UPDATE thanados.extrefs
 SET description = NULL
@@ -970,7 +1028,12 @@ WHERE description = '';
 UPDATE thanados.extrefs
 SET name = NULL
 WHERE name = '';
+
+DROP TABLE IF EXISTS thanados.refsys;
+    CREATE TABLE thanados.refsys AS
+    SELECT entity_id, name, website_url, '' AS icon_url FROM web.reference_system;
     """
+
     g.cursor.execute(sql_4)
 
     sql_5 = """
@@ -987,6 +1050,34 @@ CREATE TABLE thanados.types_and_files
     reference  jsonb,
     extrefs    jsonb
 );
+
+--external gazetteers for types
+DROP TABLE IF EXISTS thanados.ext_types;
+CREATE TABLE thanados.ext_types AS
+SELECT types_all.id                                      AS type_id,
+       reference_system.resolver_url || link.description AS url,
+       reference_system.website_url                      AS website,
+       entity.name                                       AS name,
+       entity.description                                AS description,
+       entity.id,
+       link.description                                  AS identifier,
+       entitysk.name                                     AS SKOS
+FROM thanados.types_all,
+     model.link,
+     model.entity,
+     web.reference_system,
+     model.entity AS entitysk
+WHERE types_all.id = link.range_id
+  AND link.domain_id = entity.id
+  AND model.entity.id = web.reference_system.entity_id
+  AND types_all.id != 0
+  AND link.type_id = entitysk.id
+  AND entity.id IN (SELECT entity_id from web.reference_system)
+ORDER BY types_all.id;
+
+UPDATE thanados.ext_types
+SET description = NULL
+WHERE description = '';
 
 -- insert type data
 INSERT INTO thanados.types_and_files (entity_id, types)
@@ -1076,7 +1167,9 @@ CREATE TABLE thanados.testins AS
 UPDATE thanados.types_and_files
 SET extrefs = (SELECT extref from thanados.testins f
                  WHERE entity_id = f.child_id);
-                 DROP TABLE IF EXISTS thanados.extrefs;
+                 --DROP TABLE IF EXISTS thanados.extrefs;
+                 
+DROP TABLE IF EXISTS thanados.testins;                 
 --31ms
 
 -- insert dimension data
@@ -1190,7 +1283,7 @@ SELECT f.child_id,
                        'path', f.path,
                        'id', f.type_id,
                        'parent_id', f.parenttype_id,
-                       'systemtype', f.system_type
+                       'systemtype', f.system_class
                    ),
                'types', f.types,
                'description', f.description,
@@ -1200,7 +1293,7 @@ SELECT f.child_id,
                'references', f.reference,
                'externalreference', f.extrefs
            )) AS finds
-FROM (SELECT * FROM thanados.tmp WHERE system_type LIKE 'find') f
+FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'find') f
 ORDER BY f.child_name;
 
 
@@ -1247,7 +1340,7 @@ SELECT f.child_id,
                        'path', f.path,
                        'id', f.type_id,
                        'parent_id', f.parenttype_id,
-                       'systemtype', f.system_type
+                       'systemtype', f.system_class
                    ),
                'types', f.types,
                'description', f.description,
@@ -1257,7 +1350,7 @@ SELECT f.child_id,
                'references', f.reference,
                'externalreference', f.extrefs
            )) AS humanremains
-FROM (SELECT * FROM thanados.tmp WHERE system_type LIKE 'human remains') f
+FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'human_remains') f
 ORDER BY f.child_name;
 
 
@@ -1306,7 +1399,7 @@ SELECT f.child_id AS id,
                        'path', f.path,
                        'id', f.type_id,
                        'parent_id', f.parenttype_id,
-                       'systemtype', f.system_type
+                       'systemtype', f.system_class
                    ),
                'types', f.types,
                'description', f.description,
@@ -1318,10 +1411,10 @@ SELECT f.child_id AS id,
 
            ))     AS burials,
        jsonb_strip_nulls(jsonb_agg(fi.find))--,
-FROM (SELECT * FROM thanados.tmp WHERE system_type LIKE 'stratigraphic unit') f
+FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'stratigraphic_unit') f
          LEFT JOIN thanados.tbl_findscomplete fi ON f.child_id = fi.parent_id         
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.typename, f.path,
-         f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_type, f.reference, f.extrefs
+         f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_class, f.reference, f.extrefs
 ORDER BY f.child_name;
 
 DROP TABLE IF EXISTS thanados.tbl_findscomplete;
@@ -1390,7 +1483,7 @@ SELECT f.child_id,
                        'path', f.path,
                        'id', f.type_id,
                        'parent_id', f.parenttype_id,
-                       'systemtype', f.system_type
+                       'systemtype', f.system_class
                    ),
                'types', f.types,
                'description', f.description,
@@ -1401,11 +1494,11 @@ SELECT f.child_id,
                'externalreference', f.extrefs
            )) AS graves,
        jsonb_strip_nulls(jsonb_agg(fi.burial))
-FROM (SELECT * FROM thanados.tmp WHERE system_type LIKE 'feature') f
+FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'feature') f
          LEFT JOIN thanados.tbl_burialscomplete fi ON f.child_id = fi.parent_id
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.reference, f.extrefs,
          f.geom, f.typename, f.path, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files,
-         f.system_type
+         f.system_class
 ORDER BY f.child_name;
 
 DROP TABLE IF EXISTS thanados.tbl_burialscomplete;
@@ -1503,7 +1596,7 @@ SELECT s.id,
                        'path', f.path,
                        'id', f.type_id,
                        'parent_id', f.parenttype_id,
-                       'systemtype', f.system_type
+                       'systemtype', f.system_class
                    ),
                'types', f.types,
                'description', f.description,
@@ -1516,11 +1609,11 @@ SELECT s.id,
                'center', s.point::jsonb,
                'shape', s.polygon::jsonb
            )) AS sites
-FROM (SELECT * FROM thanados.tmp WHERE system_type LIKE 'place') f
+FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'place') f
          LEFT JOIN thanados.tbl_sites s ON f.child_id = s.id
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.reference, f.extrefs,
          f.geom, f.typename, f.path, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files,
-         f.system_type, s.id, s.name,
+         f.system_class, s.id, s.name,
          s.point, s.polygon
 ORDER BY f.child_name;
 
@@ -1578,6 +1671,11 @@ WHERE --set types to display in jstree
    OR name_path LIKE 'Position of Find in Grave%'
    OR name_path LIKE 'Sex%'
    OR name_path LIKE 'Stylistic Classification%'
+   OR name_path LIKE 'Color%'
+   OR name_path LIKE 'Condition of Burial%'
+   OR name_path LIKE 'Discoloration Staining Adhesion%'
+   OR name_path LIKE 'Stylistic Classification%'
+   OR name_path LIKE 'Count%'
 UNION ALL
 SELECT DISTINCT 'dimensions' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
@@ -1591,19 +1689,21 @@ SELECT DISTINCT 'value' AS level, id::text, name AS text, parent_id::text AS par
 FROM thanados.types_all
 WHERE name_path LIKE 'Body Height%' OR
 name_path LIKE 'Isotopic Analyses%' OR
+name_path LIKE 'Count%' OR
+name_path LIKE 'Bone measurements%' OR
 name_path LIKE 'Absolute Age%'
 UNION ALL
 SELECT DISTINCT 'find' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
-WHERE name_path LIKE 'Find >%'
+WHERE name_path LIKE 'Artifact%'
 UNION ALL
 SELECT DISTINCT 'osteology' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
-WHERE name_path LIKE 'Human Remains%'
+WHERE name_path LIKE 'Human remains%'
 UNION ALL
 SELECT DISTINCT 'strat' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
-WHERE name_path LIKE 'Stratigraphic Unit%'
+WHERE name_path LIKE 'Stratigraphic unit%'
 UNION ALL
 SELECT DISTINCT 'burial_site' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
@@ -1620,9 +1720,9 @@ SET parent = '#'
 WHERE parent ISNULL; --necessary for jstree
 UPDATE thanados.typesforjson
 SET parent = '#'
-WHERE parent = '73'; --necessary for jstree
-INSERT INTO thanados.typesforjson (level, id, text, parent, path, name_path, forms, topparent)
-VALUES ('find', '13368', 'Find', '#', '13368', 'Find', '["Find"]', 13368);
+WHERE parent = '73'; --necessary for jstree (removes parent from burial site type)
+--INSERT INTO thanados.typesforjson (level, id, text, parent, path, name_path, forms, topparent)
+--VALUES ('find', '157754', 'Artifact', '#', '157754', 'Artifact', '["artifact", "find"]', 157754);
 --hack because find has no parent
 
 -- create table with all types as json
@@ -2071,9 +2171,9 @@ CREATE TABLE thanados.ageatdeath AS (
           
     DROP TABLE IF EXISTS thanados.searchData;
     CREATE TABLE thanados.searchData AS
-    SELECT e.child_id, e.child_name, 'timespan' AS type, NULL AS path, 0 AS type_id, e.begin_from AS min, e.end_to AS max, e.system_type FROM thanados.entities e WHERE e.child_id != 0
+    SELECT e.child_id, e.child_name, 'timespan' AS type, NULL AS path, 0 AS type_id, e.begin_from AS min, e.end_to AS max, e.system_class FROM thanados.entities e WHERE e.child_id != 0
     UNION ALL
-    SELECT e.child_id, e.child_name, t.name AS type, t.path AS path, t.id AS type_id, t.value::double precision AS min, t.value::double precision AS max, e.system_type FROM thanados.entities e LEFT JOIN thanados.types_main t ON e.child_id = t.entity_id WHERE e.child_id != 0 ORDER BY child_id;
+    SELECT e.child_id, e.child_name, t.name AS type, t.path AS path, t.id AS type_id, t.value::double precision AS min, t.value::double precision AS max, e.system_class FROM thanados.entities e LEFT JOIN thanados.types_main t ON e.child_id = t.entity_id WHERE e.child_id != 0 ORDER BY child_id;
 
 
 DROP TABLE IF EXISTS thanados.searchData_tmp;
@@ -2095,7 +2195,7 @@ SELECT
 		JOIN thanados.burials b ON f.parent_id = b.child_id
 		JOIN thanados.graves g ON b.parent_id = g.child_id
 		JOIN thanados.sites s ON g.parent_id = s.child_id
-		WHERE se.system_type = 'find' AND s.lon != ''
+		WHERE se.system_class = 'find' AND s.lon != ''
 
 UNION ALL
 
@@ -2115,7 +2215,7 @@ SELECT
 		JOIN thanados.burials b ON f.parent_id = b.child_id
 		JOIN thanados.graves g ON b.parent_id = g.child_id
 		JOIN thanados.sites s ON g.parent_id = s.child_id
-		WHERE se.system_type = 'human remains' AND s.lon != ''
+		WHERE se.system_class = 'human_remains' AND s.lon != ''
 
 UNION ALL
 
@@ -2134,7 +2234,7 @@ SELECT
 		JOIN thanados.burials b ON se.child_id = b.child_id 
 		JOIN thanados.graves g ON b.parent_id = g.child_id 
 		JOIN thanados.sites s ON g.parent_id = s.child_id 
-		WHERE se.system_type = 'stratigraphic unit' AND s.lon != ''
+		WHERE se.system_class = 'stratigraphic_unit' AND s.lon != ''
 
 UNION ALL		
 
@@ -2152,7 +2252,7 @@ SELECT
 		JOIN thanados.maintype mt ON se.child_id = mt.entity_id
 		JOIN thanados.graves g ON se.child_id = g.child_id 
 		JOIN thanados.sites s ON g.parent_id = s.child_id 
-		WHERE se.system_type = 'feature' AND s.lon != ''
+		WHERE se.system_class = 'feature' AND s.lon != ''
 
 UNION ALL		
 
@@ -2169,7 +2269,7 @@ SELECT
 	FROM thanados.searchData se
 		JOIN thanados.maintype mt ON se.child_id = mt.entity_id
 		JOIN thanados.sites s ON se.child_id = s.child_id 
-		WHERE se.system_type = 'place' AND s.lon != ''); 
+		WHERE se.system_class = 'place' AND s.lon != ''); 
 
 DROP TABLE IF EXISTS thanados.searchData;
     CREATE TABLE thanados.searchData AS SELECT * FROM thanados.searchData_tmp;
@@ -2216,188 +2316,202 @@ def geoclean_execute():  # pragma: no cover
     if current_user.group not in ['admin']:
         abort(403)
 
-    sql_5 = """
-    -- cleanup for geometries
--- remove point geom if it is the same as parent entity
-DROP TABLE IF EXISTS thanados.giscleanup;
-CREATE TABLE thanados.giscleanup AS
- (
-SELECT 	e.system_type,
-	e.child_name,
-	e.parent_id,
-	e.child_id,
-	e.geom AS jsongeom,
-	l.property_code,
-	l.range_id,
-	g.id,
-	g.geom
-	FROM thanados.entities e JOIN model.link l ON e.child_id = l.domain_id JOIN gis.point g ON l.range_id = g.entity_id WHERE l.property_code = 'P53');
+    g.cursor.execute("SELECT * FROM thanados.refsys")
+    resultRefs = g.cursor.fetchall()
 
-DELETE FROM gis.point g WHERE g.id in (
-SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'stratigraphic unit' ORDER BY g1.system_type, g1.child_id, g2.child_name);
-
-DELETE FROM gis.point g WHERE g.id in (
-SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'feature' ORDER BY g1.system_type, g1.child_id, g2.child_name);
-
-DELETE FROM gis.point g WHERE g.id in (
-SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'place' ORDER BY g1.system_type, g1.child_id, g2.child_name);
-
---Remove point geometries from stratigraphic units and finds
-/*
-DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup WHERE system_type NOT IN (
-'feature', 'place'));
-*/
-
-/*
--- remove point coordinates from graves for selected sites
-DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup where parent_id IN (
-            47093, -- Althofen
-            46319, -- Atschalas
-            47079, -- Augsdorf
-            47831, -- Baardorf
-            45631, -- Baiersdorf
-            46385, -- Bleiburg Barracks
-            46295, -- Breitenstein
-            45615, -- Brückl
-            49177, -- Dellach - oldest house
-            49631, -- Dellach House No. 13
-            46409, -- Dellach House No. 38
-            45625, -- Dreulach
-            46325, -- Duel
-            46261, -- Dullach II
-            46301, -- Faak am See
-            46341, -- Faschendorf
-            49153, -- Feistritz an der Drau - Görz
-            45179, -- Feistritz Bleiburg
-            47571, -- Förk
-            45161, -- Friedlach
-            47883, -- Friesach Galgenbichl
-            45665, -- Friesach Olsa
-            46591, -- Gödersdorf
-            45143, -- Göriach
-            45675, -- Goritschach Brodnikkreuz
-            46747, -- Grafenstein
-            50565, -- Graßdorf
-            45797, -- Grassen
-            45837, -- Gratzerkogel
-            46307, -- Griffen
-            46267, -- Gurina
-            45723, -- Heiligenblut
-            47693, -- Hermagor
-            46313, -- Hochosterwitz
-            47713, -- Höflein
-            45867, -- Hundsdorf Rosental
-            45167, -- KanzianibergDROP TABLE IF EXISTS thanados.giscleanup;
-CREATE TABLE thanados.giscleanup AS
- (
-SELECT 	e.system_type,
-	e.child_name,
-	e.parent_id,
-	e.child_id,
-	e.geom AS jsongeom,
-	l.property_code,
-	l.range_id,
-	g.id,
-	g.geom
-	FROM thanados.entities e JOIN model.link l ON e.child_id = l.domain_id JOIN gis.point g ON l.range_id = g.entity_id WHERE l.property_code = 'P53');
-
-DELETE FROM gis.point g WHERE g.id in (
-SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'stratigraphic unit' ORDER BY g1.system_type, g1.child_id, g2.child_name);
-
-DELETE FROM gis.point g WHERE g.id in (
-SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'feature' ORDER BY g1.system_type, g1.child_id, g2.child_name);
-
-DELETE FROM gis.point g WHERE g.id in (
-SELECT g2.id FROM thanados.giscleanup g1 JOIN thanados.giscleanup g2 ON g1.child_id = g2.parent_id WHERE g1.jsongeom = g2.jsongeom  AND g1.system_type = 'place' ORDER BY g1.system_type, g1.child_id, g2.child_name);
-
---Remove point geometries from stratigraphic units and finds
-/*
-DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup WHERE system_type NOT IN (
-'feature', 'place'));
-*/
-
-/*
--- remove point coordinates from graves for selected sites
-DELETE FROM gis.point WHERE id IN (SELECT id FROM thanados.giscleanup where parent_id IN (
-            47093, -- Althofen
-            46319, -- Atschalas
-            47079, -- Augsdorf
-            47831, -- Baardorf
-            45631, -- Baiersdorf
-            46385, -- Bleiburg Barracks
-            46295, -- Breitenstein
-            45615, -- Brückl
-            49177, -- Dellach - oldest house
-            49631, -- Dellach House No. 13
-            46409, -- Dellach House No. 38
-            45625, -- Dreulach
-            46325, -- Duel
-            46261, -- Dullach II
-            46301, -- Faak am See
-            46341, -- Faschendorf
-            49153, -- Feistritz an der Drau - Görz
-            45179, -- Feistritz Bleiburg
-            47571, -- Förk
-            45161, -- Friedlach
-            47883, -- Friesach Galgenbichl
-            45665, -- Friesach Olsa
-            46591, -- Gödersdorf
-            45143, -- Göriach
-            45675, -- Goritschach Brodnikkreuz
-            46747, -- Grafenstein
-            50565, -- Graßdorf
-            45797, -- Grassen
-            45715, -- Kappel am Krappfeld
-            45463, -- Kathreinkogel
-            46359, -- Keutschach
-            46331, -- Kolbnitz
-            46371, -- Kosasmojach
-            46365, -- Köttmannsdorf
-            50577, -- Krainberg
-            45191, -- Lamprechtskogel
-            46255, -- Längdorf
-            45185, -- Launsdorf
-            47435, -- Lebmach
-            45423, -- Lendorf 1
-            45861, -- Lendorf 2
-            45651, -- Maria Rain
-            45197, -- Metschach
-            46421, -- Oberdorf
-            45843, -- Obermieger
-            45659, -- Plescherken
-            45761, -- Puch
-            50597, -- Pulst
-            45825, -- Puppitsch Obermühlbach
-            46415, -- Ratschitschach
-            50589, -- Reisberg
-            46753, -- Straßfried
-            45457, -- Tscheltschnigkogel
-            46275, -- Ulrichsberg I
-            46289 -- Ulrichsberg II
-    ));  
-*/
---remove point geom if polygon geom exists
-DROP TABLE IF EXISTS thanados.giscleanup;
-CREATE TABLE thanados.giscleanup AS
- (
-SELECT 	e.system_type,
-	e.child_name,
-	e.parent_id,
-	e.child_id,
-	l.property_code,
-	l.range_id,
-	g.id,
-	g.geom AS poly_id,
-	g2.id AS point_id,
-	g2.geom
-	FROM thanados.entities e JOIN model.link l ON e.child_id = l.domain_id JOIN gis.polygon g ON l.range_id = g.entity_id JOIN gis.point g2 ON g.entity_id = g2.entity_id WHERE l.property_code = 'P53');
-
-DELETE FROM gis.point WHERE id IN (SELECT point_id FROM thanados.giscleanup);
-DROP TABLE IF EXISTS thanados.giscleanup;
+    # -*- coding: utf-8 -*-
+    """favicon
+    :copyright: (c) 2019 by Scott Werner.
+    :license: MIT, see LICENSE for more details.
     """
+    import os
+    import re
+    import warnings
 
-    g.cursor.execute(sql_5)
-    return redirect(url_for('jsonprepare_execute'))
+    from collections import namedtuple
+
+    from urllib.parse import urljoin, urlparse, urlunparse
+
+    import requests
+
+    from bs4 import BeautifulSoup
+
+    HEADERS = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) '
+                      'AppleWebKit/537.36 (KHTML, like Gecko) '
+                      'Chrome/33.0.1750.152 Safari/537.36'
+    }
+
+    LINK_RELS = [
+        'icon',
+        'shortcut icon',
+        'apple-touch-icon',
+        'apple-touch-icon-precomposed',
+    ]
+
+    META_NAMES = ['msapplication-TileImage', 'og:image']
+
+    SIZE_RE = re.compile(r'(?P<width>\d{2,4})x(?P<height>\d{2,4})', flags=re.IGNORECASE)
+
+    Icon = namedtuple('Icon', ['url', 'width', 'height', 'format'])
+
+    def get(url, *args, **request_kwargs):
+        """Get all fav icons for a url.
+        :param url: Homepage.
+        :type url: str
+        :param request_kwargs: Request headers argument.
+        :type request_kwargs: Dict
+        :return: List of fav icons found sorted by icon dimension.
+        :rtype: list[:class:`Icon`]
+        """
+        if args:  # backwards compatible with <= v0.6.0
+            warnings.warn(
+                "headers arg is deprecated. Use headers key in request_kwargs dict.",
+                DeprecationWarning
+            )
+            request_kwargs.setdefault('headers', args[0])
+
+        request_kwargs.setdefault('headers', HEADERS)
+        request_kwargs.setdefault('allow_redirects', True)
+
+        response = requests.get(url, **request_kwargs)
+        response.raise_for_status()
+
+        icons = set()
+
+        default_icon = default(response.url, **request_kwargs)
+        if default_icon:
+            icons.add(default_icon)
+
+        link_icons = tags(response.url, response.text)
+        if link_icons:
+            icons.update(link_icons)
+
+        return sorted(icons, key=lambda i: i.width + i.height, reverse=True)
+
+    def default(url, **request_kwargs):
+        """Get icon using default filename favicon.ico.
+        :param url: Url for site.
+        :type url: str
+        :param request_kwargs: Request headers argument.
+        :type request_kwargs: Dict
+        :return: Icon or None.
+        :rtype: :class:`Icon` or None
+        """
+        parsed = urlparse(url)
+        favicon_url = urlunparse((parsed.scheme, parsed.netloc, 'favicon.ico', '', '', ''))
+        response = requests.head(favicon_url, **request_kwargs)
+        if response.status_code == 200:
+            return Icon(response.url, 0, 0, 'ico')
+
+    def tags(url, html):
+        """Get icons from link and meta tags.
+        .. code-block:: html
+           <link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon.png">
+           <meta name="msapplication-TileImage" content="favicon.png">
+        :param url: Url for site.
+        :type url: str
+        :param html: Body of homepage.
+        :type html: str
+        :return: Icons found.
+        :rtype: set
+        """
+        soup = BeautifulSoup(html, features='html.parser')
+
+        link_tags = set()
+        for rel in LINK_RELS:
+            for link_tag in soup.find_all(
+                    'link', attrs={'rel': lambda r: r and r.lower() == rel, 'href': True}
+            ):
+                link_tags.add(link_tag)
+
+        meta_tags = set()
+        for meta_tag in soup.find_all('meta', attrs={'content': True}):
+            meta_type = meta_tag.get('name') or meta_tag.get('property') or ''
+            meta_type = meta_type.lower()
+            for name in META_NAMES:
+                if meta_type == name.lower():
+                    meta_tags.add(meta_tag)
+
+        icons = set()
+        for tag in link_tags | meta_tags:
+            href = tag.get('href', '') or tag.get('content', '')
+            href = href.strip()
+
+            if not href or href.startswith('data:image/'):
+                continue
+
+            if is_absolute(href):
+                url_parsed = href
+            else:
+                url_parsed = urljoin(url, href)
+
+            # repair '//cdn.network.com/favicon.png' or `icon.png?v2`
+            scheme = urlparse(url).scheme
+            url_parsed = urlparse(url_parsed, scheme=scheme)
+
+            width, height = dimensions(tag)
+            _, ext = os.path.splitext(url_parsed.path)
+
+            icon = Icon(url_parsed.geturl(), width, height, ext[1:].lower())
+            icons.add(icon)
+
+        return icons
+
+    def is_absolute(url):
+        """Check if url is absolute.
+        :param url: Url for site.
+        :type url: str
+        :return: True if homepage and false if it has a path.
+        :rtype: bool
+        """
+        return bool(urlparse(url).netloc)
+
+    def dimensions(tag):
+        """Get icon dimensions from size attribute or icon filename.
+        :param tag: Link or meta tag.
+        :type tag: :class:`bs4.element.Tag`
+        :return: If found, width and height, else (0,0).
+        :rtype: tuple(int, int)
+        """
+        sizes = tag.get('sizes', '')
+        if sizes and sizes != 'any':
+            size = sizes.split(' ')  # '16x16 32x32 64x64'
+            size.sort(reverse=True)
+            width, height = re.split(r'[x\xd7]', size[0])
+        else:
+            filename = tag.get('href') or tag.get('content')
+            size = SIZE_RE.search(filename)
+            if size:
+                width, height = size.group('width'), size.group('height')
+            else:
+                width, height = '0', '0'
+
+        # repair bad html attribute values: sizes='192x192+'
+        width = ''.join(c for c in width if c.isdigit())
+        height = ''.join(c for c in height if c.isdigit())
+        return int(width), int(height)
+
+    user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
+    headers = {'User-Agent': user_agent}
+    for row in resultRefs:
+        icons = get(row.website_url, headers=headers, timeout=2)
+        ref_id = row.entity_id
+        print(row.website_url)
+        if icons:
+            print(icons[0].url)
+            print(icons[0].format)
+
+            response = requests.get(icons[0].url, stream=True)
+            with open('./thanados/static/images/favicons/' + str(ref_id) + '.{}'.format(icons[0].format), 'wb') as image:
+                for chunk in response.iter_content(1024):
+                    image.write(chunk)
+                fav_filename = '/static/images/favicons/' + str(ref_id) + '.' + icons[0].format
+
+            g.cursor.execute("UPDATE thanados.refsys SET icon_url = %(favicon_)s WHERE entity_id = %(ref_id)s",
+                          {'favicon_': fav_filename, 'ref_id': ref_id})
+
+    return redirect(url_for('admin'))
 
 
 @app.route('/admin/timeclean/')

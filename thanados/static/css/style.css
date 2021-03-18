@@ -638,7 +638,7 @@ a:hover {
     margin-left: 3em;
 }
 
-#myfooter {
+#myfooter, #myfooter2 {
     background-color: #f2f2f2;
     padding: 0.5em;
 }
@@ -1287,23 +1287,24 @@ input {
     padding: 0.3rem;
 }
 
-.annotation{
+.annotation {
     cursor: pointer;
     width: fit-content;
     width: -moz-fit-content;
     margin-top: 0.5em;
     margin-right: 0.5em;
-    margin-left: auto!important;
-  }
-  /* This keeps child nodes hidden while the element loads */
-  :not(:defined) > * {
+    margin-left: auto !important;
+}
+
+/* This keeps child nodes hidden while the element loads */
+:not(:defined) > * {
     display: none;
-  }
+}
 
 .annotation:hover {
-      color: #6c757d;
+    color: #6c757d;
     font-weight: bold;
-  }
+}
 
 .carousel-control-prev, .carousel-control-next {
     top: 200px;

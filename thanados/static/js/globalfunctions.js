@@ -256,22 +256,22 @@ function checkAvailable(appendLevel, type) {
     AvailableNodes = [];
     switch (appendLevel) {
         case "burial_site":
-            form = "Place";
+            form = "place";
             break;
         case "feature":
-            form = "Feature";
+            form = "feature";
             if (mapsearch) availables = availableTypes.gravetypes;
             break;
         case "strat":
-            form = "Stratigraphic Unit";
+            form = "stratigraphic_unit";
             if (mapsearch) availables = availableTypes.burialtypes;
             break;
         case "find":
-            form = "Find";
+            form = "find";
             if (mapsearch) availables = availableTypes.findtypes;
             break;
         case "osteology":
-            form = "Human Remains"
+            form = "human_remains"
             if (mapsearch) availables = availableTypes.bonetypes;
             break;
         default:
@@ -306,22 +306,22 @@ function initiateTree(Iter, appendLevel, criteria, targetField) {
     var form;
     switch (appendLevel) {
         case "burial_site":
-            form = "Place";
+            form = "place";
             break;
         case "feature":
-            form = "Feature";
+            form = "feature";
             if (mapsearch) availables = availableTypes.gravetypes;
             break;
         case "strat":
-            form = "Stratigraphic Unit";
+            form = "stratigraphic_unit";
             if (mapsearch) availables = availableTypes.burialtypes;
             break;
         case "find":
-            form = "Find";
+            form = "find";
             if (mapsearch) availables = availableTypes.findtypes;
             break;
         case "osteology":
-            form = "Human Remains"
+            form = "human_remains"
             if (mapsearch) availables = availableTypes.bonetypes;
             break;
         default:
@@ -1559,8 +1559,9 @@ function getBasemaps() {
     });
 
     OpenStreetMap_HOT = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+        crossOrigin: "",
         maxZoom: 25,
-        maxNativeZoom: 20,
+        maxNativeZoom: 17,
         attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
             '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a></div>'
     });
@@ -1633,7 +1634,7 @@ function getBasemaps() {
     OpenStreetMap_HOT_ov = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
         crossOrigin: "",
         maxZoom: 25,
-        maxNativeZoom: 20,
+        maxNativeZoom: 17,
         //transparency: 'true',
         //opacity: 1,
         attribution: ""
@@ -1666,7 +1667,6 @@ function getBasemaps() {
     });
 
 
-
     Esri_WorldHillshade = L.tileLayer('https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}', {
         crossOrigin: "",
         attribution: "",
@@ -1675,16 +1675,10 @@ function getBasemaps() {
         opacity: 0.25
     });
 
-    Esri_WorldHillshadeNoOp = L.tileLayer('https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}', {
-        crossOrigin: "",
-        maxZoom: 25,
-        maxNativeZoom: 15,
+    relief = new L.layerGroup([OpenStreetMap_HOT_ov, Esri_WorldHillshade], {
         attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: Esri, Airbus DS, USGS, NGA, NASA, CGIAR, N Robinson, NCEAS, NLS, OS, NMA, Geodatastyrelsen, Rijkswaterstaat, GSA, Geoland, FEMA, Intermap, and the GIS user community</div>'
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>. Hillshade Sources: Esri, Airbus DS, USGS, NGA, NASA, CGIAR, N Robinson, NCEAS, NLS, OS, NMA, Geodatastyrelsen, Rijkswaterstaat, GSA, Geoland, FEMA, Intermap, and the GIS user community</div>'
     });
-
-    relief = new L.layerGroup([OpenStreetMap_HOT_ov, Esri_WorldHillshade], {attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>. Hillshade Sources: Esri, Airbus DS, USGS, NGA, NASA, CGIAR, N Robinson, NCEAS, NLS, OS, NMA, Geodatastyrelsen, Rijkswaterstaat, GSA, Geoland, FEMA, Intermap, and the GIS user community</div>'});
 
     satellite = Esri_WorldImagery; //define aerial image layer
     landscape = relief; // define topography layer
@@ -1704,8 +1698,6 @@ function getBasemaps() {
         "Landscape": landscape,
         "Satellite": satellite,
         "Streetmap": streets,
-        "Basemap": basemap_cz,
-        "Terrain": Esri_WorldHillshadeNoOp,
         "Blank": blank
     };
 
@@ -2162,7 +2154,7 @@ function hoverMarker(linkid, currentmap) {
     }
     hovermarker._bringToFront();
     if (thismap.getBounds().contains(latlng) === false) {
-        thismap.panTo(latlng);
+        thismap.flyTo(latlng, 9, {duration: 0.5});
     }
 }
 
@@ -2209,6 +2201,18 @@ function getTypeData(id, div, hierarchy) {
             ' <a href="/vocabulary/' + data.topparent.id + '" target="_blank">' + data.topparent.name + '</a></span>';
         if (data.topparent.description) returnHtml = returnHtml + '<br><span><i' +
             ' class="text-muted">' + data.topparent.description + '</i></span>';
+        if (data.gazetteers) {
+            gazetteer = "<br><br>Identifiers:<br>"
+            $.each(data.gazetteers, function (i, gaz) {
+                if (typeof gaz.about === "undefined") gaz.about = gaz.domain;
+                if (typeof gaz.favicon !== "undefined") {
+                gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.about + '" target="_blank"><img class="mr-2" height="20px"src="' + gaz.favicon +'">' + gaz.domain + ': ' + gaz.identifier +'</a><br>'
+                } else {
+                gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.about + '" target="_blank">' + gaz.domain + ': ' + gaz.identifier +'</a><br>'
+                }
+            })
+            returnHtml = returnHtml + gazetteer
+        }
         returnValue = returnHtml;
         if (hierarchy) {
             setHierarchyPopup(returnValue, div)
@@ -2225,8 +2229,6 @@ function logHTML(value, div) {
     div.popover('show');
     var btn = '<div> <button class="closePopover btn btn-xs mb-2 mt-2 btn-secondary float-right" onclick="$(this).popover(\'dispose\')">close</button></div>'
     $(div).next().find('.popover-body').append(btn);
-
-
 }
 
 function setHierarchyPopup(value, div) {
@@ -2309,7 +2311,7 @@ function repairJson(data) {
             $.each(feature.burials, function (i, burial) {
                 if (typeof (burial.properties.maintype.id) === "undefined") {
                     burial.properties.maintype = {
-                        "systemtype": "stratigraphic unit",
+                        "systemtype": "stratigraphic_unit",
                         "name": "Stratigraphic Unit",
                         "id": 13365,
                         "parent_id": 13365,
@@ -2323,9 +2325,9 @@ function repairJson(data) {
                         if (typeof (find.properties.maintype.id) === "undefined") {
                             find.properties.maintype = {
                                 "systemtype": "find",
-                                "name": "Find",
-                                "id": 13368,
-                                "parent_id": 13368,
+                                "name": "find",
+                                "id": 157754,
+                                "parent_id": 157754,
                                 "path": "Find"
                             }
                         }
@@ -2336,7 +2338,7 @@ function repairJson(data) {
                     $.each(burial.humanremains, function (i, bone) {
                         if (typeof (bone.properties.maintype.id) === "undefined") {
                             bone.properties.maintype = {
-                                "systemtype": "human remains",
+                                "systemtype": "human_remains",
                                 "name": "Human Remains",
                                 "id": 119334,
                                 "parent_id": 119334,
@@ -2546,14 +2548,12 @@ function getPopUp(feature) {
 
 function set3D(file) {
     $('body').append(
-        '<div class="modal fade bd-example-modal-lg" id="3DModal" tabindex="-1" role="dialog"\n' +
+        '<div class="modal modal-xxl fade bd-example-modal-lg" id="3DModal" tabindex="-1" role="dialog"\n' +
         '     aria-labelledby="3d-model" aria-hidden="true">\n' +
         '    <div class="modal-dialog" role="document">\n' +
         '        <div class="modal-content">\n' +
-        '            <div class="modal-body">\n' +
-        '               <div id="babyloncontainer">\n' +
-        '                    <div id="babylon"></div>\n' +
-        '               </div>\n' +
+        '            <div class="modal-body">' +
+        '               <model-viewer style="width: 100%; height: 80vh" src="' + file + '" alt="3d" auto-rotate camera-controls></model-viewer>' +
         '               <div class="modal-footer pt-2 pl-0 pr-0">\n' +
         '                   <div style="width: 100%">\n' +
         '                       <button type="button" title="show metadata" class="btn btn-primary float-left ml-2" onclick="$(\'#3dmetadata\').toggleClass(\'d-none\')"><i class="fas fa-info"></i></button>\n' +
@@ -2576,25 +2576,6 @@ function set3D(file) {
     })
 
 
-    $('#3DModal').on('shown.bs.modal', function () {
-        let domElement = document.getElementById('babylon');
-
-        let viewer = new BabylonViewer.DefaultViewer(domElement, {
-            scene: {
-                debug: false
-            },
-            camera: {
-                behaviors: {
-                    autoRotate: 0
-                }
-            },
-            model: {
-                url: threeDfilename
-            }
-        });
-        //wireframeMe()
-    })
-
     $('#3DModal').on('hide.bs.modal', function () {
         $('#3DModal').remove();
     })
@@ -2611,60 +2592,13 @@ function getImageHtml(files) {
     if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
     var imageHtml
     if (files.file_name.includes('.glb')) {
-        imageHtml = '<img class="modalimg ThreeDeeImage" data-file="' + filestring + '" title="open 3d model" src="/static/images/icons/3d.png" alt="3d" onclick="current3dFile = $(this).data(\'file\'); set3D(\'' + files.file_name + '\')">'
+        //console.log(files.file_name);
+        imageHtml = '<model-viewer class="modalimg" style="min-height: 400px;" src="' + files.file_name + '" alt="3d" auto-rotate camera-controls>' +
+            '<div class="annotation" title="enlarge" data-file="' + filestring + '" onclick="current3dFile = $(this).data(\'file\'); set3D(\'' + files.file_name + '\')"><i class="fas fa-expand"></i></div></model-viewer>'
     } else {
         imageHtml = '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" alt="' + myImgSource + '"></a>'
     }
     return imageHtml
-}
-
-function wireframeMe() {
-    BabylonViewer.viewerManager
-        .getViewerPromiseById("babylon")
-        .then(function (viewer) {
-            /*
-            Each viewer has its own model loader.
-            The loader has an internal plugin system, based on observables.
-            Each event in the loading process will trigger an event that will call the plugin,
-            if the plugin has this event implemented.
-            The plugin interface looks like this:
-
-        interface ILoaderPlugin {
-          onInit?: (loader: ISceneLoaderPlugin | ISceneLoaderPluginAsync, model: ViewerModel) => void;
-          onLoaded?: (model: ViewerModel) => void;
-          onError?: (message: string, exception?: any) => void;
-          onProgress?: (progressEvent: SceneLoaderProgressEvent) => void;
-          onExtensionLoaded?: (extension: IGLTFLoaderExtension) => void;
-          onParsed?: (parsedData: IGLTFLoaderData) => void;
-          onMeshLoaded?: (mesh: AbstractMesh) => void;
-          onTextureLoaded?: (texture: BaseTexture) => void;
-          onMaterialLoaded?: (material: Material) => void;
-          onComplete?: () => void;
-        }
-
-          All functions are optional and only triggered if implemented.
-          */
-
-            // create a new plugin, using javascript
-
-            // This plugin will change all loaded materials to wireframe.
-            let myLoaderPlugin = {
-                onInit: function (loader, model) {
-                    // Log that a model started loading
-                    console.log("model loading initialized");
-                },
-                // we will register the onMaterialLoaded function to change each material to wireframe
-                onMaterialLoaded: function (material) {
-                    material.diffuseTexture = false;
-                    material.wireframe = true;
-                    console.log("changed material " + material.name + " to wireframe");
-                }
-            };
-
-            // add the plugin to the loader
-            viewer.modelLoader.addPlugin(myLoaderPlugin);
-        });
-
 }
 
 function bodyheight() {
