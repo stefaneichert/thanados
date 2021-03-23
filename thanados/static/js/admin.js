@@ -6,13 +6,40 @@ $(window).resize(function () {
     $('#mycontent').css('max-height', (maximumHeight - 10) + 'px');
 });
 
-
-
 $(document).ready(function () {
 
     $('#missingmain').DataTable();
     $('#missingGeoNames').DataTable();
     $('#missingGeo').DataTable();
+    $('#missingFileref').DataTable({
+        initComplete: function () {
+            this.api().column(1).every(function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .appendTo($(column.header()))
+                    .on('change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+
+                        column
+                            .search(val ? '^' + val + '$' : '', true, false)
+                            .draw();
+                    });
+
+                column.data().unique().sort().each(function (d, j) {
+                    select.append('<option value="' + d + '">' + d + '</option>')
+                });
+            });
+        },
+        columnDefs: [{
+            orderable: false,
+            className: 'select-checkbox',
+            targets: 0
+        },
+        ],
+        order: [[1, 'asc']],
+    });
 
     $('#infotext').toggle();
     $("#jsonPrepBtn").click(function () {
@@ -77,7 +104,7 @@ function changeArrows() {
 table = $('#sitelist').DataTable({
     data: tabledata.sites,
     paging: true,
-    "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
+    "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
     "scrollX": true,
     columns: [
         {
@@ -88,11 +115,11 @@ table = $('#sitelist').DataTable({
             //"orderDataType": "dom-checkbox",
         },
         {
-                data: "name",
-                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                    $(nTd).html(
-                        oData.name + '<a title="Link to backend" class="backendlink" href="' + openAtlasUrl + oData.id + '" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a>'); //create links in rows
-                }
+            data: "name",
+            "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                $(nTd).html(
+                    oData.name + '<a title="Link to backend" class="backendlink" href="' + openAtlasUrl + oData.id + '" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a>'); //create links in rows
+            }
         },
         {data: 'type'},
         {data: 'id'}
@@ -103,7 +130,7 @@ table = $('#sitelist').DataTable({
             targets: 0
         },
     ],
-    'order': [[0, 'desc'],[1, 'asc']],
+    'order': [[0, 'desc'], [1, 'asc']],
     drawCallback: function () {
         checkTheBoxes();
     }
@@ -189,8 +216,8 @@ function setSiteInfo() {
 
 
 $('#selectedSites').html(
-        '(currently ' + site_ids.length + '/' + allsite_ids.length + ')'
-    )
+    '(currently ' + site_ids.length + '/' + allsite_ids.length + ')'
+)
 
 
 $('#submitBtn').on('click', function (e) {
@@ -199,3 +226,88 @@ $('#submitBtn').on('click', function (e) {
 });
 
 setSiteInfo();
+
+
+//get ids of selected images
+imgIds = []
+$(document).on('change', '.imgselector', function () {
+    if (this.checked) {
+        console.log(parseInt(this.id));
+        console.log(this.value)
+        this.value = parseInt(this.id);
+        console.log(this.value)
+        imgIds.push(parseInt(this.id));
+        document.getElementById("file_" + this.id).readOnly = false;
+    } else {
+        this.value = "";
+        removeItemOnce(imgIds, parseInt(this.id))
+        console.log('unchecked ' + parseInt(this.id))
+        var pageRef = document.getElementById("file_" + this.id);
+        pageRef.value = ''
+        document.getElementById("file_" + this.id).readOnly = true;
+    }
+    ;
+    var textarea = document.getElementById("imgstoinsert");
+    textarea.value = imgIds;
+});
+
+refId = 0
+
+$(document).on('change', '#ReferenceSelect', function () {
+    refId = parseInt(this.value)
+    console.log(refId)
+
+    //console.log(this.options[this.selectedIndex].title);
+    var textarea = document.getElementById("bibstoinsert");
+    textarea.value = this.options[this.selectedIndex].title;
+});
+
+function removeItemOnce(arr, value) {
+    var index = arr.indexOf(value);
+    if (index > -1) {
+        arr.splice(index, 1);
+    }
+    return arr;
+}
+
+function logData() {
+    if (refId === 0) {
+        alert('Please select reference first');
+        return false
+    } else {
+        imageRefs = []
+        var filereftable = $('#missingFileref').DataTable()
+        var data = filereftable.$('.imgselector')
+        $.each(data, function (i, dataset) {
+                if ((dataset.value) !== '') {
+                    var pageRef = document.getElementById("file_" + dataset.value);
+                    var pageRef = pageRef.value;
+                    var ref = {"file_id": parseInt(dataset.value), "page": pageRef, "refId": refId}
+                    imageRefs.push(ref)
+                }
+            }
+
+        )
+        console.log(imageRefs.length)
+        if (imageRefs.length === 0) {
+            alert ('Please select at least one image')
+            return false
+        }
+        setRefs(imageRefs)
+
+    }
+}
+
+function setRefs(imagerefs) {
+    $.ajax({
+        type: 'POST',
+        url: '/admin/filerefs',
+        data: {
+            'refs': JSON.stringify(imagerefs)
+        },
+        success: function (result) {
+            console.log(result);
+            window.location.href = "/admin";
+        }
+    });
+}
