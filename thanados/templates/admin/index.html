@@ -6,7 +6,9 @@
         tabledata = {{ sites|tojson }};
         missingrefs = {{ missingrefs|tojson }};
         missingeonames = {{ missingeonames|tojson }};
+        refs = {{ refs|tojson }};
     </script>
+    <script> test_csrf_token = '{{ csrf_token() }}'; </script>
     <div id="mycontent">
         <div class="ml-5 mr-5">
             <h2 class="my-heading container">Admin</h2>
@@ -225,6 +227,64 @@
 
 
                         </div>
+                    </div>
+                </div>
+
+            </div>
+            <div>
+                <div class="card mb-5">
+                    <div class="card-header">
+                        No File Reference:
+                    </div>
+                    <div class="card-body">
+                        <table id="missingFileref" class="table table-striped table-bordered" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>Site</th>
+                                <th>Image</th>
+                                <th>Page</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {% for row in missingfileref %}
+                                <tr>
+                                    <td><input class="imgselector" type="checkbox" id="{{ row.id }}"
+                                               value=""><label for="{{ row.id }}"></label></td>
+                                    <td>{{ row.site }}</td>
+                                    <td><a href="{{ openatlas_url + row.id }}"
+                                           target="_blank">
+                                        <img style="width: auto; max-width: 150px; max-height: 100px"
+                                             src="{{ row.file }}"/>
+                                    </a></td>
+                                    <td><input readonly style="width: 100%" type="text" id="{{ 'file_' + row.id }}" name="page"
+                                               value=""></td>
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+
+
+                    </div>
+                    <div class="card-footer">
+                        <div class="form-group">
+                            <label for="ReferenceSelect">Reference</label>
+                            <select class="form-control" id="ReferenceSelect">
+                                <option selected>Select one reference...</option>
+                                {% for row in refs %}
+                                <option value="{{ row.id }}" title="{{ row.citation }}">{{ row.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="bibstoinsert">Reference:</label>
+                            <textarea readonly class="form-control" id="bibstoinsert" rows="2"></textarea>
+                            <label for="imgstoinsert">refers to images:</label>
+                            <textarea readonly class="form-control" id="imgstoinsert" rows="6"></textarea>
+                        </div>
+                        <button class="btn btn-primary float-right" onclick="logData()" type="submit">Submit</button>
                     </div>
                 </div>
             </div>

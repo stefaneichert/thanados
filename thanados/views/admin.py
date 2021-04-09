@@ -2,7 +2,7 @@ import json
 import sys
 from datetime import datetime
 
-from flask import render_template, g, url_for, abort, flash
+from flask import render_template, g, url_for, abort, flash, request, jsonify
 from flask_login import login_required, current_user
 from flask_wtf import FlaskForm
 from werkzeug.utils import redirect
@@ -101,18 +101,57 @@ SELECT parent_id FROM thanados.extrefs WHERE name = 'GeoNames')) ng1 WHERE ng1.c
     except Exception:
         missingeonames = []
 
-    sql_missing_geo = """
-        SELECT jsonb_agg(jsonb_build_object('id', child_id::TEXT, 'name', child_name)) AS ng FROM (SELECT * FROM thanados.sites WHERE geom IS NULL) a
+    sql_refs = """
+    SELECT jsonb_agg(jsonb_build_object('id', id, 'name', name, 'citation', description)) AS refs FROM (SELECT id, name, description FROM model.entity WHERE class_code = 'E31' AND system_class = 'bibliography' ORDER BY name) a
+        """
+    try:
+        g.cursor.execute(sql_refs)
+        refs = g.cursor.fetchone()[0]
+        if refs == None:
+            refs = []
+    except Exception:
+        refs = []
+
+
+    sql_missing_fileref = """
+                SELECT jsonb_agg(jsonb_build_object('site', sitename, 'site_id', site_id, 'id', id::TEXT, 'name', name, 'file', filename)) AS ng FROM
+
+   (SELECT * FROM (SELECT DISTINCT g.name, g.filename, g.id, g.site_id, g.sitename, l.domain_id
+FROM (SELECT DISTINCT f.name,
+                                    f.id,
+                                    f.source,
+                                    f.filename,
+                                    s.site_id,
+                                    e.name AS sitename
+                    FROM thanados.files f
+
+                             JOIN thanados.searchdata s ON f.parent_id = s.child_id
+                             JOIN (SELECT name, id
+                                   FROM model.entity
+                                   WHERE id IN %(site_ids)s
+                    ) e ON e.id = s.site_id) g
+         LEFT OUTER JOIN (SELECT * FROM model.link WHERE property_code = 'P67') l ON g.id = l.range_id) xy WHERE domain_id IS NULL) yx
             """
     try:
-        g.cursor.execute(sql_missing_geo) #, {'site_ids': tuple(g.site_list)})
+        g.cursor.execute(sql_missing_fileref, {'site_ids': tuple(g.site_list)})
+        missingfileref = g.cursor.fetchone()[0]
+        if missingfileref == None:
+            missingfileref = []
+    except Exception:
+        missingfileref = []
+
+    sql_missing_geo = """
+            SELECT jsonb_agg(jsonb_build_object('id', child_id::TEXT, 'name', child_name)) AS ng FROM (SELECT * FROM thanados.sites WHERE geom IS NULL) a
+                """
+    try:
+        g.cursor.execute(sql_missing_geo)  # , {'site_ids': tuple(g.site_list)})
         missingeo = g.cursor.fetchone()[0]
         if missingeo == None:
             missingeo = []
     except Exception:
         missingeo = []
 
-    return render_template('admin/index.html', form=form, sites=currentsitelist, openatlas_url = app.config["OPENATLAS_URL"].replace('update', 'entity'), missingrefs=missingrefs, missingeonames=missingeonames, missingeo=missingeo)
+    return render_template('admin/index.html', form=form, refs=refs, sites=currentsitelist, openatlas_url = app.config["OPENATLAS_URL"].replace('update', 'entity'), missingrefs=missingrefs, missingeonames=missingeonames, missingfileref=missingfileref, missingeo=missingeo)
 
 
 @app.route('/admin/execute/')
@@ -2308,6 +2347,19 @@ CREATE TABLE thanados.EntCount AS
     print("finished")
     print("totaltime: " + str((endtime - start)))
     return redirect(url_for('admin'))
+
+
+@app.route('/admin/filerefs', methods=['POST'])
+def admin_filerefs() -> str:
+    sql_refs = """
+    INSERT INTO model.link (range_id, domain_id, property_code, description) VALUES (%(range_id)s, %(domain_id)s, 'P67', %(page)s)
+    """
+
+    refs = json.loads(request.form['refs'])
+    for row in refs:
+        print(row)
+        g.cursor.execute(sql_refs, {'domain_id': row['refId'], 'range_id': row['file_id'], 'page': row['page']})
+    return jsonify(refs)
 
 
 @app.route('/admin/geoclean/')
