@@ -39,6 +39,7 @@ $(document).ready(function () {
         },
         ],
         order: [[1, 'asc']],
+        paging:   false
     });
 
     $('#infotext').toggle();
@@ -138,11 +139,7 @@ table = $('#sitelist').DataTable({
 
 function checkTheBoxes() {
     $('.siteselector').each(function () {
-        if ((parseInt(this.value)) === 1) {
-            this.checked = true
-        } else {
-            this.checked = false
-        }
+        this.checked = (parseInt(this.value)) === 1;
     })
 }
 
@@ -231,9 +228,11 @@ setSiteInfo();
 //get ids of selected images
 imgIds = []
 $(document).on('change', '.imgselector', function () {
+
     if (this.checked) {
         console.log(parseInt(this.id));
         console.log(this.value)
+
         this.value = parseInt(this.id);
         console.log(this.value)
         imgIds.push(parseInt(this.id));
@@ -246,7 +245,7 @@ $(document).on('change', '.imgselector', function () {
         pageRef.value = ''
         document.getElementById("file_" + this.id).readOnly = true;
     }
-    ;
+
     var textarea = document.getElementById("imgstoinsert");
     textarea.value = imgIds;
 });
@@ -280,8 +279,10 @@ function logData() {
         var data = filereftable.$('.imgselector')
         $.each(data, function (i, dataset) {
                 if ((dataset.value) !== '') {
+                    console.log()
                     var pageRef = document.getElementById("file_" + dataset.value);
-                    var pageRef = pageRef.value;
+
+                    if (pageRef.value) {pageRef = pageRef.value} else {pageRef = ''}
                     var ref = {"file_id": parseInt(dataset.value), "page": pageRef, "refId": refId}
                     imageRefs.push(ref)
                 }
@@ -293,7 +294,8 @@ function logData() {
             alert ('Please select at least one image')
             return false
         }
-        setRefs(imageRefs)
+        console.log(imageRefs)
+        //setRefs(imageRefs)
 
     }
 }
