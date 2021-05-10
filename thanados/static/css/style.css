@@ -414,6 +414,18 @@ body {
     margin-bottom: 0.5em;
 }
 
+.rc_button {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    text-align: left;
+}
+
+.rc_button:hover {
+    background: #f2f2f2;
+}
+
 .modalimg {
     max-width: 100%;
     max-height: 400px;
@@ -1069,6 +1081,8 @@ input {
 
 .typebutton:hover {
     background: #f2f2f2;
+    color: #003db3;
+    text-decoration: none;
 }
 
 .popover a {

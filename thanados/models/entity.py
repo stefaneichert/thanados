@@ -2,9 +2,7 @@ import glob
 import os
 
 from flask import g
-
 from thanados import app
-
 
 class Data:
 
@@ -400,3 +398,129 @@ class Data:
         GettyData['qualifier'] = soup.find('Qualifier').string
         GettyData['description'] = soup.find('Descriptive_Note').Note_Text.string
         return GettyData
+
+
+class RCData:
+
+    @staticmethod
+    def radiocarbon(entid, d, s, bp, rid, curve, childsample):
+        import matplotlib
+        matplotlib.use('Agg')
+        from matplotlib import pyplot
+        from io import BytesIO
+        from thanados.models.iosacal import core, plot
+        import pkg_resources
+        curvefile = curve
+        curve_data_bytes = pkg_resources.resource_string("thanados.models.iosacal", "data/%s" % curve)
+        curve_data_string = curve_data_bytes.decode('latin1')
+        curve = core.CalibrationCurve(curve_data_string, curvefile)
+        if childsample:
+            rid = "Subunit sample: " + rid
+            entid= "sub_" + str(entid)
+        rs = core.RadiocarbonDetermination(d, s, rid)
+        ca = rs.calibrate(curve)
+        rc_output = {}
+        #rc_output['intervals'] = ca.intervals
+        #rc_output['calibration'] = (str(ca.calibration_curve).replace('CalibrationCurve( ', ''))[:-2]
+        rc_output['sample'] = (str(ca.radiocarbon_sample).replace('RadiocarbonSample( ', ''))[:-2]
+
+        try:
+            buf = BytesIO()
+        except:
+            app.logger.error('Error instantiating BytesIO')
+            # abort(400)
+        else:
+            try:
+                plot.single_plot(ca, oxcal=True, output=buf, BP=bp)
+            except ValueError:
+                app.logger.error('Error plotting')
+                # abort(400)
+            else:
+                buf.seek(0)
+
+                with open("thanados/static/images/rc_dates/rc_" + entid + ".png", "wb") as f:
+                    f.write(buf.getbuffer())
+                matplotlib.pyplot.close(fig='all')
+
+        return rc_output
+
+    @staticmethod
+    def radiocarbonmulti():
+        import matplotlib
+        matplotlib.use('Agg')
+        from matplotlib import pyplot
+        from io import BytesIO
+        from thanados.models.iosacal import core, plot
+        import pkg_resources
+
+
+
+        sql = """
+            SELECT entity_id, jsonb_agg(sample::JSONB) AS sample FROM
+                (WITH RECURSIVE superents AS (
+                    SELECT entity_id,
+                        parent_id,
+                        sample AS sample
+                    FROM thanados.rc_tree WHERE sample IS NOT NULL
+                UNION
+                    SELECT t.entity_id,
+                        t.parent_id, s.sample AS sample
+                FROM thanados.rc_tree t JOIN superents s ON s.parent_id = t.entity_id
+            )
+            SELECT *
+            FROM superents) se GROUP BY entity_id;
+            """
+
+        g.cursor.execute(sql)
+        result = g.cursor.fetchall()
+
+        g.cursor.execute('SELECT jsonb_agg(entity_id) AS ids FROM thanados.radiocarbon')
+        idlist = g.cursor.fetchone()
+        print(idlist.ids)
+
+        for row in result:
+            entId = row.entity_id
+            g.cursor.execute('SELECT name FROM model.entity WHERE id = %(entid)s', {'entid':entId})
+            entName = g.cursor.fetchone().name
+            count = len(row.sample)
+
+            Calages = []
+            for spec in row.sample:
+                # print(spec
+                lab = spec.split(' : ', 1)[0]
+                date = int((spec.split(' ± ', 1)[0]).replace((lab + ' : '), ''))
+                range = int(spec.split(' ± ', 1)[1])
+                curvefile = "intcal20.14c"
+                curve_data_bytes = pkg_resources.resource_string("thanados.models.iosacal",
+                                                                 "data/%s" % curvefile)
+                curve_data_string = curve_data_bytes.decode('latin1')
+
+                if count > 1:
+                    lab = lab + ': ' + str(date) + ' +- ' + str(range)
+                    curve = core.CalibrationCurve(curve_data_string, curvefile)
+                    rs = core.RadiocarbonDetermination(date, range, lab)
+                    ca = rs.calibrate(curve)
+                    Calages.append(ca)
+            if (len(Calages) > 1):
+                try:
+                    buf = BytesIO()
+                except:
+                    app.logger.error('Error instantiating BytesIO')
+                    # abort(400)
+                else:
+                    try:
+                        plot.stacked_plot(Calages, entName, oxcal=False, output=buf, BP='ad')
+                    except ValueError:
+                        app.logger.error('Error plotting')
+                        # abort(400)
+                    else:
+                        buf.seek(0)
+
+                        with open("thanados/static/images/rc_dates/rc_stacked_" + str(entId) + ".png", "wb") as f:
+                            f.write(buf.getbuffer())
+                        matplotlib.pyplot.close(fig='all')
+
+            if count == 1:
+                if int(entId) not in idlist.ids:
+                    RCData.radiocarbon(entId, date, range, 'ad', lab, "intcal20.14c", True)
+

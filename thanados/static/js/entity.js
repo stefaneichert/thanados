@@ -229,6 +229,23 @@ function getEntityData(parentName, parentId, currentfeature) {
         entDesc = '';
     }
 
+    RCdate = false;
+    RC_combo = false;
+    RC_child = false;
+    console.log(currentfeature.properties.radiocarbon);
+    if (typeof (currentfeature.properties.radiocarbon) !== 'undefined') {
+        entRC = currentfeature.properties.radiocarbon;
+        if (typeof (entRC.combined_children_samples) !== 'undefined') {
+            RC_combo = true
+        }
+        if (typeof (entRC.sample) !== 'undefined') {
+            RCdate = true
+        }
+        if (typeof (entRC.child_sample) !== 'undefined') {
+            RC_child = true
+        }
+    }
+
     entType = currentfeature.properties.maintype.name;
     entTypeId = currentfeature.properties.maintype.id;
     typepath = currentfeature.properties.maintype.path;
@@ -311,6 +328,9 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div type="button" data-value="' + entTypeId + '" class="modalrowitem typebutton"' +
         ' data-toggle="popover">' + entType + '</div><span class="popover-wrapper"></span>' +
         '<div id="mytimespan' + entId + '" class="modalrowitem" title="Timespan/daterange of entity">' + dateToInsert + '</div>' +
+        ((RCdate) ? '<a id="rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_' + entId + '.png"  class="modalrowitem rc_button" title="Radiocarbon Date">' + entRC.sample + '</a>' : '') +
+        ((RC_child) ? '<a id="rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_sub_' + entId + '.png"  class="modalrowitem rc_button" title="Radiocarbon Date of Subunit">' + entRC.child_sample + '</a>' : '') +
+        ((RC_combo) ? '<a id="rc_stacked_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_stacked_' + entId + '.png"  class="modalrowitem rc_button" title="Mulitple Radiocarbon Dates">' + entRC.combined_children_samples.length + ' 14C Dates combined</a>' : '') +
         '<div id="myDescr' + entId + '" title="Description of entity"><span class="shrinkable">' + entDesc + '</span></div><a class="truncBtn" onclick="truncId=\'#myDescr' + entId + '\'" href="#">Show more</a>' +
         '<div class="mt-5" id="myTypescontainer' + entId + '"></div>' +
         '<div id="myDimensionscontainer' + entId + '"></div>' +
@@ -955,7 +975,6 @@ function getEntityData(parentName, parentId, currentfeature) {
     if ((map.getZoom()) > 20) map.setZoom(20);
 
 
-
     var miniMap = new L.Control.MiniMap(osm2,
         {
             centerFixed: mapcenter,
@@ -1100,6 +1119,12 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             var dateToInsert = '';
         }
 
+        var RCdate = false;
+        if (typeof (currentfeature.properties.radiocarbon) !== 'undefined') {
+            var entRC = currentfeature.properties.radiocarbon;
+            RCdate = true
+        }
+
 
         if (currentfeature.type == 'Feature' && i > 0) $('#' + parentDiv).append('<h4 class="border-top pt-4 mt-4">' + entName + '</h4>');
         if (currentfeature.type == 'Feature' && i === 0) $('#' + parentDiv).append('<h4 class="pt-4 mt-4">' + entName + '</h4>');
@@ -1114,6 +1139,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             'data-toggle="popover" ' +
             'data-value="' + typeId + '">' + entType + '</div><span class="popover-wrapper"></span>' +
             '<div id="myModaltimespan' + entId + '" class="modalrowitem">' + dateToInsert + '</div>' +
+            ((RCdate) ? '<a id="kat_rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_' + entId + '.png"  class="modalrowitem rc_button" title="Radiocarbon Date">' + entRC.sample + '</a>' : '') +
             '<div id="myModalImagecontainer' + entId + '" class="row mb-2"></div>' +
             '<div id="myModalDescr' + entId + '">' + entDesc + '</div>' +
             '<div id="myModalTypescontainer' + entId + '"></div>' +
