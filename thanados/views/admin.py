@@ -84,9 +84,9 @@ ORDER BY parent_id)) nma WHERE nma.parent_id IN %(site_ids)s"""
         missingrefs = g.cursor.fetchone()[0]
         if missingrefs == None:
             missingrefs = []
+        print('Missing references:')
         print (missingrefs)
     except Exception:
-        print('no result')
         missingrefs = []
 
     sql_missing_geonames = """
@@ -883,6 +883,13 @@ FROM thanados.types_main
 WHERE path LIKE 'Material >%'
 ORDER BY entity_id, path;
 
+DROP TABLE IF EXISTS thanados.radiocarbon;
+CREATE TABLE thanados.radiocarbon AS
+SELECT *, 'unique' AS rc_type
+FROM thanados.types_main
+WHERE path LIKE 'Radiocarbon Dating >%'
+ORDER BY entity_id, path;
+
 
 --other types
 DROP TABLE IF EXISTS thanados.types;
@@ -896,6 +903,7 @@ WHERE path NOT LIKE 'Dimensions >%'
   AND path NOT LIKE 'Human remains >%'
   AND path NOT LIKE 'Artifact >%'
   AND path NOT LIKE 'Material >%'
+  AND path NOT LIKE 'Radiocarbon Dating >%'
 ORDER BY entity_id, path;
 
 --entities with maintypes
@@ -997,6 +1005,7 @@ CREATE TABLE thanados.files AS
     print("time elapsed:" + str((filesdone - endnext)))
     print("processing types and files")
 
+
     sql_4 = """
     --references
 DROP TABLE IF EXISTS thanados.reference;
@@ -1075,6 +1084,133 @@ DROP TABLE IF EXISTS thanados.refsys;
 
     g.cursor.execute(sql_4)
 
+
+
+    from thanados.models.entity import RCData
+
+    sql_rc = """
+            SELECT 
+                    r.entity_id::TEXT,
+                    split_part(r.value::numeric(10,2)::TEXT,'.',1) AS "date",
+                    split_part(r.value::numeric(10,2)::TEXT,'.',2) AS "range",
+                    split_part(e.description,'##RCD ',2) AS "sample"
+            FROM thanados.radiocarbon r JOIN thanados.entities e ON e.child_id = r.entity_id 
+        """
+    try:
+        g.cursor.execute(sql_rc)
+        result_rc = g.cursor.fetchall()
+        if result_rc:
+            print('calibrating radiocarbon data:')
+
+        else:
+            print('no radiocarbon data detected in database')
+    except Exception:
+        result_rc = None
+
+    if result_rc:
+        for row in result_rc:
+            if row.sample == '':
+                sample = 'Unknown Sample Id'
+            else:
+                sample = row.sample
+            print(row.entity_id + ': Sample: ' + sample + ', ' + row.date + ' +- ' + row.range)
+            RCData_ = json.dumps(RCData.radiocarbon(row.entity_id, int(row.date), int(row.range), 'ad', sample, 'intcal20.14c', False))
+            g.cursor.execute('UPDATE thanados.radiocarbon SET description = %(RCdata)s WHERE entity_id = %(entid)s',
+                             {'RCdata': RCData_, 'entid': row.entity_id})
+
+        sql_stacked = """
+                        DROP TABLE IF EXISTS thanados.rc_parents;
+                        CREATE TABLE thanados.rc_parents AS
+                        SELECT r.entity_id, e.parent_id, 'rc' AS rc
+                        FROM thanados.radiocarbon r
+                                 JOIN thanados.entities e ON r.entity_id = e.child_id
+                        ORDER BY e.parent_id;
+
+                        DROP TABLE IF EXISTS thanados.rc_tree;
+                        CREATE TABLE thanados.rc_tree AS
+                        WITH RECURSIVE superents AS (
+                            SELECT entity_id,
+                                   parent_id,
+                                   0  AS count,
+                                   '' AS sample
+                            FROM thanados.rc_parents
+                            UNION
+                            SELECT l.child_id,
+                                   l.parent_id,
+                                   0  as count,
+                                   '' AS sample
+                            FROM thanados.entities l
+                                     JOIN superents s ON s.parent_id = l.child_id
+                        )
+                        SELECT *
+                        FROM superents;
+
+                        UPDATE thanados.rc_tree t
+                        SET sample = (SELECT description::JSONB -> 'sample' FROM thanados.radiocarbon r WHERE r.entity_id = t.entity_id);
+
+                        DROP TABLE IF EXISTS thanados.RC_stacked;
+                        CREATE TABLE thanados.RC_stacked AS
+                        SELECT entity_id, jsonb_agg(sample::JSONB) AS sample FROM
+                        (WITH RECURSIVE superents AS (
+                        SELECT entity_id,
+                            parent_id,
+                            sample AS sample
+                        FROM thanados.rc_tree WHERE sample IS NOT NULL
+                        UNION
+                        SELECT t.entity_id,
+                            t.parent_id, s.sample AS sample
+                        FROM thanados.rc_tree t JOIN superents s ON s.parent_id = t.entity_id
+                        )
+                        SELECT *
+                        FROM superents) se GROUP BY entity_id;
+                        
+                        DROP TABLE IF EXISTS thanados.rc_stacked_final;
+                        CREATE TABLE thanados.rc_stacked_final AS
+                        SELECT 
+                            entity_id, sample, 
+                            jsonb_array_length(sample) 
+                            FROM thanados.RC_stacked 
+                            WHERE entity_id NOT IN (SELECT entity_id from thanados.radiocarbon)
+                        UNION ALL
+                        
+                        SELECT 
+                            entity_id, 
+                            sample, jsonb_array_length(sample) 
+                            FROM thanados.RC_stacked WHERE entity_id IN (SELECT entity_id from thanados.radiocarbon) 
+                                AND jsonb_array_length(sample) > 1;
+                    
+                    
+                    DROP TABLE IF EXISTS thanados.radiocarbon_tmp;
+
+CREATE TABLE thanados.radiocarbon_tmp AS
+    SELECT
+           entity_id,
+           jsonb_build_object('child_sample', sample) AS sample
+FROM thanados.rc_stacked_final WHERE entity_id NOT IN (SELECT entity_id FROM thanados.radiocarbon) AND jsonb_array_length(sample) = 1
+UNION ALL
+    SELECT
+           entity_id,
+           jsonb_build_object('combined_children_samples', sample) AS sample
+FROM thanados.rc_stacked_final WHERE entity_id NOT IN (SELECT entity_id FROM thanados.radiocarbon) AND jsonb_array_length(sample) > 1
+UNION ALL
+    SELECT
+           f.entity_id,
+           jsonb_build_object('combined_samples', f.sample,
+                                'sample', s.description::JSONB -> 'sample') AS sample
+FROM thanados.rc_stacked_final f JOIN thanados.radiocarbon s ON s.entity_id = f.entity_id WHERE f.entity_id IN (SELECT entity_id FROM thanados.radiocarbon) AND jsonb_array_length(sample) > 1;
+
+INSERT INTO thanados.radiocarbon_tmp SELECT r.entity_id, r.description::JSONB FROM thanados.radiocarbon r WHERE r.entity_id NOT IN (SELECT entity_id FROM thanados.radiocarbon_tmp);
+                    """
+        g.cursor.execute(sql_stacked)
+
+        from thanados.models.entity import RCData
+
+        RCData.radiocarbonmulti()
+
+
+
+
+
     sql_5 = """
 -- create table with types and files of all entities
 DROP TABLE IF EXISTS thanados.types_and_files;
@@ -1087,7 +1223,8 @@ CREATE TABLE thanados.types_and_files
     material   jsonb,
     timespan   jsonb,
     reference  jsonb,
-    extrefs    jsonb
+    extrefs    jsonb,
+    radiocarbon jsonb
 );
 
 --external gazetteers for types
@@ -1135,6 +1272,10 @@ FROM thanados.entities e
      ON e.child_id = irgendwas.entity_id WHERE e.child_id != 0;
 
 
+-- insert radiocarbon
+UPDATE thanados.types_and_files t SET radiocarbon = r.sample::JSONB
+FROM thanados.radiocarbon_tmp r WHERE t.entity_id = r.entity_id;
+         
 -- insert file data
 DROP TABLE IF EXISTS thanados.testins;
 CREATE TABLE thanados.testins AS
@@ -1276,7 +1417,7 @@ CREATE TABLE thanados.tmp AS
      FROM thanados.entities e
               LEFT JOIN thanados.types_and_files t ON e.child_id = t.entity_id ORDER BY parent_id, child_name);
 
-DROP TABLE IF EXISTS thanados.types_and_files;
+--DROP TABLE IF EXISTS thanados.types_and_files;
 
 UPDATE thanados.tmp
 SET timespan = NULL
@@ -1292,6 +1433,7 @@ SET end_comment = NULL
 WHERE end_comment = '';
 UPDATE thanados.tmp SET description = (SELECT split_part(description, '##German', 1)); --hack to remove German descriptions
 UPDATE thanados.tmp SET description = (SELECT split_part(description, '##Deutsch', 1)); --hack to remove German descriptions
+UPDATE thanados.tmp SET description = (SELECT split_part(description, '##RCD', 1)); --hack to remove Radiocarbon string
 --1,4s
 """
 
@@ -1330,7 +1472,8 @@ SELECT f.child_id,
                'dimensions', f.dimensions,
                'material', f.material,
                'references', f.reference,
-               'externalreference', f.extrefs
+               'externalreference', f.extrefs,
+               'radiocarbon', f.radiocarbon
            )) AS finds
 FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'find') f
 ORDER BY f.child_name;
@@ -1387,7 +1530,8 @@ SELECT f.child_id,
                'dimensions', f.dimensions,
                'material', f.material,
                'references', f.reference,
-               'externalreference', f.extrefs
+               'externalreference', f.extrefs,
+               'radiocarbon', f.radiocarbon
            )) AS humanremains
 FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'human_remains') f
 ORDER BY f.child_name;
@@ -1446,14 +1590,15 @@ SELECT f.child_id AS id,
                'dimensions', f.dimensions,
                'material', f.material,
                'references', f.reference,
-               'externalreference', f.extrefs
+               'externalreference', f.extrefs,
+               'radiocarbon', f.radiocarbon
 
            ))     AS burials,
        jsonb_strip_nulls(jsonb_agg(fi.find))--,
 FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'stratigraphic_unit') f
          LEFT JOIN thanados.tbl_findscomplete fi ON f.child_id = fi.parent_id         
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.typename, f.path,
-         f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_class, f.reference, f.extrefs
+         f.radiocarbon, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_class, f.reference, f.extrefs
 ORDER BY f.child_name;
 
 DROP TABLE IF EXISTS thanados.tbl_findscomplete;
@@ -1530,13 +1675,14 @@ SELECT f.child_id,
                'dimensions', f.dimensions,
                'material', f.material,
                'references', f.reference,
-               'externalreference', f.extrefs
+               'externalreference', f.extrefs,
+               'radiocarbon', f.radiocarbon
            )) AS graves,
        jsonb_strip_nulls(jsonb_agg(fi.burial))
 FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'feature') f
          LEFT JOIN thanados.tbl_burialscomplete fi ON f.child_id = fi.parent_id
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.reference, f.extrefs,
-         f.geom, f.typename, f.path, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files,
+         f.radiocarbon, f.geom, f.typename, f.path, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files,
          f.system_class
 ORDER BY f.child_name;
 
@@ -1646,13 +1792,14 @@ SELECT s.id,
                'externalreference', f.extrefs,
                'files', f.files,
                'center', s.point::jsonb,
-               'shape', s.polygon::jsonb
+               'shape', s.polygon::jsonb,
+               'radiocarbon', f.radiocarbon
            )) AS sites
 FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'place') f
          LEFT JOIN thanados.tbl_sites s ON f.child_id = s.id
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.reference, f.extrefs,
          f.geom, f.typename, f.path, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files,
-         f.system_class, s.id, s.name,
+         f.radiocarbon, f.system_class, s.id, s.name,
          s.point, s.polygon
 ORDER BY f.child_name;
 
@@ -2357,7 +2504,6 @@ def admin_filerefs() -> str:
 
     refs = json.loads(request.form['refs'])
     for row in refs:
-        print(row)
         g.cursor.execute(sql_refs, {'domain_id': row['refId'], 'range_id': row['file_id'], 'page': row['page']})
     return jsonify(refs)
 
@@ -2674,57 +2820,5 @@ def fileref_execute():  # pragma: no cover
     if current_user.group not in ['admin']:
         abort(403)
 
-    sql_7 = """
-    --cleanup for missing file references
-    -- check for files without references and add reference of entity if available
 
-DROP TABLE IF EXISTS thanados.refFilesTmp;
-
-CREATE table thanados.refFilesTmp AS (
-SELECT
-	f.child_name,
-	f.child_id,
-	fi.id AS range_id,
-	fi.filename
-FROM thanados.finds f JOIN thanados.files fi ON f.child_id = fi.parent_id WHERE source ISNULL);
-
-INSERT INTO thanados.refFilesTmp
-	SELECT
-	f.child_name,
-	f.child_id,
-	fi.id AS range_id,
-	fi.filename
-FROM thanados.burials f JOIN thanados.files fi ON f.child_id = fi.parent_id WHERE source ISNULL;
-
-INSERT INTO thanados.refFilesTmp
-	SELECT
-	f.child_name,
-	f.child_id,
-	fi.id AS range_id,
-	fi.filename
-FROM thanados.graves f JOIN thanados.files fi ON f.child_id = fi.parent_id WHERE source ISNULL;
-
-INSERT INTO thanados.refFilesTmp
-	SELECT
-	f.child_name,
-	f.child_id,
-	fi.id AS range_id,
-	fi.filename
-FROM thanados.sites f JOIN thanados.files fi ON f.child_id = fi.parent_id WHERE source ISNULL;
-
-
-
-INSERT INTO model.link (range_id, domain_id, property_code, description)
-
-SELECT 	f.range_id,
-	r.id AS domain_id,
-	'P67' AS property_code,
-	r.reference AS description
-
-FROM thanados.reffilestmp f JOIN thanados.reference r ON r.parent_id = f.child_id;
-
-DROP TABLE IF EXISTS thanados.refFilesTmp;
-    """
-
-    g.cursor.execute(sql_7)
-    return redirect(url_for('jsonprepare_execute'))
+    return redirect(url_for('admin'))
