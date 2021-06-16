@@ -983,6 +983,9 @@ function jsonquery(id, level, prop, val1, val2) {
                     $.each(burial.finds, function (f, find) {
                         searchResultIds.push(parseInt(find.id));
                     });
+                    $.each(burial.humanremains, function (f, bone) {
+                        searchResultIds.push(parseInt(bone.id));
+                    });
                 });
             }
         });
@@ -998,6 +1001,9 @@ function jsonquery(id, level, prop, val1, val2) {
                     $.each(burial.finds, function (f, find) {
                         searchResultIds.push(parseInt(find.id));
                     });
+                    $.each(burial.humanremains, function (f, bone) {
+                        searchResultIds.push(parseInt(bone.id));
+                    });
                 }
             });
         });
@@ -1012,6 +1018,9 @@ function jsonquery(id, level, prop, val1, val2) {
                     if (searchResultIds.includes(find.id)) {
                         searchResultIds.push(burial.id);
                         searchResultIds.push(feature.id);
+                        $.each(burial.humanremains, function (f, bone) {
+                            searchResultIds.push(parseInt(bone.id));
+                        });
                     }
                 });
             });
@@ -1026,6 +1035,9 @@ function jsonquery(id, level, prop, val1, val2) {
                     if (searchResultIds.includes(humanremain.id)) {
                         searchResultIds.push(burial.id);
                         searchResultIds.push(feature.id);
+                        $.each(burial.finds, function (f, find) {
+                            searchResultIds.push(parseInt(find.id));
+                        });
                     }
                 });
             });
