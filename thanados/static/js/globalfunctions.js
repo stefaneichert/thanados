@@ -2542,6 +2542,82 @@ function getAllGraves() {
     });
 }
 
+function getAllGraves() {
+    $.ajax({
+        type: 'POST',
+        url: '/ajax/allgraves',
+        success: function (result) {
+            eval('allGraves' + Iter + '= L.geoJSON(result, {onEachFeature: function (feature, layer){\n' +
+                '                    layer.bindPopup(getPopUp(feature))\n' +
+                '                },filter: polygonFilter,style: myBackgroundStyle})')
+
+            pointgraves = L.geoJSON(result, {
+                onEachFeature: function (feature, layer) {
+                    layer.bindPopup(getPopUp(feature))
+                },
+                filter: pointFilter,
+                pointToLayer: function (feature, latlng) {
+                    if (feature.id !== 0) {
+                        var lefttoplat = (latlng.lat - 0.000003);
+                        var lefttoplon = (latlng.lng - 0.000005);
+                        var rightbottomlat = (latlng.lat + 0.000003);
+                        var rightbottomlon = (latlng.lng + 0.000005);
+                        var bounds = [[lefttoplat, lefttoplon], [rightbottomlat, rightbottomlon]];
+                        var rect = L.rectangle(bounds).toGeoJSON(13);
+                        L.extend(rect, {//add necessary properties from json
+                            properties: feature.properties,
+                            id: feature.id,
+                            parent: feature.parent,
+                            burials: feature.burials,
+                            derivedPoly: "true",
+                            site: feature.site
+                        });
+                        eval('allGraves' + Iter).addData(rect);
+                    }
+                },
+            });
+
+            var gravesexist = false;
+            eval('if (typeof(graves' + Iter + ') !== "undefined") var gravesexist = true')
+
+            if (gravesexist) {
+                var groupedOverlays = {
+                    "Search Results": {
+                        "Clustered": clustermarkers,
+                        "Single": eval('resultpoints' + Iter),
+                        "Graves (results)": eval('graves' + Iter)
+                    },
+                    "Visualisations": {
+                        "Density": heat,
+                        "Graves (all)": eval('allGraves' + Iter)
+                    }
+                };
+            } else {
+                var groupedOverlays = {
+                    "Search Results": {
+                        "Clustered": clustermarkers,
+                        "Single": eval('resultpoints' + Iter),
+                        //"Graves (results)": eval('graves' + Iter)
+                    },
+                    "Visualisations": {
+                        "Density": heat,
+                        "Graves (all)": eval('allGraves' + Iter)
+                    }
+                }
+            }
+            var options = {
+                groupCheckboxes: false
+            };
+            eval('map' + Iter + '.removeControl(layerControl' + Iter + ')');
+            eval('layerControl' + Iter + ' = L.control.groupedLayers(MyBaseLayers' + Iter + ', groupedOverlays, options)');
+            eval('map' + Iter + '.addControl(layerControl' + Iter + ')');
+
+            eval
+
+        }
+    });
+}
+
 function getPopUp(feature) {
     var myPopup = '<a href="entity\/' + feature.id + '" title="' + feature.properties.path + '" target="_blank"><b>' + feature.properties.name + '</b></a>' +
         '<br>' + feature.site.name

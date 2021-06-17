@@ -328,9 +328,9 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div type="button" data-value="' + entTypeId + '" class="modalrowitem typebutton"' +
         ' data-toggle="popover">' + entType + '</div><span class="popover-wrapper"></span>' +
         '<div id="mytimespan' + entId + '" class="modalrowitem" title="Timespan/daterange of entity">' + dateToInsert + '</div>' +
-        ((RCdate) ? '<a id="rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_' + entId + '.png"  class="modalrowitem rc_button" title="Radiocarbon Date">' + entRC.sample + '</a>' : '') +
-        ((RC_child) ? '<a id="rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_sub_' + entId + '.png"  class="modalrowitem rc_button" title="Radiocarbon Date of Subunit">' + entRC.child_sample + '</a>' : '') +
-        ((RC_combo) ? '<a id="rc_stacked_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_stacked_' + entId + '.png"  class="modalrowitem rc_button" title="Mulitple Radiocarbon Dates">' + entRC.combined_children_samples.length + ' 14C Dates combined</a>' : '') +
+        ((RCdate) ? '<a id="rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_' + entId + '.png"  class="modalrowitem rc_button" title="Radiocarbon Date">14C cal: ' + entRC.sample + '</a>' : '') +
+        ((RC_child) ? '<a id="rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_sub_' + entId + '.png"  class="modalrowitem rc_button" title="Radiocarbon Date of Subunit">14C cal subunit: '  + entRC.child_sample + '</a>' : '') +
+        ((RC_combo) ? '<a id="rc_stacked_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_stacked_' + entId + '.png"  class="modalrowitem rc_button" title="Mulitple Radiocarbon Dates">multiple (' + entRC.combined_children_samples.length + ') 14C dates</a>' : '') +
         '<div id="myDescr' + entId + '" title="Description of entity"><span class="shrinkable">' + entDesc + '</span></div><a class="truncBtn" onclick="truncId=\'#myDescr' + entId + '\'" href="#">Show more</a>' +
         '<div class="mt-5" id="myTypescontainer' + entId + '"></div>' +
         '<div id="myDimensionscontainer' + entId + '"></div>' +
@@ -1122,6 +1122,15 @@ function setcatalogue(currentchildren, parentDiv, iter) {
         var RCdate = false;
         if (typeof (currentfeature.properties.radiocarbon) !== 'undefined') {
             var entRC = currentfeature.properties.radiocarbon;
+
+
+
+
+
+            if (entRC["sample"]) {RCid = entId; RCname = '14C cal: ' + entRC.sample}
+            if (entRC["child_sample"]) {RCid = 'sub_'+ entId; RCname = '14C cal subunit: '  + entRC.child_sample}
+            if (entRC["combined_children_samples"]) {RCid = 'stacked_'+ entId; RCname = 'multiple (' + entRC.combined_children_samples.length + ') 14C dates'}
+
             RCdate = true
         }
 
@@ -1139,7 +1148,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             'data-toggle="popover" ' +
             'data-value="' + typeId + '">' + entType + '</div><span class="popover-wrapper"></span>' +
             '<div id="myModaltimespan' + entId + '" class="modalrowitem">' + dateToInsert + '</div>' +
-            ((RCdate) ? '<a id="kat_rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_' + entId + '.png"  class="modalrowitem rc_button" title="Radiocarbon Date">' + entRC.sample + '</a>' : '') +
+            ((RCdate) ? '<a id="kat_rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_' + RCid + '.png"  class="modalrowitem rc_button" title="Radiocarbon Date">'+RCname+'</a>' : '') +
             '<div id="myModalImagecontainer' + entId + '" class="row mb-2"></div>' +
             '<div id="myModalDescr' + entId + '">' + entDesc + '</div>' +
             '<div id="myModalTypescontainer' + entId + '"></div>' +
