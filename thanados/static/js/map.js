@@ -90,6 +90,26 @@ $(window).resize(function () {
 
 
 function setmap(myjson) {
+    greyicon = L.icon({
+      iconUrl: '/static/images/icons/marker-icon_grey.png',
+      shadowUrl: '/static/images/icons/marker-shadow.png',
+      iconAnchor: [12, 41],
+      popupAnchor: [0, -34]
+    });
+    //markers for all sites
+    mymarkers = L.markerClusterGroup();
+    $.each(sitelist[0].sitelist, function (i, site) {
+        if (site.id !== myjson.site_id) {
+        var marker = L.marker([((site.lon)), ((site.lat))], {icon: greyicon, title: site.name}).addTo(mymarkers).bindPopup('<a href="/entity/' + site.id + '" title="' + site.description + '"><b>' + site.name + '</b></a><br><br>' + site.type);
+        }
+    })
+
+    var overlays = {
+        "All sites": mymarkers,
+    };
+
+
+
     //set sidebar to current json
     if (myjson.features[0].id !== 0) {
         setSidebarContent(myjson);
@@ -170,7 +190,7 @@ function setmap(myjson) {
     addFilterSearch();
 
     //add layer control
-    baseControl = L.control.layers(baseLayers).addTo(map);
+    baseControl = L.control.layers(baseLayers, overlays).addTo(map);
 
     //add scalebar
     L.control.scale({imperial: false}).addTo(map);
@@ -341,6 +361,25 @@ function setmap(myjson) {
         attributionChange()
     });
     attributionChange();
+
+    Sitemarker = L.marker([myjson.properties.center.coordinates[1],myjson.properties.center.coordinates[0]]).addTo(map)
+    Sitemarker.setOpacity(0)
+
+    map.on('zoom', function (e) {
+        if (map.getZoom() > 18) {
+           Sitemarker.setOpacity(0)
+        } else {
+            if (map.getZoom() === 10) Sitemarker.setOpacity(1)
+            if (map.getZoom() === 11) Sitemarker.setOpacity(0.8)
+            if (map.getZoom() === 12) Sitemarker.setOpacity(0.7)
+            if (map.getZoom() === 13) Sitemarker.setOpacity(0.6)
+            if (map.getZoom() === 14) Sitemarker.setOpacity(0.5)
+            if (map.getZoom() === 15) Sitemarker.setOpacity(0.4)
+            if (map.getZoom() === 16) Sitemarker.setOpacity(0.2)
+            if (map.getZoom() === 17) Sitemarker.setOpacity(0.1)
+            if (map.getZoom() > 18) Sitemarker.setOpacity(0)
+        }
+    })
 
     //set THANADOS style for layer control (see style.css)
     $('.leaflet-control-layers-toggle').css({'background-image': ''});
