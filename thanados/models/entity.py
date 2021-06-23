@@ -437,8 +437,10 @@ class RCData:
                 # abort(400)
             else:
                 buf.seek(0)
+                filename = "thanados/static/images/rc_dates/rc_" + entid + ".png"
+                os.makedirs(os.path.dirname(filename), exist_ok=True)
 
-                with open("thanados/static/images/rc_dates/rc_" + entid + ".png", "wb") as f:
+                with open(filename, "wb") as f:
                     f.write(buf.getbuffer())
                 matplotlib.pyplot.close(fig='all')
 
