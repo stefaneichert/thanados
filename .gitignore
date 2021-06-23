@@ -12,6 +12,7 @@ __pycache__/*
 
 # created files
 thanados/static/images/entities/*
+thanados/static/images/rc_dates/*
 
 # files for specific projects
 thanados/templates/about/aboutmedcem.html
