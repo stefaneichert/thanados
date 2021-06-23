@@ -232,7 +232,6 @@ function getEntityData(parentName, parentId, currentfeature) {
     RCdate = false;
     RC_combo = false;
     RC_child = false;
-    console.log(currentfeature.properties.radiocarbon);
     if (typeof (currentfeature.properties.radiocarbon) !== 'undefined') {
         entRC = currentfeature.properties.radiocarbon;
         if (typeof (entRC.combined_children_samples) !== 'undefined') {

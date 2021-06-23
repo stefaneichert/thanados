@@ -768,6 +768,27 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     var entdims = currentfeature.properties.dimensions;
     var entmaterial = currentfeature.properties.material;
     //console.log(entName);
+
+    RCdate = false;
+    RC_combo = false;
+    RC_child = false;
+    if (typeof (currentfeature.properties.radiocarbon) !== 'undefined') {
+        console.log(currentfeature.properties.radiocarbon)
+        entRC = currentfeature.properties.radiocarbon;
+        if (typeof (entRC.combined_children_samples) !== 'undefined') {
+            RC_combo = true
+        }
+        if (typeof (entRC.sample) !== 'undefined') {
+            RCdate = true
+        }
+        if (typeof (entRC.child_sample) !== 'undefined') {
+            RC_child = true
+        }
+        console.log(RCdate)
+    }
+
+
+
     $('#' + parentDiv).append(
         '<div class="modal-header">' +
         '<h5 class="modal-title">' +
@@ -785,6 +806,9 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         'data-toggle="popover" ' +
         'data-value="' + typeId + '">' + entType + '</div>' +
         '<div id="myModaltimespan' + entId + '" class="modalrowitem">' + dateToInsert + '</div><span class="popover-wrapper"></span>' +
+        ((RCdate) ? '<a id="rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_' + entId + '.png"  class="modalrowitem rc_button_map" title="Radiocarbon Date">14C cal: ' + entRC.sample + '</a>' : '') +
+        ((RC_child) ? '<a id="rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_sub_' + entId + '.png" class="modalrowitem rc_button_map" title="Radiocarbon Date of Subunit">14C cal subunit: '  + entRC.child_sample + '</a>' : '') +
+        ((RC_combo) ? '<a id="rc_stacked_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_stacked_' + entId + '.png"  class="modalrowitem rc_button_map" title="Mulitple Radiocarbon Dates">multiple (' + entRC.combined_children_samples.length + ') 14C dates</a>' : '') +
         '<div id="myModalDescr' + entId + '">' + entDesc + '</div>' +
         '<div class="mt-2" id="myModalImagecontainer' + entId + '"></div>' +
         '<div id="myModalTypescontainer' + entId + '"></div>' +
