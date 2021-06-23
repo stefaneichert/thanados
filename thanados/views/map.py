@@ -31,8 +31,11 @@ def map(object_id: int):
         if row.system_class == 'human_remains':
             availabletypes['bonetypes'].append(row.id)
 
+    site_list = Data.get_list()
+
     return render_template('map/map.html',
                            myjson=myjson[0].data,
                            object_id=object_id,
                            typesjson=types[0].types,
-                           availables=availabletypes)
+                           availables=availabletypes,
+                           site_list=site_list)

@@ -577,14 +577,7 @@ WHERE end_comment = 'None';
 UPDATE thanados.entitiestmp
 SET description = NULL
 WHERE description = '';
-UPDATE thanados.entitiestmp
-SET description = (SELECT split_part(description, '##German', 1)); --remove German descriptions. Replace ##German with characters of string. This string and the following characters will be removed in the description
-UPDATE thanados.entitiestmp
-SET description = (SELECT split_part(description, '##Deutsch', 1)); --remove German descriptions. See above
-UPDATE thanados.entitiestmp
-SET description = (SELECT split_part(description, '##german', 1)); --remove German descriptions. See above
-UPDATE thanados.entitiestmp
-SET description = (SELECT split_part(description, '##deutsch', 1)); --remove German descriptions. See above
+
 
 -- fill timespan dates if NULL with from_values
 UPDATE thanados.entitiestmp SET begin_to = begin_from WHERE begin_from IS NOT NULL and begin_to IS NULL;
@@ -1432,7 +1425,9 @@ UPDATE thanados.tmp
 SET end_comment = NULL
 WHERE end_comment = '';
 UPDATE thanados.tmp SET description = (SELECT split_part(description, '##German', 1)); --hack to remove German descriptions
+UPDATE thanados.tmp SET description = (SELECT split_part(description, '##german', 1)); --hack to remove German descriptions
 UPDATE thanados.tmp SET description = (SELECT split_part(description, '##Deutsch', 1)); --hack to remove German descriptions
+UPDATE thanados.tmp SET description = (SELECT split_part(description, '##deutsch', 1)); --hack to remove German descriptions
 UPDATE thanados.tmp SET description = (SELECT split_part(description, '##RCD', 1)); --hack to remove Radiocarbon string
 --1,4s
 """

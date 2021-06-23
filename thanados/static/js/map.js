@@ -90,6 +90,26 @@ $(window).resize(function () {
 
 
 function setmap(myjson) {
+    greyicon = L.icon({
+      iconUrl: '/static/images/icons/marker-icon_grey.png',
+      shadowUrl: '/static/images/icons/marker-shadow.png',
+      iconAnchor: [12, 41],
+      popupAnchor: [0, -34]
+    });
+    //markers for all sites
+    mymarkers = L.markerClusterGroup();
+    $.each(sitelist[0].sitelist, function (i, site) {
+        if (site.id !== myjson.site_id) {
+        var marker = L.marker([((site.lon)), ((site.lat))], {icon: greyicon, title: site.name}).addTo(mymarkers).bindPopup('<a href="/entity/' + site.id + '" title="' + site.description + '"><b>' + site.name + '</b></a><br><br>' + site.type);
+        }
+    })
+
+    var overlays = {
+        "All sites": mymarkers,
+    };
+
+
+
     //set sidebar to current json
     if (myjson.features[0].id !== 0) {
         setSidebarContent(myjson);
@@ -170,7 +190,7 @@ function setmap(myjson) {
     addFilterSearch();
 
     //add layer control
-    baseControl = L.control.layers(baseLayers).addTo(map);
+    baseControl = L.control.layers(baseLayers, overlays).addTo(map);
 
     //add scalebar
     L.control.scale({imperial: false}).addTo(map);
@@ -341,6 +361,25 @@ function setmap(myjson) {
         attributionChange()
     });
     attributionChange();
+
+    Sitemarker = L.marker([myjson.properties.center.coordinates[1],myjson.properties.center.coordinates[0]]).addTo(map)
+    Sitemarker.setOpacity(0)
+
+    map.on('zoom', function (e) {
+        if (map.getZoom() > 18) {
+           Sitemarker.setOpacity(0)
+        } else {
+            if (map.getZoom() === 10) Sitemarker.setOpacity(1)
+            if (map.getZoom() === 11) Sitemarker.setOpacity(0.8)
+            if (map.getZoom() === 12) Sitemarker.setOpacity(0.7)
+            if (map.getZoom() === 13) Sitemarker.setOpacity(0.6)
+            if (map.getZoom() === 14) Sitemarker.setOpacity(0.5)
+            if (map.getZoom() === 15) Sitemarker.setOpacity(0.4)
+            if (map.getZoom() === 16) Sitemarker.setOpacity(0.2)
+            if (map.getZoom() === 17) Sitemarker.setOpacity(0.1)
+            if (map.getZoom() > 18) Sitemarker.setOpacity(0)
+        }
+    })
 
     //set THANADOS style for layer control (see style.css)
     $('.leaflet-control-layers-toggle').css({'background-image': ''});
@@ -729,6 +768,27 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     var entdims = currentfeature.properties.dimensions;
     var entmaterial = currentfeature.properties.material;
     //console.log(entName);
+
+    RCdate = false;
+    RC_combo = false;
+    RC_child = false;
+    if (typeof (currentfeature.properties.radiocarbon) !== 'undefined') {
+        console.log(currentfeature.properties.radiocarbon)
+        entRC = currentfeature.properties.radiocarbon;
+        if (typeof (entRC.combined_children_samples) !== 'undefined') {
+            RC_combo = true
+        }
+        if (typeof (entRC.sample) !== 'undefined') {
+            RCdate = true
+        }
+        if (typeof (entRC.child_sample) !== 'undefined') {
+            RC_child = true
+        }
+        console.log(RCdate)
+    }
+
+
+
     $('#' + parentDiv).append(
         '<div class="modal-header">' +
         '<h5 class="modal-title">' +
@@ -746,6 +806,9 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         'data-toggle="popover" ' +
         'data-value="' + typeId + '">' + entType + '</div>' +
         '<div id="myModaltimespan' + entId + '" class="modalrowitem">' + dateToInsert + '</div><span class="popover-wrapper"></span>' +
+        ((RCdate) ? '<a id="rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_' + entId + '.png"  class="modalrowitem rc_button_map" title="Radiocarbon Date">14C cal: ' + entRC.sample + '</a>' : '') +
+        ((RC_child) ? '<a id="rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_sub_' + entId + '.png" class="modalrowitem rc_button_map" title="Radiocarbon Date of Subunit">14C cal subunit: '  + entRC.child_sample + '</a>' : '') +
+        ((RC_combo) ? '<a id="rc_stacked_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_stacked_' + entId + '.png"  class="modalrowitem rc_button_map" title="Mulitple Radiocarbon Dates">multiple (' + entRC.combined_children_samples.length + ') 14C dates</a>' : '') +
         '<div id="myModalDescr' + entId + '">' + entDesc + '</div>' +
         '<div class="mt-2" id="myModalImagecontainer' + entId + '"></div>' +
         '<div id="myModalTypescontainer' + entId + '"></div>' +
