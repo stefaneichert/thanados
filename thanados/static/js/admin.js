@@ -295,7 +295,7 @@ function logData() {
             return false
         }
         console.log(imageRefs)
-        //setRefs(imageRefs)
+        setRefs(imageRefs)
 
     }
 }
