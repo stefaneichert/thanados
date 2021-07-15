@@ -653,6 +653,20 @@ function loadBurials() {
             $('#sex-chart-container').remove();
         }
 
+        if (isodata != null) {
+            createschatterchart(isodata, 'Isotopic Analyses Delta16N vs. Delta13C', 'iso-chart', 'Delta13C (per mil)', 'Delta16N (per mil)', false);
+            BuCh = true
+        } else {
+            $('#iso-chart-container').remove();
+        }
+
+        if (isoage != null) {
+            createschatterchart(isoage, 'Delta 16N vs. Age at death', 'isoage-chart', 'Age at death', 'Delta16N (per mil)', true);
+            BuCh = true
+        } else {
+            $('#isoage-chart-container').remove();
+        }
+
         if (GenderData.length > 0) {
             GenderBurials = {'name': 'no information', 'count': 0};
             $.each(GenderData, function (i, dataset) {
@@ -1132,6 +1146,60 @@ function createMultiLinechart(data, title, container, colorrange) {
     var ctx = document.getElementById(container).getContext('2d');
     var newchart = new Chart(ctx, config)
 }
+
+function createschatterchart(data, title, container, xlabel, ylabel, legend) {
+    var ctx = document.getElementById(container).getContext('2d');
+
+    var scatteroptions = {
+
+        tooltips: {
+            callbacks: {
+                label: function (tooltipItem, data) {
+                    var label = data.datasets[tooltipItem.datasetIndex].labels[tooltipItem.index];
+                    return label + ': (' + tooltipItem.xLabel + ', ' + tooltipItem.yLabel + ')';
+                }
+            }
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+            display: legend,
+        },
+        title: {
+            display: true,
+            text: title
+        },
+        scales: {
+            xAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: xlabel,
+                },
+                stacked: false,
+            }],
+            yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: ylabel,
+                },
+                stacked: false
+            }]
+        },
+        plugins: {
+            colorschemes: {
+                scheme: 'tableau.Tableau20'
+            }
+        }
+    }
+
+
+    var scatterChart = new Chart(ctx, {
+        type: "scatter",
+        data: data,
+        options: scatteroptions
+    });
+}
+
 
 function setAgeData(SourceData, sorttype, sortdirection) {
     var burials = [];

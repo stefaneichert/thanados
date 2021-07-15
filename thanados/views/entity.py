@@ -38,6 +38,44 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
                                mysitejson=data, system_class=system_class, entity=entity, network=network)
     if format_ == 'dashboard':
 
+        def getScatterDataX(xarr, yval, labelarr):
+            iter = 0
+            isodata = {}
+            isodata['datasets'] = []
+            for row in xarr:
+                print(row)
+                print(labelarr[iter])
+
+                sqlScatter = """
+                    SELECT jsonb_build_object(
+                         'label', %(labelval)s,
+                         'labels', jsonb_agg(f.child_name),
+                         'data', jsonb_agg(jsonb_build_object(
+                             'x', f.xaxe,
+                             'y', f.yaxe))
+                     ) as datasets
+                FROM (
+         SELECT b.child_name, a.min AS xaxe, b.min AS yaxe
+         FROM thanados.searchdata a
+                  JOIN (SELECT child_id, child_name, min FROM thanados.searchdata WHERE type_id = %(yval)s AND site_id = %(site_id)s) b
+                       ON a.child_id = b.child_id
+         WHERE a.type_id = %(xarrval)s) f
+                """
+                g.cursor.execute(sqlScatter, {'site_id': place_id, 'yval': yval, 'labelval': labelarr[iter], 'xarrval': xarr[iter]} )
+                iter += 1
+                isojson = g.cursor.fetchone()
+                if (isojson.datasets['data']) != None:
+                    isodata['datasets'].append(isojson.datasets)
+                else:
+                    isodata = None
+            return isodata
+
+        isoAge = getScatterDataX([117199, 117200], 118182, ['min age', 'max age'])
+        isodata = getScatterDataX([118183], 118182, ['Burials'])
+
+
+
+
         def getBubbleData(treeName, topId, prefix):
 
             bubbletree = [{
@@ -1070,6 +1108,8 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
                                preciousMetalfindsAgeValue=preciousMetalfindsAgeValue,
                                preciousMetalfindsAgeBracket=preciousMetalfindsAgeBracket,
                                prestigiousfindsValueAge=prestigiousfindsValueAge,
+                               isodata = isodata,
+                               isoage = isoAge,
                                prestigiousfindsBracketAge=prestigiousfindsBracketAge, knn=knn, place_id=place_id)
 
     if api_ == 'api':
