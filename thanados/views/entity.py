@@ -1,6 +1,6 @@
 import ast
 import collections
-#import json,urllib.request
+# import json,urllib.request
 
 from flask import json, render_template, g
 
@@ -18,8 +18,8 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
     entity = {}
     api_url = app.config["API_URL"]
     url = api_url + str(object_id)
-    #jsondata = urllib.request.urlopen(url).read()
-    #output = json.loads(jsondata)
+    # jsondata = urllib.request.urlopen(url).read()
+    # output = json.loads(jsondata)
 
     sql = """
     SELECT name, description FROM model.entity WHERE id = %(id)s 
@@ -38,14 +38,29 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
                                mysitejson=data, system_class=system_class, entity=entity, network=network)
     if format_ == 'dashboard':
 
+
+        #prepare AgeData
+        sqlAge = """
+        DROP TABLE IF EXISTS thanados.valueages;
+CREATE TABLE thanados.valueages AS
+SELECT a.child_name, a.child_id AS burial_id, a.avg AS min, b.avg AS max FROM
+
+(SELECT site_id, child_id, child_name, avg(min)::numeric(10,2) AS avg FROM thanados.searchdata
+WHERE type_id IN (118152, 144521, 118134, 117199)
+GROUP BY site_id, child_id, child_name ORDER BY avg desc) a JOIN
+
+(SELECT site_id, child_id, child_name, avg(min)::numeric(10,2) AS avg FROM thanados.searchdata
+WHERE type_id IN (118151, 118132, 117200, 144520)
+GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.child_id WHERE a.site_id = %(place_id)s
+        
+        """
+        g.cursor.execute(sqlAge, {'place_id': place_id})
+
         def getScatterDataX(xarr, yval, labelarr):
             iter = 0
             isodata = {}
             isodata['datasets'] = []
             for row in xarr:
-                print(row)
-                print(labelarr[iter])
-
                 sqlScatter = """
                     SELECT jsonb_build_object(
                          'label', %(labelval)s,
@@ -61,7 +76,8 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
                        ON a.child_id = b.child_id
          WHERE a.type_id = %(xarrval)s) f
                 """
-                g.cursor.execute(sqlScatter, {'site_id': place_id, 'yval': yval, 'labelval': labelarr[iter], 'xarrval': xarr[iter]} )
+                g.cursor.execute(sqlScatter,
+                                 {'site_id': place_id, 'yval': yval, 'labelval': labelarr[iter], 'xarrval': xarr[iter]})
                 iter += 1
                 isojson = g.cursor.fetchone()
                 if (isojson.datasets['data']) != None:
@@ -75,6 +91,21 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
 
 
 
+        def getAvgValuesPerTypeParent(topparent, label):
+
+            sql = """
+                SELECT jsonb_build_object(
+    'labels', jsonb_agg(f.child_name),
+    'datasets', jsonb_agg(f.avg),
+    'tooltips', jsonb_agg(f.label)
+        ) as values FROM
+(SELECT child_name, array_agg(type || ': ' || min || 'cm') AS label, avg(min)::int AS avg FROM thanados.searchdata
+WHERE type_id IN (SELECT id FROM thanados.types_all WHERE path LIKE %(topparent)s AND site_id = %(site_id)s)
+GROUP BY site_id, child_id, child_name ORDER BY avg) f
+            """
+            g.cursor.execute(sql, {'site_id': place_id, 'topparent': str(topparent) + ' >%', 'label': label})
+            result = g.cursor.fetchone()
+            return result.values
 
         def getBubbleData(treeName, topId, prefix):
 
@@ -375,6 +406,28 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
                 return {"labels": [],
                         "datasets": []}
 
+        def getMultiBoxPlotValues(topparent, type_id, label):
+            sql = """
+            SELECT jsonb_build_object(
+    'labels', jsonb_agg(c.type || ' (' || c.count || ')'),
+    'datasets', jsonb_build_array(jsonb_build_object('data',jsonb_agg(c.values), 'label', %(label)s))
+        ) AS data
+            FROM
+(SELECT a.type, jsonb_agg(b.min) AS values, COUNT(b.min)  FROM thanados.searchdata a JOIN thanados.searchdata b ON a.child_id = b.child_id
+WHERE a.type_id IN (SELECT id from thanados.types_all WHERE topparent = '%(topparent)s')
+  AND a.site_id = %(place_id)s AND b.type_id = %(type_id)s GROUP BY a.type
+        UNION ALL
+    SELECT 'total', jsonb_agg(b.min) AS values, COUNT(b.min)  FROM thanados.searchdata a JOIN thanados.searchdata b ON a.child_id = b.child_id
+WHERE a.type_id IN (SELECT id from thanados.types_all WHERE topparent = '%(topparent)s')
+  AND a.site_id = %(place_id)s AND b.type_id = %(type_id)s) c
+            """
+            g.cursor.execute(sql, {'place_id': place_id, 'topparent': topparent, 'type_id': type_id, 'label':label})
+            result = g.cursor.fetchone()
+            return result.data
+
+
+
+
         def getAges():
             sql_age = """
                 SELECT ages FROM (SELECT gre.site_id, jsonb_agg(jsonb_build_object(
@@ -390,7 +443,7 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
                                                JOIN thanados.graves g ON s.child_id = g.parent_id
                                                JOIN thanados.burials b ON b.parent_id = g.child_id
                                                JOIN thanados.types t ON t.entity_id = b.child_id
-                                      WHERE t.path LIKE 'Anthropology > Age%%') AS t ) gre GROUP BY gre.site_id) a WHERE site_id = %(place_id)s                                                
+                                      WHERE t.path LIKE 'Anthropology > Age%%') AS t ORDER BY agemin, agemax) gre GROUP BY gre.site_id) a WHERE site_id = %(place_id)s                                                
             """
             g.cursor.execute(sql_age, {'place_id': place_id})
             result = g.cursor.fetchone()
@@ -545,29 +598,23 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
             return data
 
         def getValueAges():
-            minAges = (118152, 118134, 117199)
-            maxAges = (118151, 118132, 117200)
 
             sqlValueAges = """
-                DROP TABLE IF EXISTS thanados.valueAges;
-                CREATE TABLE thanados.valueAges AS
-                SELECT child_name, burial_id, count(burial_id), min, NULL::DOUBLE PRECISION AS max 
-                    FROM thanados.searchdata 
-                    WHERE type_id IN (118152, 118134, 117199) 
-                    AND site_id = %(place_id)s GROUP BY child_name, burial_id, min ORDER BY count DESC;
-    
-                UPDATE thanados.valueAges v SET max = d.max FROM 
-                (SELECT child_name, burial_id, count(burial_id), min as max 
-                FROM thanados.searchdata WHERE type_id IN (118151, 118132, 117200)
-                AND site_id = %(place_id)s GROUP BY child_name, burial_id, min) d WHERE v.burial_id = d.burial_id;
-    
-                DELETE FROM thanados.valueAges WHERE min ISNULL OR max ISNULL;
-                    
                 SELECT jsonb_agg(jsonb_build_object(
                     'name', v.name,
                     'from', v.from,
                     'to', v.to
-                    )) AS ages FROM (SELECT child_name AS name, min AS from, max AS to FROM thanados.valueAges) v;
+                    )) AS ages FROM (
+                    SELECT a.site_id, a.child_name AS name, a.avg AS "from", b.avg AS "to" FROM
+
+(SELECT site_id, child_id, child_name, avg(min)::numeric(10,2) AS avg FROM thanados.searchdata
+WHERE type_id IN (117199)
+GROUP BY site_id, child_id, child_name ORDER BY avg desc) a JOIN
+
+(SELECT site_id, child_id, child_name, avg(min)::numeric(10,2) AS avg FROM thanados.searchdata
+WHERE type_id IN (117200)
+GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.child_id WHERE a.site_id = %(place_id)s
+                    ) v;
             """
 
             g.cursor.execute(sqlValueAges, {'place_id': place_id})
@@ -1108,9 +1155,11 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
                                preciousMetalfindsAgeValue=preciousMetalfindsAgeValue,
                                preciousMetalfindsAgeBracket=preciousMetalfindsAgeBracket,
                                prestigiousfindsValueAge=prestigiousfindsValueAge,
-                               isodata = isodata,
-                               isoage = isoAge,
-                               prestigiousfindsBracketAge=prestigiousfindsBracketAge, knn=knn, place_id=place_id)
+                               isodata=isodata,
+                               isoboxplot = getMultiBoxPlotValues(23, 118183, 'Delta16N vs. Sex'),
+                               isoage=isoAge,
+                               prestigiousfindsBracketAge=prestigiousfindsBracketAge, knn=knn, place_id=place_id,
+                               bodyheightAvg=getAvgValuesPerTypeParent(118155, 'avg body height in cm.'))
 
     if api_ == 'api':
         if type_ == 'JSON-LD':
@@ -1119,4 +1168,4 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
             return json.dumps(data)
 
     return render_template('entity/view.html', place_id=place_id, object_id=object_id,
-                           mysitejson=data, system_class=system_class, jsonld_url=url) #, jsonld=output)
+                           mysitejson=data, system_class=system_class, jsonld_url=url)  # , jsonld=output)
