@@ -985,16 +985,12 @@ function createchart(data, title, container) {
 
 function createbarchart(data, title, container, n, anno, tooltips) {
     if (tooltips) {
-        console.log(data)
         var tooltiplabels = JSON.parse(JSON.stringify(data.tooltips))
         var tooltipOptions = {
             tooltips: {
                 callbacks: {
                     label: function (tooltipItem) {
                         var label = tooltiplabels[tooltipItem.index]
-                          console.log(label)
-
-
                         return label;
                     }
                 }
@@ -1011,7 +1007,6 @@ function createbarchart(data, title, container, n, anno, tooltips) {
         })
         sum = sum / data.datasets.length;
         AgeAvg = sum;
-        console.log(sum)
 
 
         var barOptions = {
