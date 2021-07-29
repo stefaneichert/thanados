@@ -646,8 +646,8 @@ function loadBurials() {
             $('#boxplot-chart-container').remove();
         }
 
-        if (isoboxplot.labels.length > 0) {
-            createBoxChart(isoboxplot, 'isoboxplot-chart', 'Delta16N vs. Sex', 'Delta16N (per mil)', false);
+        if (isoboxplot.labels.length > 1) {
+            createBoxChart(isoboxplot, 'isoboxplot-chart', 'Delta15N vs. Sex', 'Delta15N (per mil)', false);
             //$('#valueage-chart-container').append('<div class="charttitle text-center text-muted" id="avgLegend"><b class="mr-2">- - - - - - - -</b> Average age at death: ' + AgeAvg + ' years</div>')
             BuCh = true
         } else {
@@ -668,14 +668,14 @@ function loadBurials() {
         }
 
         if (isodata != null) {
-            createschatterchart(isodata, 'Isotopic Analyses Delta16N vs. Delta13C', 'iso-chart', 'Delta13C (per mil)', 'Delta16N (per mil)', false);
+            createschatterchart(isodata, 'Isotopic Analyses Delta15N vs. Delta13C', 'iso-chart', 'Delta13C (per mil)', 'Delta15N (per mil)', false);
             BuCh = true
         } else {
             $('#iso-chart-container').remove();
         }
 
         if (isoage != null) {
-            createschatterchart(isoage, 'Delta 16N vs. Age at death', 'isoage-chart', 'Age at death', 'Delta16N (per mil)', true);
+            createschatterchart(isoage, 'Delta 15N vs. Age at death', 'isoage-chart', 'Age at death', 'Delta15N (per mil)', true);
             BuCh = true
         } else {
             $('#isoage-chart-container').remove();

@@ -1156,7 +1156,7 @@ GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.ch
                                preciousMetalfindsAgeBracket=preciousMetalfindsAgeBracket,
                                prestigiousfindsValueAge=prestigiousfindsValueAge,
                                isodata=isodata,
-                               isoboxplot = getMultiBoxPlotValues(23, 118183, 'Delta16N vs. Sex'),
+                               isoboxplot = getMultiBoxPlotValues(23, 118183, 'Delta15N vs. Sex'),
                                isoage=isoAge,
                                prestigiousfindsBracketAge=prestigiousfindsBracketAge, knn=knn, place_id=place_id,
                                bodyheightAvg=getAvgValuesPerTypeParent(118155, 'avg body height in cm.'))
