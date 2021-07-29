@@ -773,7 +773,6 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     RC_combo = false;
     RC_child = false;
     if (typeof (currentfeature.properties.radiocarbon) !== 'undefined') {
-        console.log(currentfeature.properties.radiocarbon)
         entRC = currentfeature.properties.radiocarbon;
         if (typeof (entRC.combined_children_samples) !== 'undefined') {
             RC_combo = true
@@ -784,7 +783,6 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         if (typeof (entRC.child_sample) !== 'undefined') {
             RC_child = true
         }
-        console.log(RCdate)
     }
 
 

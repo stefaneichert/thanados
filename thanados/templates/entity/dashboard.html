@@ -28,6 +28,8 @@
         constrData = {{ constrData|tojson }};
         DashAgeData = {{ DashAgeData|tojson }};
         ValueAgeData = {{ ValueAgeData|tojson }};
+        bodyheightAvg = {{ bodyheightAvg|tojson }};
+        isoboxplot = {{ isoboxplot|tojson }};
         GenderData = {{ GenderData|tojson }};
         SexDepthData = {{ SexDepthData|tojson }};
         pathoBubble = {{ pathoBubble|tojson }};
@@ -36,6 +38,8 @@
         prestigiousfinds = {{ prestigiousfinds|tojson }};
         BoxPlotData = {{ BoxPlotData|tojson }};
         findAges = {{ findAges|tojson }};
+        isodata = {{ isodata|tojson }};
+        isoage = {{ isoage|tojson }};
         findBracketAges = {{ findBracketAges|tojson }};
         preciousMetalfindsAgeValue = {{ preciousMetalfindsAgeValue|tojson }};
         preciousMetalfindsAgeBracket = {{ preciousMetalfindsAgeBracket|tojson }};
@@ -239,6 +243,26 @@
                         <div id="boxplot-chart-container" class="mb-4 col-xl-12">
                             <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
                             <canvas class="chartcontainer" id="boxplot-chart"></canvas>
+                        </div>
+
+                        <div id="iso-chart-container" class="mb-4 col-xl-12">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="iso-chart"></canvas>
+                        </div>
+
+                        <div id="isoage-chart-container" class="mb-4 col-xl-12">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="isoage-chart"></canvas>
+                        </div>
+
+                        <div id="isoboxplot-chart-container" class="mb-4 col-xl-12">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="isoboxplot-chart"></canvas>
+                        </div>
+
+                        <div id="bodyheight-chart-container" class="mb-4 col-xl-12">
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <canvas class="chartcontainer" id="bodyheight-chart"></canvas>
                         </div>
 
                         <div id="sex-chart-container" class="mb-4 col-xl-6">

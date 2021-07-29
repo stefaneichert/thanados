@@ -537,35 +537,35 @@ function loadGraves() {
     if (gravesmissing) {
         var depthcount = (depthData.datasets.reduce((a, b) => a + b, 0))
         if (depthcount > 0) {
-            createbarchart(removeDashboardZeros(JSON.parse(JSON.stringify(depthData))), 'Depth of Graves (cm)', 'gravedepth-chart', depthcount);
+            createbarchart(removeDashboardZeros(JSON.parse(JSON.stringify(depthData))), 'Depth of Graves (cm)', 'gravedepth-chart', depthcount, false, false);
             GrCh = true;
         } else {
             $('#gravedepth-chart-container').remove()
         }
         var lengthcount = (lengthData.datasets.reduce((a, b) => a + b, 0))
         if (lengthcount > 0) {
-            createbarchart(removeDashboardZeros(JSON.parse(JSON.stringify(lengthData))), 'Length of Graves (cm)', 'gravelength-chart', lengthcount);
+            createbarchart(removeDashboardZeros(JSON.parse(JSON.stringify(lengthData))), 'Length of Graves (cm)', 'gravelength-chart', lengthcount, false, false);
             GrCh = true;
         } else {
             $('#gravelength-chart-container').remove()
         }
         var widthcount = (widthData.datasets.reduce((a, b) => a + b, 0))
         if (widthcount > 0) {
-            createbarchart(removeDashboardZeros(JSON.parse(JSON.stringify(widthData))), 'Width of Graves (cm)', 'gravewidth-chart', widthcount);
+            createbarchart(removeDashboardZeros(JSON.parse(JSON.stringify(widthData))), 'Width of Graves (cm)', 'gravewidth-chart', widthcount, false, false);
             GrCh = true;
         } else {
             $('#gravewidth-chart-container').remove()
         }
         var degcount = (degData.datasets.reduce((a, b) => a + b, 0))
         if (degcount > 0) {
-            createbarchart((JSON.parse(JSON.stringify(degData))), 'Orientation of Graves/Skeletons (0 - 360°)', 'gravedeg-chart', degcount);
+            createbarchart((JSON.parse(JSON.stringify(degData))), 'Orientation of Graves/Skeletons (0 - 360°)', 'gravedeg-chart', degcount, false, false);
             GrCh = true;
         } else {
             $('#gravedeg-chart-container').remove()
         }
         var azicount = (aziData.datasets.reduce((a, b) => a + b, 0))
         if (azicount > 0) {
-            createbarchart((JSON.parse(JSON.stringify(aziData))), 'Azimuth of Gravespits (0 - 180°)', 'graveazi-chart', azicount);
+            createbarchart((JSON.parse(JSON.stringify(aziData))), 'Azimuth of Gravespits (0 - 180°)', 'graveazi-chart', azicount, false, false);
             GrCh = true;
         } else {
             $('#graveazi-chart-container').remove()
@@ -583,7 +583,7 @@ function loadGraves() {
         }
         var knncount = (knn.values.length)
         if (knncount > 0) {
-            createbarchart(removeDashboardZeros(JSON.parse(JSON.stringify(knn))), 'Distance to nearest Neighbour (m)', 'graveknn-chart', knncount);
+            createbarchart(removeDashboardZeros(JSON.parse(JSON.stringify(knn))), 'Distance to nearest Neighbour (m)', 'graveknn-chart', knncount, false, false);
             GrCh = true;
         } else {
             $('#graveknn-chart-container').remove()
@@ -617,6 +617,12 @@ function loadBurials() {
                 $('#valueage-chart-container').removeClass('col-xl-12');
                 $('#valueage-chart-container').addClass('col-xl-6');
             }
+            $.each(ValueAgeData, function (i, dataset) {
+                if (dataset.from === dataset.to) {
+                    dataset.from = (dataset.from - 0.25);
+                    dataset.to = (dataset.to + 0.25);
+                }
+            })
             createAgeChart(ValueAgeData, 'valueage-chart', 'Age at death based on absolute age (min - max)');
             //$('#valueage-chart-container').append('<div class="charttitle text-center text-muted" id="avgLegend"><b class="mr-2">- - - - - - - -</b> Average age at death: ' + AgeAvg + ' years</div>')
             BuCh = true
@@ -625,7 +631,7 @@ function loadBurials() {
         }
 
         if (BoxPlotData.BracketData.labels.length > 0) {
-            createBoxChart(BoxPlotData.BracketData, 'boxplotBracket-chart', 'Age at death based on age bracket classifications');
+            createBoxChart(BoxPlotData.BracketData, 'boxplotBracket-chart', 'Age at death based on age bracket classifications', 'Years', true);
             //$('#valueage-chart-container').append('<div class="charttitle text-center text-muted" id="avgLegend"><b class="mr-2">- - - - - - - -</b> Average age at death: ' + AgeAvg + ' years</div>')
             BuCh = true
         } else {
@@ -633,11 +639,19 @@ function loadBurials() {
         }
 
         if (BoxPlotData.ValueData.labels.length > 0) {
-            createBoxChart(BoxPlotData.ValueData, 'boxplot-chart', 'Age at death based on absolute age (min - max)');
+            createBoxChart(BoxPlotData.ValueData, 'boxplot-chart', 'Age at death based on absolute age (min - max)',  'Years', true);
             //$('#valueage-chart-container').append('<div class="charttitle text-center text-muted" id="avgLegend"><b class="mr-2">- - - - - - - -</b> Average age at death: ' + AgeAvg + ' years</div>')
             BuCh = true
         } else {
             $('#boxplot-chart-container').remove();
+        }
+
+        if (isoboxplot.labels.length > 1) {
+            createBoxChart(isoboxplot, 'isoboxplot-chart', 'Delta15N vs. Sex', 'Delta15N (per mil)', false);
+            //$('#valueage-chart-container').append('<div class="charttitle text-center text-muted" id="avgLegend"><b class="mr-2">- - - - - - - -</b> Average age at death: ' + AgeAvg + ' years</div>')
+            BuCh = true
+        } else {
+            $('#isoboxplot-chart-container').remove();
         }
 
         if (SexData.length > 0) {
@@ -651,6 +665,27 @@ function loadBurials() {
             BuCh = true
         } else {
             $('#sex-chart-container').remove();
+        }
+
+        if (isodata != null) {
+            createschatterchart(isodata, 'Isotopic Analyses Delta15N vs. Delta13C', 'iso-chart', 'Delta13C (per mil)', 'Delta15N (per mil)', false);
+            BuCh = true
+        } else {
+            $('#iso-chart-container').remove();
+        }
+
+        if (isoage != null) {
+            createschatterchart(isoage, 'Delta 15N vs. Age at death', 'isoage-chart', 'Age at death', 'Delta15N (per mil)', true);
+            BuCh = true
+        } else {
+            $('#isoage-chart-container').remove();
+        }
+
+        if (bodyheightAvg.datasets) {
+            createbarchart(bodyheightAvg, 'Bodyheights in cm.', 'bodyheight-chart', bodyheightAvg.datasets.length, true, true);
+            BuCh = true
+        } else {
+            $('#bodyheight-chart-container').remove();
         }
 
         if (GenderData.length > 0) {
@@ -865,7 +900,7 @@ function createAgeChart(data, container, title) {
     chart = new Chart(ctx, dateconfig);
 }
 
-function createBoxChart(data, container, title) {
+function createBoxChart(data, container, title, yAxeLabel, showlegend) {
     ageconfigBoxplot = {
         type: 'boxplot',
         data: data,
@@ -873,13 +908,14 @@ function createBoxChart(data, container, title) {
             responsive: true,
             legend: {
                 position: 'top',
+                display: showlegend,
             },
             maintainAspectRatio: false,
             scales: {
                 yAxes: [{
                     scaleLabel: {
                         display: true,
-                        labelString: 'Years'
+                        labelString: yAxeLabel
                     }
                 }]
             },
@@ -947,38 +983,118 @@ function createchart(data, title, container) {
     var newchart = new Chart(ctx, config)
 }
 
-function createbarchart(data, title, container, n) {
+function createbarchart(data, title, container, n, anno, tooltips) {
+    if (tooltips) {
+        var tooltiplabels = JSON.parse(JSON.stringify(data.tooltips))
+        var tooltipOptions = {
+            tooltips: {
+                callbacks: {
+                    label: function (tooltipItem) {
+                        var label = tooltiplabels[tooltipItem.index]
+                        return label;
+                    }
+                }
+            },
+        }
+    } else {
+        tooltipOptions = {tooltips: {}}
+    }
+    if (anno) {
 
-    var barOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        legend: {
-            display: false,
-        },
-        title: {
-            display: true,
-            text: title
-        },
-        scales: {
-            xAxes: [{
-                scaleLabel: {
-                    display: true,
-                    labelString: '(n = ' + n + ')',
-                },
-                gridLines: {
-                    display: false
+        var sum = 0;
+        $.each(data.datasets, function (i, dataset) {
+            sum += (dataset)
+        })
+        sum = sum / data.datasets.length;
+        AgeAvg = sum;
+
+
+        var barOptions = {
+            responsive: true,
+            tooltips: tooltipOptions.tooltips,
+            maintainAspectRatio: false,
+            legend: {
+                display: false,
+            },
+            title: {
+                display: true,
+                text: title
+            },
+            scales: {
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: '(n = ' + n + ')',
+                    },
+                    gridLines: {
+                        display: false
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        precision: 0,
+                        beginAtZero: true
+                    }
+                }]
+            },
+            plugins: {
+                colorschemes: {
+                    scheme: 'tableau.Tableau20'
                 }
-            }],
-            yAxes: [{
-                ticks: {
-                    precision: 0,
-                    beginAtZero: true
+            },
+            annotation: {
+                annotations: [{
+                    type: 'line',
+                    mode: 'horizontal',
+                    scaleID: 'y-axis-0',
+                    value: sum,
+                    borderColor: '#666',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    label: {
+                        enabled: true,
+                        backgroundColor: '#d8d8d8',
+                        content: 'Average: ' + sum.toFixed(1),
+                        position: "left",
+                        fontColor: "#666",
+                        xAdjust: 7,
+                        yAdjust: -15,
+                    }
+                }]
+            },
+        }
+    } else {
+        var barOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            legend: {
+                display: false,
+            },
+            title: {
+                display: true,
+                text: title
+            },
+            scales: {
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: '(n = ' + n + ')',
+                    },
+                    gridLines: {
+                        display: false
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        precision: 0,
+                        beginAtZero: true
+                    }
+                }]
+            },
+            plugins: {
+                colorschemes: {
+                    scheme: 'tableau.Tableau20'
                 }
-            }]
-        },
-        plugins: {
-            colorschemes: {
-                scheme: 'tableau.Tableau20'
             }
         }
     }
@@ -999,6 +1115,7 @@ function createbarchart(data, title, container, n) {
     var ctx = document.getElementById(container).getContext('2d');
     var newchart = new Chart(ctx, config)
 }
+
 
 function createlinechart(data, title, container, n) {
 
@@ -1132,6 +1249,60 @@ function createMultiLinechart(data, title, container, colorrange) {
     var ctx = document.getElementById(container).getContext('2d');
     var newchart = new Chart(ctx, config)
 }
+
+function createschatterchart(data, title, container, xlabel, ylabel, legend) {
+    var ctx = document.getElementById(container).getContext('2d');
+
+    var scatteroptions = {
+
+        tooltips: {
+            callbacks: {
+                label: function (tooltipItem, data) {
+                    var label = data.datasets[tooltipItem.datasetIndex].labels[tooltipItem.index];
+                    return label + ': (' + tooltipItem.xLabel + ', ' + tooltipItem.yLabel + ')';
+                }
+            }
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+            display: legend,
+        },
+        title: {
+            display: true,
+            text: title
+        },
+        scales: {
+            xAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: xlabel,
+                },
+                stacked: false,
+            }],
+            yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: ylabel,
+                },
+                stacked: false
+            }]
+        },
+        plugins: {
+            colorschemes: {
+                scheme: 'tableau.Tableau20'
+            }
+        }
+    }
+
+
+    var scatterChart = new Chart(ctx, {
+        type: "scatter",
+        data: data,
+        options: scatteroptions
+    });
+}
+
 
 function setAgeData(SourceData, sorttype, sortdirection) {
     var burials = [];

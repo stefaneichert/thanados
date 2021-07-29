@@ -230,17 +230,12 @@ imgIds = []
 $(document).on('change', '.imgselector', function () {
 
     if (this.checked) {
-        console.log(parseInt(this.id));
-        console.log(this.value)
-
         this.value = parseInt(this.id);
-        console.log(this.value)
         imgIds.push(parseInt(this.id));
         document.getElementById("file_" + this.id).readOnly = false;
     } else {
         this.value = "";
         removeItemOnce(imgIds, parseInt(this.id))
-        console.log('unchecked ' + parseInt(this.id))
         var pageRef = document.getElementById("file_" + this.id);
         pageRef.value = ''
         document.getElementById("file_" + this.id).readOnly = true;
@@ -254,7 +249,6 @@ refId = 0
 
 $(document).on('change', '#ReferenceSelect', function () {
     refId = parseInt(this.value)
-    console.log(refId)
 
     //console.log(this.options[this.selectedIndex].title);
     var textarea = document.getElementById("bibstoinsert");
@@ -279,7 +273,6 @@ function logData() {
         var data = filereftable.$('.imgselector')
         $.each(data, function (i, dataset) {
                 if ((dataset.value) !== '') {
-                    console.log()
                     var pageRef = document.getElementById("file_" + dataset.value);
 
                     if (pageRef.value) {pageRef = pageRef.value} else {pageRef = ''}
@@ -289,12 +282,10 @@ function logData() {
             }
 
         )
-        console.log(imageRefs.length)
         if (imageRefs.length === 0) {
             alert ('Please select at least one image')
             return false
         }
-        console.log(imageRefs)
         setRefs(imageRefs)
 
     }
@@ -308,7 +299,6 @@ function setRefs(imagerefs) {
             'refs': JSON.stringify(imagerefs)
         },
         success: function (result) {
-            console.log(result);
             window.location.href = "/admin";
         }
     });

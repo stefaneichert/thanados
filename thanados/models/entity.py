@@ -14,7 +14,7 @@ class Data:
             CREATE TABLE thanados.tmpsites AS (
                 
                      SELECT s.child_name     AS name,
-                            s.description    AS description,
+                            REPLACE(split_part(s.description, '##German', 1), '"', '``')    AS description,
                             s.begin_from     AS begin,
                             s.end_to         AS end,
                             s.child_id       AS id,
@@ -478,7 +478,6 @@ class RCData:
 
         g.cursor.execute('SELECT jsonb_agg(entity_id) AS ids FROM thanados.radiocarbon')
         idlist = g.cursor.fetchone()
-        print(idlist.ids)
 
         for row in result:
             entId = row.entity_id
