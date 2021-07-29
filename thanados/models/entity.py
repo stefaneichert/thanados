@@ -478,7 +478,6 @@ class RCData:
 
         g.cursor.execute('SELECT jsonb_agg(entity_id) AS ids FROM thanados.radiocarbon')
         idlist = g.cursor.fetchone()
-        print(idlist.ids)
 
         for row in result:
             entId = row.entity_id
