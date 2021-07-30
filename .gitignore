@@ -6,6 +6,7 @@ install/data_cleanup.sql
 
 # cache
 __pycache__/*
+.cache
 
 # compiled files
 *.pyc
