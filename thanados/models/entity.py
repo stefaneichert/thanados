@@ -14,7 +14,7 @@ class Data:
             CREATE TABLE thanados.tmpsites AS (
                 
                      SELECT s.child_name     AS name,
-                            REPLACE(split_part(s.description, '##German', 1), '"', '``')    AS description,
+                            REPLACE(split_part(s.description, '##', 1), '"', '``')    AS description,
                             s.begin_from     AS begin,
                             s.end_to         AS end,
                             s.child_id       AS id,
