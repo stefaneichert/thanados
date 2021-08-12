@@ -29,6 +29,9 @@ export var MarkerClusterGroup = L.MarkerClusterGroup = L.FeatureGroup.extend({
 		// If you are adding individual markers set to true, if adding bulk markers leave false for massive performance gains.
 		animateAddingMarkers: false,
 
+		// Make it possible to provide custom function to calculate spiderfy shape positions
+		spiderfyShapePositions: null,
+
 		//Increase to increase the distance away that spiderfied markers appear from the center
 		spiderfyDistanceMultiplier: 1,
 
@@ -206,6 +209,12 @@ export var MarkerClusterGroup = L.MarkerClusterGroup = L.FeatureGroup.extend({
 			var started = (new Date()).getTime();
 			var process = L.bind(function () {
 				var start = (new Date()).getTime();
+
+				// Make sure to unspiderfy before starting to add some layers
+				if (this._map && this._unspiderfy) {
+					this._unspiderfy();
+				}
+
 				for (; offset < l; offset++) {
 					if (chunked && offset % 200 === 0) {
 						// every couple hundred markers, instrument the time elapsed since processing started:
@@ -538,16 +547,20 @@ export var MarkerClusterGroup = L.MarkerClusterGroup = L.FeatureGroup.extend({
 	//Zoom down to show the given layer (spiderfying if necessary) then calls the callback
 	zoomToShowLayer: function (layer, callback) {
 
+		var map = this._map;
+
 		if (typeof callback !== 'function') {
 			callback = function () {};
 		}
 
 		var showMarker = function () {
-			if ((layer._icon || layer.__parent._icon) && !this._inZoomAnimation) {
+			// Assumes that map.hasLayer checks for direct appearance on map, not recursively calling
+			// hasLayer on Layer Groups that are on map (typically not calling this MarkerClusterGroup.hasLayer, which would always return true)
+			if ((map.hasLayer(layer) || map.hasLayer(layer.__parent)) && !this._inZoomAnimation) {
 				this._map.off('moveend', showMarker, this);
 				this.off('animationend', showMarker, this);
 
-				if (layer._icon) {
+				if (map.hasLayer(layer)) {
 					callback();
 				} else if (layer.__parent._icon) {
 					this.once('spiderfied', callback, this);

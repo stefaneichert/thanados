@@ -331,6 +331,43 @@ function setcharts() {
     if (typeof (depthchart) != 'undefined') depthchart.destroy();
     depthchart = new Chart(ctx, depthconfig);
 
+    //bodyheight: Data contains site and no of burials of bodyheight interval of 10cm
+    mybodyheightdata = setChartData(bodyheight_data, false, true, true);
+    bodyheightconfig = {
+        // The type of chart we want to create
+        type: 'bar',
+        // The data for our dataset
+        data: mybodyheightdata,
+        // Configuration options go here
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Bodyheight in cm.'
+                    }
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: '%',
+                        beginAtZero: true
+                    }
+                }]
+            },
+            plugins: {
+                colorschemes: {
+                    scheme: 'tableau.Tableau20'
+                }
+            }
+        }
+    };
+    var ctx = document.getElementById('bodyheight-chart').getContext('2d');
+    if (typeof (bodyheightchart) != 'undefined') bodyheightchart.destroy();
+    bodyheightchart = new Chart(ctx, bodyheightconfig);
+
 // orientation of graves: Data contains site and no of graves of a orientation interval of 20°
     myorientationdata = setChartData(orientation_data, false, true, false);
     orientationconfig = {
@@ -440,6 +477,41 @@ function setcharts() {
     var ctx = document.getElementById('sex-chart').getContext('2d');
     if (typeof (sexchart) != 'undefined') sexchart.destroy();
     sexchart = new Chart(ctx, sexconfig)
+
+    //gender of individuals: Data contains site and no of skeletons with male, female or undefined gender
+    mygenderdata = setChartData(gender_data, true, true, false, false);
+    genderconfig = {
+        // The type of chart we want to create
+        type: 'bar',
+        // The data for our dataset
+        data: mygenderdata,
+        // Configuration options go here
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                xAxes: [{
+                    stacked: true
+                }],
+                yAxes: [{
+                    stacked: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: '%',
+                        beginAtZero: true
+                    }
+                }]
+            },
+            plugins: {
+                colorschemes: {
+                    scheme: 'tableau.Tableau10'
+                }
+            }
+        }
+    };
+    var ctx = document.getElementById('gender-chart').getContext('2d');
+    if (typeof (genderchart) != 'undefined') genderchart.destroy();
+    genderchart = new Chart(ctx, genderconfig)
 
 //types of graves: Data contains site and no of graves of a certain type
     gravetypesconfig = {
@@ -619,12 +691,64 @@ function setcharts() {
     if (typeof (agechart) != 'undefined') agechart.destroy();
     agechart = new Chart(ctx, JSON.parse(JSON.stringify(ageconfig)));
 
+
+    valueageconfig = {
+        type: 'violin',
+        data: setage(valueage_data),
+        options: {
+            responsive: true,
+            legend: {
+                position: 'top',
+            },
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'age'
+                    }
+                }]
+            },
+        }
+    };
+    valueageconfigBoxplot = {
+        type: 'boxplot',
+        data: setage(valueage_data),
+        options: {
+            responsive: true,
+            legend: {
+                position: 'top',
+            },
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'age'
+                    }
+                }]
+            },
+        }
+    };
+    var ctx = document.getElementById('valueage-chart').getContext('2d');
+    if (typeof (valueagechart) != 'undefined') valueagechart.destroy();
+    valueagechart = new Chart(ctx, JSON.parse(JSON.stringify(valueageconfig)));
+
+
     $("#violin").click(function () {
         change('violin', 'agechart', 'age-chart', ageconfig);
     });
 
     $("#boxplot").click(function () {
         change('boxplot', 'agechart', 'age-chart', ageconfigBoxplot);
+    });
+
+    $("#violinV").click(function () {
+        change('violin', 'valueagechart', 'valueage-chart', valueageconfig);
+    });
+
+    $("#boxplotV").click(function () {
+        change('boxplot', 'valueagechart', 'valueage-chart', valueageconfigBoxplot);
     });
 
 }
@@ -858,33 +982,44 @@ $('#collapseFilter').on('shown.bs.collapse', function () {
 
 function enlargeChart(currentConfig) {
     $('.boxBtn').addClass('d-none')
+    $('.boxBtnV').addClass('d-none')
     $('.absBtn').addClass('d-none')
     $('.chronBtn').addClass('d-none')
     $('.modal-title').text(currentTitle);
-    $('#chart-xl').modal();
+    $('#chart-xl').show();
+    $('#back-to-top').addClass('d-none');
     if (typeof (bigchart) !== 'undefined') {
         bigchart.destroy();
         delete bigchart
     }
     var ctx = document.getElementById('bigchart-container').getContext('2d');
     bigchart = new Chart(ctx, currentConfig);
+
     if (percScript !== '') {
         if (percScript.includes('Chron') === false) {
             $('.absBtn').removeClass('d-none')
         } else {
             $('.chronBtn').removeClass('d-none')
         }
-        percScript = percScript.substring(percScript.indexOf(",") + 1);
-        percScript = 'updateChart(bigchart,' + percScript;
-        absScript = absScript.substring(absScript.indexOf(",") + 1);
-        absScript = 'updateChart(bigchart,' + absScript;
-        $('#percBtn').click(function () {
-            eval(percScript)
-        });
-        $('#absBtn').click(function () {
-            eval(absScript)
-        });
+        if (percScript !== 'valueage') {
+            percScript = percScript.substring(percScript.indexOf(",") + 1);
+            percScript = 'updateChart(bigchart,' + percScript;
+            absScript = absScript.substring(absScript.indexOf(",") + 1);
+            absScript = 'updateChart(bigchart,' + absScript;
+            $('#percBtn').click(function () {
+                eval(percScript)
+            });
+            $('#absBtn').click(function () {
+                eval(absScript)
+            });
+        }
+        if (percScript === 'valueage') {
+            console.log('valueageshallo')
+            $('.boxBtnV').removeClass('d-none');
+            $('.absBtn').addClass('d-none');
+        }
     } else {
+
         $('.boxBtn').removeClass('d-none');
         $('.absBtn').addClass('d-none');
     }
@@ -896,7 +1031,8 @@ function getCitation() {
     mysource = mysource.replace(/(\r\n|\n|\r)/gm, "");
     $('#mycitation').empty();
     $('#mycitation').html('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');
-    $('#citeModal').modal();
+    $('#backgroundgray').toggle();
+    $('#citeModal').show();
 }
 
 function updateSourceSites() {
@@ -921,3 +1057,10 @@ setSiteSelection();
 $('#mySelectedSites').text(SourceSites);
 
 setSiteInfo();
+
+$('#citeModal').css('z-index', '1070')
+$('#citeModal').css('opacity', '1')
+$('#closeSiteMe').click(function () {
+    $('#citeModal').toggle();
+    $('#backgroundgray').toggle();
+})

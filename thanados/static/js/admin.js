@@ -48,7 +48,7 @@ $(document).ready(function () {
         $('.sql_button').prop("disabled", true);
         // add spinner to button
         $(this).html(
-            `<span class="spinner-border spinner-border-sm mr-3" role="status" aria-hidden="true"></span>...in progress`
+            `<span class="spinner-border spinner-border-sm me-3" role="status" aria-hidden="true"></span>...in progress`
         );
         setAlert();
     });
@@ -57,7 +57,7 @@ $(document).ready(function () {
         $('.sql_button').prop("disabled", true);
         // add spinner to button
         $(this).html(
-            `<span class="spinner-border spinner-border-sm mr-3" role="status" aria-hidden="true"></span>...in progress`
+            `<span class="spinner-border spinner-border-sm me-3" role="status" aria-hidden="true"></span>...in progress`
         );
         setAlert();
     });
@@ -66,7 +66,7 @@ $(document).ready(function () {
         $('.sql_button').prop("disabled", true);
         // add spinner to button
         $(this).html(
-            `<span class="spinner-border spinner-border-sm mr-3" role="status" aria-hidden="true"></span>...in progress`
+            `<span class="spinner-border spinner-border-sm me-3" role="status" aria-hidden="true"></span>...in progress`
         );
         setAlert();
     });
@@ -75,7 +75,7 @@ $(document).ready(function () {
         $('.sql_button').prop("disabled", true);
         // add spinner to button
         $(this).html(
-            `<span class="spinner-border spinner-border-sm mr-3" role="status" aria-hidden="true"></span>...in progress`
+            `<span class="spinner-border spinner-border-sm me-3" role="status" aria-hidden="true"></span>...in progress`
         );
         setAlert();
     });
@@ -119,7 +119,7 @@ table = $('#sitelist').DataTable({
             data: "name",
             "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                 $(nTd).html(
-                    oData.name + '<a title="Link to backend" class="backendlink" href="' + openAtlasUrl + oData.id + '" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a>'); //create links in rows
+                    oData.name + '<a title="Link to backend" class="backendlink" href="' + openAtlasUrl + oData.id + '" target="_blank""><i class="float-end text-secondary fas fa-database"></i></a>'); //create links in rows
             }
         },
         {data: 'type'},

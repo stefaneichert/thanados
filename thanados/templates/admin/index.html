@@ -10,7 +10,7 @@
     </script>
     <script> test_csrf_token = '{{ csrf_token() }}'; </script>
     <div id="mycontent">
-        <div class="ml-5 mr-5">
+        <div class="ms-5 me-5">
             <h2 class="my-heading container">Admin</h2>
             <div class="row">
                 <div class="col-lg">
@@ -86,12 +86,12 @@
                 <div class="card-header" id="headingFilter">
                     <h5 class="mb-0">
                         <a id="filterBtn" class="btn btn-link collapsed" type="button"
-                           data-toggle="collapse"
-                           data-target="#collapseFilter" aria-expanded="true"
+                           data-bs-toggle="collapse"
+                           data-bs-target="#collapseFilter" aria-expanded="true"
                            aria-controls="collapseFilter">
                             Used/Unused Sites <span id="selectedSites"></span><i
                                 id="filterBtnArrow"
-                                class="ml-3 fas fa-chevron-down"></i>
+                                class="ms-3 fas fa-chevron-down"></i>
                         </a>
 
                     </h5>
@@ -136,7 +136,7 @@
                         <h5><label for="site_list">List of sites</label></h5>
                         {{ form.csrf_token|safe }}
                         {{ form.site_list(class_="form-control sitelistform", rows="15")|safe }}
-                        {{ form.save(class_="float-right mb-2 mt-2 btn btn-secondary")|safe }}
+                        {{ form.save(class_="float-end mb-2 mt-2 btn btn-secondary")|safe }}
                     </div>
                 </form>
             </div>
@@ -284,7 +284,7 @@
                             <label for="imgstoinsert">refers to images:</label>
                             <textarea readonly class="form-control" id="imgstoinsert" rows="6"></textarea>
                         </div>
-                        <button class="btn btn-primary float-right" onclick="logData()" type="submit">Submit</button>
+                        <button class="btn btn-primary float-end" onclick="logData()" type="submit">Submit</button>
                     </div>
                 </div>
             </div>

@@ -430,12 +430,12 @@ body {
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.5;
-    color: #333!important;
+    color: #333 !important;
     text-align: left;
 }
 
 .rc_button_map:hover {
-    color: #003db3!important;
+    color: #003db3 !important;
 }
 
 .modalimg {
@@ -486,6 +486,17 @@ a.ui-button:active,
     color: #ffffff;
 }
 
+a {
+    color: #007bff;
+    text-decoration: none;
+    background-color: transparent;
+}
+
+a:hover {
+    color: #003db3;
+    text-decoration: none;
+}
+
 .ui-button:focus {
     outline-color: rgb(198, 198, 198)
 }
@@ -521,24 +532,11 @@ a.ui-button:active,
     background-color: #696969 !important;
 }
 
-.input-group-addon {
-    border-top-left-radius: 0 !important;
-    border-bottom-left-radius: 0 !important;
-}
-
 .input-group-text {
     font-size: 0.875rem;
     padding: 0 0.75rem;
     height: 31px;
     background-color: #f2f2f2;
-}
-
-.input-group-text:first-child {
-    border-left-width: 1px;
-}
-
-.input-group-text:last-child {
-    border-right-width: 1px;
 }
 
 .dim-label {
@@ -548,12 +546,6 @@ a.ui-button:active,
 .value-input {
     min-width: 4em;
     width: 100%;
-}
-
-.input-group-middle {
-    border-radius: 0 !important;
-    margin-left: -1px;
-    margin-right: -1px;
 }
 
 .toremovebtn {
@@ -715,11 +707,11 @@ a:hover {
 }
 
 .entlink {
-    color: #007bff!important;
+    color: #007bff !important;
 }
 
 .entlink:hover {
-    color: #003db3!important;
+    color: #003db3 !important;
 }
 
 .custom-header-bg {
@@ -914,6 +906,11 @@ input[type=color] {
 
 .infobtns {
     font-size: 0.875rem !important;
+    text-decoration: none;
+}
+
+.infobtns:hover {
+    text-decoration: underline;
 }
 
 #mystyleform > .card > .card-header > h6 > .btn {
@@ -1017,7 +1014,7 @@ input {
     margin-bottom: 0.2rem;
 }
 
-.custom-select:disabled {
+.form-select:disabled {
     background-color: #f2f2f2;
 }
 
@@ -1027,6 +1024,17 @@ input {
 
 .modal-xxl > .modal-dialog {
     max-width: 96% !important;
+}
+
+#backgroundgray  {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: gray;
+    z-index: 1069;
+    opacity: 0.9;
+    display: none;
 }
 
 .activePage {
@@ -1083,8 +1091,14 @@ input {
     margin-left: 1em;
 }
 
-.hierarchy-card .btn-link {
+.hierarchy-card .btn-link, .btn-link {
     cursor: pointer;
+    text-decoration: none;
+    color: #007bff;
+}
+
+.hierarchy-card .btn-link:hover, .btn-link:hover {
+    color: #003db3;
 }
 
 .popover .arrow {
@@ -1106,6 +1120,7 @@ input {
 }
 
 .popover {
+    z-index: 2000!important;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -1267,6 +1282,10 @@ input {
     content: ">";
 }
 
+.breadcrumb {
+    padding: 0.75rem 1rem;
+}
+
 .logo-button {
     display: none !important;
 }
@@ -1332,11 +1351,6 @@ input {
     font-weight: bold;
 }
 
-.carousel-control-prev, .carousel-control-next {
-    top: 200px;
-    bottom: 200px;
-}
-
 .sitelistform {
     font-size: 0.875em;
     background: #f8f9fa;
@@ -1347,7 +1361,7 @@ input {
 }
 
 #entbuttons .dropdown-item {
-    color: #fff!important;
+    color: #fff !important;
 }
 
 #entbuttons .dropdown-item:hover {
@@ -1381,3 +1395,15 @@ input {
     border-bottom-right-radius: 4px;
 }
 
+.dataTables_scrollHead {
+    margin-bottom: -2px !important;
+}
+
+.btn-close {
+    opacity: 1;
+}
+
+.btn-link > .btn-check:focus + .btn, .btn:focus {
+    outline: 0;
+    box-shadow: none;
+}

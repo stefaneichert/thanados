@@ -112,6 +112,18 @@ class Data:
         return g.cursor.fetchall()
 
     @staticmethod
+    def get_gender():
+        sql = 'SELECT gender FROM thanados.chart_data;'
+        g.cursor.execute(sql)
+        return g.cursor.fetchall()
+
+    @staticmethod
+    def get_bodyheight():
+        sql = 'SELECT bodyheight FROM thanados.chart_data;'
+        g.cursor.execute(sql)
+        return g.cursor.fetchall()
+
+    @staticmethod
     def get_system_class(id_):
         sql = "SELECT system_class FROM model.entity WHERE id = %(object_id)s;"
         g.cursor.execute(sql, {"object_id": id_})

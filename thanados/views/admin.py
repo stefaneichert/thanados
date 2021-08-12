@@ -1923,6 +1923,19 @@ CREATE TABLE thanados.typesjson AS (
           ORDER BY name_path) as u);
           
 -- prepare data for charts
+
+DROP TABLE IF EXISTS thanados.chart_data;
+CREATE TABLE thanados.chart_data
+(
+    depth       JSONB,
+    bodyheight  JSONB,
+    orientation JSONB,
+    azimuth     JSONB,
+    sex         JSONB,
+    gender      JSONB
+);
+
+
 DROP TABLE IF EXISTS thanados.depth_labels;
 CREATE TABLE thanados.depth_labels AS (
 -- get labels for depth of graves
@@ -2027,15 +2040,6 @@ CREATE TABLE thanados.depth AS (
 
     GROUP BY parent_id, site_name);
 
-
-DROP TABLE IF EXISTS thanados.chart_data;
-CREATE TABLE thanados.chart_data
-(
-    depth       JSONB,
-    orientation JSONB,
-    azimuth     JSONB,
-    sex         JSONB
-);
 
 
 DROP TABLE IF EXISTS thanados.chart_depth;
@@ -2264,6 +2268,63 @@ SET azimuth = (SELECT azimuth::JSONB FROM thanados.chart_azimuth);
 
 DROP TABLE IF EXISTS thanados.chart_azimuth;
 
+-- gender start
+
+DROP TABLE IF EXISTS thanados.gender;
+CREATE TABLE thanados.gender AS (
+    SELECT s.parent_id AS site_id,
+           s.site_name AS "label",
+           '[' ||
+           count(s.*) FILTER (WHERE name LIKE 'Male%') || ',' ||
+           count(s.*) FILTER (WHERE name LIKE 'Female%') || ',' ||
+           (bc.burialcount - count(s.*) FILTER (WHERE name LIKE 'Male%') -
+            count(s.*) FILTER (WHERE name LIKE 'Female%')) || ']'
+                       AS data
+    FROM (
+             SELECT g.parent_id,
+                    s.name AS site_name,
+                    d.name
+             FROM thanados.tbl_sites s
+                      JOIN thanados.graves g ON g.parent_id = s.id
+                      JOIN thanados.burials b ON g.child_id = b.parent_id
+                      JOIN thanados.types d ON b.child_id = d.entity_id
+             WHERE d.path LIKE 'Gender >%') s
+             JOIN (
+        SELECT g.parent_id        AS site_id,
+               count(g.parent_id) AS burialcount
+        FROM thanados.tbl_sites s
+                 JOIN thanados.graves g ON g.parent_id = s.id
+                 JOIN thanados.burials b ON g.child_id = b.parent_id
+        GROUP by g.parent_id
+    ) bc ON s.parent_id = bc.site_id
+    GROUP BY site_name, parent_id, burialcount);
+
+DROP TABLE IF EXISTS thanados.chart_gender;
+CREATE TABLE thanados.chart_gender
+(
+    gender TEXT
+);
+
+INSERT INTO thanados.chart_gender (gender)
+    (SELECT jsonb_build_object(
+                    'labels', array_to_json('{"male", "female", "unknown"}'::TEXT[]),
+                    'datasets', jsonb_agg(d)
+                )
+     FROM thanados.gender d);
+     
+DROP TABLE IF EXISTS thanados.gender;     
+
+UPDATE thanados.chart_gender
+SET gender = REPLACE(gender, '"[', '[');
+UPDATE thanados.chart_gender
+SET gender = REPLACE(gender, ']"', ']');
+
+UPDATE thanados.chart_data
+SET gender = (SELECT gender::JSONB FROM thanados.chart_gender);
+DROP TABLE IF EXISTS thanados.chart_gender;
+
+-- gender end
+
 DROP TABLE IF EXISTS thanados.sex;
 CREATE TABLE thanados.sex AS (
     SELECT s.parent_id AS site_id,
@@ -2282,7 +2343,7 @@ CREATE TABLE thanados.sex AS (
                       JOIN thanados.graves g ON g.parent_id = s.id
                       JOIN thanados.burials b ON g.child_id = b.parent_id
                       JOIN thanados.types d ON b.child_id = d.entity_id
-             WHERE d.path LIKE 'Sex%') s
+             WHERE d.path LIKE 'Sex >%') s
              JOIN (
         SELECT g.parent_id        AS site_id,
                count(g.parent_id) AS burialcount
@@ -2349,6 +2410,9 @@ CREATE TABLE thanados.ageatdeath AS (
                       WHERE t.path LIKE '%> Age >%'
                       ORDER BY sitename) AS a) age
           GROUP BY sitename, site_id) ar ORDER BY site_id);
+          
+            
+
           
     DROP TABLE IF EXISTS thanados.searchData;
     CREATE TABLE thanados.searchData AS
@@ -2475,6 +2539,98 @@ DROP TABLE thanados.searchData;
 CREATE TABLE thanados.searchData AS (
 SELECT * FROM thanados.searchData_tmp);
 DROP TABLE thanados.searchData_tmp;
+
+
+DROP TABLE IF EXISTS thanados.valueageatdeath;
+CREATE TABLE thanados.valueageatdeath AS (
+            SELECT ar.sitename,
+           ar.site_id,
+           jsonb_build_object(
+                   'name', ar.sitename,
+                   'site_id', ar.site_id,
+                   'min', ar.min,
+                   'max', ar.max,
+                   'avg', ar.avg) AS age
+    FROM (SELECT sitename,
+         site_id,
+                 array_agg(agemin)  AS min,
+                 array_agg(agemax)  AS max,
+                 array_agg(average) AS avg
+          FROM (
+                    SELECT a.site_id, c.name AS sitename, a.avg AS agemin, b.avg AS agemax, (a.avg + b.avg)/2 AS average FROM
+
+(SELECT site_id, child_id, child_name, avg(min) AS avg FROM thanados.searchdata
+WHERE type_id IN (117199)
+GROUP BY site_id, child_id, child_name ORDER BY avg desc) a JOIN
+
+(SELECT site_id, child_id, child_name, avg(min) AS avg FROM thanados.searchdata
+WHERE type_id IN (117200)
+GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.child_id
+                        JOIN model.entity c ON a.site_id = c.id
+                    ) age
+          GROUP BY sitename, site_id) ar ORDER BY site_id);
+
+
+DROP TABLE IF EXISTS thanados.bodyheight_labels;
+CREATE TABLE thanados.bodyheight_labels AS (
+    SELECT '["0-10", "11-20", "21-30", "31-40", "41-50", "51-60", "61-70", "71-80", "81-90", "91-100", "101-110", "111-120", "121-130", "131-140", "141-150", "151-160", "161-170", "171-180", "181-190", "191-200", "over 200"]'::JSONB AS labels
+);
+
+DROP TABLE IF EXISTS thanados.bodyheight;
+CREATE TABLE thanados.bodyheight AS (
+
+SELECT b.name                                       AS "label",
+       b.id                                         AS "site_id",
+       '[' ||
+       count(*) FILTER (WHERE a.VALUE <= 10) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 20 AND a.VALUE <= 30) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 30 AND a.VALUE <= 40) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 40 AND a.VALUE <= 50) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 50 AND a.VALUE <= 60) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 60 AND a.VALUE <= 70) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 70 AND a.VALUE <= 80) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 80 AND a.VALUE <= 90) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 90 AND a.VALUE <= 100) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 100 AND a.VALUE <= 110) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 110 AND a.VALUE <= 120) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 120 AND a.VALUE <= 130) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 130 AND a.VALUE <= 140) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 140 AND a.VALUE <= 150) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 150 AND a.VALUE <= 160) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 160 AND a.VALUE <= 170) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 170 AND a.VALUE <= 180) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 180 AND a.VALUE <= 190) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 190 AND a.VALUE <= 200) || ',' ||
+       count(*) FILTER (WHERE a.VALUE > 200) || ']' AS data
+FROM (
+         SELECT site_id, child_id, (avg(min)::int) AS VALUE
+         FROM thanados.searchdata
+         WHERE type_id IN (SELECT id FROM thanados.types_all WHERE path LIKE '118155%')
+         GROUP BY site_id, child_id) a
+         JOIN model.entity b on a.site_id = b.id
+GROUP BY b.name, b.id);
+
+DROP TABLE IF EXISTS thanados.chart_bodyheight;
+CREATE TABLE thanados.chart_bodyheight(bodyheight TEXT);
+INSERT INTO thanados.chart_bodyheight (bodyheight)
+SELECT jsonb_build_object(
+               'labels', dl.labels,
+               'datasets', jsonb_agg(d)
+           )
+FROM thanados.bodyheight_labels dl,
+     thanados.bodyheight d
+GROUP BY dl.labels;
+
+DROP TABLE IF EXISTS thanados.bodyheight_labels;
+DROP TABLE IF EXISTS thanados.bodyheight;
+
+UPDATE thanados.chart_bodyheight
+SET bodyheight = REPLACE(bodyheight, '"[', '[');
+UPDATE thanados.chart_bodyheight
+SET bodyheight = REPLACE(bodyheight, ']"', ']');
+
+UPDATE thanados.chart_data
+SET bodyheight = (SELECT bodyheight::JSONB FROM thanados.chart_bodyheight);
 
 DROP TABLE IF EXISTS thanados.EntCount;
 CREATE TABLE thanados.EntCount AS
