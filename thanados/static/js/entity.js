@@ -83,7 +83,7 @@ if (systemtype == 'place') {
     getEntityData(sitename, jsonmysite.id, jsonmysite);
     mycitation = '"' + sitename + '".';
     myjson = jsonmysite;
-    $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Site) </div>');
+    $('#mybreadcrumbs').append('<div class="ms-3 text-muted"> (Site) </div>');
 }
 
 window.addEventListener('load', function () {
@@ -128,7 +128,7 @@ if (systemtype == 'feature') {
         }
 
     });
-    $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Feature/Grave) </div>');
+    $('#mybreadcrumbs').append('<div class="ms-3 text-muted"> (Feature/Grave) </div>');
 }
 
 
@@ -161,7 +161,7 @@ if (systemtype == 'stratigraphic_unit') {
 
         });
     });
-    $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Burial/Stratigraphic Unit) </div>');
+    $('#mybreadcrumbs').append('<div class="ms-3 text-muted"> (Burial/Stratigraphic Unit) </div>');
 }
 
 
@@ -208,9 +208,9 @@ if (systemtype === 'find' || systemtype === 'human_remains') {
         });
     });
     if (systemtype === 'find') {
-        $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Find) </div>')
+        $('#mybreadcrumbs').append('<div class="ms-3 text-muted"> (Find) </div>')
     } else {
-        $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Osteology) </div>');
+        $('#mybreadcrumbs').append('<div class="ms-3 text-muted"> (Osteology) </div>');
     }
     ;
 }
@@ -303,23 +303,23 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div class="row mb-5">' +
         '<div id="myData_' + entId + '" class="col-lg">' +
         '<div class="row mb-3">' +
-        '<h4 style="margin-top: 0.5em; margin-left: 0.5em" id="myname_' + entId + '" title="Name of entity">' + entName + '&nbsp;</h4>' +
-        '<div id="entbuttons" style="margin-top: 0.6em; margin-left: 1em; padding-bottom: 0.6em;">' +
-        '<button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>' +
+        '<h4 id="myname_' + entId + '" title="Name of entity">' + entName + '&nbsp;</h4>' +
+        '<div id="entbuttons">' +
+        '<button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>' +
         ((showDashboard) ? '<a style="margin-left: 0.2em" onclick="this.blur();" href="/entity/' + place_id + '/dashboard" class="btn btn-sm btn-secondary" title="Dashboard"><i class="fas fa-chart-line"></i></a>' : '') +
         '<button type="button" style="margin-left: 0.2em" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" class="btn btn-sm btn-secondary" title="Open detailed map of this site"><i class="fas fa-map-marked-alt"></i></button>' +
 
         '<a style="margin-left: 0.2em" onclick="this.blur();" href="' + openAtlasUrl + entId + '" target="_blank" class="backendlink d-none btn btn-sm btn-secondary" title="Backend link"><i class="fas fa-database"></i></a>' +
 
         '<div class="dropdown" style="display: inline-block; margin-left: 0.2em;" >\n' +
-        '  <button class="btn btn-sm btn-secondary" type="button" id="dropdownMenuButton" title="More" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
+        '  <button class="btn btn-sm btn-secondary" type="button" id="dropdownMenuButton" title="More" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
         '  <i class="fas fa-ellipsis-v"></i>  ' +
         '  </button>' +
         '   <div class="dropdown-menu" aria-labelledby="dropdownMenu">' +
         '       <a class="dropdown-item" onclick="this.blur(); exportToJsonFile(myjson)" title="Download data as GeoJSON" href="#">' +
-        '       <i class="fas fa-download mr-1"></i>GeoJSON</a>' +
+        '       <i class="fas fa-download me-1"></i>GeoJSON</a>' +
         '       <a class="dropdown-item" title="Network visualisation" href="/entity/' + entId + '/network">' +
-        '<i class="fas fa-project-diagram mr-1"></i>Network</a>' +
+        '<i class="fas fa-project-diagram me-1"></i>Network</a>' +
         '   </div>' +
         '</div>' +
         '</div>' +
@@ -328,7 +328,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         ' data-toggle="popover">' + entType + '</div><span class="popover-wrapper"></span>' +
         '<div id="mytimespan' + entId + '" class="modalrowitem" title="Timespan/daterange of entity">' + dateToInsert + '</div>' +
         ((RCdate) ? '<a id="rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_' + entId + '.png"  class="modalrowitem rc_button" title="Radiocarbon Date">14C cal: ' + entRC.sample + '</a>' : '') +
-        ((RC_child) ? '<a id="rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_sub_' + entId + '.png"  class="modalrowitem rc_button" title="Radiocarbon Date of Subunit">14C cal subunit: '  + entRC.child_sample + '</a>' : '') +
+        ((RC_child) ? '<a id="rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_sub_' + entId + '.png"  class="modalrowitem rc_button" title="Radiocarbon Date of Subunit">14C cal subunit: ' + entRC.child_sample + '</a>' : '') +
         ((RC_combo) ? '<a id="rc_stacked_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_stacked_' + entId + '.png"  class="modalrowitem rc_button" title="Mulitple Radiocarbon Dates">multiple (' + entRC.combined_children_samples.length + ') 14C dates</a>' : '') +
         '<div id="myDescr' + entId + '" title="Description of entity"><span class="shrinkable">' + entDesc + '</span></div><a class="truncBtn" onclick="truncId=\'#myDescr' + entId + '\'" href="#">Show more</a>' +
         '<div class="mt-5" id="myTypescontainer' + entId + '"></div>' +
@@ -342,10 +342,10 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myChildrencontainer' + entId + '">' +
         '<nav>' +
         '<div class="nav nav-tabs" id="nav-tab" role="tablist">' +
-        '<a class="nav-item nav-link active" id="nav-table-tab" data-toggle="tab" href="#nav-table' + entId + '" role="tab" aria-controls="nav-table' + entId + '" aria-selected="true">' + subLabel + '</a>' +
-        '<a class="nav-item nav-link d-none" id="nav-pills-tab' + entId + '" data-toggle="tab" href="#nav-pills' + entId + '" role="tab" aria-controls="nav-pills' + entId + '" aria-selected="false">Simple</a>' +
-        '<a class="nav-item nav-link d-none" id="nav-humanremains-tab" data-toggle="tab" href="#nav-humanremains" role="tab" aria-controls="nav-humanremains" aria-selected="false">Osteology</a>' +
-        '<a class="nav-item nav-link" id="nav-catalogue-tab" data-toggle="tab" href="#nav-catalogue" role="tab" aria-controls="nav-catalogue" aria-selected="false">Catalogue</a>' +
+        '<a class="nav-item nav-link active" id="nav-table-tab" data-bs-toggle="tab" href="#nav-table' + entId + '" role="tab" aria-controls="nav-table' + entId + '" aria-selected="true">' + subLabel + '</a>' +
+        '<a class="nav-item nav-link d-none" id="nav-pills-tab' + entId + '" data-bs-toggle="tab" href="#nav-pills' + entId + '" role="tab" aria-controls="nav-pills' + entId + '" aria-selected="false">Simple</a>' +
+        '<a class="nav-item nav-link d-none" id="nav-humanremains-tab" data-bs-toggle="tab" href="#nav-humanremains" role="tab" aria-controls="nav-humanremains" aria-selected="false">Osteology</a>' +
+        '<a class="nav-item nav-link" id="nav-catalogue-tab" data-bs-toggle="tab" href="#nav-catalogue" role="tab" aria-controls="nav-catalogue" aria-selected="false">Catalogue</a>' +
         '</div>' +
         '</nav>' +
         '<div class="tab-content pl-2 pr-2 pt-4" id="nav-tabContent">' +
@@ -538,8 +538,8 @@ function getEntityData(parentName, parentId, currentfeature) {
     $('#myMetadatacontainer' + entId).empty();
     $('#myMetadatacontainer' + entId).append(
         '<div id="mainRef" class="mt-5"><p><h6>Data source</h6></p>' +
-        '<table class="table table-sm table-hover">' +
-        '<thead class="thead-light">' +
+        '<table class="table table-sm table-hover table-striped">' +
+        '<thead class="table-light">' +
         '<tr>' +
         '<th scope="col">Title</th>' +
         '<th scope="col">Page</th>' +
@@ -548,8 +548,8 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<tbody id="mytablebody"></tbody></table></div>' +
 
         '<div id="furtherRefs" class="mt-5"><p><h6>Bibliography</h6></p>' +
-        '<table class="table table-sm table-hover">' +
-        '<thead class="thead-light">' +
+        '<table class="table table-sm table-hover table-striped">' +
+        '<thead class="table-light">' +
         '<tr>' +
         '<th scope="col">Title</th>' +
         '<th scope="col">Page</th>' +
@@ -621,8 +621,8 @@ function getEntityData(parentName, parentId, currentfeature) {
     if (typeof (currentfeature.properties.externalreference) !== 'undefined') {
         $('#myMetadatacontainer' + entId).append(
             '<p><h6 class="mt-5">External references</h6></p>' +
-            '<table class="table table-sm table-hover">' +
-            '<thead class="thead-light">' +
+            '<table class="table table-sm table-hover table-striped">' +
+            '<thead class="table-light">' +
             '<tr>' +
             '<th scope="col">#</th>' +
             '<th scope="col">URL</th>' +
@@ -665,8 +665,8 @@ function getEntityData(parentName, parentId, currentfeature) {
     if (typeof (files) !== 'undefined') {
         $('#myMetadatacontainer' + entId).append(
             '<p><h6 class="mt-5">Files</h6></p>' +
-            '<table class="table table-sm table-hover">' +
-            '<thead class="thead-light">' +
+            '<table class="table table-sm table-hover table-striped">' +
+            '<thead class="table-light">' +
             '<tr>' +
             '<th scope="col">#</th>' +
             '<th scope="col">ID</th>' +
@@ -776,7 +776,7 @@ function getEntityData(parentName, parentId, currentfeature) {
                     data: "name",
                     "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                         $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" +
-                            '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + oData.id + '" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a>'); //create links in rows
+                            '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + oData.id + '" target="_blank""><i class="float-end text-secondary fas fa-database"></i></a>'); //create links in rows
                     }
                 },
                 {
@@ -799,7 +799,9 @@ function getEntityData(parentName, parentId, currentfeature) {
             if (currentfeature.humanremains) {
                 $('#nav-table-tab').toggle();
                 $('#nav-catalogue-tab').toggle();
-                $('#nav-humanremains-tab').tab('show')
+                var someTabTriggerEl = document.querySelector('#nav-humanremains-tab')
+                var tab = new bootstrap.Tab(someTabTriggerEl)
+                tab.show()
                 //$('#nav-humanremains-tab').addClass('active');
                 //$('#nav-humanremains-tab').removeClass('d-none');
             } else {
@@ -1008,27 +1010,27 @@ function setImages(entId, entfiles) {
             firstimage = entfiles[0];
             secondimage = entfiles[1];
             $('#myImagecontainer' + entId).append(
-                '<div id="carouselExampleIndicators' + entId + '" class="cat-image-container carousel slide" data-ride="carousel" data-interval="false">' +
-                '<ol id="mymodalimageindicators' + entId + '" class="carousel-indicators">' +
-                '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="0" class="active"></li>' +
-                '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="1"></li>' +
-                '</ol>' +
-                '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
-                '<div class="carousel-item active">' +
+                '<div id="carouselExampleIndicators' + entId + '" class="cat-image-container carousel slide" data-bs-ride="carousel" data-interval="false">' +
+                '   <div id="mymodalimageindicators' + entId + '" class="carousel-indicators">\n' +
+                '       <button type="button" data-bs-target="#carouselExampleIndicators' + entId + '" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>\n' +
+                '       <button type="button" data-bs-target="#carouselExampleIndicators' + entId + '" data-bs-slide-to="1" aria-label="Slide 2"></button>\n' +
+                '   </div>' +
+                '   <div id="mycarouselimages' + entId + '" class="carousel-inner">\n' +
+                '       <div class="carousel-item active">\n' +
                 getImageHtml(firstimage) +
-                '</div>' +
-                '<div class="carousel-item">' +
+                '       </div>\n' +
+                '       <div class="carousel-item">\n' +
                 getImageHtml(secondimage) +
-                '</div>' +
-                '</div>' +
-                '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
-                '<span aria-hidden="true"><button onclick="this.blur()" type="button" class="btn btn-secondary"><</button></span>' +
-                '<span class="sr-only">Previous</span>' +
-                '</a>' +
-                '<a class="carousel-control-next" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="next">' +
-                '<span aria-hidden="true"><button onclick="this.blur()" type="button" class="btn btn-secondary">></button></span>' +
-                '<span class="sr-only">Next</span>' +
-                '</a>' +
+                '       </div>\n' +
+                '   </div>' +
+                '   <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators' + entId + '" data-bs-slide="prev">\n' +
+                '    <span class="carousel-control-prev-icon" aria-hidden="true"></span>\n' +
+                '    <span class="visually-hidden">Previous</span>\n' +
+                '   </button>\n' +
+                '   <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators' + entId + '" data-bs-slide="next">\n' +
+                '    <span class="carousel-control-next-icon" aria-hidden="true"></span>\n' +
+                '    <span class="visually-hidden">Next</span>\n' +
+                '   </button>' +
                 '</div>'
             );
 
@@ -1044,11 +1046,24 @@ function setImages(entId, entfiles) {
                         );
 
                         $('#mymodalimageindicators' + entId).append(
-                            '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="' + f + '"></li>'
+                            '<button type="button" data-bs-target="#carouselExampleIndicators' + entId + '" data-bs-slide-to="' + f + '" aria-label="Slide ' + f + '"></button>\n'
                         );
                     }
                 }
             );
+            $(".cat-image-container").hover(function () {
+                $(this).find("button").css("background-color", "gray");
+                $(this).find(".carousel-indicators").find("button").css("border", "solid");
+                $(this).find(".carousel-indicators").find("button").css("height", "15px");
+                $(this).find(".carousel-indicators").find("button").css("border-width", "2px");
+                $(this).find(".carousel-indicators").find("button").css("border-color", "white");
+            }, function () {
+                $(this).find("button").css("background-color", "");
+                $(this).find(".carousel-indicators").find("button").css("border", "");
+                $(this).find(".carousel-indicators").find("button").css("height", "");
+                $(this).find(".carousel-indicators").find("button").css("border-width", "");
+                $(this).find(".carousel-indicators").find("button").css("border-color", "");
+            })
         }
 
     } else {
@@ -1098,7 +1113,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
         var entId = currentfeature.id;
         var entName =
             '<a href="../entity/' + entId + '" title="Permalink to this entity">' + currentfeature.properties.name + '</a>' +
-            '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + entId + '" target="_blank""><i class="ml-4 text-secondary fas fa-database"></i></a>';
+            '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + entId + '" target="_blank""><i class="ms-4 text-secondary fas fa-database"></i></a>';
         var entDesc = currentfeature.properties.description;
         if (typeof entDesc == 'undefined') {
             var entDesc = '';
@@ -1123,12 +1138,18 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             var entRC = currentfeature.properties.radiocarbon;
 
 
-
-
-
-            if (entRC["sample"]) {RCid = entId; RCname = '14C cal: ' + entRC.sample}
-            if (entRC["child_sample"]) {RCid = 'sub_'+ entId; RCname = '14C cal subunit: '  + entRC.child_sample}
-            if (entRC["combined_children_samples"]) {RCid = 'stacked_'+ entId; RCname = 'multiple (' + entRC.combined_children_samples.length + ') 14C dates'}
+            if (entRC["sample"]) {
+                RCid = entId;
+                RCname = '14C cal: ' + entRC.sample
+            }
+            if (entRC["child_sample"]) {
+                RCid = 'sub_' + entId;
+                RCname = '14C cal subunit: ' + entRC.child_sample
+            }
+            if (entRC["combined_children_samples"]) {
+                RCid = 'stacked_' + entId;
+                RCname = 'multiple (' + entRC.combined_children_samples.length + ') 14C dates'
+            }
 
             RCdate = true
         }
@@ -1147,7 +1168,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             'data-toggle="popover" ' +
             'data-value="' + typeId + '">' + entType + '</div><span class="popover-wrapper"></span>' +
             '<div id="myModaltimespan' + entId + '" class="modalrowitem">' + dateToInsert + '</div>' +
-            ((RCdate) ? '<a id="kat_rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_' + RCid + '.png"  class="modalrowitem rc_button" title="Radiocarbon Date">'+RCname+'</a>' : '') +
+            ((RCdate) ? '<a id="kat_rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_' + RCid + '.png"  class="modalrowitem rc_button" title="Radiocarbon Date">' + RCname + '</a>' : '') +
             '<div id="myModalImagecontainer' + entId + '" class="row mb-2"></div>' +
             '<div id="myModalDescr' + entId + '">' + entDesc + '</div>' +
             '<div id="myModalTypescontainer' + entId + '"></div>' +
@@ -1157,7 +1178,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             '</div>' +
             '</div>' +
             '</div>' +
-            '<div class="ml-4" id="' + parentDiv + '_' + entId + '"></div>'
+            '<div class="ms-4" id="' + parentDiv + '_' + entId + '"></div>'
         );
         if ($('#myModaltimespan' + entId).html() == '') $('#myModaltimespan' + entId).toggle();
 

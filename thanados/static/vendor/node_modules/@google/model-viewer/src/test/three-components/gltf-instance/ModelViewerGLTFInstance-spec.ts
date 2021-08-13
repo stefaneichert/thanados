@@ -82,12 +82,6 @@ suite('ModelViewerGLTFInstance', () => {
   });
 
   suite('preparing the GLTF', () => {
-    test('duplicates a transparent, double-sided mesh', () => {
-      const meshThree = preparedGLTF.scene.children[2] as Mesh;
-      expect(meshThree.children[0]).to.be.ok;
-      expect((meshThree.children[0] as Mesh).isMesh).to.be.ok;
-    });
-
     test('sets meshes to cast shadows', () => {
       (preparedGLTF.scene.children as [Mesh, Mesh, Mesh])
           .forEach(mesh => expect(mesh.castShadow).to.be.true);

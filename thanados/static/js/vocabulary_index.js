@@ -53,7 +53,7 @@ $(document).ready(function () {
                             }
                         })
                     }
-                    var content = '<h5 title="' + data.path + '" class="text-muted">' + data.name + '<a class="ml-4 detailLink" title="Open details in new tab" href="/vocabulary/' + id + '" target="_blank"><i class="fas fa-external-link-alt"></i></a></h5>';
+                    var content = '<h5 title="' + data.path + '" class="text-muted">' + data.name + '<a class="ms-4 detailLink" title="Open details in new tab" href="/vocabulary/' + id + '" target="_blank"><i class="fas fa-external-link-alt"></i></a></h5>';
                     if (data.description) content = content + '<p class="text-muted font-italic" >' + data.description + '</p>';
                     if (data.parent) content = content + '<p> Subcategory of:' +
                         ' <span class="text-muted"> ' + data.parent_name + '</span></p>';
@@ -134,10 +134,10 @@ function settabs() {
             var active = ''
         }
 
-        var tab = '<li class="nav-item"><a class="nav-link ' + active + '" data-toggle="tab" href="#' + link + '">' + tab + '</a></li>';
+        var tab = '<li class="nav-item"><a class="nav-link ' + active + '" data-bs-toggle="tab" href="#' + link + '">' + tab + '</a></li>';
         $('#treeTabs').append(tab);
     })
-    var searchtab = '<li class="nav-item pull-right"><a class="nav-link" data-toggle="tab" href="#_searchTab"><i title="Search for a certain type" class="fas fa-search"></i></a></li>'
+    var searchtab = '<li class="nav-item pull-right"><a class="nav-link" data-bs-toggle="tab" href="#_searchTab"><i title="Search for a certain type" class="fas fa-search"></i></a></li>'
 
     $('#treeTabs').append(searchtab);
 
@@ -160,12 +160,12 @@ function setpanes() {
                 var treecard = '<div class="card mb-3">' +
                     '<div class="card-header hierarchy-row row justify-content-start">' +
                     '<span data-id="' + node.id + '" class="btn-link typeheading" ' +
-                    'data-toggle="collapse" ' +
-                    'data-target="#tree_' + node.text.replace(/ /g, "") + '"' +
+                    'data-bs-toggle="collapse" ' +
+                    'data-bs-target="#tree_' + node.text.replace(/ /g, "") + '"' +
                     'aria-expanded="true" aria-controls="#tree_' + node.text.replace(/ /g, "") + '">' +
                     '' + node.text +
                     '</span>\n' +
-                    '<div class="hierarchy-detail col-sm-8 float-right d-none">\n' +
+                    '<div class="hierarchy-detail col-sm-8 float-end d-none">\n' +
                     '</div>\n' +
                     '</div>\n' +
                     '<div class="card-body collapse treecard" data-topparent="' + node.id + '" id="tree_' + node.text.replace(/ /g, "") + '">\n' +

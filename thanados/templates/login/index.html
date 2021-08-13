@@ -16,13 +16,13 @@
                     <span class="input-group-text">Password: </span>
                 </div>
                 {{ form.password(class_='required, form-control') }}
-                <div class="input-group-append float-right">
+                <div class="input-group-append float-end">
                     {{ form.save(class_='btn btn-secondary') }}
                 </div>
             </div>
-            <div class="float-right">
-                <span><small class="text-muted mr-4">show password?</small></span>
-                {{ form.show_passwords(type_='radio', class='mr-2 align-middle') }}
+            <div class="float-end">
+                <span><small class="text-muted me-4">show password?</small></span>
+                {{ form.show_passwords(type_='radio', class='me-2 align-middle') }}
             </div>
         </form>
     </div>

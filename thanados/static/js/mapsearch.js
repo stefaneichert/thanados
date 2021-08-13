@@ -25,7 +25,7 @@ function startsearch() {
                 // Create the Close Button (this can be a link, an image etc.)
                 var link =
                     '<btn id="dialog-close" title="close" ' +
-                    'class="btn btn-sm btn-secondary d-inline-block float-right text-decoration-none;">' +
+                    'class="btn btn-sm btn-secondary d-inline-block float-end text-decoration-none;">' +
                     '<i class="fas fa-times"></i></btn>';
                 // Create Close Button
                 $(".ui-dialog-title").css({'width': ''});
@@ -71,10 +71,8 @@ function appendSearch(Iter) {//append search form to dialog
     $('#mysearchform').append(
         //selection for search level: grave, burial or find
         '<div id="LevelSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">\n' +
-        '<div class="input-group-prepend">\n' +
-        '<label class="input-group-text" for="LevelSelect_' + Iter + '">' + Iter + '. </label>\n' +
-        '</div>\n' +
-        '<select class="custom-select empty" title="Select whether to search in graves, burials (=human_remains) or finds" id="LevelSelect_' + Iter + '">\n' +
+        '<span class="input-group-text">' + Iter + '. </span>\n' +
+        '<select class="form-select form-select-sm" title="Select whether to search in graves, burials (=human_remains) or finds" id="LevelSelect_' + Iter + '">\n' +
         '<option selected disabled>Select search level...</option>\n' +
         ((gravesthere) ? '<option value="feature">Graves</option>\n' : '') +
         ((burialsthere) ? '<option value="strat">Burials</option>\n' : '') +
@@ -90,22 +88,20 @@ function appendSearch(Iter) {//append search form to dialog
         $('#LevelSelect_' + Iter).prop('disabled', true); //disable former selection field
         if (Iter == 1)
             $('#LevelSelect_' + Iter + '_parent').append(//add reset button on first iteration
-                '<div class="input-group-append">' +
-                '<button class="btn btn-secondary btn-sm" type="button" id="resetsearchbutton" onclick="delete Globaliter; startsearch()" title="Reset search">' +
+                '<span class="btn btn-secondary btn-sm" type="button" id="resetsearchbutton" onclick="delete Globaliter; startsearch()" title="Reset search">' +
                 '<i class="fas fa-sync-alt"></i>' +
-                '</button>' +
-                '</div>'
+                '</span>'
             );
         $('#mysearchform').append(
             //selection for property to choose: maintype, types, dimensions, material or timespan
             '<div id="PropSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">' +
-            '<select class="custom-select empty" title="select what property to search for" id="PropSelect_' + Iter + '">' +
+            '<select class="form-select form-select-sm empty" title="select what property to search for" id="PropSelect_' + Iter + '">' +
             '<option selected disabled>Select search criteria...</option>' +
             '<option title="Main type of ' + appendLevelName + '" value="maintype">Maintype</option>' +
             (checkAvailable(appendLevel, 'type') ? '<option title="Classifications, typology and other named types associated with ' + appendLevelName + '" value="type">Properties</option>' : '') +
             '<option title="Date range of ' + appendLevelName + '" value="timespan">Timespan</option>' +
             //(checkAvailable(appendLevel, 'dimensions') ? '<option title="Dimensions and certain other measured values concerning the spatial extend of ' + appendLevelName + '" value="dimension">Dimensions</option>' : '') +
-            '<option title="Dimensions and certain other measured values concerning the spatial extend of ' + appendLevelName + '" value="dimension">Dimensions</option>'+
+            '<option title="Dimensions and certain other measured values concerning the spatial extend of ' + appendLevelName + '" value="dimension">Dimensions</option>' +
             (checkAvailable(appendLevel, 'material') ? '<option title="Materials (like copper, iron, ceramics etc.) of ' + appendLevelName + '" value="material">Material</option>' : '') +
             (checkAvailable(appendLevel, 'value') ? '<option title="Classifications of entities that are connected with values (e.g. maximum age, body height etc.)" value="value">Value Properties</option>' : '') +
             '</select>' +
@@ -129,9 +125,7 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
     if (criteria == 'maintype' || criteria == 'type') { //if maintype or type append form with tree select
         $('#mysearchform').append(
             '<div id="MaintypeSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">' +
-            '<div class="input-group-prepend">' +
-            '<label class="input-group-text" for="MaintypeSelect_' + Iter + '">Type </label>' +
-            '</div>' +
+            '<span class="input-group-text">Type</span>' +
             '<input id="MaintypeSelect_' + Iter + '" class="form-control" onclick="this.blur()" type="text" placeholder="Select type.." readonly>' +
             '<input id="MaintypeSelect_' + Iter + '_Result" class="form-control" onclick="this.blur()" type="text" readonly disabled>' +
             '</div>'
@@ -149,17 +143,13 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
 
         $('#mysearchform').append(
             '<div id="TimespanSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">' +
-            '<div class="input-group-prepend">' +
             '<span class="input-group-text dim-label">Timespan min: </span>' +
-            '</div>' +
             '<input title="start year (CE) of the entity\'s dating" id="valMin_' + Iter + '" class="form-control value-input" type="text">' +
-            '<span class="input-group-text input-group-middle">max: </span>' +
+            '<span class="input-group-text">max: </span>' +
             '<input title="end year (CE) of the entity\'s dating" id="valMax_' + Iter + '" class="form-control value-input" type="text">' +
-            '<div class="input-group-append">' +
-            '<button class="btn btn-secondary btn-sm" type="button" id="timespanbutton_' + Iter + '" onclick="searchTime(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for timespan">' +
+            '<span class="btn btn-secondary btn-sm" type="button" id="timespanbutton_' + Iter + '" onclick="searchTime(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for timespan">' +
             '<i class="fas fa-search"></i>' +
-            '</button>' +
-            '</div>' +
+            '</span>' +
             '</div>'
         );
     }
@@ -171,7 +161,7 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
         Globaliter = Iter;
         $('#mysearchform').append(
             '<div id="DimensionSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">' +
-            '<select class="custom-select  dim-label empty" id="DimensionSelect_' + Iter + '">' +
+            '<select class="form-select form-select-sm  dim-label empty" id="DimensionSelect_' + Iter + '">' +
             '<option selected disabled>Select dimension...</option>' +
             '<option value="15679">Height/Depth (cm)</option>' +
             '<option value="26189">Length (cm)</option>' +
@@ -188,15 +178,13 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
         $('#DimensionSelect_' + Iter).on('change', function () {
             $('#DimensionSelect_' + Iter).prop('disabled', true); //disable input
             $('#DimensionSelect_' + Iter + '_parent').append(//append input of values
-                '<span class="input-group-text input-group-middle">min: </span>' +
+                '<span class="input-group-text">min: </span>' +
                 '<input title="minumum value of the dimension to search for." id="valMin_' + Iter + '" class="form-control value-input" type="text">' +
-                '<span class="input-group-text input-group-middle">max: </span>' +
+                '<span class="input-group-text">max: </span>' +
                 '<input title="maximum value of the dimension to search for." id="valMax_' + Iter + '" class="form-control value-input" type="text">' +
-                '<div class="input-group-append">' +
-                '<button class="btn btn-secondary btn-sm" type="button" id="dimMatButton_' + Iter + '" onclick="searchDimMat(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for dimension">' +
+                '<span class="btn btn-secondary btn-sm" type="button" id="dimMatButton_' + Iter + '" onclick="searchDimMat(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for dimension">' +
                 '<i class="fas fa-search"></i>' +
-                '</button>' +
-                '</div>'
+                '</span>'
             )
         });
     }
@@ -204,9 +192,7 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
     if (criteria == 'material' || criteria == 'value') { //if material or value append form with tree select
         $('#mysearchform').append(
             '<div id="MaterialSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">' +
-            '<div class="input-group-prepend">' +
             '<span id="MaterialSelect_' + Iter + '" class="input-group-text"></span>' +
-            '</div>' +
             '</div>'
         );
         targetField = 'MaterialSelect_' + Iter;
@@ -216,17 +202,13 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
 
 function appendMaterial(Iter) { //append value input after material is chosen
     $('#MaterialSelect_' + Iter + '_parent').append(
-        '<span class="input-group-text input-group-middle">min: </span>' +
+        '<span class="input-group-text">min: </span>' +
         '<input title="minimum value of the criteria to search for. In case of material this can be left blank if you want to get all entities with any value of this material" id="valMin_' + Iter + '" class="form-control value-input" type="text">' +
-        '<div class="input-group-append">' +
-        '<span class="input-group-text input-group-middle">max: </span>' +
-        '</div>' +
+        '<span class="input-group-text">max: </span>' +
         '<input title="maximum value of the criteria to search for. In case of material this can be left blank if you want to get all entities with any value of this material" id="valMax_' + Iter + '" class="form-control value-input" type="text">' +
-        '<div class="input-group-append">' +
-        '<button class="btn btn-secondary btn-sm" type="button" id="dimMatButton_' + Iter + '" onclick="searchDimMat(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for selected criteria">' +
+        '<span class="btn btn-secondary btn-sm" type="button" id="dimMatButton_' + Iter + '" onclick="searchDimMat(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for selected criteria">' +
         '<i class="fas fa-search"></i>' +
-        '</button>' +
-        '</div>'
+        '</span>'
     );
 }
 
@@ -353,7 +335,7 @@ function appendPlus(Iter) {
             '<i class="fas fa-map-marker"></i>' +
             '</button>' +*/
             /*'<div class="dropdown">' +
-            '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+            '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
             '<i class="far fa-save"></i>' +
             '</button>' +
             '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
@@ -361,7 +343,7 @@ function appendPlus(Iter) {
             '<a class="dropdown-item" onclick="finishQuery(null, finalSearchResultIds, CSVresult, false, null); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
             '</div>' +
             '</div>' +*/
-            '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, true, null)" type="button" id="ShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
+            '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, true, null)" type="button" id="ShowListButton" title="Show/Export result list" data-bs-toggle="modal" data-bs-target="#CSVmodal">' +
             '<i class="fas fa-list"></i>' +
             '</button>' +
             '<button class="btn btn-secondary btn-sm toremovebtn" type="button" id="addNewSearchCritBtn" onclick="appendSearch(Globaliter)" title="Add another search criteria to search for in this result">' +
@@ -683,8 +665,8 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
             })
         }
         var multibutton = '<a onclick="minmaxLegend(this);"' +
-            ' style="cursor: pointer; font-size: 1.3em; margin-top: -1px;" class="float-right"><i class="far fa-minus-square" title="collapse"></i></a>' +
-            '<a class="multicolorbtn float-right" ' +
+            ' style="cursor: pointer; font-size: 1.3em; margin-top: -1px;" class="float-end"><i class="far fa-minus-square" title="collapse"></i></a>' +
+            '<a class="multicolorbtn float-end" ' +
             'onclick="currentLegend = (this.getAttribute(\'data-legend\')); ' +
             'CSVresult = JSON.parse(this.getAttribute(\'data-CSVresult\')); ' +
             'finalSearchResultIds = JSON.parse(this.getAttribute(\'data-idlist\')); ' +
@@ -840,8 +822,8 @@ function finishQuery(type, idlist, csvData, first, layerId) { //finish query and
         })
 
         var multibutton = '<a onclick="minmaxLegend(this);"' +
-            ' style="cursor: pointer; font-size: 1.3em; margin-top: -1px;" class="float-right"><i class="far fa-minus-square" title="collapse"></i></a>' +
-            '<a class="multicolorbtn float-right" ' +
+            ' style="cursor: pointer; font-size: 1.3em; margin-top: -1px;" class="float-end"><i class="far fa-minus-square" title="collapse"></i></a>' +
+            '<a class="multicolorbtn float-end" ' +
             'onclick="currentLegend = (this.getAttribute(\'data-legend\')); ' +
             'CSVresult = JSON.parse(this.getAttribute(\'data-CSVresult\')); ' +
             'finalSearchResultIds = JSON.parse(this.getAttribute(\'data-idlist\')); ' +
@@ -897,13 +879,13 @@ function CSVtable(csvData) {
         "scrollX": true,
         "autoWidth": true,
         drawCallback: function () {
-            $('a[rel=popover]').popover({
+            $('[data-toggle="popover-hover"]').popover({
                 html: true,
                 trigger: 'hover',
                 placement: 'right',
-                container: '.modal-body',
+                //container: $('#CSVmodal'),
                 content: function () {
-                    return '<img class="popover-img" src="' + $(this).data('img') + '" alt=""/>';
+                    return '<img class="popover-img" src="' + $(this).data('img') + '" />';
                 }
             });
         },
@@ -913,7 +895,7 @@ function CSVtable(csvData) {
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                     if (oData.image === null) $(nTd).html("<a href='/entity/" + oData.ObjectId + "' target='_blank' title='open in new tab'>" + oData.ObjectName + "</a>");
                     if (oData.image !== null) $(nTd).html("<a href='/entity/" + oData.ObjectId + "' target='_blank' title='open in new tab'>" + oData.ObjectName + "</a>" +
-                        "<a class='btn-xs float-right' rel='popover' data-img='" + oData.image + "'><i class='fas fa-image'></i></a>"); //create links in rows
+                        "<a class='btn-xs float-end' tabindex='0' data-toggle='popover-hover' data-img='" + oData.image + "'><i class='fas fa-image'></i></a>"); //create links in rows
                 }
             },
             {data: 'ObjectType'},
@@ -924,6 +906,16 @@ function CSVtable(csvData) {
             {data: 'latestEnd'},
             {data: 'grave'}
         ],
+    });
+
+    $('[data-toggle="popover-hover"]').popover({
+        html: true,
+        trigger: 'hover',
+        placement: 'right',
+        //container: $('#CSVmodal'),
+        content: function () {
+            return '<img "popover-img" src="' + $(this).data('img') + '" />';
+        }
     });
 
     if ((search.includes('dimension') || search.includes('material') || search.includes('value')) === false) {

@@ -38,8 +38,7 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
                                mysitejson=data, system_class=system_class, entity=entity, network=network)
     if format_ == 'dashboard':
 
-
-        #prepare AgeData
+        # prepare AgeData
         sqlAge = """
         DROP TABLE IF EXISTS thanados.valueages;
 CREATE TABLE thanados.valueages AS
@@ -88,8 +87,6 @@ GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.ch
 
         isoAge = getScatterDataX([117199, 117200], 118182, ['min age', 'max age'])
         isodata = getScatterDataX([118183], 118182, ['Burials'])
-
-
 
         def getAvgValuesPerTypeParent(topparent, label):
 
@@ -421,12 +418,9 @@ WHERE a.type_id IN (SELECT id from thanados.types_all WHERE topparent = '%(toppa
 WHERE a.type_id IN (SELECT id from thanados.types_all WHERE topparent = '%(topparent)s')
   AND a.site_id = %(place_id)s AND b.type_id = %(type_id)s) c
             """
-            g.cursor.execute(sql, {'place_id': place_id, 'topparent': topparent, 'type_id': type_id, 'label':label})
+            g.cursor.execute(sql, {'place_id': place_id, 'topparent': topparent, 'type_id': type_id, 'label': label})
             result = g.cursor.fetchone()
             return result.data
-
-
-
 
         def getAges():
             sql_age = """
@@ -1156,7 +1150,7 @@ GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.ch
                                preciousMetalfindsAgeBracket=preciousMetalfindsAgeBracket,
                                prestigiousfindsValueAge=prestigiousfindsValueAge,
                                isodata=isodata,
-                               isoboxplot = getMultiBoxPlotValues(23, 118183, 'Delta15N vs. Sex'),
+                               isoboxplot=getMultiBoxPlotValues(23, 118183, 'Delta15N vs. Sex'),
                                isoage=isoAge,
                                prestigiousfindsBracketAge=prestigiousfindsBracketAge, knn=knn, place_id=place_id,
                                bodyheightAvg=getAvgValuesPerTypeParent(118155, 'avg body height in cm.'))

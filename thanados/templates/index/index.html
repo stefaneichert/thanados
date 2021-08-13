@@ -17,6 +17,8 @@
         <h2 class="my-heading container"><img class="logo-heading"
                                               src="/static/images/logos/THANADOS_Logo_RGB.png">
         </h2>
+        <h2 class="my-heading container">The Anthropological and Archaeological Database of
+            Sepultures</h2>
 
         <a title="click to open site selection" href="{{ url_for('sites') }}">
             <div id="map" style="height: 20rem"></div>
@@ -38,40 +40,40 @@
                         Austria. <br></p>
                     <p class="h6 mb-1 text-uppercase mb-3">Features</p>
                     <ul class="list-unstyled row px-3 mb-4">
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle mr-2"></i>100s of
+                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>100s of
                             cemeteries online
                         </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle mr-2"></i>Interactive
+                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Interactive
                             maps
                         </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle mr-2"></i>Query
+                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Query
                             sites, graves, finds
                         </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle mr-2"></i>Visualise
+                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Visualise
                             and analyse data
                         </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle mr-2"></i>Export
+                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Export
                             data
                         </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle mr-2"></i>Domain
+                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Domain
                             specific vocabularies
                         </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle mr-2"></i>Detailed
+                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Detailed
                             anthropological data
                         </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle mr-2"></i>Network
+                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Network
                             visualisations
                         </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle mr-2"></i>Spatial
+                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Spatial
                             analyses
                         </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle mr-2"></i>Images,
+                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Images,
                             3D Models
                         </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle mr-2"></i>Metadata
+                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Metadata
                             and bibliographies
                         </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle mr-2"></i>Interactive
+                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Interactive
                             charts
                         </li>
                     </ul>
@@ -81,9 +83,9 @@
                     </p>
                 </div>
                 <div class="col-lg-6">
-                    <div id="carouselExampleIndicators"
+                    <div id="carouselExampleControls"
                          style="margin-bottom: 4em; border: 1px solid rgba(0, 0, 0, 0.125)"
-                         class="carousel slide" data-ride="carousel">
+                         class="carousel slide carousel-fade" data-bs-ride="carousel">
 
                         <div class="carousel-inner">
                             <div class="carousel-item active">
@@ -131,16 +133,16 @@
                                      alt="Fourth slide">
                             </div>
                         </div>
-                        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button"
-                           data-slide="prev">
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+                                data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button"
-                           data-slide="next">
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+                                data-bs-slide="next">
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Next</span>
-                        </a>
+                            <span class="visually-hidden">Next</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -170,7 +172,7 @@
                 <div class="container p-3">
 
                     <h4 class="mt-3">July 2021: Version 2.9 released</h4>
-                     <p class="text-muted">
+                    <p class="text-muted">
                         Introducing new dashboard visualisations for isotopic analyses and bodyheight of individuals.
                         E.g. at<a target="_blank" href="/entity/50625/dashboard"> Oberleiserberg</a> (see burial tab).
                         Also 30 new sites were added to the repository including many from Tyrol.
@@ -180,10 +182,13 @@
                     <p class="text-muted">
                         Introducing radiocarbon calibration using the excellent open source Python library
                         <a target="_blank" href="https://doi.org/10.5281/zenodo.630455"> IOSACal</a>.
-                        Now, if available, radiocarbon data (years, range, laboratory and specimen number) are used to "on the fly"
+                        Now, if available, radiocarbon data (years, range, laboratory and specimen number) are used to
+                        "on the fly"
                         create plots of the calibrated dates based on the most recent calibration curve:
-                        Eg. <a data-featherlight="image" href="/static/images/rc_dates/rc_sub_57319.png">Grave 1</a> from Oberleiserberg.
-                        Also <a data-featherlight="image" href="/static/images/rc_dates/rc_stacked_50625.png">stacked plots</a> are created if
+                        Eg. <a data-featherlight="image" href="/static/images/rc_dates/rc_sub_57319.png">Grave 1</a>
+                        from Oberleiserberg.
+                        Also <a data-featherlight="image" href="/static/images/rc_dates/rc_stacked_50625.png">stacked
+                        plots</a> are created if
                         there is more than one date for the respective entity and or its subunits.
                     </p>
 

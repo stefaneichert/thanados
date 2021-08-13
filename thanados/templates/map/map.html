@@ -6,9 +6,9 @@
             <div class="sidebar-wrapper">
                 <div class="panel panel-default" id="pnlSidebar">
                     <div id="mysidebarheading" class="panel-heading">
-                        <div class="float-right mt-3">
+                        <div class="float-end me-3 mt-3">
                             <button type="button"
-                                    class="mr-2 btn btn-secondary btn-sm fa-pull-right"
+                                    class="me-2 btn btn-secondary btn-sm fa-pull-right"
                                     onclick="this.blur(); modalsetsite()" title="show details">
                                 <i class="fa fa-info"></i>
                             </button>
@@ -46,8 +46,9 @@
                 <div class="modal-content">
                     <div class="modal-header custom-header-bg">
                         <h5 class="modal-title" id="CSVmodalLabel">Search result for: </h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
+                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal"
+                                aria-label="Close">
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
                     <div class="modal-body">
@@ -74,10 +75,11 @@
                                 title="Download result as spreadsheet data (CSV - Comma separated Values)">
                             Export CSV
                         </button>
-                        <button type="button" onclick="getCitation()" title="how to cite this" class="btn btn-secondary">
+                        <button type="button" onclick="getCitation()" title="how to cite this"
+                                class="btn btn-secondary">
                             <i class="fas fa-quote-right"></i>
                         </button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
                         </button>
                     </div>
                 </div>
@@ -98,13 +100,11 @@
         <div id="mytreeModal" title="Select category">
             <div>
                 <div id="TreeMenu" class="input-group input-group-sm mb-3">
-                    <div class="input-group-prepend">
-                        <label for="jstree_q"></label><input id="jstree_q"
+                    <div class="input-group">
+                        <input id="jstree_q"
                                                              class="form-control form-control-sm"
                                                              type="text"
                                                              placeholder="type to search...">
-                    </div>
-                    <div class="input-group-append">
                         <button class="btn btn-secondary btn-sm" type="button"
                                 onclick="transferNode(GlobaltargetField, GlobalNodeSelected, GlobalSelectedNodeName, Globalcriteria, GlobalappendLevel, Globaliter)"
                                 id="confirmNodeBtn">Select
@@ -128,6 +128,5 @@
     </script>
     <script src="/static/js/map.js"></script>
     <script src="/static/js/mapsearch.js"></script>
-    <script src="/static/js/choropleth_results.js"></script>
 
 {% endblock %}

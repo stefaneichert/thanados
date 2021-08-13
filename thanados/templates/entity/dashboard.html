@@ -5,11 +5,11 @@
     <link rel="stylesheet" href="/static/vendor/node_modules/jqcloud2/dist/jqcloud.min.css"/>
     <script src="/static/vendor/node_modules/jqcloud2/dist/jqcloud.min.js"></script>
     <script src="/static/vendor/node_modules/vis-network/dist/vis-network.min.js"></script>
-    <script src="/static/vendor/node_modules/chart.js/dist/Chart.bundle.min.js"></script>
+    <script src="/static/vendor/node_modules/chart.js/dist/Chart.min.js"></script>
     <script src="/static/vendor/node_modules/chartjs-plugin-colorschemes/dist/chartjs-plugin-colorschemes.min.js"></script>
     <script src="/static/vendor/node_modules/d3/dist/d3.min.js"></script>
     <script src="/static/vendor/node_modules/chartjs-plugin-annotation/chartjs-plugin-annotation.min.js"></script>
-    <script src="/static/vendor/node_modules/chartjs-chart-box-and-violin-plot/build/Chart.BoxPlot.min.js"></script>
+    <script src="/static/vendor/node_modules/@sgratzl/chartjs-chart-boxplot/build/Chart.BoxPlot.min.js"></script>
     <script src="/static/js/dashboardInfo.js"></script>
 
     <script>
@@ -109,8 +109,8 @@
     <!-- Page Content  -->
     <div id="mycontent">
         <h2 class="mb-3"><a class="btn-link" href="/entity/{{ mysitejson.site_id }}">{{ mysitejson.name }}</a>
-            <button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary float-right" data-toggle="modal"
-                    data-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>
+            <button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary float-end" data-bs-toggle="modal"
+                    data-bs-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>
         </h2>
 
         <div class="db-element d-none" id="overview-wrapper">
@@ -136,8 +136,8 @@
                             <canvas class="chartcontainer" id="gravegoods-chart"></canvas>
                         </div>
                         <div id="bubblecard" class="mb-4 col-xl-6">
-                            <i title="Detailed info" style="top: 0;" class="fas fa-info chart-help-btn"></i>
-                            <div class="row"><span class="mx-auto charttitle">Find distribution</span></div>
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <div class="row"><span class="mt-2 ms-5 charttitle">Find distribution</span></div>
                             <div class="chartcontainer overflow-auto text-center">
                                 <svg id="bubble" class="row mx-auto"></svg>
                             </div>
@@ -166,8 +166,8 @@
                                 </div>
                     Loading network
                     </span>
-                <a href="/entity/{{ place_id }}/network" style="position: absolute; margin: 1em!important; z-index: 5000" class="btn btn-sm btn-secondary ml-4" title="Detailed network with legend"><i class="fas fa-project-diagram"></i></a>
-                <div id="network" class="card-body p-0">
+                <a href="/entity/{{ place_id }}/network" style="position: absolute; margin: 1em!important; z-index: 5000" class="btn btn-sm btn-secondary ms-4" title="Detailed network with legend"><i class="fas fa-project-diagram"></i></a>
+                <div id="network" class="card-body p-0" style="max-height: 70vh">
                 </div>
             </div>
         </div>
@@ -281,8 +281,8 @@
                         </div>
 
                         <div id="pathocard" class="mb-4 col-xl-6">
-                            <i title="Detailed info" style="top: 0;" class="fas fa-info chart-help-btn"></i>
-                            <div class="row"><span class="mx-auto charttitle">Pathologies</span></div>
+                            <i title="Detailed info" style="padding-top: 2px; padding-left: 11px" class="mt-2 ms-3 fas fa-info chart-help-btn" style="padding-top: 3px!important"></i>
+                            <div class="row"><span class="mt-2 ms-5 charttitle">Pathologies</span></div>
                             <div class="chartcontainer overflow-auto text-center">
                                 <svg id="pathology" class="row mx-auto"></svg>
                             </div>
@@ -302,8 +302,8 @@
                     <div class="row">
 
                         <div id="bubblecardFinds" class="mb-4 col-xl-6">
-                            <i title="Detailed info" style="top: 0;" class="fas fa-info chart-help-btn"></i>
-                            <div class="row"><span class="mx-auto charttitle">Find distribution</span></div>
+                            <i title="Detailed info" class="mt-2 ms-3 fas fa-info chart-help-btn"></i>
+                            <div class="row"><span class="mt-2 ms-5 charttitle">Find distribution</span></div>
                             <div class="chartcontainer overflow-auto text-center">
                                 <svg id="bubbleFinds" class="row mx-auto"></svg>
                             </div>
@@ -369,7 +369,7 @@
                 <div class="modal-header custom-header-bg">
                     <h5 id="chartTitle" class="modal-title"></h5>
 
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="$('#chart-xl').toggle();" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -377,7 +377,7 @@
                     body
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                    <button type="button" class="btn btn-secondary" onclick="$('#chart-xl').toggle();">Close
                     </button>
                 </div>
             </div>
