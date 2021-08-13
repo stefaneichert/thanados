@@ -20,6 +20,23 @@ $(document).ready(function () {
     $('#mycontent').css('max-height', (maximumHeight - 40) + 'px');
     if (typeof (table) !== 'undefined') table.draw();
 
+    function popoverRedraw() {
+        $('[data-toggle="popover-hover"]').popover({
+            html: true,
+            trigger: 'hover',
+            placement: 'right',
+            content: function () {
+                return '<img class="popover-img" src="' + $(this).data('img') + '" />';
+            }
+        });
+    }
+
+    popoverRedraw()
+
+    table.on('draw', function () {
+            popoverRedraw()
+        }
+    );
 });
 
 $(window).resize(function () {
@@ -169,17 +186,7 @@ if (data.entities_recursive) {
 if (data.entities_recursive) {
     table = $('#entities_tbl').DataTable({
         data: setData(),
-        drawCallback: function () {
-            $('a[rel=popover]').popover({
-                html: true,
-                trigger: 'hover',
-                //placement: 'right',
-                container: $('body'),
-                content: function () {
-                    return '<img class="popover-img" src="' + $(this).data('img') + '" alt=""/>';
-                }
-            });
-        },
+
         "pagingType": "numbers",
         "lengthMenu": [10],
         "bLengthChange": false,
@@ -191,7 +198,7 @@ if (data.entities_recursive) {
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                     if (oData.file === null) $(nTd).html("<a id='" + oData.id + "' href='/entity/" + oData.id + "' title='" + oData.main_type + " ' target='_blank'>" + oData.name + "</a>");
                     if (oData.file !== null) $(nTd).html("<a id='" + oData.id + "' href='/entity/" + oData.id + "' title='" + oData.main_type + " ' target='_blank'>" + oData.name + "</a>" +
-                        "<a class='btn-xs float-right' rel='popover' data-img='" + oData.file + "'><i class='fas fa-image'></i></a>"); //create links in rows
+                        "<a class='btn-xs float-end' data-toggle='popover-hover' data-img='" + oData.file + "'><i class='fas fa-image'></i></a>"); //create links in rows
                 }
             },
             {
@@ -206,6 +213,7 @@ if (data.entities_recursive) {
         ],
     });
 
+
     if (data.entities) {
         if (data.entities.length !== data.entities_recursive.length) {
             $('#entities').prepend('<h6><span id="exact">' + data.entities.length + ' exact matches </span><input id="entSwitch" type="checkbox"><label for="entSwitch"></label><span id="incl" class="text-muted">' + data.entities_recursive.length + ' including subcategories</span></h6>')
@@ -215,7 +223,6 @@ if (data.entities_recursive) {
     } else {
         $('#entities').prepend('<h6 class="text-muted">' + $('#occurence').text() + '</h6>')
     }
-
 }
 
 $(document).on('change', '#entSwitch', function () {
@@ -311,6 +318,7 @@ function createNetwork() {
     });
     noNetwork = false;
 }
+
 
 
 

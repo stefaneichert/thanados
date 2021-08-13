@@ -46,7 +46,7 @@ if (systemtype == 'place') {
     //getEntityData(sitename, jsonmysite.id, jsonmysite);
     mycitation = '"' + sitename + '".';
     myjson = jsonmysite;
-    $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Site) </div>');
+    $('#mybreadcrumbs').append('<div class="ms-3 text-muted"> (Site) </div>');
 }
 
 if (systemtype == 'feature') {
@@ -68,7 +68,7 @@ if (systemtype == 'feature') {
         }
 
     });
-    $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Feature/Grave) </div>');
+    $('#mybreadcrumbs').append('<div class="ms-3 text-muted"> (Feature/Grave) </div>');
 }
 
 if (systemtype == 'stratigraphic_unit') {
@@ -99,7 +99,7 @@ if (systemtype == 'stratigraphic_unit') {
 
         });
     });
-    $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Burial/Stratigraphic Unit) </div>');
+    $('#mybreadcrumbs').append('<div class="ms-3 text-muted"> (Burial/Stratigraphic Unit) </div>');
 }
 
 
@@ -145,9 +145,9 @@ if (systemtype === 'find' || systemtype === 'human_remains') {
         });
     });
     if (systemtype === 'find') {
-        $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Find) </div>')
+        $('#mybreadcrumbs').append('<div class="ms-3 text-muted"> (Find) </div>')
     } else {
-        $('#mybreadcrumbs').append('<div class="ml-3 text-muted"> (Osteology) </div>');
+        $('#mybreadcrumbs').append('<div class="ms-3 text-muted"> (Osteology) </div>');
     }
 }
 

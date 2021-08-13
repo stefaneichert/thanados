@@ -25,7 +25,6 @@ $(document).ready(function () {
         }, 0);
         $('#back-to-top').css("display", "none")
     });
-
 })
 
 $(document).on('change', "input[type|=\'text\']", function () {
@@ -608,37 +607,37 @@ function openStyleDialog(layerType) {
 
         if (layertypes.multicolor) {
             if (layertypes.multicolorNoOverlaps) {
-                var multibadge = '<span title="Multiple colors for sub categories of your search parameters are possible without overlaps" class="ml-1 badge float-right badge-success badge-pill"><i class="fas fa-check"></i></span>'
+                var multibadge = '<span title="Multiple colors for sub categories of your search parameters are possible without overlaps" class="ms-1 badge float-end badge-success badge-pill"><i class="fas fa-check"></i></span>'
             } else {
-                var multibadge = '<span title="Multiple colors for sub categories of your search parameters are possible but there are overlapping results. This results from multiple matches in one grave. For one grave only one category can be displayed. You can narrow the results by selecting more detailed categories in the search." class="ml-1 badge float-right badge-success badge-pill">Overlaps &nbsp;<i class="fas fa-info"></i></span>\n'
+                var multibadge = '<span title="Multiple colors for sub categories of your search parameters are possible but there are overlapping results. This results from multiple matches in one grave. For one grave only one category can be displayed. You can narrow the results by selecting more detailed categories in the search." class="ms-1 badge float-end badge-success badge-pill">Overlaps &nbsp;<i class="fas fa-info"></i></span>\n'
             }
         } else {
             $('#colorPoly').addClass('d-none');
-            var multibadge = '<span title="There are no distinctive categories in this search. No multiple color display is possible." class="ml-1 badge float-right badge-secondary badge-pill"><i class="fas fa-exclamation-triangle"></i></span>';
+            var multibadge = '<span title="There are no distinctive categories in this search. No multiple color display is possible." class="ms-1 badge float-end badge-secondary badge-pill"><i class="fas fa-exclamation-triangle"></i></span>';
 
         }
 
         if (layertypes.gradientcolor || layertypes.gradientcolorTimespan) {
             if (layertypes.gradientcolorNoOverlaps) {
-                var gradibadge = '<span title="Gradient colors for values of your search parameters are possible without overlaps" class="ml-1 badge float-right badge-success badge-pill">Values &nbsp;<i class="fas fa-check"></i></span>\n'
+                var gradibadge = '<span title="Gradient colors for values of your search parameters are possible without overlaps" class="ms-1 badge float-end badge-success badge-pill">Values &nbsp;<i class="fas fa-check"></i></span>\n'
             } else {
-                var gradibadge = '<span title="Gradient colors for values of your search parameters are possible but there are overlapping results. This results from multiple matches in one grave. For one grave only one category can be displayed. You can narrow the results by selecting more detailed categories in the search." class="ml-1 badge float-right badge-success badge-pill">Values overlaps &nbsp;<i class="fas fa-info"></i></span>\n'
+                var gradibadge = '<span title="Gradient colors for values of your search parameters are possible but there are overlapping results. This results from multiple matches in one grave. For one grave only one category can be displayed. You can narrow the results by selecting more detailed categories in the search." class="ms-1 badge float-end badge-success badge-pill">Values overlaps &nbsp;<i class="fas fa-info"></i></span>\n'
             }
         } else {
-            var gradibadge = '<span title="There are no values to be displayed as gradient colors." class="ml-1 badge float-right badge-secondary badge-pill">Values &nbsp;<i class="fas fa-exclamation-triangle"></i></span>'
+            var gradibadge = '<span title="There are no values to be displayed as gradient colors." class="ms-1 badge float-end badge-secondary badge-pill">Values &nbsp;<i class="fas fa-exclamation-triangle"></i></span>'
         }
 
         if (layertypes.gradientcount) {
-            var gradicountbadge = '<span title="Gradient colors for the count of your search parameters for each grave are possible" class="ml-1 badge float-right badge-success badge-pill">Count &nbsp;<i class="fas fa-check"></i></span>\n'
-        } else var gradicountbadge = '<span title="There are no varying counts to be displayed as gradient colors." class="ml-1 badge float-right badge-secondary badge-pill">Count &nbsp;<i class="fas fa-exclamation-triangle"></i></span>\n'
+            var gradicountbadge = '<span title="Gradient colors for the count of your search parameters for each grave are possible" class="ms-1 badge float-end badge-success badge-pill">Count &nbsp;<i class="fas fa-check"></i></span>\n'
+        } else var gradicountbadge = '<span title="There are no varying counts to be displayed as gradient colors." class="ms-1 badge float-end badge-secondary badge-pill">Count &nbsp;<i class="fas fa-exclamation-triangle"></i></span>\n'
 
         if (layertypes.gradientcount === false && layertypes.gradientcolor === false && layertypes.gradientcolorTimespan === false) $('#choropoly').addClass('d-none')
 
         if (layertypes.charts) {
-            var chartcountbadge = '<span title="Chart markers for the count of your search parameters for each grave are possible" class="ml-1 badge float-right badge-success badge-pill"><i class="fas fa-check"></i></span>\n'
+            var chartcountbadge = '<span title="Chart markers for the count of your search parameters for each grave are possible" class="ms-1 badge float-end badge-success badge-pill"><i class="fas fa-check"></i></span>\n'
         } else {
             $('#chart').addClass('d-none');
-            var chartcountbadge = '<span title="There are no multiple counts of your search results per grave to be displayed as chart markers." class="ml-1 badge float-right badge-secondary badge-pill"><i class="fas fa-exclamation-triangle"></i></span>'
+            var chartcountbadge = '<span title="There are no multiple counts of your search results per grave to be displayed as chart markers." class="ms-1 badge float-end badge-secondary badge-pill"><i class="fas fa-exclamation-triangle"></i></span>'
         }
     }
 // multicolorNoOverlaps: true,
@@ -659,37 +658,33 @@ function openStyleDialog(layerType) {
             var styledialog = '<form id="mystyleform">\n' +
                 '<h5 class="mt-1 mb-3"> Layer options for graves </h5>' +
                 '        <div class="mystyleoptions input-group input-group-sm mb-3">\n' +
-                '            <div class="input-group-prepend">\n' +
-                '                <label class="input-group-text" for="stylecolor">Fill color: </label>\n' +
-                '            </div>\n' +
-                '            <input class="form-control" id="stylecolor" style="max-width: 70px" type="color"\n' +
+                '            <span class="input-group-text" for="stylecolor">Fill color: </span>\n' +
+                '            <input class="form-control form-control-sm" id="stylecolor" style="max-width: 70px" type="color"\n' +
                 '                   value="' + myStyle.fillColor + '">\n' +
-                '            <span class="input-group-text input-group-middle">Opacity (%): </span>\n' +
-                '            <label for="mystyleopacity"></label><input class="form-control"\n' +
+                '            <span class="input-group-text">Opacity (%): </span>\n' +
+                '            <input class="form-control form-control-sm form-range"\n' +
                 '                                                       id="mystyleopacity" type="range"\n' +
                 '                                                       value="' + (100 - (myStyle.fillOpacity * 100)) + '" min="0" max="100">\n' +
-                '            <label for="mystyleopacityvalue"></label><input class="form-control"\n' +
+                '            <input class="form-control form-control-sm"\n' +
                 '                                                            id="mystyleopacityvalue"\n' +
                 '                                                            type="number" value="10" min="0"\n' +
                 '                                                            max="100"\n' +
                 '                                                            style="max-width: 60px">\n' +
                 '        </div>\n' +
                 '        <div class="mystyleoptions input-group input-group-sm mb-3">\n' +
-                '            <div class="input-group-prepend">\n' +
-                '                <label class="input-group-text" for="stylebordercolor">Border\n' +
-                '                    color: </label>\n' +
-                '            </div>\n' +
-                '            <label for="stylecolorborder"></label><input class="form-control"\n' +
+                '            <span class="input-group-text">Border\n' +
+                '                    color: </span>\n' +
+                '            <input class="form-control form-control-sm"\n' +
                 '                                                         id="stylecolorborder"\n' +
                 '                                                         style="max-width: 70px"\n' +
                 '                                                         type="color"\n' +
                 '                                                         value="' + myStyle.color + '">\n' +
-                '            <span class="input-group-text input-group-middle">Border width: </span>\n' +
-                '            <label for="styleborderwidth"></label><input class="form-control"\n' +
+                '            <span class="input-group-text">Border width: </span>\n' +
+                '            <input class="form-control form-control-sm"\n' +
                 '                                                         id="styleborderwidth" type="number"\n' +
                 '                                                         value="' + myStyle.color + '" min="0">\n' +
                 '        </div>\n' +
-                '        <button class="btn btn-sm btn-secondary btn-sm float-right" type="button"\n' +
+                '        <button class="btn btn-sm btn-secondary btn-sm float-end" type="button"\n' +
                 '                id="applyStyle"\n' +
                 '                onclick="applyButton(\'graves\')" title="Apply">Apply\n' +
                 '        </button>\n' +
@@ -703,28 +698,22 @@ function openStyleDialog(layerType) {
             var styledialog = '<form id="mystyleform">\n' +
                 '<h5 class="mt-1 mb-3"> Single color layer options</h5>' +
                 '<div class="mysearchoptions input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
-                '</div>' +
-                '<input class="form-control legendtext" id="legendtitle" type="text" value="' + currentLegend + '">' +
+                '<span class="input-group-text">Legend title: </span>' +
+                '<input class="form-control form-control-sm legendtext" id="legendtitle" type="text" value="' + currentLegend + '">' +
                 '</div>' +
                 '</div>' +
                 '<div class="mysearchoptions input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="Searchfillcolor">Fill color: </label>' +
-                '</div>' +
-                '<input class="form-control" id="Searchfillcolor" style="max-width: 70px" type="color" value="' + searchStyle.fillColor + '">' +
-                '<span class="input-group-text input-group-middle">Opacity (%): </span>' +
-                '<input class="form-control" id="Searchmysearchopacity" type="range" value="' + (100 - ((searchStyle.fillOpacity) * 100)) + '" min="0" max="100">' +
-                '<input class="form-control" id="Searchmysearchopacityvalue" type="number" value="' + (100 - ((searchStyle.fillOpacity) * 100)) + '" min="0" max="100" style="max-width: 60px">' +
+                '<span class="input-group-text">Fill color: </span>' +
+                '<input class="form-control form-control-sm" id="Searchfillcolor" style="max-width: 70px" type="color" value="' + searchStyle.fillColor + '">' +
+                '<span class="input-group-text">Opacity (%): </span>' +
+                '<input class="form-control form-control-sm form-range" id="Searchmysearchopacity" type="range" value="' + (100 - ((searchStyle.fillOpacity) * 100)) + '" min="0" max="100">' +
+                '<input class="form-control form-control-sm" id="Searchmysearchopacityvalue" type="number" value="' + (100 - ((searchStyle.fillOpacity) * 100)) + '" min="0" max="100" style="max-width: 60px">' +
                 '</div>' +
                 '<div class="mysearchoptions input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="searchbordercolor">Border color: </label>' +
-                '</div>' +
-                '<input class="form-control" id="Searchcolorborder" style="max-width: 70px" type="color" value="' + searchStyle.color + '">' +
-                '<span class="input-group-text input-group-middle">Border width: </span>' +
-                '<input class="form-control input-group-middle" id="Searchsearchborderwidth" type="number" value="' + searchStyle.weight + '" min="0">' +
+                '<span class="input-group-text" for="searchbordercolor">Border color: </span>' +
+                '<input class="form-control form-control-sm" id="Searchcolorborder" style="max-width: 70px" type="color" value="' + searchStyle.color + '">' +
+                '<span class="input-group-text ">Border width: </span>' +
+                '<input class="form-control" id="Searchsearchborderwidth" type="number" value="' + searchStyle.weight + '" min="0">' +
                 '<span title="Radius for point result" class="pointBtn input-group-text input-group-middle">Radius: </span>' +
                 '<input title="Radius for point result" class="pointBtn form-control" id="Searchsearchpointradius" type="number" value="8" min="1">' +
                 '</div>' +
@@ -741,7 +730,7 @@ function openStyleDialog(layerType) {
                 '<i class="fas fa-clone"></i>' +
                 '</button>' +
                 '<div class="dropdown">' +
-                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
                 '<i class="far fa-save"></i>' +
                 '</button>' +
                 '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
@@ -749,7 +738,7 @@ function openStyleDialog(layerType) {
                 '<a class="dropdown-item" onclick="finishQuery(null, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
                 '</div>' +
                 '</div>' +
-                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
+                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-bs-toggle="modal" data-bs-target="#CSVmodal">' +
                 '<i class="fas fa-list"></i>' +
                 '</button>' +
                 '</form>'
@@ -824,61 +813,48 @@ function openStyleDialog(layerType) {
             var styledialog = '<form id="mystyleform">\n' +
                 '<h5 class="mt-1 mb-3"> Gradient color layer options</h5>' +
                 '<div class="myoptions input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="colorrange">Color range</label>' +
-                '</div>' +
-                '<input class="form-control" id="colorstart" style="max-width: 70px" type="color" value="' + myChorocolor[0] + '">' +
-                '<input class="form-control" id="colorend" style="max-width: 70px" type="color" value="' + myChorocolor[1] + '">' +
-                '<span class="input-group-text input-group-middle">Steps: </span>' +
-                '<input class="form-control" id="chorosteps" type="number" value="' + myChorosteps + '" min="2" max="100">' +
+                '<span class="input-group-text">Color range</span>' +
+                '<input class="form-control form-control-sm" id="colorstart" style="max-width: 70px" type="color" value="' + myChorocolor[0] + '">' +
+                '<input class="form-control form-control-sm" id="colorend" style="max-width: 70px" type="color" value="' + myChorocolor[1] + '">' +
+                '<span class="input-group-text">Steps: </span>' +
+                '<input class="form-control form-control-sm" id="chorosteps" type="number" value="' + myChorosteps + '" min="2" max="100">' +
                 '</div>' +
                 '<div class="myoptions input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
-                '</div>' +
-                '<input class="form-control legendtext" id="legendtitle" type="text" value="' + myChorolegendtitle + '">' +
+                '<span class="input-group-text">Legend title: </span>' +
+                '<input class="form-control form-control-sm legendtext" id="legendtitle" type="text" value="' + myChorolegendtitle + '">' +
                 '</div>' +
                 '<div class="myoptions input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="ChoroOpacity">Opacity (%): </label>' +
-                '</div>' +
-                '<input class="form-control" id="ChoroOpacity" type="range" value="' + myChoroopacity + '" min="0" max="100">' +
-                '<input class="form-control" id="ChoroOpacityvalue" type="number" value="' + myChoroopacity + '" min="0" max="100" style="max-width: 60px">' +
+                '<span class="input-group-text">Opacity (%): </span>' +
+                '<input class="form-control form-control-sm form-range" id="ChoroOpacity" type="range" value="' + myChoroopacity + '" min="0" max="100">' +
+                '<input class="form-control form-control-sm" id="ChoroOpacityvalue" type="number" value="' + myChoroopacity + '" min="0" max="100" style="max-width: 60px">' +
                 '</div>' +
                 '<div class="myoptions input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="bordercolor">Border color: </label>' +
-                '</div>' +
-                '<input class="form-control" id="ChoroColorborder" style="max-width: 70px" type="color" value="' + myChoroborder + '">' +
-                '<span class="input-group-text input-group-middle">Border width: </span>' +
-                '<input class="form-control" id="ChoroBorderwidth" type="number" value="' + myChoroborderwidth + '" min="0">' +
+                '<span class="input-group-text">Border color: </span>' +
+                '<input class="form-control form-control-sm" id="ChoroColorborder" style="max-width: 70px" type="color" value="' + myChoroborder + '">' +
+                '<span class="input-group-text">Border width: </span>' +
+                '<input class="form-control form-control-sm" id="ChoroBorderwidth" type="number" value="' + myChoroborderwidth + '" min="0">' +
                 '</div>' +
 
                 '<div class="myoptions input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="gradselect">Point:</label>' +
-                '</div>' +
-                '<select class="custom-select empty" id="gradselect">' +
+                '<span class="input-group-text">Point:</span>' +
+                '<select class="form-select form-select-sm empty" id="gradselect">' +
                 '<option value="0">single size</option>' +
                 '<option value="1">gradient size</option>' +
                 '</select>' +
-                '<span id="radius" class="input-group-text input-group-middle">Radius: </span>' +
-                '<input class="d-none pointBtn form-control" id="minRadius" type="number" value="' + mysearchpointminradius + '" min="1">' +
-                '<input class="input-group-addon pointBtn form-control" id="Searchsearchpointradius" type="number" value="' + mysearchpointradius + '" min="1">' +
+                '<span id="radius" class="input-group-text">Radius: </span>' +
+                '<input class="d-none pointBtn form-control form-control-sm" id="minRadius" type="number" value="' + mysearchpointminradius + '" min="1">' +
+                '<input class="input-group pointBtn form-control form-control-sm" id="Searchsearchpointradius" type="number" value="' + mysearchpointradius + '" min="1">' +
 
                 '</div>' +
                 '<div id="MethodSelect_parent" class="myoptions input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="MethodSelect">Method: </label>' +
-                '</div>' +
-                '<select class="custom-select empty" id="MethodSelect">' +
+                '<span class="input-group-text">Method: </span>' +
+                '<select class="form-select form-select-sm empty" id="MethodSelect">' +
                 '<option value="e">equidistant</option>' +
                 '<option value="q">quantile</option>' +
                 '<option value="k">k-means</option>' +
                 '</select>' +
-                '<span class="input-group-text input-group-middle">Color value: </span>' +
-                '<div class="input-group-append input-group-sm">\n' +
-                '       <select class="custom-select input-group-addon empty"\n' +
+                '<span class="input-group-text">Color value: </span>' +
+                '       <select class="form-select form-select-sm empty"\n' +
                 '                title="Select what value the color intensity is calculated from." \n' +
                 '                id="ValueSelect">\n' +
                 '            <option id="valueOption" class="d-none" title="The value associated with the search result. E.g. the depth of a grave" value="value">Value</option>\n' +
@@ -887,7 +863,6 @@ function openStyleDialog(layerType) {
                 '            <option id="middleOption" class="d-none timeOption" title="Display the average value between begin and end in gradient colors" value="middle">Middle</option>\n' +
                 '            <option id="endOption" class="d-none timeOption" title="Display the end value in gradient colors" value="end">End</option>\n' +
                 '        </select>' +
-                '</div>' +
                 '</div>' +
                 '<button id="ChoroStyleBtn" class="polyBtn btn btn-secondary btn-sm toremovebtn" title="Apply as polygon layer" type="button">' +
                 '<i class="fas fa-draw-polygon"></i>' +
@@ -902,7 +877,7 @@ function openStyleDialog(layerType) {
                 '<i class="fas fa-clone"></i>' +
                 '</button>' +
                 '<div class="dropdown">' +
-                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
                 '<i class="far fa-save"></i>' +
                 '</button>' +
                 '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
@@ -910,7 +885,7 @@ function openStyleDialog(layerType) {
                 '<a class="dropdown-item" onclick="finishQuery(null, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
                 '</div>' +
                 '</div>' +
-                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
+                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-bs-toggle="modal" data-bs-target="#CSVmodal">' +
                 '<i class="fas fa-list"></i>' +
                 '</button>' +
                 '</form>';
@@ -1041,27 +1016,21 @@ function openStyleDialog(layerType) {
             var styledialog = '<form id="mystyleform">\n' +
                 '<h5 class="mt-1 mb-3"> Multiple color layer options</h5>' +
                 '<div class="mysearchoptions input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
-                '</div>' +
-                '<input class="form-control legendtext" id="legendtitle" type="text" value="' + currentLegend + '">' +
+                '<span class="input-group-text">Legend title: </span>' +
+                '<input class="form-control form-control-sm legendtext" id="legendtitle" type="text" value="' + currentLegend + '">' +
                 '</div>' +
                 '<div class="mysearchoptions input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="searchbordercolor">Border color: </label>' +
-                '</div>' +
-                '<input class="form-control" id="Searchcolorborder" style="max-width: 70px" type="color" value="' + MultiColorSearchStyle.color + '">' +
-                '<span class="input-group-text input-group-middle">Border width: </span>' +
-                '<input class="form-control input-group-middle" id="Searchsearchborderwidth" type="number" value="' + MultiColorSearchStyle.weight + '" min="0">' +
-                '<span title="Radius for point result" class="pointBtn input-group-text input-group-middle">Radius: </span>' +
-                '<input title="Radius for point result" class="pointBtn form-control" id="Searchsearchpointradius" type="number" value="' + MultiColorSearchStyle.radius + '" min="1">' +
+                '<span class="input-group-text">Border color: </span>' +
+                '<input class="form-control form-control-sm" id="Searchcolorborder" style="max-width: 70px" type="color" value="' + MultiColorSearchStyle.color + '">' +
+                '<span class="input-group-text">Border width: </span>' +
+                '<input class="form-control form-control-sm input-group-middle" id="Searchsearchborderwidth" type="number" value="' + MultiColorSearchStyle.weight + '" min="0">' +
+                '<span title="Radius for point result" class="pointBtn input-group-text">Radius: </span>' +
+                '<input title="Radius for point result" class="pointBtn form-control form-control-sm" id="Searchsearchpointradius" type="number" value="' + MultiColorSearchStyle.radius + '" min="1">' +
                 '</div>' +
                 '<div class="mysearchoptions input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="Opacity">Opacity (%): </label>' +
-                '</div>' +
-                '<input class="form-control input-group-middle" id="Searchmysearchopacity" type="range" value="' + (100 - ((MultiColorSearchStyle.fillOpacity) * 100)) + '" min="0" max="100">' +
-                '<input class="form-control" id="Searchmysearchopacityvalue" type="number" value="' + (100 - ((MultiColorSearchStyle.fillOpacity) * 100)) + '" min="0" max="100" style="max-width: 60px">' +
+                '<span class="input-group-text">Opacity (%): </span>' +
+                '<input class="form-control form-control-sm form-range" id="Searchmysearchopacity" type="range" value="' + (100 - ((MultiColorSearchStyle.fillOpacity) * 100)) + '" min="0" max="100">' +
+                '<input class="form-control form-control-sm" id="Searchmysearchopacityvalue" type="number" value="' + (100 - ((MultiColorSearchStyle.fillOpacity) * 100)) + '" min="0" max="100" style="max-width: 60px">' +
                 '</div>' +
 
                 '<div id="mytable" class="mt-2 mb-2 border" style="line-height: 1.3em; max-height: 284px; font-size: 0.9em; overflow-y: auto; overflow-x: hidden; border-collapse: collapse;">' +
@@ -1089,7 +1058,7 @@ function openStyleDialog(layerType) {
                 '<i class="fas fa-clone"></i>' +
                 '</button>' +
                 '<div class="dropdown">' +
-                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
                 '<i class="far fa-save"></i>' +
                 '</button>' +
                 '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
@@ -1097,7 +1066,7 @@ function openStyleDialog(layerType) {
                 '<a class="dropdown-item" onclick="finishQuery(null, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
                 '</div>' +
                 '</div>' +
-                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
+                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-bs-toggle="modal" data-bs-target="#CSVmodal">' +
                 '<i class="fas fa-list"></i>' +
                 '</button>' +
                 '</form>'
@@ -1113,7 +1082,7 @@ function openStyleDialog(layerType) {
                         data: "SearchKey",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).html("<span>" + oData.SearchKey + "</span>" +
-                                "<input class='MultiColorPicker float-right' id='" + oData.SearchKey + "' style='cursor: pointer; border: none; min-width: 60px; padding: 0;' type='color' value='" + oData.FillColor + "'>");
+                                "<input class='MultiColorPicker float-end' id='" + oData.SearchKey + "' style='cursor: pointer; border: none; min-width: 60px; padding: 0;' type='color' value='" + oData.FillColor + "'>");
                         }
                     },
                     {data: 'Count'},
@@ -1184,27 +1153,21 @@ function openStyleDialog(layerType) {
             var styledialog = '<form id="mystyleform">\n' +
                 '<h5 class="mt-1 mb-3"> Chart Markers layer options</h5>' +
                 '<div class="mysearchoptions input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="legendtitle">Legend title: </label>' +
-                '</div>' +
-                '<input class="form-control legendtext" id="legendtitle" type="text" value="' + currentLegend + '">' +
+                '<span class="input-group-text">Legend title: </span>' +
+                '<input class="form-control form-control-sm legendtext" id="legendtitle" type="text" value="' + currentLegend + '">' +
                 '</div>' +
                 '<div class="mysearchoptions input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="Searchsearchbarwidth">Bar thickness: </label>' +
-                '</div>' +
-                '<input class="form-control input-group-middle" id="Searchsearchbarwidth" type="number" value="' + ChartStyle.barthickness + '" min="0">' +
-                '<span title="Radius chart marker" class="pointBtn input-group-text input-group-middle">Radius: </span>' +
-                '<input title="Radius chart marker" class="pointBtn form-control" id="Searchsearchpointradius" type="number" value="' + ChartStyle.radius + '" min="1">' +
+                '<span class="input-group-text">Bar thickness: </span>' +
+                '<input class="form-control form-control-sm" id="Searchsearchbarwidth" type="number" value="' + ChartStyle.barthickness + '" min="0">' +
+                '<span title="Radius chart marker" class="pointBtn input-group-text">Radius: </span>' +
+                '<input title="Radius chart marker" class="pointBtn form-control form-control-sm" id="Searchsearchpointradius" type="number" value="' + ChartStyle.radius + '" min="1">' +
                 '</div>' +
                 '<div class="mysearchoptions input-group input-group-sm mb-3">' +
-                '<div class="input-group-prepend">' +
-                '<label class="input-group-text" for="Opacity">Opacity (%): </label>' +
-                '</div>' +
-                '<input class="form-control input-group-middle" id="Searchmysearchopacity" type="range" value="' + (100 - ((ChartStyle.fillOpacity) * 100)) + '" min="0" max="100">' +
-                '<input class="form-control" id="Searchmysearchopacityvalue" type="number" value="' + (100 - ((ChartStyle.fillOpacity) * 100)) + '" min="0" max="100" style="max-width: 60px">' +
-                '<span class="input-group-text input-group-middle">Border width: </span>' +
-                '<input class="form-control input-group-addon" id="Searchsearchborderwidth" type="number" value="' + ChartStyle.weight + '" min="0">' +
+                '<span class="input-group-text" for="Opacity">Opacity (%): </span>' +
+                '<input class="form-control form-control-sm form-range" id="Searchmysearchopacity" type="range" value="' + (100 - ((ChartStyle.fillOpacity) * 100)) + '" min="0" max="100">' +
+                '<input class="form-control form-control-sm" id="Searchmysearchopacityvalue" type="number" value="' + (100 - ((ChartStyle.fillOpacity) * 100)) + '" min="0" max="100" style="max-width: 60px">' +
+                '<span class="input-group-text">Border width: </span>' +
+                '<input class="form-control form-control-sm" id="Searchsearchborderwidth" style="max-width: 60px" type="number" value="' + ChartStyle.weight + '" min="0">' +
                 '</div>' +
 
 
@@ -1230,7 +1193,7 @@ function openStyleDialog(layerType) {
                 '<i class="fas fa-clone"></i>' +
                 '</button>' +
                 '<div class="dropdown">' +
-                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
                 '<i class="far fa-save"></i>' +
                 '</button>' +
                 '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
@@ -1238,7 +1201,7 @@ function openStyleDialog(layerType) {
                 '<a class="dropdown-item" onclick="finishQuery(null, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
                 '</div>' +
                 '</div>' +
-                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
+                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-bs-toggle="modal" data-bs-target="#CSVmodal">' +
                 '<i class="fas fa-list"></i>' +
                 '</button>' +
                 '</form>'
@@ -1254,7 +1217,7 @@ function openStyleDialog(layerType) {
                         data: "SearchKey",
                         "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                             $(nTd).html("<span>" + oData.SearchKey + "</span>" +
-                                "<input class='MultiColorPicker float-right' id='" + oData.SearchKey + "' style='cursor: pointer; border: none; min-width: 60px; padding: 0;' type='color' value='" + oData.FillColor + "'>");
+                                "<input class='MultiColorPicker float-end' id='" + oData.SearchKey + "' style='cursor: pointer; border: none; min-width: 60px; padding: 0;' type='color' value='" + oData.FillColor + "'>");
                         }
                     },
                     {data: 'Count'},
@@ -1329,8 +1292,8 @@ function openStyleDialog(layerType) {
                 '  <div class="card card-first">\n' +
                 '    <div class="card-header" id="InfoLayername">\n' +
                 '      <h6 class="mb-0">\n' +
-                '        <a href="#" class="btn infobtns btn-link" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoOne" aria-expanded="true" aria-controls="collapseInfoOne">\n' +
-                '        <i class="fas fa-chevron-down mr-2"></i>Info\n' +
+                '        <a href="#" class="btn infobtns btn-link" onclick="this.blur()" data-bs-toggle="collapse" data-bs-target="#collapseInfoOne" aria-expanded="true" aria-controls="collapseInfoOne">\n' +
+                '        <i class="fas fa-chevron-down me-2"></i>Info\n' +
                 '        </a>\n' +
                 '      </h6>\n' +
                 '    </div>\n' +
@@ -1346,8 +1309,8 @@ function openStyleDialog(layerType) {
                 '  <div class="card card-middle">\n' +
                 '    <div class="card-header" id="headingTwo">\n' +
                 '      <h6 class="mb-0">\n' +
-                '        <a href="#" class="btn infobtns btn-link" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoTwo" aria-expanded="false" aria-controls="collapseInfoTwo">\n' +
-                '        <i class="fas fa-chevron-right mr-2"></i>Results\n' +
+                '        <a href="#" class="btn infobtns btn-link" onclick="this.blur()" data-bs-toggle="collapse" data-bs-target="#collapseInfoTwo" aria-expanded="false" aria-controls="collapseInfoTwo">\n' +
+                '        <i class="fas fa-chevron-right me-2"></i>Results\n' +
                 '        </a>\n' +
                 '      </h6>\n' +
                 '    </div>\n' +
@@ -1371,8 +1334,8 @@ function openStyleDialog(layerType) {
                 '  <div class="card card-last">\n' +
                 '    <div class="card-header" id="headingThree">\n' +
                 '      <h6 class="mb-0">\n' +
-                '        <a href="#" class="btn infobtns btn-link" onclick="this.blur()" data-toggle="collapse" data-target="#collapseInfoThree" aria-expanded="false" aria-controls="collapseInfoThree">\n' +
-                '           <i class="fas fa-chevron-right mr-2"></i>Display possibilities' +
+                '        <a href="#" class="btn infobtns btn-link" onclick="this.blur()" data-bs-toggle="collapse" data-bs-target="#collapseInfoThree" aria-expanded="false" aria-controls="collapseInfoThree">\n' +
+                '           <i class="fas fa-chevron-right me-2"></i>Display possibilities' +
                 '        </a>\n' +
                 '      </h6>\n' +
                 '    </div>\n' +
@@ -1382,7 +1345,7 @@ function openStyleDialog(layerType) {
                 '<ul class="list-group">\n' +
                 '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h6 align-items-center">\n' +
                 '    Single color\n' +
-                '    <span class="ml-1 badge float-right badge-success badge-pill"><i class="fas fa-check"></i></span>\n' +
+                '    <span class="ms-1 badge float-end badge-success badge-pill"><i class="fas fa-check"></i></span>\n' +
                 '  </li>\n' +
                 '  <li style="padding: 0.6em; font-size: 0.9em;" class="list-group-item h6 align-items-center">\n' +
                 '    <span> Multiple color </span>' + multibadge +
@@ -1404,7 +1367,7 @@ function openStyleDialog(layerType) {
                 '<i class="fas fa-clone"></i>' +
                 '</button>' +
                 '<div class="dropdown">' +
-                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                '<button class="btn btn-secondary btn-sm dropdown-toggle toremovebtn" type="button" id="dropdownMenuButtonDL" title="Download search result geodata" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
                 '<i class="far fa-save"></i>' +
                 '</button>' +
                 '<div class="dropdown-menu" aria-labelledby="dropdownMenuButtonDL">' +
@@ -1412,7 +1375,7 @@ function openStyleDialog(layerType) {
                 '<a class="dropdown-item" onclick="finishQuery(null, finalSearchResultIds, CSVresult, false, currentLayerId); exportToJsonFile(jsonresultPoints)" title="Download as GEOJson points" href="#">Points</a>' +
                 '</div>' +
                 '</div>' +
-                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-toggle="modal" data-target="#CSVmodal">' +
+                '<button class="btn btn-secondary btn-sm toremovebtn" onclick="finishQuery(\'table\', finalSearchResultIds, CSVresult, false, currentLayerId)" type="button" id="SearchShowListButton" title="Show/Export result list" data-bs-toggle="modal" data-bs-target="#CSVmodal">' +
                 '<i class="fas fa-list"></i>' +
                 '</button>' +
                 '    </form>';
@@ -1816,7 +1779,7 @@ function createLegend(containerMap, currentLayer, legendContent) {
         var currentLegendDom = document.getElementById(mapId + '_legendtitle');
 
 
-        legendOn = 'Legend <a onclick="legendToggle(\'' + mapId + '\')" class="legendToggle" data-map=' + mapId + ' title="Hide legend"><i id="' + mapId + '_toggleLeg" style="color: #eeeeee; cursor: pointer; font-size: 1.3em;" class="legendBtn ml-2 float-right far fa-check-square"></a>'
+        legendOn = 'Legend <a onclick="legendToggle(\'' + mapId + '\')" class="legendToggle" data-map=' + mapId + ' title="Hide legend"><i id="' + mapId + '_toggleLeg" style="color: #eeeeee; cursor: pointer; font-size: 1.3em;" class="legendBtn ms-2 float-end far fa-check-square"></a>'
         legendOff = '<a onclick="legendToggle(\'' + mapId + '\')" class="legendToggle" data-map=' + mapId + ' title="show legend"><i id="' + mapId + '_toggleLeg" style="color: #eeeeee; cursor: pointer; font-size: 1.3em;" class="legendBtn fas fa-list-ul"></a>'
 
         $(currentLegendDom).html(legendOn);
@@ -1845,7 +1808,7 @@ function createLegend(containerMap, currentLayer, legendContent) {
         options.name + '<a id="' + options.layername + '_toggleBtn" \n' +
         'onclick="toggleLayers(this.dataset.map, this.dataset.layer, this.dataset.show)" \n' +
         'data-show=true data-map="' + mapId + '" data-layer="' + options.layername + '"> \n' +
-        '<i id="' + options.layername + '_toggleIcon" style="cursor: pointer; font-size: 1.3em;" class="ml-2 float-right far fa-check-square"></i></a></div>';
+        '<i id="' + options.layername + '_toggleIcon" style="cursor: pointer; font-size: 1.3em;" class="ms-2 float-end far fa-check-square"></i></a></div>';
 
     var NoEntryYet = (document.getElementById(mapId + '_' + options.layername) === null);
     //console.log('No entry yet: ' +  NoEntryYet);
@@ -2206,9 +2169,9 @@ function getTypeData(id, div, hierarchy) {
             $.each(data.gazetteers, function (i, gaz) {
                 if (typeof gaz.about === "undefined") gaz.about = gaz.domain;
                 if (typeof gaz.favicon !== "undefined") {
-                gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.about + '" target="_blank"><img class="mr-2" height="20px"src="' + gaz.favicon +'">' + gaz.domain + ': ' + gaz.identifier +'</a><br>'
+                    gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.about + '" target="_blank"><img class="me-2" height="20px"src="' + gaz.favicon + '">' + gaz.domain + ': ' + gaz.identifier + '</a><br>'
                 } else {
-                gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.about + '" target="_blank">' + gaz.domain + ': ' + gaz.identifier +'</a><br>'
+                    gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.about + '" target="_blank">' + gaz.domain + ': ' + gaz.identifier + '</a><br>'
                 }
             })
             returnHtml = returnHtml + gazetteer
@@ -2227,14 +2190,14 @@ function logHTML(value, div) {
 
     div.popover({html: true, content: value, container: div.next()});
     div.popover('show');
-    var btn = '<div> <button class="closePopover btn btn-xs mb-2 mt-2 btn-secondary float-right" onclick="$(this).popover(\'dispose\')">close</button></div>'
+    var btn = '<div> <button class="closePopover btn btn-xs mb-2 mt-2 btn-secondary float-end" onclick="$(this).popover(\'dispose\')">close</button></div>'
     $(div).next().find('.popover-body').append(btn);
 }
 
 function setHierarchyPopup(value, div) {
     div.popover({html: true, content: value, container: div.parent().next(), placement: 'right',});
     div.popover('show');
-    var btn = '<div> <button class="closePopover btn btn-xs mb-2 mt-2 btn-secondary float-right" onclick="$(this).popover(\'dispose\')">close</button></div>'
+    var btn = '<div> <button class="closePopover btn btn-xs mb-2 mt-2 btn-secondary float-end" onclick="$(this).popover(\'dispose\')">close</button></div>'
     $(div).parent().next().find('.popover-body').append(btn);
 }
 
@@ -2632,11 +2595,11 @@ function set3D(file) {
         '               <model-viewer style="width: 100%; height: 80vh" src="' + file + '" alt="3d" auto-rotate camera-controls></model-viewer>' +
         '               <div class="modal-footer pt-2 pl-0 pr-0">\n' +
         '                   <div style="width: 100%">\n' +
-        '                       <button type="button" title="show metadata" class="btn btn-primary float-left ml-2" onclick="$(\'#3dmetadata\').toggleClass(\'d-none\')"><i class="fas fa-info"></i></button>\n' +
-        '                       <button type="button" class="btn btn-secondary float-right ml-2" data-dismiss="modal"><i class="fas fa-times"></i></button>\n' +
-        '                       <a type="button" href="' + file + '" class="btn btn-primary float-right"><i class="fas fa-download"></i></a>\n' +
+        '                       <button type="button" title="show metadata" class="btn btn-primary float-start ms-2" onclick="$(\'#3dmetadata\').toggleClass(\'d-none\')"><i class="fas fa-info"></i></button>\n' +
+        '                       <button type="button" class="btn btn-secondary float-end ms-2" data-bs-dismiss="modal"><i class="fas fa-times"></i></button>\n' +
+        '                       <a type="button" href="' + file + '" class="btn btn-primary float-end"><i class="fas fa-download"></i></a>\n' +
         '                   </div>' +
-        '                   <div id="3dmetadata" style="font-size: 0.875rem" class="w-100 pl-2 pr-2 pt-2 pb-0 text-muted float-left d-none"></div>\n' +
+        '                   <div id="3dmetadata" style="font-size: 0.875rem" class="w-100 pl-2 pr-2 pt-2 pb-0 text-muted float-start d-none"></div>\n' +
         '                   </div>\n' +
         '               </div>' +
         '            </div>\n' +
@@ -3308,19 +3271,19 @@ function bodyheightmodal(method) {
     $('#bodyheight').append(
         '<div class="mb-3 mt-3 text-muted">Calculation after: <a href="' + citeUrl + '" target="_blank">' + citeName + '</a></div>' +
         '<div class="mb-2 p-2 border rounded" id="chartwrapper"><canvas id="bhChart">' +
-        '</canvas><div class="text-center text-muted" id="avgLegend"><b class="mr-2">- - - - - - - -</b> Average: ' + avg + ' cm.</div></div>' +
+        '</canvas><div class="text-center text-muted" id="avgLegend"><b class="me-2">- - - - - - - -</b> Average: ' + avg + ' cm.</div></div>' +
         '<div class="input-group input-group-sm mt-2 mb-2">\n' +
         '  <div class="input-group-prepend">\n' +
         '    <label class="input-group-text" for="inputGroupSelect01">Method</label>\n' +
         '  </div>\n' +
-        '  <select class="custom-select" id="inputGroupSelect01">\n' +
+        '  <select class="form-select form-select-sm" id="inputGroupSelect01">\n' +
         '  </select>\n' +
         '</div>' +
         '<div id="accordion">\n' +
         '  <div class="card">\n' +
         '    <div class="card-header p-0" id="boneData">\n' +
         '      <span class="mb-0">\n' +
-        '        <a class="btn btn-sm btn-link" data-toggle="collapse" data-target="#bonetable" aria-expanded="true" aria-controls="bonetable">\n' +
+        '        <a class="btn btn-sm btn-link" data-bs-toggle="collapse" data-bs-target="#bonetable" aria-expanded="true" aria-controls="bonetable">\n' +
         '          Data' +
         '        </a>\n' +
         '      </span>\n' +
@@ -3331,7 +3294,7 @@ function bodyheightmodal(method) {
     )
 
     $.each(bonesToUse, function (i, bone) {
-        $('#bonetable').append('<li class="list-group-item">' + bone.name + ': ' + bone.length + ' cm. <i class="mr-2 fas fa-arrow-right"></i>calculated: ' + bone.value + ' cm. </li>')
+        $('#bonetable').append('<li class="list-group-item">' + bone.name + ': ' + bone.length + ' cm. <i class="me-2 fas fa-arrow-right"></i>calculated: ' + bone.value + ' cm. </li>')
         bhLabels.push('Estimated after: ' + bone.name);
         bhData.push(bone.value.toFixed(1));
         bhAvg.push(avg);

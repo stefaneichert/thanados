@@ -87,27 +87,27 @@ $(window).resize(function () {
 ///////////////////////////////
 
 
-
-
 function setmap(myjson) {
     greyicon = L.icon({
-      iconUrl: '/static/images/icons/marker-icon_grey.png',
-      shadowUrl: '/static/images/icons/marker-shadow.png',
-      iconAnchor: [12, 41],
-      popupAnchor: [0, -34]
+        iconUrl: '/static/images/icons/marker-icon_grey.png',
+        shadowUrl: '/static/images/icons/marker-shadow.png',
+        iconAnchor: [12, 41],
+        popupAnchor: [0, -34]
     });
     //markers for all sites
     mymarkers = L.markerClusterGroup();
     $.each(sitelist[0].sitelist, function (i, site) {
         if (site.id !== myjson.site_id) {
-        var marker = L.marker([((site.lon)), ((site.lat))], {icon: greyicon, title: site.name}).addTo(mymarkers).bindPopup('<a href="/entity/' + site.id + '" title="' + site.description + '"><b>' + site.name + '</b></a><br><br>' + site.type);
+            var marker = L.marker([((site.lon)), ((site.lat))], {
+                icon: greyicon,
+                title: site.name
+            }).addTo(mymarkers).bindPopup('<a href="/entity/' + site.id + '" title="' + site.description + '"><b>' + site.name + '</b></a><br><br>' + site.type);
         }
     })
 
     var overlays = {
         "All sites": mymarkers,
     };
-
 
 
     //set sidebar to current json
@@ -117,8 +117,8 @@ function setmap(myjson) {
         $('#accordion1').html(
             '<div title="' + myjson.properties.maintype.path + '" style="display: block; padding: 1em"><b>Type: </b>' +
             myjson.properties.maintype.name
-            + '<a class="float-right ml-2 sitepermalink" style="color: #696969" href="../entity/' + myjson.site_id + '" title="Permalink to this entity"><h6><i class="fas fa-link"></i></h6></a>' +
-            '<a title="Link to backend" class="backendlink d-none float-right" href="' + openAtlasUrl + myjson.site_id + '" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a></div>'
+            + '<a class="float-end ms-2 sitepermalink" style="color: #696969" href="../entity/' + myjson.site_id + '" title="Permalink to this entity"><h6><i class="fas fa-link"></i></h6></a>' +
+            '<a title="Link to backend" class="backendlink d-none float-end" href="' + openAtlasUrl + myjson.site_id + '" target="_blank""><i class="float-end text-secondary fas fa-database"></i></a></div>'
         );
         if (typeof (myjson.properties.timespan) !== 'undefined') {
             $('#accordion1').append(
@@ -362,12 +362,12 @@ function setmap(myjson) {
     });
     attributionChange();
 
-    Sitemarker = L.marker([myjson.properties.center.coordinates[1],myjson.properties.center.coordinates[0]]).addTo(map)
+    Sitemarker = L.marker([myjson.properties.center.coordinates[1], myjson.properties.center.coordinates[0]]).addTo(map)
     Sitemarker.setOpacity(0)
 
     map.on('zoom', function (e) {
         if (map.getZoom() > 18) {
-           Sitemarker.setOpacity(0)
+            Sitemarker.setOpacity(0)
         } else {
             if (map.getZoom() === 10) Sitemarker.setOpacity(1)
             if (map.getZoom() === 11) Sitemarker.setOpacity(0.8)
@@ -575,7 +575,7 @@ function setSidebarContent(myjson) {
             '<a grave="' + features.id + '" onclick="collapseAllOthers(' + features.id + '); ' +
             'toggleButtons(' + features.id + ', true)"' +
             ' for="collapse' + gravediv + '" class="entity sidebarheading" ' +
-            'data-toggle="collapse" aria-expanded="true"' +
+            'data-bs-toggle="collapse" aria-expanded="true"' +
             ' aria-controls="#collapse' + gravediv + '"' +
             ' data-parent="#accordion1" href="#collapse' + gravediv + '">\n' +
             '<i id="btn' + features.id + '"' +
@@ -608,7 +608,7 @@ function setSidebarContent(myjson) {
             $('#desc_' + gravediv).append(
                 '<div id="' + burialdiv + '">' +
                 '<a onclick="toggleButtons(' + burials.id + ')" for="collapse' + burialdiv + '"' +
-                ' class="entity subheading" data-toggle="collapse" aria-expanded="true"' +
+                ' class="entity subheading" data-bs-toggle="collapse" aria-expanded="true"' +
                 ' aria-controls="#collapse' + burialdiv + '" data-parent="#' + burialdiv + '"' +
                 ' href="#collapse' + burialdiv + '">' +
                 '<i id="btn' + burials.id + '"' +
@@ -635,7 +635,7 @@ function setSidebarContent(myjson) {
                 $('#desc_' + burialdiv).append(
                     '<div id="' + finddiv + '">' +
                     '<a onclick="toggleButtons(' + finds.id + ')" for="collapse' + finddiv + '" ' +
-                    'class="entity entity subheading" data-toggle="collapse" aria-expanded="true" ' +
+                    'class="entity entity subheading" data-bs-toggle="collapse" aria-expanded="true" ' +
                     'aria-controls="#collapse' + finddiv + '" data-parent="#' + finddiv + '" ' +
                     'href="#collapse' + finddiv + '">' +
                     '<i id="btn' + finds.id + '" ' +
@@ -786,12 +786,11 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     }
 
 
-
     $('#' + parentDiv).append(
         '<div class="modal-header">' +
         '<h5 class="modal-title">' +
         '<img src="' + iconpath + '" width="30" height="30" class="modaltitleicon" alt="my image">' +
-        '<a href="../entity/' + entId + '" title="Permalink to this entity" style="display: contents" class="entlink float-right ml-2">' + entName +'</a><div class="float-right mt-1" id="myModalPermalink' +
+        '<a href="../entity/' + entId + '" title="Permalink to this entity" style="display: contents" class="entlink float-end ms-2">' + entName + '</a><div class="float-end mt-1" id="myModalPermalink' +
         '' + entId + '"></div></h5>' + closebutton +
         '</div>' +
         '<div class="modal-body">' +
@@ -805,7 +804,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
         'data-value="' + typeId + '">' + entType + '</div>' +
         '<div id="myModaltimespan' + entId + '" class="modalrowitem">' + dateToInsert + '</div><span class="popover-wrapper"></span>' +
         ((RCdate) ? '<a id="rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_' + entId + '.png"  class="modalrowitem rc_button_map" title="Radiocarbon Date">14C cal: ' + entRC.sample + '</a>' : '') +
-        ((RC_child) ? '<a id="rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_sub_' + entId + '.png" class="modalrowitem rc_button_map" title="Radiocarbon Date of Subunit">14C cal subunit: '  + entRC.child_sample + '</a>' : '') +
+        ((RC_child) ? '<a id="rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_sub_' + entId + '.png" class="modalrowitem rc_button_map" title="Radiocarbon Date of Subunit">14C cal subunit: ' + entRC.child_sample + '</a>' : '') +
         ((RC_combo) ? '<a id="rc_stacked_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_stacked_' + entId + '.png"  class="modalrowitem rc_button_map" title="Mulitple Radiocarbon Dates">multiple (' + entRC.combined_children_samples.length + ') 14C dates</a>' : '') +
         '<div id="myModalDescr' + entId + '">' + entDesc + '</div>' +
         '<div class="mt-2" id="myModalImagecontainer' + entId + '"></div>' +
@@ -820,8 +819,8 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
     );
 
     $('#myModalPermalink' + entId).append(
-        //'<a href="../entity/' + entId + '" title="Permalink to this entity" class="float-right ml-2"><h6><i class="fas fa-link"></i></h6></a>' +
-        '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + entId + '" target="_blank""><i class="float-right text-secondary fas fa-database"></i></a>'
+        //'<a href="../entity/' + entId + '" title="Permalink to this entity" class="float-end ms-2"><h6><i class="fas fa-link"></i></h6></a>' +
+        '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + entId + '" target="_blank""><i class="float-end text-secondary fas fa-database"></i></a>'
     );
 
     if (dateToInsert == '') {
@@ -921,8 +920,8 @@ function setImages(entId, entfiles) {
             $('#myModalImagecontainer' + entId).empty();
 
             $('#myModalImagecontainer' + entId).append(
-                        getImageHtml(entfiles[0])
-                    )
+                getImageHtml(entfiles[0])
+            )
         }
 
 
@@ -936,27 +935,27 @@ function setImages(entId, entfiles) {
 
             //create carousel and apppend first two images
             $('#myModalImagecontainer' + entId).append(
-                '<div id="carouselExampleIndicators' + entId + '" class="cat-image-container carousel slide" data-ride="carousel" data-interval="false">' +
-                '<ol id="mymodalimageindicators' + entId + '" class="carousel-indicators">' +
-                '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="0" class="active"></li>' +
-                '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="1"></li>' +
-                '</ol>' +
-                '<div id="mycarouselimages' + entId + '" class="carousel-inner">' +
-                '<div class="carousel-item active">' +
+                '<div id="carouselExampleIndicators' + entId + '" class="carousel slide cat-image-container carousel-dark" data-bs-ride="carousel" data-bs-interval="false">' +
+                '   <div id="mymodalimageindicators' + entId + '" class="carousel-indicators">\n' +
+                '       <button type="button" data-bs-target="#carouselExampleIndicators' + entId + '" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>\n' +
+                '       <button type="button" data-bs-target="#carouselExampleIndicators' + entId + '" data-bs-slide-to="1" aria-label="Slide 2"></button>\n' +
+                '   </div>' +
+                '   <div id="mycarouselimages' + entId + '" class="carousel-inner">\n' +
+                '       <div class="carousel-item active">' +
                 getImageHtml(firstimage) +
-                '</div>' +
-                '<div class="carousel-item">' +
+                '       </div>' +
+                '       <div class="carousel-item">' +
                 getImageHtml(secondimage) +
-                '</div>' +
-                '</div>' +
-                '<a class="carousel-control-prev" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="prev">' +
-                '<span aria-hidden="true"><button onclick="this.blur()" type="button" class="btn btn-secondary"><</button></span>' +
-                '<span class="sr-only">Previous</span>' +
-                '</a>' +
-                '<a class="carousel-control-next" href="#carouselExampleIndicators' + entId + '" role="button" data-slide="next">' +
-                '<span aria-hidden="true"><button onclick="this.blur()" type="button" class="btn btn-secondary">></button></span>' +
-                '<span class="sr-only">Next</span>' +
-                '</a>' +
+                '       </div>' +
+                '   </div>' +
+                '   <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators' + entId + '" data-bs-slide="prev">\n' +
+                '       <span class="carousel-control-prev-icon" aria-hidden="true"></span>\n' +
+                '       <span class="visually-hidden">Previous</span>\n' +
+                '   </button>\n' +
+                '   <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators' + entId + '" data-bs-slide="next">\n' +
+                '       <span class="carousel-control-next-icon" aria-hidden="true"></span>\n' +
+                '       <span class="visually-hidden">Next</span>\n' +
+                '   </button>' +
                 '</div>'
             );
 
@@ -969,10 +968,23 @@ function setImages(entId, entfiles) {
                         '</div>'
                     );
                     $('#mymodalimageindicators' + entId).append(
-                        '<li data-target="#carouselExampleIndicators' + entId + '" data-slide-to="' + f + '"></li>'
+                        '<button type="button" data-bs-target="#carouselExampleIndicators' + entId + '" data-bs-slide-to="' + f + '" aria-label="Slide ' + f + '"></button>'
                     );
                 }
             });
+            $(".cat-image-container").hover(function () {
+                $(this).find("button").css("background-color", "gray");
+                $(this).find(".carousel-indicators").find("button").css("border", "solid");
+                $(this).find(".carousel-indicators").find("button").css("height", "15px");
+                $(this).find(".carousel-indicators").find("button").css("border-width", "2px");
+                $(this).find(".carousel-indicators").find("button").css("border-color", "white");
+            }, function () {
+                $(this).find("button").css("background-color", "");
+                $(this).find(".carousel-indicators").find("button").css("border", "");
+                $(this).find(".carousel-indicators").find("button").css("height", "");
+                $(this).find(".carousel-indicators").find("button").css("border-width", "");
+                $(this).find(".carousel-indicators").find("button").css("border-color", "");
+            })
         }
     }
 
@@ -1009,7 +1021,7 @@ function modalset(id) {
             // Create the Close Button (this can be a link, an image etc.)
             var link =
                 '<btn id="myModal-close" title="close" ' +
-                'class="text-decoration-none btn btn-sm btn-secondary d-inline-block float-right">' +
+                'class="text-decoration-none btn btn-sm btn-secondary d-inline-block float-end">' +
                 '<i class="fas fa-times"></i></btn>';
             // Create Close Button
             $(".ui-dialog-title").css({'width': ''});
@@ -1037,7 +1049,7 @@ function modalsetsite() {
             // Create the Close Button (this can be a link, an image etc.)
             var link =
                 '<btn id="myModal-close" title="close" ' +
-                'class="text-decoration-none float-right btn btn-sm btn-secondary d-inline-block">' +
+                'class="text-decoration-none float-end btn btn-sm btn-secondary d-inline-block">' +
                 '<i class="fas fa-times"></i></btn>';
             // Create Close Button
             $(".ui-dialog-title").css({'width': ''});
@@ -1059,14 +1071,13 @@ function addFilterSearch() {
         var div = L.DomUtil.create('div');
         div.innerHTML = '<div class="dropdown" id="sidebarclosed-menu">\n' +
             '                <button class="btn btn-secondary btn-sm mapbutton" type="button" onclick="this.blur(); startsearch()"\n' +
-            '                        id="dropdownMenuButtonMap" data-toggle="dropdown" title="Filter/Search/Visualise"\n' +
+            '                        id="dropdownMenuButtonMap" data-bs-toggle="dropdown" title="Filter/Search/Visualise"\n' +
             '                        aria-haspopup="true"\n' +
             '                        aria-expanded="false">\n' +
             '                    <i class="fas fa-search"></i>\n' +
             '                </button>\n' +
             '                <div class="dropdown-menu d-none" aria-labelledby="dropdownMenuButtonMap">\n' +
             '                    <a class="dropdown-item searchbutton" onclick="startsearch()" href="#">Filter/Search</a>\n' +
-            '                    <a class="dropdown-item visbutton" onclick="startvis(false)" href="#">Visualisations</a>\n' +
             '                </div>\n' +
             '            </div>';
         return div;
@@ -1107,5 +1118,6 @@ function getCitation() {
     mysource = mysource.replace(/(\r\n|\n|\r)/gm, "");
     $('#mycitation').empty();
     $('#mycitation').html('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');
-    $('#citeModal').modal();
+    var citemodal = new bootstrap.Modal(document.getElementById('citeModal'))
+    citemodal.show();
 }

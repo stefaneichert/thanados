@@ -40,7 +40,7 @@ $('.chart-help-btn').click(function (i) {
     $('#chartDescr').text(currentChartDescription);
     $('#chartTitle').empty();
     $('#chartTitle').text(currentChartTitle);
-    $('#chart-xl').modal();
+    $('#chart-xl').show();
 })
 
 $.each(bibfeature.properties.references, function (t, ref) {
@@ -607,7 +607,7 @@ function loadBurials() {
                 $('#burialage-chart-container').addClass('col-xl-6');
             }
             createAgeChart(DashAgeData, 'burialage-chart', 'Age at death based on age bracket classifications');
-            //$('#burialage-chart-container').append('<div class="charttitle text-center text-muted" id="avgLegend"><b class="mr-2">- - - - - - - -</b> Average age at death: ' + AgeAvg + ' years</div>')
+            //$('#burialage-chart-container').append('<div class="charttitle text-center text-muted" id="avgLegend"><b class="me-2">- - - - - - - -</b> Average age at death: ' + AgeAvg + ' years</div>')
             BuCh = true
         } else {
             $('#burialage-chart-container').remove();
@@ -624,7 +624,7 @@ function loadBurials() {
                 }
             })
             createAgeChart(ValueAgeData, 'valueage-chart', 'Age at death based on absolute age (min - max)');
-            //$('#valueage-chart-container').append('<div class="charttitle text-center text-muted" id="avgLegend"><b class="mr-2">- - - - - - - -</b> Average age at death: ' + AgeAvg + ' years</div>')
+            //$('#valueage-chart-container').append('<div class="charttitle text-center text-muted" id="avgLegend"><b class="me-2">- - - - - - - -</b> Average age at death: ' + AgeAvg + ' years</div>')
             BuCh = true
         } else {
             $('#valueage-chart-container').remove();
@@ -632,7 +632,7 @@ function loadBurials() {
 
         if (BoxPlotData.BracketData.labels.length > 0) {
             createBoxChart(BoxPlotData.BracketData, 'boxplotBracket-chart', 'Age at death based on age bracket classifications', 'Years', true);
-            //$('#valueage-chart-container').append('<div class="charttitle text-center text-muted" id="avgLegend"><b class="mr-2">- - - - - - - -</b> Average age at death: ' + AgeAvg + ' years</div>')
+            //$('#valueage-chart-container').append('<div class="charttitle text-center text-muted" id="avgLegend"><b class="me-2">- - - - - - - -</b> Average age at death: ' + AgeAvg + ' years</div>')
             BuCh = true
         } else {
             $('#boxplotBracket-chart-container').remove();
@@ -640,7 +640,7 @@ function loadBurials() {
 
         if (BoxPlotData.ValueData.labels.length > 0) {
             createBoxChart(BoxPlotData.ValueData, 'boxplot-chart', 'Age at death based on absolute age (min - max)',  'Years', true);
-            //$('#valueage-chart-container').append('<div class="charttitle text-center text-muted" id="avgLegend"><b class="mr-2">- - - - - - - -</b> Average age at death: ' + AgeAvg + ' years</div>')
+            //$('#valueage-chart-container').append('<div class="charttitle text-center text-muted" id="avgLegend"><b class="me-2">- - - - - - - -</b> Average age at death: ' + AgeAvg + ' years</div>')
             BuCh = true
         } else {
             $('#boxplot-chart-container').remove();
@@ -648,7 +648,7 @@ function loadBurials() {
 
         if (isoboxplot.labels.length > 1) {
             createBoxChart(isoboxplot, 'isoboxplot-chart', 'Delta15N vs. Sex', 'Delta15N (per mil)', false);
-            //$('#valueage-chart-container').append('<div class="charttitle text-center text-muted" id="avgLegend"><b class="mr-2">- - - - - - - -</b> Average age at death: ' + AgeAvg + ' years</div>')
+            //$('#valueage-chart-container').append('<div class="charttitle text-center text-muted" id="avgLegend"><b class="me-2">- - - - - - - -</b> Average age at death: ' + AgeAvg + ' years</div>')
             BuCh = true
         } else {
             $('#isoboxplot-chart-container').remove();

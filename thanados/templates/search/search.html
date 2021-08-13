@@ -7,24 +7,21 @@
     <link href="/static/css/style.css" rel="stylesheet">
 
     <div id="mycontent" class="pb-4">
-        <div id="mySearchCards" class="m-4 sortable row">
+        <div id="mySearchCards" class="m-4 sortable">
         </div>
-        <button id="AddSearch" class="btn btn-secondary float-right mr-4 d-none">New Search</button>
+        <button id="AddSearch" class="btn btn-secondary float-end me-4 d-none">New Search</button>
 
     </div>
     <div id="mytreeModal" title="Select category" class="d-none">
         <div>
             <div id="TreeMenu" class="input-group input-group-sm mb-3">
-                <div class="input-group-prepend">
-                    <label for="jstree_q"></label><input id="jstree_q" class="form-control form-control-sm" type="text"
+                <input id="jstree_q" class="form-control form-control-sm" type="text"
                                                          placeholder="type to search...">
-                </div>
-                <div class="input-group-append">
                     <button class="btn btn-secondary btn-sm" type="button"
                             onclick="transferNode(GlobaltargetField, GlobalNodeSelected, GlobalSelectedNodeName, Globalcriteria, GlobalappendLevel, Globaliter, 'false')"
                             id="confirmNodeBtn">Select
                     </button>
-                </div>
+
             </div>
             <div id="myTreeModalContent">
                 <form id="jstree-div">

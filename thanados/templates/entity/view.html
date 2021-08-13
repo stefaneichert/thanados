@@ -1,11 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
 
-    <script src="/static/vendor/node_modules/chart.js/dist/Chart.bundle.min.js"></script>
-    <script src="/static/vendor/node_modules/chartjs-plugin-annotation/chartjs-plugin-annotation.min.js"></script>
-{#    <script type="application/ld+json">{{ jsonld|tojson }}</script>#}
-{#    <script type="application/ld+json" src="{{ jsonld_url }}"></script>#}
-
     <div id="containerPermalink">
         <div id="mybreadcrumb"></div>
         <div id="mycontent"></div>
@@ -21,7 +16,7 @@
         <div class="modal-content">
             <div class="modal-header custom-header-bg">
                 <h5 class="modal-title" id="HeightModalLabel">Body Height Estimation</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>

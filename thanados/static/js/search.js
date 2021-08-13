@@ -50,12 +50,12 @@ function addSearch() {
         '<div id="Query' + Iter + '" class="card mb-3" style="width: 100%;">\n' +
         '<div class="card-header" id="heading' + Iter + '">\n' +
         '                <h5 class="mb-0">\n' +
-        '                    <button id="Heading' + Iter + '" class="btn btn-link text-left" type="button" data-toggle="collapse"\n' +
-        '                            data-target="#collapseQuery_' + Iter + '" aria-expanded="true"\n' +
+        '                    <button id="Heading' + Iter + '" class="btn btn-link text-left" type="button" data-bs-toggle="collapse"\n' +
+        '                            data-bs-target="#collapseQuery_' + Iter + '" aria-expanded="true"\n' +
         '                            aria-controls="collapseQuery_' + Iter + '">\n' +
         '                        Search' +
         '                    </button>\n' +
-        '    <div class="float-right">\n' +
+        '    <div class="float-end">\n' +
         '        <button id="ResetBtn' + Iter + '" class="btn btn-link myResetbutton d-none" type="button" value="' + Iter + '" class="card-link">Remove</button>\n' +
         '        <button id="RemoveBtn' + Iter + '" class="btn btn-link myRemovebutton d-none" type="button" value="' + Iter + '" class="card-link">Remove</button>\n' +
         '    </div>\n' +
@@ -66,14 +66,14 @@ function addSearch() {
         '    <div class="card-body">\n' +
         '        <div id="Form' + Iter + '" ></div>\n' +
         '        <div class="input-group mb-3 d-none">\n' +
-        '                            <textarea readonly id="SQL' + Iter + '" class="form-control" aria-label="Selected sites" placeholder="Query statement"></textarea>\n' +
+        '              <textarea readonly id="SQL' + Iter + '" class="form-control" aria-label="Selected sites" placeholder="Query statement"></textarea>\n' +
         '        </div>\n' +
         '    </div>' +
         '    </div>' +
         '    <div class="card-header" style="border-top: 1px solid rgba(0, 0, 0, 0.125); display: none" id="headingb' + Iter + '">' +
         '        <h5 class="mb-0">\n' +
-        '            <button id="Resultlist' + Iter + '" class="btn btn-link" type="button" data-toggle="collapse"\n' +
-        '                            data-target="#collapseList' + Iter + '" aria-expanded="true"\n' +
+        '            <button id="Resultlist' + Iter + '" class="btn btn-link" type="button" data-bs-toggle="collapse"\n' +
+        '                            data-bs-target="#collapseList' + Iter + '" aria-expanded="true"\n' +
         '                            aria-controls="collapseList' + Iter + '">\n' +
         '                        Results' +
         '            </button>\n' +
@@ -98,12 +98,12 @@ function addSearch() {
         '            <div class="m-1 map" id="map' + Iter + '" style="height: 100%; min-height: 500px; min-width: 300px"></div>' +
         '        </div>' +
         '      </div>' +
-        '    <div class="float-right card-body btn-toolbar">\n' +
-        '           <button value="' + Iter + '" type="button" onclick="currentBtn = this.value; getCitation()" title="how to cite this" class="mr-2 btn btn-secondary combosearchdropdown">\n' +
+        '    <div class="float-end card-body btn-toolbar">\n' +
+        '           <button value="' + Iter + '" type="button" onclick="currentBtn = this.value; getCitation()" title="how to cite this" class="me-2 btn btn-secondary combosearchdropdown">\n' +
         '                            <i class="fas fa-quote-right"></i>\n' +
         '           </button>' +
         '       <div class="dropdown">' +
-        '           <button class="btn btn-secondary dropdown-toggle combosearchdropdown" type="button" id="dropdownMenuButton' + Iter + '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+        '           <button class="btn btn-secondary dropdown-toggle combosearchdropdown" type="button" id="dropdownMenuButton' + Iter + '" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
         '               Combine search' +
         '           </button>' +
         '               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton' + Iter + '">' +
@@ -171,10 +171,8 @@ function appendSearch() {//append search form to dialog
     $('#Form' + Iter).append(
         //selection for search level: grave, burial or find
         '<div id="LevelSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">\n' +
-        '<div class="input-group-prepend">\n' +
-        '<label class="input-group-text" for="LevelSelect_' + Iter + '">1. </label>\n' +
-        '</div>\n' +
-        '<select class="custom-select empty" title="Select whether to search for cemeteries, graves, burials (=human_remains) or finds" id="LevelSelect_' + Iter + '">\n' +
+        '<span class="input-group-text">1. </span>\n' +
+        '<select class="form-select form-select-sm empty" title="Select whether to search for cemeteries, graves, burials (=human_remains) or finds" id="LevelSelect_' + Iter + '">\n' +
         '<option selected disabled>Select search level...</option>\n' +
         '<option value="burial_site">Cemeteries</option>\n' +
         '<option value="feature">Graves</option>\n' +
@@ -198,7 +196,7 @@ function appendSearch() {//append search form to dialog
         $('#Form' + Iter).append(
             //selection for property to choose: maintype, types, dimensions, material or timespan
             '<div id="PropSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">\n' +
-            '<select class="custom-select empty" id="PropSelect_' + Iter + '">\n' +
+            '<select class="form-select form-select-sm empty" id="PropSelect_' + Iter + '">\n' +
             '<option selected disabled>Select search criteria...</option>\n' +
             '<option title="Main type of ' + appendLevelName + '" value="maintype">Maintype</option>' +
             (checkAvailable(appendLevel, 'type') ? '<option title="Classifications, typology and other named types associated with ' + appendLevelName + '" value="type">Properties</option>' : '') +
@@ -229,9 +227,7 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
     if (criteria === 'maintype' || criteria === 'type') { //if maintype or type append form with tree select
         $('#Form' + Iter).append(
             '<div id="MaintypeSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">\n' +
-            '<div class="input-group-prepend">\n' +
-            '<label class="input-group-text" for="MaintypeSelect_' + Iter + '">Type </label>\n' +
-            '</div>\n' +
+            '<span class="input-group-text">Type </span>\n' +
             '<input id="MaintypeSelect_' + Iter + '" class="form-control" onclick="this.blur()" type="text" placeholder="Select type.." readonly>\n' +
             '<input id="MaintypeSelect_' + Iter + '_Result" class="form-control" onclick="this.blur()" type="text" readonly disabled>\n' +
             '</div>'
@@ -249,17 +245,13 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
 
         $('#Form' + Iter).append(
             '<div id="TimespanSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">\n' +
-            '<div class="input-group-prepend">\n' +
             '<span class="input-group-text dim-label">Timespan min: </span>\n' +
-            '</div>\n' +
             '<input title="start year (CE) of the entity\'s dating" id="valMin_' + Iter + '" class="form-control value-input" type="text">\n' +
-            '<span class="input-group-text input-group-middle">max: </span>\n' +
+            '<span class="input-group-text">max: </span>\n' +
             '<input title="end year (CE) of the entity\'s dating" id="valMax_' + Iter + '" class="form-control value-input" type="text">\n' +
-            '<div class="input-group-append">\n' +
             '<button class="btn btn-secondary btn-sm" type="button" id="timespanbutton_' + Iter + '" onclick="searchTime(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for timespan">\n' +
             'Search\n' +
             '</button>\n' +
-            '</div>\n' +
             '</div>'
         );
     }
@@ -272,7 +264,7 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
         Globaliter = Iter;
         $('#Form' + Iter).append(
             '<div id="DimensionSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">\n' +
-            '<select class="custom-select  dim-label empty" id="DimensionSelect_' + Iter + '">\n' +
+            '<select class="form-select form-select-sm dim-label empty" id="DimensionSelect_' + Iter + '">\n' +
             '<option selected disabled>Select dimension...</option>\n' +
             '<option value="15679">Height/Depth (cm)</option>\n' +
             '<option value="26189">Length (cm)</option>\n' +
@@ -288,15 +280,13 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
         $('#DimensionSelect_' + Iter).on('change', function () {
             $('#DimensionSelect_' + Iter).prop('disabled', true); //disable input
             $('#DimensionSelect_' + Iter + '_parent').append(//append input of values
-                '<span class="input-group-text input-group-middle">min: </span>\n' +
+                '<span class="input-group-text">min: </span>\n' +
                 '<input title="minumum value of the dimension to search for. Leave blank if you want to get all entities with any value of this type" id="valMin_' + Iter + '" class="form-control value-input" type="text">\n' +
-                '<span class="input-group-text input-group-middle">max: </span>\n' +
+                '<span class="input-group-text">max: </span>\n' +
                 '<input title="maximum value of the dimension to search for. Leave blank if you want to get all entities with any value of this type" id="valMax_' + Iter + '" class="form-control value-input" type="text">\n' +
-                '<div class="input-group-append">\n' +
                 '<button class="btn btn-secondary btn-sm" type="button" id="dimMatButton_' + Iter + '" onclick="searchDimMat(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for dimension">\n' +
                 'Search\n' +
-                '</button>\n' +
-                '</div>'
+                '</button>\n'
             );
             $('#SQL' + Iter).val($('#SQL' + Iter).val() + ' is "' + $('#DimensionSelect_' + Iter + ' option:selected').text() + '"');
             $("#Heading" + Iter).html($('#SQL' + Iter).val());
@@ -306,9 +296,7 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
     if (criteria === 'material' || criteria === 'value') { //if material append form with tree select
         $('#Form' + Iter).append(
             '<div id="MaterialSelect_' + Iter + '_parent" class="input-group input-group-sm mb-3">\n' +
-            '<div class="input-group-prepend">\n' +
             '<span id="MaterialSelect_' + Iter + '" class="input-group-text"></span>\n' +
-            '</div>\n' +
             '</div>'
         );
         targetField = 'MaterialSelect_' + Iter;
@@ -318,17 +306,13 @@ function appendCriteriaSearch(Iter, criteria, appendLevel) { //append respective
 
 function appendMaterial(Iter) { //append value input after material is chosen
     $('#MaterialSelect_' + Iter + '_parent').append(
-        '<span class="input-group-text input-group-middle">min: </span>\n' +
+        '<span class="input-group-text">min: </span>\n' +
         '<input title="minimum value of the criteria to search for. In case of material this can be left blank if you want to get all entities with any value of this material" id="valMin_' + Iter + '" class="form-control value-input" type="text">\n' +
-        '<div class="input-group-append">\n' +
-        '<span class="input-group-text input-group-middle">max: </span>\n' +
-        '</div>\n' +
+        '<span class="input-group-text">max: </span>\n' +
         '<input title="maximum value of the criteria to search for. In case of material this can be left blank if you want to get all entities with any value of this material" id="valMax_' + Iter + '" class="form-control value-input" type="text">\n' +
-        '<div class="input-group-append">\n' +
         '<button class="btn btn-secondary btn-sm" type="button" id="dimMatButton_' + Iter + '" onclick="searchDimMat(Globalcriteria, GlobalappendLevel, Globaliter, Globalval, Globalval2)" title="Search for selected criteria">\n' +
         'Search\n' +
-        '</button>\n' +
-        '</div>'
+        '</button>\n'
     );
 }
 
@@ -415,7 +399,7 @@ function returnQuerystring() {
     if (mylevel === 'burial_site') system_class = 'place';
     if (mylevel === 'strat') system_class = 'stratigraphic_unit';
     $('#headingb' + Iter).toggle();
-    $('#Resultlist' + Iter).html('<span class="spinner-border spinner-border-sm mr-3" role="status" aria-hidden="true"></span>...Search in progress');
+    $('#Resultlist' + Iter).html('<span class="spinner-border spinner-border-sm me-3" role="status" aria-hidden="true"></span>...Search in progress');
     $.ajax({
         type: 'POST',
         url: '/ajax/test',
@@ -594,7 +578,7 @@ function setdatatable(data, tablePosition) {
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                     if (oData.file === null) $(nTd).html("<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + Iter + ")' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.maintype + " ' target='_blank'>" + oData.name + "</a>");
                     if (oData.file !== null) $(nTd).html("<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + Iter + ")' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.maintype + " ' target='_blank'>" + oData.name + "</a>" +
-                        "<a class='btn-xs float-right' rel='popover' data-img='" + oData.file + "'><i class='fas fa-image'></i></a>"); //create links in rows
+                        "<a class='btn-xs float-end' rel='popover' data-img='" + oData.file + "'><i class='fas fa-image'></i></a>"); //create links in rows
                 }
             },
             {
@@ -640,6 +624,7 @@ function setdatatable(data, tablePosition) {
     });
     //table.draw();
     setmymap(mymarkers, heatmarkers, graveIds);
+    $('input[type="search"]').addClass('w-75');
 }
 
 function setmymap(markers, heatmarkers, graveIds) {
@@ -916,5 +901,13 @@ function getCitation() {
     mysource = Search.replace("Search", "Search result") + '.' + mycitation1.replace("After:", "");
     $('#mycitation').empty();
     $('#mycitation').html('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');
-    $('#citeModal').modal();
+    $('#backgroundgray').fadeIn(300);
+    $('#citeModal').show();
 }
+
+$('#citeModal').css('z-index', '1070')
+$('#citeModal').css('opacity', '1')
+$('#closeSiteMe').click(function () {
+    $('#citeModal').toggle();
+    $('#backgroundgray').toggle();
+})

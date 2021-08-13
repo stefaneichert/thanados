@@ -8,11 +8,11 @@
             <div class="card-header" id="headingFilter">
                 <h5 class="mb-0">
                     <button id="filterBtn" class="btn btn-link collapsed" type="button"
-                            data-toggle="collapse"
-                            data-target="#collapseFilter" aria-expanded="true"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseFilter" aria-expanded="true"
                             aria-controls="collapseFilter">
                         Filter/select sites to be visualised as charts <span id="selectedSites"></span><i id="filterBtnArrow"
-                                                                         class="ml-3 fas fa-chevron-right"></i>
+                                                                         class="ms-3 fas fa-chevron-right"></i>
                     </button>
 
                 </h5>
@@ -56,9 +56,9 @@
                                       aria-label="Selected sites"
                                       placeholder="Selected sites"></textarea>
                             <div class="input-group-append">
-                                <button id="submitBtn" class="btn btn-sm btn-secondary float-right"
-                                        data-toggle="collapse"
-                                        data-target="#collapseFilter" aria-expanded="true"
+                                <button id="submitBtn" class="btn btn-sm btn-secondary float-end"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#collapseFilter" aria-expanded="true"
                                         aria-controls="collapseFilter">
                                     (0) Apply
                                 </button>
@@ -82,8 +82,8 @@
                     <div class="card-header" id="headingOne">
                         <h5 class="mb-0">
                             <button class="btn btn-link title-btn" type="button"
-                                    data-toggle="collapse"
-                                    data-target="#collapseOne" aria-expanded="true"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseOne" aria-expanded="true"
                                     aria-controls="collapseOne">
                                 Depth of graves
                             </button>
@@ -125,8 +125,8 @@
                     <div class="card-header" id="headingDate">
                         <h5 class="mb-0">
                             <button class="btn btn-link title-btn" type="button"
-                                    data-toggle="collapse"
-                                    data-target="#collapseDate" aria-expanded="true"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseDate" aria-expanded="true"
                                     aria-controls="collapseDate">
                                 Chronology
                             </button>
@@ -168,8 +168,8 @@
                     <div class="card-header" id="headingThree">
                         <h5 class="mb-0">
                             <button class="btn btn-link title-btn" type="button"
-                                    data-toggle="collapse"
-                                    data-target="#collapseThree" aria-expanded="true"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseThree" aria-expanded="true"
                                     aria-controls="collapseThree">
                                 Sex of indiviuals
                             </button>
@@ -206,14 +206,184 @@
                     </div>
                 </div>
             </div>
+            <div class="col-xl-6 mymargin">
+                <div class="card" id="card_genderchart">
+                    <div class="card-header" id="headingThree">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseGender" aria-expanded="true"
+                                    aria-controls="collapseGender">
+                                Gender of indiviuals
+                            </button>
+                            <button id="genderchart_enlarge"
+                                    class="btn btn-sm btn-secondary fa-pull-right enlargeBtn"
+                                    title="enlarge" style="margin-left: 0.5em"
+                                    onclick="
+                                    currentTitle = ($( this ).siblings('.title-btn').text());
+                                    percScript=$('#genderchart_percentage').attr('onclick');
+                                    absScript = $('#genderchart_absolute').attr('onclick');
+                                    enlargeChart(genderconfig)">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                            <button id="genderchart_percentage"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="percentage" style="margin-left: 0.5em"
+                                    onclick="updateChart(genderchart, setChartData(gender_data, true, true, false), true)">
+                                %
+                            </button>
+                            <button id="genderchart_absolute"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="absolute"
+                                    onclick="updateChart(genderchart, setChartData(gender_data, true, false, false), false)">
+                                &Sigma;
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseGender" class="collapse show" aria-labelledby="headingThree">
+                        <div class="card-body">
+                            <div id="gender-chart-container">
+                                <canvas id="gender-chart" class="chartcontainer"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-6 mymargin">
+                <div class="card" id="card_age-chart">
+                    <div class="card-header" id="headingFour">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseAgeBr" aria-expanded="true"
+                                    aria-controls="collapseAgeBr">
+                                Age at death (age brackets)
+                            </button>
+                            <button id="card_age-chart_enlarge"
+                                    class="btn btn-sm btn-secondary fa-pull-right enlargeBtn"
+                                    title="enlarge" style="margin-left: 0.5em"
+                                    onclick="
+                                    percScript= '';
+                                    absScript = '';
+                                    currentTitle = ($( this ).siblings('.title-btn').text());
+                                    enlargeChart(ageconfig)">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                            <button id="boxplot" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="Boxplot">
+                                Boxplot
+                            </button>
+                            <button id="violin" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="Violin plot"
+                                    style="margin-right: 0.5em">
+                                Violin
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseAgeBr" class="collapse show" aria-labelledby="headingFour">
+                        <div class="card-body">
+                            <div id="age-chart-container">
+                                <canvas id="age-chart" class="chartcontainer"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-6 mymargin">
+                <div class="card" id="card_valueage-chart">
+                    <div class="card-header" id="headingFour">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseValueage" aria-expanded="true"
+                                    aria-controls="collapseValueage">
+                                Age at death (absolute age values)
+                            </button>
+                            <button id="card_valueage-chart_enlarge"
+                                    class="btn btn-sm btn-secondary fa-pull-right enlargeBtn"
+                                    title="enlarge" style="margin-left: 0.5em"
+                                    onclick="
+                                    percScript= 'valueage';
+                                    absScript = '';
+                                    currentTitle = ($( this ).siblings('.title-btn').text());
+                                    enlargeChart(valueageconfig)">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                            <button id="boxplotV" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="Boxplot">
+                                Boxplot
+                            </button>
+                            <button id="violinV" class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="Violin plot"
+                                    style="margin-right: 0.5em">
+                                Violin
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseValueage" class="collapse show" aria-labelledby="headingFour">
+                        <div class="card-body">
+                            <div id="valueage-chart-container">
+                                <canvas id="valueage-chart" class="chartcontainer"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-xl-6 mymargin">
+                <div class="card" id="card_bodyheight-chart">
+                    <div class="card-header" id="headingOne">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link title-btn" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseBodyheight" aria-expanded="true"
+                                    aria-controls="collapseBodyheight">
+                                Bodyheight of individuals
+                            </button>
+                            <button id="bodyheightchart_enlarge"
+                                    class="btn btn-sm btn-secondary fa-pull-right enlargeBtn"
+                                    title="enlarge" style="margin-left: 0.5em"
+                                    onclick="
+                                    percScript=$('#bodyheightchart_percentage').attr('onclick');
+                                    absScript = $('#bodyheightchart_absolute').attr('onclick');
+                                    currentTitle = ($( this ).siblings('.title-btn').text());
+                                    enlargeChart(bodyheightconfig)">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                            <button id="bodyheightchart_percentage"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="percentage" style="margin-left: 0.5em"
+                                    onclick="updateChart(bodyheightchart, setChartData(bodyheight_data, false, true, true), true)">
+                                %
+                            </button>
+                            <button id="bodyheightchart_absolute"
+                                    class="btn btn-sm btn-secondary fa-pull-right"
+                                    title="absolute"
+                                    onclick="updateChart(bodyheightchart, setChartData(bodyheight_data, false, false, true), false)">
+                                &Sigma;
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseBodyheight" class="collapse show" aria-labelledby="headingOne">
+                        <div class="card-body">
+                            <div id="bodyheight-chart-container">
+                                <canvas id="bodyheight-chart" class="chartcontainer"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="col-xl-6 mymargin mymargin">
                 <div class="card" id="card_orientationchart">
                     <div class="card-header" id="headingTwo">
                         <h5 class="mb-0">
                             <button class="btn btn-link title-btn" type="button"
-                                    data-toggle="collapse"
-                                    data-target="#collapseTwo" aria-expanded="true"
-                                    aria-controls="collapseTwo">
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseOri" aria-expanded="true"
+                                    aria-controls="collapseOri">
                                 Orientation of skeletons
                             </button>
                             <button id="orientationchart_enlarge"
@@ -240,7 +410,7 @@
                             </button>
                         </h5>
                     </div>
-                    <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">
+                    <div id="collapseOri" class="collapse show" aria-labelledby="headingTwo">
                         <div class="card-body">
                             <div id="orientation-chart-container">
                                 <canvas id="orientation-chart" class="chartcontainer"></canvas>
@@ -254,8 +424,8 @@
                     <div class="card-header" id="headingTwo">
                         <h5 class="mb-0">
                             <button class="btn btn-link title-btn" type="button"
-                                    data-toggle="collapse"
-                                    data-target="#collapseAzi" aria-expanded="true"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseAzi" aria-expanded="true"
                                     aria-controls="collapseAzi">
                                 Azimuth of gravepits
                             </button>
@@ -294,55 +464,15 @@
                 </div>
             </div>
 
-            <div class="col-xl-6 mymargin">
-                <div class="card" id="card_age-chart">
-                    <div class="card-header" id="headingFour">
-                        <h5 class="mb-0">
-                            <button class="btn btn-link title-btn" type="button"
-                                    data-toggle="collapse"
-                                    data-target="#collapseFour" aria-expanded="true"
-                                    aria-controls="collapseFour">
-                                Age at death
-                            </button>
-                            <button id="card_age-chart_enlarge"
-                                    class="btn btn-sm btn-secondary fa-pull-right enlargeBtn"
-                                    title="enlarge" style="margin-left: 0.5em"
-                                    onclick="
-                                    percScript= '';
-                                    absScript = '';
-                                    currentTitle = ($( this ).siblings('.title-btn').text());
-                                    enlargeChart(ageconfig)">
-                                <i class="fas fa-expand-alt"></i>
-                            </button>
-                            <button id="boxplot" class="btn btn-sm btn-secondary fa-pull-right"
-                                    title="Boxplot">
-                                Boxplot
-                            </button>
-                            <button id="violin" class="btn btn-sm btn-secondary fa-pull-right"
-                                    title="Violin plot"
-                                    style="margin-right: 0.5em">
-                                Violin
-                            </button>
-                        </h5>
-                    </div>
-                    <div id="collapseFour" class="collapse show" aria-labelledby="headingFour">
-                        <div class="card-body">
-                            <div id="age-chart-container">
-                                <canvas id="age-chart" class="chartcontainer"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <div class="col-xl-6 mymargin">
                 <div class="card" id="card_gravetypes">
                     <div class="card-header" id="headingFive">
                         <h5 class="mb-0">
                             <button class="btn btn-link title-btn" type="button"
-                                    data-toggle="collapse"
-                                    data-target="#collapseFive" aria-expanded="true"
-                                    aria-controls="collapseFive">
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseGravetypes" aria-expanded="true"
+                                    aria-controls="collapseGravetypes">
                                 Types of graves
                             </button>
                             <button id="gravetypes-chart_enlarge"
@@ -369,7 +499,7 @@
                             </button>
                         </h5>
                     </div>
-                    <div id="collapseFive" class="collapse show" aria-labelledby="headingFive">
+                    <div id="collapseGravetypes" class="collapse show" aria-labelledby="headingFive">
                         <div class="card-body">
                             <div id="gravetypes-chart-container">
                                 <canvas id="gravetypes-chart" class="chartcontainer"></canvas>
@@ -383,8 +513,8 @@
                     <div class="card-header" id="headingSix">
                         <h5 class="mb-0">
                             <button class="btn btn-link title-btn" type="button"
-                                    data-toggle="collapse"
-                                    data-target="#collapseSix" aria-expanded="true"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseSix" aria-expanded="true"
                                     aria-controls="collapseSix">
                                 Grave Construction
                             </button>
@@ -427,8 +557,8 @@
                     <div class="card-header" id="headingSeven">
                         <h5 class="mb-0">
                             <button class="btn btn-link title-btn" type="button"
-                                    data-toggle="collapse"
-                                    data-target="#collapseSeven" aria-expanded="true"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseSeven" aria-expanded="true"
                                     aria-controls="collapseSeven">
                                 Types of finds
                             </button>
@@ -470,8 +600,8 @@
                     <div class="card-header" id="headingEight">
                         <h5 class="mb-0">
                             <button class="btn btn-link title-btn" type="button"
-                                    data-toggle="collapse"
-                                    data-target="#collapseEight" aria-expanded="true"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseEight" aria-expanded="true"
                                     aria-controls="collapseEight">
                                 Burial types
                             </button>
@@ -509,14 +639,14 @@
                 </div>
             </div>
         </div>
-        <div id="chart-xl" class="modal modal-xxl" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
+        <div id="chart-xl" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-fullscreen" role="document">
                 <div class="modal-content">
                     <div class="modal-header custom-header-bg">
                         <h5 class="modal-title">Chart</h5>
 
                         <button id="absBtn"
-                                class="mr-2 absBtn btn btn-sm btn-secondary fa-pull-right"
+                                class="me-2 absBtn btn btn-sm btn-secondary fa-pull-right"
                                 title="absolute">
                             &Sigma;
                         </button>
@@ -527,7 +657,7 @@
                             %
                         </button>
 
-                        <button class="mr-2  boxBtn btn btn-sm btn-secondary fa-pull-right"
+                        <button class="me-2  boxBtn btn btn-sm btn-secondary fa-pull-right"
                                 title="Violin plot"
                                 style="margin-right: 0.5em"
                                 onclick="change('violin', 'bigchart', 'bigchart-container', ageconfig);">
@@ -540,18 +670,32 @@
                             Boxplot
                         </button>
 
-                        <button class="mr-2  chronBtn btn btn-sm btn-secondary fa-pull-right"
+                        <button class="me-2  boxBtnV btn btn-sm btn-secondary fa-pull-right"
+                                title="Violin plot"
+                                style="margin-right: 0.5em"
+                                onclick="change('violin', 'bigchart', 'bigchart-container', valueageconfig);">
+                            Violin
+                        </button>
+
+                        <button class="boxBtnV btn btn-sm btn-secondary fa-pull-right"
+                                title="Boxplot"
+                                onclick="change('boxplot', 'bigchart', 'bigchart-container', valueageconfig);">
+                            Boxplot
+                        </button>
+
+
+                        <button class="me-2  chronBtn btn btn-sm btn-secondary fa-pull-right"
                                 title="Switch between begin and end dates for sorting"
                                     onclick="bigDatechart = true; setChronVars()">
                                 <i class="fas fa-sort"></i>
                         </button>
-                        <button class="mr-2  chronBtn btn btn-sm btn-secondary fa-pull-right"
+                        <button class="me-2  chronBtn btn btn-sm btn-secondary fa-pull-right"
                                 title="Switch between left-right and right-left order"
                                     onclick="bigDatechart = true; setChronDir()">
                                 <i style="transform: rotate(90deg)" class="fas fa-sort"></i>
                         </button>
 
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="ms-2 btn btn-sm btn-secondary" onclick="$('#chart-xl').toggle(); $('#back-to-top').removeClass('d-none');" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -564,7 +708,7 @@
                         <button type="button" onclick="getCitation()" title="how to cite this" class="btn btn-secondary">
                             <i class="fas fa-quote-right"></i>
                         </button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                        <button type="button" class="btn btn-secondary" onclick="$('#chart-xl').toggle(); $('#back-to-top').removeClass('d-none');">Close
                         </button>
                     </div>
                 </div>
@@ -573,8 +717,11 @@
     </div>
     <script>
         depth_data = {{ depth_data|tojson }};
+        bodyheight_data = {{ bodyheight_data|tojson }};
         sex_data = {{ sex_data|tojson }};
+        gender_data = {{ gender_data|tojson }};
         age_data = {{ age|tojson }};
+        valueage_data = {{ valueage|tojson }};
         orientation_data = {{ orientation_data|tojson }};
         azimuth_data = {{ azimuth_data|tojson }};
         gravetypes = {{ gravetypes_json|tojson }};
@@ -584,8 +731,8 @@
         burialtypes = {{ burial_types|tojson }};
         sitelist = {{ sitelist|tojson }};
     </script>
-    <script src="/static/vendor/node_modules/chart.js/dist/Chart.bundle.min.js"></script>
-    <script src="/static/vendor/node_modules/chartjs-chart-box-and-violin-plot/build/Chart.BoxPlot.min.js"></script>
+    <script src="/static/vendor/node_modules/chart.js/dist/Chart.min.js"></script>
+    <script src="/static/vendor/node_modules/@sgratzl/chartjs-chart-boxplot/build/Chart.BoxPlot.min.js"></script>
     <script src="/static/vendor/node_modules/chartjs-plugin-colorschemes/dist/chartjs-plugin-colorschemes.min.js"></script>
     <script src="/static/js/charts.js"></script>
 {% endblock %}

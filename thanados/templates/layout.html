@@ -8,14 +8,16 @@
 
     <link rel="icon" href="/static/favicon.ico">
     <link href="/static/vendor/node_modules/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
-    <link href="/static/vendor/node_modules/leaflet/dist/leaflet.css" rel="stylesheet"/>
-    <script src="/static/vendor/node_modules/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="/static/vendor/node_modules/leaflet-dvf/dist/css/dvf.css">
+    <link href="/static/vendor/node_modules/leaflet{{ leafletVersion }}/dist/leaflet.css" rel="stylesheet"/>
+    <script src="/static/vendor/node_modules/leaflet{{ leafletVersion }}/dist/leaflet.js"></script>
+    <script src="/static/vendor/node_modules/leaflet-dvf/dist/leaflet-dvf.markers.js"></script>
     <script src="/static/vendor/node_modules/leaflet-providers/leaflet-providers.js"></script>
     <script src="/static/vendor/node_modules/jquery/dist/jquery.min.js"></script>
     <script src="/static/vendor/node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
     <link href="/static/vendor/node_modules/jquery-ui-dist/jquery-ui.min.css" rel="stylesheet">
     <script src="/static/vendor/node_modules/jquery-ui-dist/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="/static/vendor/node_modules/leaflet-dvf/dist/css/dvf.css">
+
     <link href="/static/css/style.css" rel="stylesheet">
     <link href="/static/vendor/node_modules/@fortawesome/fontawesome-free/css/all.css"
           rel="stylesheet">
@@ -35,13 +37,13 @@
           href="/static/vendor/node_modules/leaflet-easybutton/src/easy-button.css">
     <script src="/static/vendor/node_modules/leaflet-easybutton/src/easy-button.js"></script>
     <script src="/static/vendor/node_modules/wicket/wicket.js"></script>
-    <link href="/static/vendor/node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css"
+    <link href="/static/vendor/node_modules/datatables.net-bs5/css/dataTables.bootstrap5.css"
           rel="stylesheet">
     <script src="/static/vendor/node_modules/datatables.net/js/jquery.dataTables.js"></script>
-    <script src="/static/vendor/node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script src="/static/vendor/node_modules/datatables.net-bs5/js/dataTables.bootstrap5.js"></script>
     <script src="/static/js/globalfunctions.js"></script>
     <script src="/static/vendor/node_modules/chroma-js/chroma.min.js"></script>
-    <script src="/static/vendor/node_modules/leaflet-dvf/dist/leaflet-dvf.markers.js"></script>
+
     <link href="/static/vendor/node_modules/leaflet.markercluster/dist/MarkerCluster.css"
           rel="stylesheet">
     <link href="/static/vendor/node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css"
@@ -52,9 +54,9 @@
     <script src="/static/vendor/node_modules/leaflet.heat/dist/leaflet-heat.js"></script>
     <script src="/static/vendor/node_modules/leaflet.fullscreen/Control.FullScreen.js"></script>
     <script src="/static/vendor/node_modules/shave/dist/jquery.shave.min.js"></script>
-{#    <script src="/static/vendor/L.TileLayer.NoGap.js"></script>#}
+    {#    <script src="/static/vendor/L.TileLayer.NoGap.js"></script>#}
     <link href="/static/css/datatables.css" rel="stylesheet">
-{#    <link rel="stylesheet" href="/static/vendor/node_modules/leaflet-loading/src/Control.Loading.css"/>#}
+    {#    <link rel="stylesheet" href="/static/vendor/node_modules/leaflet-loading/src/Control.Loading.css"/>#}
     <script src="/static/vendor/node_modules/leaflet-loading/src/Control.Loading.js"></script>
     <script type="module"
             src="/static/vendor/node_modules/@google/model-viewer/dist/model-viewer.min.js">
@@ -67,19 +69,21 @@
 
 </head>
 <body>
-
+<div id="backgroundgray"></div>
 <nav id="mynavbar" class="navbar navbar-expand-md navbar-dark bg-dark fixed-top" role="navigation">
     <div class="container-fluid" style="padding-left: 0">
-        <a class="navbar-brand" href="/">
-            <img id="nav-logo" src="/static/images/icons/logo.png" height="30" alt="" title="Home">
+        <a class="navbar-brand ms-2" href="/">
+            <img id="nav-logo" src="/static/images/icons/logo_big.png" height="30" alt=""
+                 title="Home">
         </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
-                aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault"
+                aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-            <ul class="navbar-nav mr-auto">
-                {#% if current_user.is_authenticated %#}
+            <ul class="navbar-nav ms-2">
                 <li class="nav-item">
                     <a id="nav-sites" class="nav-link" href="{{ url_for('sites') }}">Sites</a>
                 </li>
@@ -100,18 +104,6 @@
                             title="Help/Manual"
                             class="fas fa-question"></i></a>
                 </li>
-                <!-- <li class="nav-item">
-                     <a class="nav-link" href="/logout">Logout</a>
-                 </li>-->
-                {#% else %#}
-                <!--<li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('about') }}">About</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/login">Login</a>
-                </li>-->
-                {#% endif %#}
-
             </ul>
         </div>
     </div>
@@ -156,14 +148,14 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="citeModal" tabindex="-1" role="dialog"
+<div class="modal fade" id="citeModal" tabindex="-1"
      aria-labelledby="How to cite this" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header custom-header-bg">
                 <h5 class="modal-title" id="citeModalLabel">How to cite this:</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                <button id="closeSiteMe" type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body" id="mycitation">
