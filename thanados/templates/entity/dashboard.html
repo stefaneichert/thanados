@@ -136,8 +136,8 @@
                             <canvas class="chartcontainer" id="gravegoods-chart"></canvas>
                         </div>
                         <div id="bubblecard" class="mb-4 col-xl-6">
-                            <i title="Detailed info" style="top: 0;" class="fas fa-info chart-help-btn"></i>
-                            <div class="row"><span class="mx-auto charttitle">Find distribution</span></div>
+                            <i title="Detailed info" class="fas fa-info chart-help-btn"></i>
+                            <div class="row"><span class="mt-2 ms-5 charttitle">Find distribution</span></div>
                             <div class="chartcontainer overflow-auto text-center">
                                 <svg id="bubble" class="row mx-auto"></svg>
                             </div>
@@ -167,7 +167,7 @@
                     Loading network
                     </span>
                 <a href="/entity/{{ place_id }}/network" style="position: absolute; margin: 1em!important; z-index: 5000" class="btn btn-sm btn-secondary ms-4" title="Detailed network with legend"><i class="fas fa-project-diagram"></i></a>
-                <div id="network" class="card-body p-0">
+                <div id="network" class="card-body p-0" style="max-height: 70vh">
                 </div>
             </div>
         </div>
@@ -281,8 +281,8 @@
                         </div>
 
                         <div id="pathocard" class="mb-4 col-xl-6">
-                            <i title="Detailed info" style="top: 0;" class="fas fa-info chart-help-btn"></i>
-                            <div class="row"><span class="mx-auto charttitle">Pathologies</span></div>
+                            <i title="Detailed info" style="padding-top: 2px; padding-left: 11px" class="mt-2 ms-3 fas fa-info chart-help-btn" style="padding-top: 3px!important"></i>
+                            <div class="row"><span class="mt-2 ms-5 charttitle">Pathologies</span></div>
                             <div class="chartcontainer overflow-auto text-center">
                                 <svg id="pathology" class="row mx-auto"></svg>
                             </div>
@@ -302,8 +302,8 @@
                     <div class="row">
 
                         <div id="bubblecardFinds" class="mb-4 col-xl-6">
-                            <i title="Detailed info" style="top: 0;" class="fas fa-info chart-help-btn"></i>
-                            <div class="row"><span class="mx-auto charttitle">Find distribution</span></div>
+                            <i title="Detailed info" class="mt-2 ms-3 fas fa-info chart-help-btn"></i>
+                            <div class="row"><span class="mt-2 ms-5 charttitle">Find distribution</span></div>
                             <div class="chartcontainer overflow-auto text-center">
                                 <svg id="bubbleFinds" class="row mx-auto"></svg>
                             </div>
@@ -369,7 +369,7 @@
                 <div class="modal-header custom-header-bg">
                     <h5 id="chartTitle" class="modal-title"></h5>
 
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="$('#chart-xl').toggle();" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -377,7 +377,7 @@
                     body
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                    <button type="button" class="btn btn-secondary" onclick="$('#chart-xl').toggle();">Close
                     </button>
                 </div>
             </div>

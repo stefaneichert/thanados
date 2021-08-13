@@ -353,13 +353,12 @@ text {
 }
 
 .chart-help-btn {
-    float: right;
     font-size: 0.875em;
     cursor: pointer;
     position: absolute;
-    right: 20px;
-    top: 7px;
     color: #a4b1bc;
+    margin-left: 2rem;
+    padding-top: 8px;
 }
 
 .chart-help-btn:hover {

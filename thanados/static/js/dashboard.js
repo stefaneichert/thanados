@@ -40,7 +40,7 @@ $('.chart-help-btn').click(function (i) {
     $('#chartDescr').text(currentChartDescription);
     $('#chartTitle').empty();
     $('#chartTitle').text(currentChartTitle);
-    $('#chart-xl').modal();
+    $('#chart-xl').show();
 })
 
 $.each(bibfeature.properties.references, function (t, ref) {
