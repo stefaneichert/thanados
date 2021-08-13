@@ -234,5 +234,7 @@ $(document).ready(function () {
         if (resultLenght.length > 0) map.fitBounds(mymarkers.getBounds());
     });
     map.invalidateSize();
+
+    $('input[type="search"]').addClass('w-75')
 })
 ;

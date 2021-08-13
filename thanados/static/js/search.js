@@ -624,6 +624,7 @@ function setdatatable(data, tablePosition) {
     });
     //table.draw();
     setmymap(mymarkers, heatmarkers, graveIds);
+    $('input[type="search"]').addClass('w-75');
 }
 
 function setmymap(markers, heatmarkers, graveIds) {
@@ -900,5 +901,13 @@ function getCitation() {
     mysource = Search.replace("Search", "Search result") + '.' + mycitation1.replace("After:", "");
     $('#mycitation').empty();
     $('#mycitation').html('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');
-    $('#citeModal').modal();
+    $('#backgroundgray').fadeIn(300);
+    $('#citeModal').show();
 }
+
+$('#citeModal').css('z-index', '1070')
+$('#citeModal').css('opacity', '1')
+$('#closeSiteMe').click(function () {
+    $('#citeModal').toggle();
+    $('#backgroundgray').toggle();
+})

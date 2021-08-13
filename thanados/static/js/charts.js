@@ -1031,7 +1031,7 @@ function getCitation() {
     mysource = mysource.replace(/(\r\n|\n|\r)/gm, "");
     $('#mycitation').empty();
     $('#mycitation').html('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');
-    $('#backgroundgray').toggle();
+    $('#backgroundgray').fadeIn(300);
     $('#citeModal').show();
 }
 

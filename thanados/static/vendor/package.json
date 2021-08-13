@@ -30,7 +30,7 @@
     "leaflet.fullscreen": "^2.0.0",
     "leaflet.heat": "^0.2.0",
     "leaflet.markercluster": "^1.5.0",
-    "leaflet1.5": "npm:leaflet@^1.5.0",
+    "leaflet1.4": "npm:leaflet@^1.4.0",
     "shave": "^2.5.10",
     "vanilla-lazyload": "^17.4.0",
     "vis-network": "^8.3.1",
