@@ -1138,7 +1138,8 @@ input {
 }
 
 #ImgOne {
-    margin: 0.8rem
+    margin: 0.8rem;
+    text-align: center;
 }
 
 

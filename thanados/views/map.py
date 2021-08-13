@@ -38,4 +38,5 @@ def map(object_id: int):
                            object_id=object_id,
                            typesjson=types[0].types,
                            availables=availabletypes,
-                           site_list=site_list)
+                           site_list=site_list,
+                           leafletVersion="1.5")
