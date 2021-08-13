@@ -1415,3 +1415,7 @@ input {
     outline: 0;
     box-shadow: none;
 }
+
+.media-col {
+    max-width: 250px;
+}

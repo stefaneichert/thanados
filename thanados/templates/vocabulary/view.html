@@ -271,7 +271,7 @@
                         {% endif %}
                     <div class="row">
                         {% for row in data.gazetteers %}
-                            <div class="col-sm-6 col-lg-4 mb-4">
+                            <div class="col-sm-6 col-lg-4 mb-4 media-col">
                                 <div class="card text-center">
 
                                     <div class="card-header">
@@ -323,7 +323,7 @@
                             <div class="tab-pane active" id="images">
                                 <div class="row">
                                     {% for row in data.files %}
-                                        <div class="col-sm-6 col-lg-4 mb-4">
+                                        <div class="col-sm-6 col-lg-4 mb-4 media-col">
                                             <div class="card">
                                                 {% if ".glb" in row.file_name %}
                                                     <model-viewer class="img-fluid card-img-bottom"
@@ -366,7 +366,7 @@
                             <div class="tab-pane" id="images">
                                 <div class="row">
                                     {% for row in data.files %}
-                                        <div class="col-sm-6 col-lg-4 mb-4">
+                                        <div class="col-sm-6 col-lg-4 mb-4 media-col">
                                             <div class="card">
                                                 {% if ".glb" in row.file_name %}
                                                     <model-viewer class="img-fluid card-img-bottom"
