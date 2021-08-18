@@ -2361,7 +2361,7 @@ function highlightbones(svg_label) {
 function createFeatureCollection(ids) {
     $.ajax({
         type: 'POST',
-        url: '/ajax/featureCollection',
+        url: '/ajax/feature_collection',
         data: {
             'ids': ids
         },
