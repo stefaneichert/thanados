@@ -175,6 +175,14 @@ if (data.entities_recursive) {
             MultAttributionChange(map, '#map', attrib)
         });
         $('#occurence').append(occCount);
+        map.on('overlayadd', function (e) {
+            if (e.name === 'Incl. Subcategories') {
+                map.fitBounds(entPointsRec.getBounds())
+            } else {
+                map.fitBounds(entPoints.getBounds())
+            }
+            ;
+        });
 
 
     }
