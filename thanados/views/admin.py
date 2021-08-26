@@ -2869,100 +2869,135 @@ def timeclean_execute():  # pragma: no cover
     if current_user.group not in ['admin']:
         abort(403)
 
-    sql_6 = """
-    --cleanup for timespans
-UPDATE model.entity SET begin_to = begin_from WHERE begin_to IS NULL AND begin_from IS NOT NULL;
-UPDATE model.entity SET end_to = end_from WHERE end_to IS NULL AND end_from IS NOT NULL;
+    import os
+    from PIL import Image, ImageStat, ImageChops
+    import numpy as np
 
-DROP TABLE IF EXISTS thanados.idpath;
-CREATE TABLE thanados.idpath AS
-(SELECT
-	s.child_id AS site_id,
-	m1.begin_from AS site_begin_from,
-	m1.begin_to AS site_begin_to,
-	m1.end_from AS site_end_from,
-	m1.end_to AS site_end_to,
-	g.child_id AS grave_id,
-	m2.begin_from AS grave_begin_from,
-	m2.begin_to AS grave_begin_to,
-	m2.end_from AS grave_end_from,
-	m2.end_to AS grave_end_to,
-	b.child_id AS burial_id,
-	m3.begin_from AS burial_begin_from,
-	m3.begin_to AS burial_begin_to,
-	m3.end_from AS burial_end_from,
-	m3.end_to AS burial_end_to,
-	f.child_id AS find_id,
-	m4.begin_from AS find_begin_from,
-	m4.begin_to AS find_begin_to,
-	m4.end_from AS find_end_from,
-	m4.end_to AS find_end_to
+    def detect_color_image(file, thumb_size=40, MSE_cutoff=22,
+                           adjust_color_bias=True):
+        pil_img = Image.open(file)
+        bands = pil_img.getbands()
+        if bands == ('R', 'G', 'B') or bands == ('R', 'G', 'B', 'A'):
+            thumb = pil_img.resize((thumb_size, thumb_size))
+            SSE, bias = 0, [0, 0, 0]
+            if adjust_color_bias:
+                bias = ImageStat.Stat(thumb).mean[:3]
+                bias = [b - sum(bias) / 3 for b in bias]
+            for pixel in thumb.getdata():
+                mu = sum(pixel) / 3
+                SSE += sum(
+                    (pixel[i] - mu - bias[i]) * (pixel[i] - mu - bias[i]) for i
+                    in [0, 1, 2])
+            MSE = float(SSE) / (thumb_size * thumb_size)
+            if MSE <= MSE_cutoff:
+                print ("grayscale")
+            else:
+                print ("Color")
+            print("( MSE=", MSE, ")")
+        elif len(bands) == 1:
+            print("Black and white", bands)
+        else:
+            print ("Don't know...", bands)
 
-FROM thanados.sites s LEFT JOIN model.entity m1 on s.child_id = m1.id
-	LEFT JOIN thanados.graves g ON s.child_id = g.parent_id LEFT JOIN model.entity m2 on g.child_id = m2.id
-	LEFT JOIN thanados.burials b ON g.child_id = b.parent_id LEFT JOIN model.entity m3 on b.child_id = m3.id
-	LEFT JOIN thanados.finds f ON b.child_id = f.parent_id LEFT JOIN model.entity m4 on f.child_id = m4.id );
+    filesthere = 1
+    print('Cropping files')
+    sql = """
+                SELECT DISTINCT 
+                REPLACE(filename, '/static/images/entities/', '') as file
+                FROM thanados.files WHERE filename != '' 
+                                AND license IS NOT NULL 
+                                AND id NOT IN
+                                (SELECT image_id FROM web.map_overlay)
+                                ORDER BY file"""
+    g.cursor.execute(sql)
+    result = g.cursor.fetchall()
+    filestotal = len(result)
+    filesfailed = 0
+    failedlist = []
+    for row in result:
 
--- remove contradictory timespans (subuits older than begin of super unit respectively later end than super unit)
-UPDATE thanados.idpath SET grave_begin_from = site_begin_from WHERE grave_begin_from < site_begin_from;
-UPDATE thanados.idpath SET grave_begin_to = grave_begin_from WHERE grave_begin_to < grave_begin_from;
-UPDATE thanados.idpath SET grave_end_to = site_end_to WHERE grave_end_to > site_end_to;
-UPDATE thanados.idpath SET grave_end_from = grave_end_to WHERE grave_end_from > grave_end_to;
-UPDATE thanados.idpath SET burial_begin_from = grave_begin_from WHERE burial_begin_from < grave_begin_from;
-UPDATE thanados.idpath SET burial_begin_to = burial_begin_from WHERE burial_begin_to < burial_begin_from;
-UPDATE thanados.idpath SET burial_end_to = grave_end_to WHERE burial_end_to > grave_end_to;
-UPDATE thanados.idpath SET burial_end_from = burial_end_to WHERE burial_end_from > burial_end_to;
+        current_image = 'thanados' + app.config[
+            "WEB_FOLDER_PATH"] + '/' + row.file
 
--- finds are left because their timespan does not concern their deposition but their production/lifecicle
-/*
-UPDATE thanados.idpath SET find_begin_from = burial_begin_from WHERE find_begin_from < burial_begin_from;
-UPDATE thanados.idpath SET find_begin_to = find_begin_from WHERE find_begin_to < find_begin_from;
-UPDATE thanados.idpath SET find_end_to = burial_end_to WHERE find_end_to > burial_end_to;
-UPDATE thanados.idpath SET find_end_from = find_end_to WHERE find_end_from > find_end_to;
-*/
-
--- remove contradictory timespans (subunits whith other timespan than super units)
-/*
-UPDATE thanados.idpath SET grave_begin_from = site_begin_from;
-UPDATE thanados.idpath SET grave_begin_to = grave_begin_from;
-UPDATE thanados.idpath SET grave_end_to = site_end_to;
-UPDATE thanados.idpath SET grave_end_from = grave_end_to;
-UPDATE thanados.idpath SET burial_begin_from = grave_begin_from;
-UPDATE thanados.idpath SET burial_begin_to = burial_begin_from;
-UPDATE thanados.idpath SET burial_end_to = grave_end_to;
-UPDATE thanados.idpath SET burial_end_from = burial_end_to;
-UPDATE thanados.idpath SET find_begin_from = burial_begin_from;
-UPDATE thanados.idpath SET find_begin_to = find_begin_from;
-UPDATE thanados.idpath SET find_end_to = burial_end_to;
-UPDATE thanados.idpath SET find_end_from = find_end_to;
-*/
+        newimage = 'thanados' + app.config[
+            "WEB_FOLDER_PATH"] + '/jpgs/' + row.file
 
 
+        if os.path.isfile(current_image):
 
-    UPDATE model.entity SET begin_from = grave_begin_from FROM (SELECT id, grave_begin_from FROM model.entity e JOIN thanados.idpath i ON id = grave_id WHERE begin_from != grave_begin_from) a WHERE a.id = model.entity.id;
-    UPDATE model.entity SET begin_to = grave_begin_to FROM (SELECT id, grave_begin_to FROM model.entity e JOIN thanados.idpath i ON id = grave_id WHERE begin_to != grave_begin_to) a WHERE a.id = model.entity.id;
-    
-    UPDATE model.entity SET end_from = grave_end_from FROM (SELECT id, grave_end_from FROM model.entity e JOIN thanados.idpath i ON id = grave_id WHERE end_from != grave_end_from) a WHERE a.id = model.entity.id;
-    UPDATE model.entity SET end_to = grave_end_to FROM (SELECT id, grave_end_to FROM model.entity e JOIN thanados.idpath i ON id = grave_id WHERE end_to != grave_end_to) a WHERE a.id = model.entity.id;
-    
-    UPDATE model.entity SET begin_from = burial_begin_from FROM (SELECT id, burial_begin_from FROM model.entity e JOIN thanados.idpath i ON id = burial_id WHERE begin_from != burial_begin_from) a WHERE a.id = model.entity.id;
-    UPDATE model.entity SET begin_to = burial_begin_to FROM (SELECT id, burial_begin_to FROM model.entity e JOIN thanados.idpath i ON id = burial_id WHERE begin_to != burial_begin_to) a WHERE a.id = model.entity.id;
-    
-    UPDATE model.entity SET end_from = burial_end_from FROM (SELECT id, burial_end_from FROM model.entity e JOIN thanados.idpath i ON id = burial_id WHERE end_from != burial_end_from) a WHERE a.id = model.entity.id;
-    UPDATE model.entity SET end_to = burial_end_to FROM (SELECT id, burial_end_to FROM model.entity e JOIN thanados.idpath i ON id = burial_id WHERE end_to != burial_end_to) a WHERE a.id = model.entity.id;
-    
-    /*
-    UPDATE model.entity SET begin_from = find_begin_from FROM (SELECT id, find_begin_from FROM model.entity e JOIN thanados.idpath i ON id = find_id WHERE begin_from != find_begin_from) a WHERE a.id = model.entity.id;
-    UPDATE model.entity SET begin_to = find_begin_to FROM (SELECT id, find_begin_to FROM model.entity e JOIN thanados.idpath i ON id = find_id WHERE begin_to != find_begin_to) a WHERE a.id = model.entity.id;
-    
-    UPDATE model.entity SET end_from = find_end_from FROM (SELECT id, find_end_from FROM model.entity e JOIN thanados.idpath i ON id = find_id WHERE end_from != find_end_from) a WHERE a.id = model.entity.id;
-    UPDATE model.entity SET end_to = find_end_to FROM (SELECT id, find_end_to FROM model.entity e JOIN thanados.idpath i ON id = find_id WHERE end_to != find_end_to) a WHERE a.id = model.entity.id;
-    */
-    DROP TABLE IF EXISTS thanados.idpath;
-    """
+            try:
+                bbox = None
+                message_ = 'file exists'
+                im = Image.open(current_image)
+                im.load()
 
-    g.cursor.execute(sql_6)
-    return redirect(url_for('jsonprepare_execute'))
+                bg = Image.new(im.mode, im.size, im.getpixel((0, 0)))
+                width, height = im.size
+                diff = ImageChops.difference(im, bg)
+                diff = ImageChops.add(diff, diff, 2.0, -100)
+                bbox = diff.getbbox()
+                newbbox = list(bbox)
+                if newbbox[0]  >= 25:
+                    newbbox[0] -= 25
+                else:
+                    newbbox[0] = 0
+
+                if newbbox[1] >= 25:
+                    newbbox[1] -= 25
+                else:
+                    newbbox[1] = 0
+
+                if width - newbbox[2] >= 25:
+                    newbbox[2] += 25
+                else:
+                    newbbox[2] = width
+
+                if height - newbbox[3] >= 25:
+                    newbbox[3] += 25
+                else:
+                    newbbox[3] = height
+
+                bbox = tuple(newbbox)
+                if bbox:
+                    print(im.crop(bbox).size)
+                    if not im.crop(bbox).size == 0:
+                        try:
+                            im.crop(bbox).save((os.path.splitext(newimage)[0]) + '.jpg')
+                            message_ = 'cropped and converted'
+                        except Exception:
+                            im.crop(bbox).save(newimage)
+                            message_ = 'old image kept'
+                    else:
+                        message_ = 'size 0'
+
+
+            except Exception:
+                try:
+                    message_ = ('Error with file ' + current_image + '. Keeping existing image')
+                    im = Image.open(current_image)
+                    im.load()
+                    im.save(current_image)
+                except Exception:
+                    filesfailed += 1
+                    failedlist.append(row.file + ' (failed)')
+
+
+
+
+        else:
+            message_ = (current_image + ' not found')
+            filesfailed += 1
+            failedlist.append(row.file + ' (notfound)')
+
+
+        print(str(int(
+            filesthere / filestotal * 100)) + "% - File: " + row.file + " - " + str(
+            filesthere) + " of " + str(filestotal) + ": " + message_)
+        filesthere += 1
+    print(str(filestotal - filesfailed) + ' of ' + str(filestotal) + ' successully done')
+    print('failed files:')
+    print(failedlist)
+    return redirect(url_for('admin'))
 
 
 @app.route('/admin/fileref/')
@@ -2970,6 +3005,62 @@ UPDATE thanados.idpath SET find_end_from = find_end_to;
 def fileref_execute():  # pragma: no cover
     if current_user.group not in ['admin']:
         abort(403)
+
+    import requests
+    import os
+    filesthere = 1
+    print('Downloading files')
+    sql = """
+            SELECT DISTINCT REPLACE(filename, '/static/images/entities/', '') as file 
+            FROM thanados.files WHERE filename != '' AND license IS NOT NULL"""
+    g.cursor.execute(sql)
+    result = g.cursor.fetchall()
+    filestotal = len(result)
+    for row in result:
+        current_image = 'thanados' + app.config["WEB_FOLDER_PATH"] + '/' + row.file
+        if os.path.isfile(current_image):
+            message_ = 'file exists'
+        else:
+            url = app.config["API_FILE_DISPLAY"] + row.file
+            r = requests.get(url)
+            message_ = url
+            with open('thanados' + app.config["WEB_FOLDER_PATH"] + '/' + row.file, 'wb') as f:
+                f.write(r.content)
+
+        print (str(int(filesthere/filestotal*100)) + "% - File: " + row.file + " - " + str(filesthere) + " of " + str(filestotal) + ": " + message_)
+        filesthere += 1
+
+    print('Downloading type images/files')
+    sql_files = """
+        SELECT e.id
+            FROM model.entity e
+            JOIN model.link l ON e.id = l.domain_id
+            JOIN model.entity e2 ON e2.id = l.range_id
+            WHERE e.system_class = 'file'
+            AND e2.class_code = 'E55' AND l.property_code = 'P67'
+           """
+    g.cursor.execute(sql_files)
+    output_files = g.cursor.fetchall()
+
+    for row in output_files:
+        file_name = (Data.get_file_path(row.id))
+        if os.path.isfile('thanados' + app.config["WEB_FOLDER_PATH"] + '/' + file_name):
+            print(file_name + ' exists')
+
+        else:
+            imagetypes = ['.bmp', '.glb', '.gif', '.ico', '.jpeg', '.jpg', '.png', '.svg']
+            for extension in imagetypes:
+                try:
+                    file_name = str(row.id) + extension
+                    url = app.config["API_FILE_DISPLAY"] + file_name
+                    r = requests.get(url)
+                    if r.status_code == 200:
+                        print('downloading ' + file_name)
+                        with open('thanados' + app.config["WEB_FOLDER_PATH"] + '/' + file_name, 'wb') as f:
+                            f.write(r.content)
+                except Exception:
+                    print(extension + ' not found')
+
 
 
     return redirect(url_for('admin'))

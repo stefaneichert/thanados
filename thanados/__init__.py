@@ -14,7 +14,16 @@ app.config.from_pyfile('production.py')  # Load instance/INSTANCE_NAME.py
 thunderforest_API_key = app.config["THUNDERFOREST_API_KEY"]
 openatlas_url = app.config["OPENATLAS_URL"]
 api_url = app.config["API_URL"]
+api_image = app.config["API_FILE_DISPLAY"]
+use_api = app.config["USE_API"]
 leafletVersion = ""
+
+print(use_api)
+
+if use_api == False:
+    api_image = app.config["WEB_FOLDER_PATH"] + '/'
+    print(api_image)
+
 
 from thanados.views import (
     index, map, about, entity, charts, login, manual, sites, admin, search,
@@ -64,6 +73,8 @@ def global_vars():
         thunderforest=thunderforest_API_key,
         openAtlasUrl=openatlas_url,
         api_url=api_url,
+        api_image=api_image,
+        use_api=use_api,
         leafletVersion=leafletVersion)
 
 

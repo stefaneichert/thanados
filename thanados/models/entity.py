@@ -57,7 +57,7 @@ class Data:
         path = glob.glob(os.path.join(app.config['UPLOAD_FOLDER_PATH'], str(id_) + '.*'))
         if path:
             filename, file_extension = os.path.splitext(path[0])
-            return app.config['WEB_FOLDER_PATH'] + '/' + str(id_) + file_extension
+            return str(id_) + file_extension
         return ''
 
     @staticmethod
