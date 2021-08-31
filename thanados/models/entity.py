@@ -54,7 +54,10 @@ class Data:
 
     @staticmethod
     def get_file_path(id_: int):
-        path = glob.glob(os.path.join(app.config['UPLOAD_FOLDER_PATH'], str(id_) + '.*'))
+        if app.config['USE_JPGS']:
+            path = glob.glob(os.path.join((app.config['UPLOAD_FOLDER_PATH'] + '/jpgs'), str(id_) + '.*'))
+        else:
+            path = glob.glob(os.path.join(app.config['UPLOAD_FOLDER_PATH'], str(id_) + '.*'))
         if path:
             filename, file_extension = os.path.splitext(path[0])
             return str(id_) + file_extension

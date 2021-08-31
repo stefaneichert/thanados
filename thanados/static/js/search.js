@@ -558,7 +558,7 @@ function setdatatable(data, tablePosition) {
                 placement: 'right',
                 container: '#myResultlist' + tablePosition + '_wrapper',
                 content: function () {
-                    return '<img class="popover-img" src="' + api_image + $(this).data('img') + '" alt=""/>';
+                    return '<img class="popover-img" src="' + loc_image + $(this).data('img') + '" alt=""/>';
                 }
             });
         },

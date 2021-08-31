@@ -2627,7 +2627,7 @@ function set3D(file) {
 
 function getImageHtml(files) {
     var filestring = JSON.stringify(files).replace(/'/g, '').replace(/"/g, '\'');
-    files.file_name = api_image + files.file_name;
+    files.file_name = loc_image + files.file_name;
     var myImgSource = '';
     if (typeof (files.source) != 'undefined') myImgSource = files.source;
     if (typeof (files.source) == 'undefined') myImgSource = "unknown source";

@@ -2844,22 +2844,27 @@ def geoclean_execute():  # pragma: no cover
     user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
     headers = {'User-Agent': user_agent}
     for row in resultRefs:
-        icons = get(row.website_url, headers=headers, timeout=2)
-        ref_id = row.entity_id
-        print(row.website_url)
-        if icons:
-            print(icons[0].url)
-            print(icons[0].format)
+        try:
+            icons = get(row.website_url, headers=headers, timeout=2)
+            ref_id = row.entity_id
+            print(row.website_url)
+            if icons:
+                print(icons[0].url)
+                print(icons[0].format)
 
-            response = requests.get(icons[0].url, stream=True)
-            with open('./thanados/static/images/favicons/' + str(ref_id) + '.{}'.format(icons[0].format), 'wb') as image:
-                for chunk in response.iter_content(1024):
-                    image.write(chunk)
-                fav_filename = '/static/images/favicons/' + str(ref_id) + '.' + icons[0].format
+                try:
+                    response = requests.get(icons[0].url, stream=True)
+                    with open('./thanados/static/images/favicons/' + str(ref_id) + '.{}'.format(icons[0].format), 'wb') as image:
+                        for chunk in response.iter_content(1024):
+                            image.write(chunk)
+                        fav_filename = '/static/images/favicons/' + str(ref_id) + '.' + icons[0].format
 
-            g.cursor.execute("UPDATE thanados.refsys SET icon_url = %(favicon_)s WHERE entity_id = %(ref_id)s",
-                          {'favicon_': fav_filename, 'ref_id': ref_id})
-
+                    g.cursor.execute("UPDATE thanados.refsys SET icon_url = %(favicon_)s WHERE entity_id = %(ref_id)s",
+                                  {'favicon_': fav_filename, 'ref_id': ref_id})
+                except Exception:
+                    print('Error downloading ' + row.website_url)
+        except Exception:
+            print('Error with ' + row.website_url)
     return redirect(url_for('admin'))
 
 
@@ -2870,65 +2875,48 @@ def timeclean_execute():  # pragma: no cover
         abort(403)
 
     import os
-    from PIL import Image, ImageStat, ImageChops
-    import numpy as np
+    from PIL import Image, ImageChops
+    from shutil import copy
 
-    def detect_color_image(file, thumb_size=40, MSE_cutoff=22,
-                           adjust_color_bias=True):
-        pil_img = Image.open(file)
-        bands = pil_img.getbands()
-        if bands == ('R', 'G', 'B') or bands == ('R', 'G', 'B', 'A'):
-            thumb = pil_img.resize((thumb_size, thumb_size))
-            SSE, bias = 0, [0, 0, 0]
-            if adjust_color_bias:
-                bias = ImageStat.Stat(thumb).mean[:3]
-                bias = [b - sum(bias) / 3 for b in bias]
-            for pixel in thumb.getdata():
-                mu = sum(pixel) / 3
-                SSE += sum(
-                    (pixel[i] - mu - bias[i]) * (pixel[i] - mu - bias[i]) for i
-                    in [0, 1, 2])
-            MSE = float(SSE) / (thumb_size * thumb_size)
-            if MSE <= MSE_cutoff:
-                print ("grayscale")
-            else:
-                print ("Color")
-            print("( MSE=", MSE, ")")
-        elif len(bands) == 1:
-            print("Black and white", bands)
-        else:
-            print ("Don't know...", bands)
-
-    filesthere = 1
+    filesthere = 0
     print('Cropping files')
     sql = """
-                SELECT DISTINCT 
-                REPLACE(filename, '/static/images/entities/', '') as file
-                FROM thanados.files WHERE filename != '' 
-                                AND license IS NOT NULL 
+                SELECT id AS file, 0 AS ovl FROM model.entity WHERE system_class = 'file' 
                                 AND id NOT IN
                                 (SELECT image_id FROM web.map_overlay)
-                                ORDER BY file"""
+                UNION ALL
+                SELECT id AS file, 1 AS ovl FROM model.entity WHERE system_class = 'file' 
+                                AND id IN
+                                (SELECT image_id FROM web.map_overlay)
+                                """
     g.cursor.execute(sql)
     result = g.cursor.fetchall()
     filestotal = len(result)
     filesfailed = 0
+    filesnotfound = 0
+    filessizezero = 0
+    filesdone = 0
+    filesonlyconverted = 0
+
     failedlist = []
     for row in result:
+        found = False
+        imagetypes = ['.png', '.bmp', '.jpg', '.jpeg', '.glb']
+        for extension in imagetypes:
+            current_image = 'thanados' + app.config[
+                "WEB_FOLDER_PATH"] + '/' + str(row.file) + extension
 
-        current_image = 'thanados' + app.config[
-            "WEB_FOLDER_PATH"] + '/' + row.file
+            newimage = ('thanados' + app.config["JPG_FOLDER_PATH"] + '/' + str(row.file)
+                + '.jpg')
+            if os.path.isfile(current_image):
+                found = True
+                break
 
-        newimage = 'thanados' + app.config[
-            "WEB_FOLDER_PATH"] + '/jpgs/' + row.file
-
-
-        if os.path.isfile(current_image):
-
+        if found and not os.path.isfile(newimage) and row.ovl == 0:
             try:
-                bbox = None
-                message_ = 'file exists'
                 im = Image.open(current_image)
+                imageBox = im.getbbox()
+                im = im.crop(imageBox)
                 im.load()
 
                 bg = Image.new(im.mode, im.size, im.getpixel((0, 0)))
@@ -2959,43 +2947,65 @@ def timeclean_execute():  # pragma: no cover
 
                 bbox = tuple(newbbox)
                 if bbox:
-                    print(im.crop(bbox).size)
-                    if not im.crop(bbox).size == 0:
+                    if not im.crop(bbox).size == (0,0):
                         try:
-                            im.crop(bbox).save((os.path.splitext(newimage)[0]) + '.jpg')
-                            message_ = 'cropped and converted'
+                            im.crop(bbox)
+                            im.convert('RGB').save(newimage)
+                            message_ = 'cropped and converted ' + newimage
+                            filesdone += 1
                         except Exception:
-                            im.crop(bbox).save(newimage)
-                            message_ = 'old image kept'
+                            im = Image.open(current_image)
+                            im.load()
+                            im.convert('RGB').save(newimage)
+                            message_ = 'old image kept ' + newimage
+                            filesonlyconverted +=1
                     else:
-                        message_ = 'size 0'
+                        message_ = 'size 0? at ' + str(row.file)
+                        filessizezero +=1
+                        failedlist.append(str(filesthere) + ':' + str(row.file) + ' + size 0')
 
 
             except Exception:
-                try:
-                    message_ = ('Error with file ' + current_image + '. Keeping existing image')
-                    im = Image.open(current_image)
-                    im.load()
-                    im.save(current_image)
-                except Exception:
-                    filesfailed += 1
-                    failedlist.append(row.file + ' (failed)')
+                    message_ = ('Cropping error with file ' + current_image + '.')
+                    try:
+                        copy(
+                        current_image,
+                        'thanados' + app.config["WEB_FOLDER_PATH"] + '/jpgs/')
+                        message_ = ('kept original file, check:' + current_image)
+                        failedlist.append(str(filesthere) + ':' + str(row.file) + ' kept the original. Check the file')
+                    except Exception:
+                        filesfailed += 1
+                        failedlist.append(str(filesthere) + ':' + str(row.file) +  ' general error')
 
 
 
+        elif found and os.path.isfile(newimage):
+            message_ = (current_image + ' already done ')
+            found = True
+        elif row.ovl == 1:
+            try:
+                copy(
+                    current_image,
+                    'thanados' + app.config["WEB_FOLDER_PATH"] + '/jpgs/')
+                message_ = ('kept original file, Map Overlay:' + current_image)
+            except Exception:
+                message_ = ('Error, Map Overlay:' + current_image)
+                filesfailed += 1
+                failedlist.append(
+                    str(filesthere) + ':' + str(row.file) + ' map overlay')
 
-        else:
-            message_ = (current_image + ' not found')
-            filesfailed += 1
-            failedlist.append(row.file + ' (notfound)')
+        if not found:
+            filesnotfound += 1
+            message_ = str(row.file) + ': file missing'
 
-
-        print(str(int(
-            filesthere / filestotal * 100)) + "% - File: " + row.file + " - " + str(
-            filesthere) + " of " + str(filestotal) + ": " + message_)
         filesthere += 1
-    print(str(filestotal - filesfailed) + ' of ' + str(filestotal) + ' successully done')
-    print('failed files:')
+        print(str(int(
+            filesthere / filestotal * 100)) + "% - File: " + str(row.file) + " - " + str(
+            filesthere) + " of " + str(filestotal) + ": " + message_)
+
+
+    print(str(filestotal - (filesfailed + filesnotfound)) + ' of ' + str(filestotal) + ' successully done. ' + str(filesnotfound) + ' not found')
+    print( str(len(failedlist)) + ' failed files:')
     print(failedlist)
     return redirect(url_for('admin'))
 
@@ -3008,59 +3018,87 @@ def fileref_execute():  # pragma: no cover
 
     import requests
     import os
-    filesthere = 1
-    print('Downloading files')
-    sql = """
-            SELECT DISTINCT REPLACE(filename, '/static/images/entities/', '') as file 
-            FROM thanados.files WHERE filename != '' AND license IS NOT NULL"""
-    g.cursor.execute(sql)
-    result = g.cursor.fetchall()
-    filestotal = len(result)
-    for row in result:
-        current_image = 'thanados' + app.config["WEB_FOLDER_PATH"] + '/' + row.file
-        if os.path.isfile(current_image):
-            message_ = 'file exists'
-        else:
-            url = app.config["API_FILE_DISPLAY"] + row.file
-            r = requests.get(url)
-            message_ = url
-            with open('thanados' + app.config["WEB_FOLDER_PATH"] + '/' + row.file, 'wb') as f:
-                f.write(r.content)
 
-        print (str(int(filesthere/filestotal*100)) + "% - File: " + row.file + " - " + str(filesthere) + " of " + str(filestotal) + ": " + message_)
-        filesthere += 1
+    filesfailed = 0
+    filesnotfound = 0
+    filesdone = 0
+    filesthere = 0
+    filesdownloaded = 0
+    failedlist = []
+    message_ = ''
 
-    print('Downloading type images/files')
+    print('Downloading images/files')
     sql_files = """
-        SELECT e.id
-            FROM model.entity e
-            JOIN model.link l ON e.id = l.domain_id
-            JOIN model.entity e2 ON e2.id = l.range_id
-            WHERE e.system_class = 'file'
-            AND e2.class_code = 'E55' AND l.property_code = 'P67'
+        SELECT id FROM model.entity WHERE system_class = 'file' AND id IN
+    (SELECT domain_id FROM model.link WHERE range_id IN (SELECT id FROM thanados.types_all WHERE topparent = '12935')
+         AND property_code = 'P2')
            """
     g.cursor.execute(sql_files)
     output_files = g.cursor.fetchall()
+    filestotal = len(output_files)
 
     for row in output_files:
-        file_name = (Data.get_file_path(row.id))
-        if os.path.isfile('thanados' + app.config["WEB_FOLDER_PATH"] + '/' + file_name):
-            print(file_name + ' exists')
+        imagetypes = ['.png', '.bmp', '.jpg', '.jpeg', '.glb']
+        found = False
+        license = True
+        for extension in imagetypes:
+            if found:
+                break
+            file_name = str(row.id) + extension
+            if os.path.isfile('thanados' + app.config["WEB_FOLDER_PATH"] + '/' + file_name):
+                message_ = file_name + ' already exists'
+                filesdone += 1
+                filesthere += 1
+                found = True
 
-        else:
-            imagetypes = ['.bmp', '.glb', '.gif', '.ico', '.jpeg', '.jpg', '.png', '.svg']
+        if not found:
+            print(row.id)
             for extension in imagetypes:
+                if found:
+                    break
+                file_name = str(row.id) + extension
                 try:
-                    file_name = str(row.id) + extension
                     url = app.config["API_FILE_DISPLAY"] + file_name
                     r = requests.get(url)
+                    print('trying ' + extension + ': ' + str(r.status_code))
+
                     if r.status_code == 200:
-                        print('downloading ' + file_name)
                         with open('thanados' + app.config["WEB_FOLDER_PATH"] + '/' + file_name, 'wb') as f:
                             f.write(r.content)
+                        filesdone += 1
+                        filesdownloaded += 1
+                        found = True
+                        break
+                    elif r.status_code == 404:
+                        found = False
+                    elif r.status_code == 403:
+                        license = False
+                        break
                 except Exception:
-                    print(extension + ' not found')
+                    message_ = file_name + ' Error'
+                    filesdone += 1
+                    filesnotfound += 1
+                    failedlist.append(file_name + 'Error')
+            if not license:
+                message_ = file_name + ' has no license'
+                failedlist.append(file_name + ' no license')
+                filesdone += 1
+            if found:
+                message_ = 'downloaded: ' + file_name
+            elif license:
+                filesnotfound += 1
+                filesdone += 1
+                message_ = str(row.id) + ' not found'
 
+        print(str(int(
+            filesdone / filestotal * 100)) + "% - File: " + file_name + " - "
+              + str(
+            filesdone) + " of " + str(filestotal) + ": " + message_)
 
+    print(str(filestotal - filesfailed) + ' of ' + str(
+        filestotal) + ' successully done')
+    print('failed files:')
+    print(failedlist)
 
     return redirect(url_for('admin'))
+
