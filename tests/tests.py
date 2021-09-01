@@ -11,7 +11,7 @@ class TestBaseCase(unittest.TestCase):
         app.testing = True
         app.config['SERVER_NAME'] = 'local.host'
         app.config['WTF_CSRF_ENABLED'] = False
-        app.config['WTF_CSRF_METHODS'] = []  # This is the magic to disable CSRF for tests
+        app.config['WTF_CSRF_METHODS'] = []  # Disables CSRF for tests
         self.app = app.test_client()
 
 
@@ -25,13 +25,20 @@ class WebsiteTests(TestBaseCase):
             assert b'Orientation' in self.app.get(url_for('charts')).data
             assert b'Filter' in self.app.get(url_for('manual')).data
             assert b'Password' in self.app.get(url_for('login')).data
-            assert b'Visualisations' in self.app.get(url_for('map',object_id=50505)).data
+            assert b'Visualisations' in self.app.get(
+                url_for('map', object_id=50505)).data
             rv = self.app.get(url_for('entity_view', object_id=50505))
             assert b'cite' in rv.data
-            rv = self.app.get(url_for('entity_view', object_id=50505, format_='json'))
+            rv = self.app.get(
+                url_for('entity_view', object_id=50505, format_='json'))
             assert b'site' in rv.data
             self.app.get(url_for('admin'))
             assert b'Username:' in self.app.get(url_for('login')).data
-            assert b'Username:' in self.app.get(url_for('logout'), follow_redirects=True).data
-            rv = self.app.post(url_for('login'), data={'username': 'seppl', 'password': 'ninx'}, follow_redirects=True)
+            assert b'Username:' in self.app.get(
+                url_for('logout'),
+                follow_redirects=True).data
+            rv = self.app.post(
+                url_for('login'),
+                data={'username': 'seppl', 'password': 'ninx'},
+                follow_redirects=True)
             assert b'error username' in rv.data

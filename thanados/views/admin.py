@@ -2,14 +2,15 @@ import json
 import sys
 from datetime import datetime
 
-from flask import render_template, g, url_for, abort, flash, request, jsonify
-from flask_login import login_required, current_user
+from flask import abort, g, jsonify, render_template, request, url_for
+from flask_login import current_user, login_required
 from flask_wtf import FlaskForm
 from werkzeug.utils import redirect
 from wtforms import SubmitField, TextAreaField
 
 from thanados import app
 from thanados.models.entity import Data
+from thanados.util.files import api_download
 
 
 class SiteListForm(FlaskForm):  # type: ignore
@@ -3022,94 +3023,10 @@ def timeclean_execute():  # pragma: no cover
     return redirect(url_for('admin'))
 
 
-@app.route('/admin/fileref/')
+@app.route('/admin/download_files/')
 @login_required
-def fileref_execute():  # pragma: no cover
-    if current_user.group not in ['admin']:
+def download_files():
+    if current_user.group != 'admin':
         abort(403)
-
-    import requests
-    import os
-
-    filesfailed = 0
-    filesnotfound = 0
-    filesdone = 0
-    filesthere = 0
-    filesdownloaded = 0
-    failedlist = []
-    message_ = ''
-
-    print('Downloading images/files')
-    sql_files = """
-        SELECT id FROM model.entity WHERE system_class = 'file' AND id IN
-    (SELECT domain_id FROM model.link WHERE range_id IN (SELECT id FROM thanados.types_all WHERE topparent = '12935')
-         AND property_code = 'P2')
-           """
-    g.cursor.execute(sql_files)
-    output_files = g.cursor.fetchall()
-    filestotal = len(output_files)
-
-    for row in output_files:
-        imagetypes = ['.png', '.bmp', '.jpg', '.jpeg', '.glb']
-        found = False
-        license = True
-        for extension in imagetypes:
-            if found:
-                break
-            file_name = str(row.id) + extension
-            if os.path.isfile('thanados' + app.config["WEB_FOLDER_PATH"] + '/' + file_name):
-                message_ = file_name + ' already exists'
-                filesdone += 1
-                filesthere += 1
-                found = True
-
-        if not found:
-            print(row.id)
-            for extension in imagetypes:
-                if found:
-                    break
-                file_name = str(row.id) + extension
-                try:
-                    url = app.config["API_FILE_DISPLAY"] + file_name
-                    r = requests.get(url)
-                    print('trying ' + extension + ': ' + str(r.status_code))
-
-                    if r.status_code == 200:
-                        with open('thanados' + app.config["WEB_FOLDER_PATH"] + '/' + file_name, 'wb') as f:
-                            f.write(r.content)
-                        filesdone += 1
-                        filesdownloaded += 1
-                        found = True
-                        break
-                    elif r.status_code == 404:
-                        found = False
-                    elif r.status_code == 403:
-                        license = False
-                        break
-                except Exception:
-                    message_ = file_name + ' Error'
-                    filesdone += 1
-                    filesnotfound += 1
-                    failedlist.append(file_name + 'Error')
-            if not license:
-                message_ = file_name + ' has no license'
-                failedlist.append(file_name + ' no license')
-                filesdone += 1
-            if found:
-                message_ = 'downloaded: ' + file_name
-            elif license:
-                filesnotfound += 1
-                filesdone += 1
-                message_ = str(row.id) + ' not found'
-
-        print(str(int(
-            filesdone / filestotal * 100)) + "% - File: " + file_name + " - "
-              + str(
-            filesdone) + " of " + str(filestotal) + ": " + message_)
-
-    print(str(filestotal - filesfailed) + ' of ' + str(
-        filestotal) + ' successully done')
-    print('failed files:')
-    print(failedlist)
-
+    api_download()
     return redirect(url_for('admin'))
