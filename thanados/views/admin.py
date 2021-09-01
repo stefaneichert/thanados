@@ -2878,6 +2878,18 @@ def timeclean_execute():  # pragma: no cover
     from PIL import Image, ImageChops
     from shutil import copy
 
+    def remove_transparency(im, bg_colour=(255, 255, 255)):
+
+        if im.mode in ('RGBA', 'LA') or (
+                im.mode == 'P' and 'transparency' in im.info):
+            alpha = im.convert('RGBA').split()[-1]
+            bg = Image.new("RGBA", im.size, bg_colour + (255,))
+            bg.paste(im, mask=alpha)
+            return bg
+
+        else:
+            return im
+
     filesthere = 0
     print('Cropping files')
     sql = """
@@ -2950,6 +2962,7 @@ def timeclean_execute():  # pragma: no cover
                     if not im.crop(bbox).size == (0,0):
                         try:
                             im.crop(bbox)
+                            im = remove_transparency(im)
                             im.convert('RGB').save(newimage)
                             message_ = 'cropped and converted ' + newimage
                             filesdone += 1
