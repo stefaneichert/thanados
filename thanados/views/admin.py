@@ -722,8 +722,6 @@ SELECT
 
 INSERT INTO thanados.dimensiontypes SELECT id, parent_id, burial_id, name, description, value, path FROM thanados.graveDeg;
 
-DROP EXTENSION IF EXISTS postgis_sfcgal;
-CREATE EXTENSION postgis_sfcgal;
 DROP TABLE IF EXISTS thanados.giscleanup2;
 CREATE TABLE thanados.giscleanup2 AS
  (
@@ -3115,4 +3113,3 @@ def fileref_execute():  # pragma: no cover
     print(failedlist)
 
     return redirect(url_for('admin'))
-
