@@ -38,7 +38,7 @@ def api_download():
         if not found:
             print(row.id)
             for extension in app.config['MEDIA_EXTENSION']:
-                file_name = f'{row.id}extension'
+                file_name = f'{row.id}{extension}'
                 try:
                     r = requests.get(app.config["API_FILE_DISPLAY"] + file_name)
                     print(f'trying {extension}: {r.status_code}')
