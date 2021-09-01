@@ -15,6 +15,11 @@ $(document).ready(function () {
     if (($(window).width()) > 550) dialogPosition = {my: "left+20 top+20", at: "left top", of: "body"}
     if (($(window).width()) <= 550) dialogPosition = {my: "left top", at: "left top", of: "body"}
     mapsearch = false;
+    $(document).on('change', '#checkmysearch', function () {
+        $('#catSearch').toggle()
+        $('#freesearch').toggle()
+    });
+    $('#freesearch').toggle()
 });
 
 $(window).resize(function () {
@@ -638,8 +643,6 @@ function setmymap(markers, heatmarkers, graveIds) {
     });
 
 
-
-
     eval('landscape' + Iter + ' = jQuery.extend(true, {}, OpenStreetMap_HOT);');
     eval('natural' + Iter + ' = jQuery.extend(true, {}, BasemapAT_grau);');
     eval('terrain' + Iter + ' = jQuery.extend(true, {}, BasemapAT_terrain);');
@@ -724,7 +727,7 @@ function setmymap(markers, heatmarkers, graveIds) {
                 '<a title="Download Data" style="background-size: 16px 16px; cursor: pointer; border-top-right-radius: 2px; border-bottom-right-radius: 2px;">' +
                 '<span class="fas fa-download"></span>' +
                 '</a>' +
-                '<ul class="easyBtnHolder" id="btnHolder'+Iter+'">' +
+                '<ul class="easyBtnHolder" id="btnHolder' + Iter + '">' +
                 '<li class="d-inline-block"><a class="csvDownload" title="Download search result as CSV file" data-iter="' + Iter + '"><i class="fas fa-list-alt"></i></a></li>' +
                 '<li class="d-inline-block"><a class="jsonDownload" title="Download search result (sites) as GeoJSON file" data-iter="' + Iter + '"><i class="fas fa-map-marker-alt"></i></a></li>' +
                 '</ul>' +
@@ -741,7 +744,6 @@ function setmymap(markers, heatmarkers, graveIds) {
     }
 
     L.control.batn({position: 'topleft'}).addTo(eval('map' + Iter));
-
 
 
     printMapbutton(('map' + Iter), 'topleft');
