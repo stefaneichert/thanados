@@ -3276,9 +3276,7 @@ function bodyheightmodal(method) {
         '<div class="mb-2 p-2 border rounded" id="chartwrapper"><canvas id="bhChart">' +
         '</canvas><div class="text-center text-muted" id="avgLegend"><b class="me-2">- - - - - - - -</b> Average: ' + avg + ' cm.</div></div>' +
         '<div class="input-group input-group-sm mt-2 mb-2">\n' +
-        '  <div class="input-group-prepend">\n' +
-        '    <label class="input-group-text" for="inputGroupSelect01">Method</label>\n' +
-        '  </div>\n' +
+        '  <span class="input-group-text" for="inputGroupSelect01">Method</span>\n' +
         '  <select class="form-select form-select-sm" id="inputGroupSelect01">\n' +
         '  </select>\n' +
         '</div>' +

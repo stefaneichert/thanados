@@ -18,6 +18,7 @@ $(document).ready(function () {
     $(document).on('change', '#checkmysearch', function () {
         $('#catSearch').toggle()
         $('#freesearch').toggle()
+        if ($('.freesearch').hasClass('text-muted')) $('.freesearch').toggleClass('text-muted')
     });
     $('#freesearch').toggle()
 });
@@ -86,7 +87,7 @@ function addSearch() {
         '    </div>' +
         '    <div data-map="map' + Iter + '" id="collapseList' + Iter + '" style="display: none" class="resultCard collapse show" aria-labelledby="headingb' + Iter + '">\n' +
         '        <div class="card-body row">' +
-        '          <div class="col-lg">' +
+        '          <div class="col-lg-6">' +
         '            <table id="myResultlist' + Iter + '" class="display table table-striped table-bordered w-100">' +
         '                    <thead>\n' +
         '                    <tr>\n' +
@@ -99,7 +100,7 @@ function addSearch() {
         '                    </thead>' +
         '            </table>' +
         '          </div>' +
-        '        <div class="col-lg">' +
+        '        <div class="col-lg-6">' +
         '            <div class="m-1 map" id="map' + Iter + '" style="height: 100%; min-height: 500px; min-width: 300px"></div>' +
         '        </div>' +
         '      </div>' +
