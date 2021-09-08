@@ -662,9 +662,7 @@ function setdatatable(data, tablePosition) {
 
 function setFreeDatatable(data) {
     OldIter = Iter
-    console.log(Iter)
     Iter = 0
-    console.log(Iter)
     result_0 = data;
     if (typeof (freeTable) !== 'undefined') {
         freeTable.clear()
@@ -725,7 +723,6 @@ function setFreeDatatable(data) {
 
     setmymap(mymarkers, heatmarkers, graveIds);
     Iter = OldIter
-    console.log(Iter)
     $('input[type="search"]').addClass('w-75');
 }
 
