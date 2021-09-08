@@ -605,7 +605,6 @@ function setdatatable(data, tablePosition) {
         "bLengthChange": false,
         "scrollX": true,
 
-
         columns: [
             {
                 data: "name",
@@ -661,6 +660,72 @@ function setdatatable(data, tablePosition) {
     $('input[type="search"]').addClass('w-75');
 }
 
+function setFreeDatatable(data) {
+    OldIter = Iter
+    Iter = 0
+    result_0 = data;
+    if (typeof (freeTable) !== 'undefined') {
+        freeTable.clear()
+    }
+    var mymarkers = new L.featureGroup([]);
+    var heatmarkers = [];
+    var graveIds = [];
+    $.each(data, function (i, dataset) {
+        if (graveIds.includes(dataset.grave_id) === false) {
+            graveIds.push(dataset.grave_id)
+        }
+    })
+    //console.log(graveIds);
+    graveIds = JSON.stringify(graveIds).replace('[', '')
+    graveIds = graveIds.replace(']', '')
+
+    freeTable = $('#myResultlistfreeResult').DataTable({
+        data: data,
+        drawCallback: function () {
+            $('a[rel=popover]').popover({
+                html: true,
+                trigger: 'hover',
+                placement: 'right',
+                container: '#myResultlistfreeResult_wrapper',
+                content: function () {
+                    return '<img class="popover-img" src="' + loc_image + $(this).data('img') + '" alt=""/>';
+                }
+            });
+        },
+        "pagingType": "numbers",
+        "lengthMenu": [10],
+        "bLengthChange": false,
+        "scrollX": true,
+        "destroy": true,
+        columns: [
+            {
+                data: "name",
+                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                    if (oData.file === null) $(nTd).html("<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + Iter + ")' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.description + " ' target='_blank'>" + oData.name + "</a>");
+                    if (oData.file !== null) $(nTd).html("<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + Iter + ")' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.description + " ' target='_blank'>" + oData.name + "</a>" +
+                        "<a class='btn-xs float-end' rel='popover' data-img='" + oData.file + "'><i class='fas fa-image'></i></a>"); //create links in rows
+                }
+            },
+            {
+                data: 'type',
+                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                    $(nTd).html("<div title='" + oData.maintype + "'>" + oData.type + "</div> ");
+                    myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_blank"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + oData.type + '</i>'
+                    marker = L.marker([((oData.lon)), ((oData.lat))], {title: (oData.context)}).addTo(mymarkers).bindPopup(myPopupLine);
+                    heatmarkers.push([JSON.parse(oData.lon) + ',' + JSON.parse(oData.lat)]);
+                }
+            },
+            {data: 'min'},
+            {data: 'max'},
+            {data: 'context'}
+        ],
+    });
+
+    setmymap(mymarkers, heatmarkers, graveIds);
+    Iter = OldIter
+    $('input[type="search"]').addClass('w-75');
+}
+
 function setmymap(markers, heatmarkers, graveIds) {
 //define basemaps
 
@@ -670,8 +735,6 @@ function setmymap(markers, heatmarkers, graveIds) {
         maxClusterRadius: 0,
 
     });
-
-
 
 
     eval('landscape' + Iter + ' = jQuery.extend(true, {}, OpenStreetMap_HOT);');
