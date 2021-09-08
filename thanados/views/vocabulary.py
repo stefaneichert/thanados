@@ -308,8 +308,9 @@ def vocabulary_view(object_id: int, format_=None):
 
         for row in output_files:
             file_name = (Data.get_file_path(row.id))
+            print(file_name)
             file_id = (row.id)
-            file = {'id': file_id, 'file_name': file_name}
+            file = {'id': file_id, 'file_name': (app.config["WEB_FOLDER_PATH"] + '/' + file_name)}
             g.cursor.execute(sql_file_refs, {'file_id': file_id})
             output_file_refs = g.cursor.fetchone()
             g.cursor.execute(sql_filelicense, {'file_id': file_id})
@@ -446,4 +447,4 @@ def vocabulary_view(object_id: int, format_=None):
     if object_id:
         return render_template('vocabulary/view.html', object_id=object_id, data=data,
                                children=len(output_children), credit=credits, license=license,
-                               children_recursive=len(entlist))
+                               children_recursive=len(entlist), webfolder=app.config["WEB_FOLDER_PATH"])
