@@ -19,9 +19,7 @@ use_api = app.config["USE_API"]
 use_jpgs = app.config["USE_JPGS"]
 leafletVersion = ""
 
-print(use_api)
-
-if use_api == False:
+if not use_api:
     if use_jpgs:
         loc_image = app.config["JPG_FOLDER_PATH"] + '/'
     else:
