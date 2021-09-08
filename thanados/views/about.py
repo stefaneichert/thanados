@@ -5,4 +5,4 @@ from thanados import app
 
 @app.route('/about')
 def about():
-    return render_template('/about/about.html')
+    return render_template('about/about.html')

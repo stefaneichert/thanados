@@ -175,6 +175,14 @@ if (data.entities_recursive) {
             MultAttributionChange(map, '#map', attrib)
         });
         $('#occurence').append(occCount);
+        map.on('overlayadd', function (e) {
+            if (e.name === 'Incl. Subcategories') {
+                map.fitBounds(entPointsRec.getBounds())
+            } else {
+                map.fitBounds(entPoints.getBounds())
+            }
+            ;
+        });
 
 
     }
@@ -198,7 +206,7 @@ if (data.entities_recursive) {
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                     if (oData.file === null) $(nTd).html("<a id='" + oData.id + "' href='/entity/" + oData.id + "' title='" + oData.main_type + " ' target='_blank'>" + oData.name + "</a>");
                     if (oData.file !== null) $(nTd).html("<a id='" + oData.id + "' href='/entity/" + oData.id + "' title='" + oData.main_type + " ' target='_blank'>" + oData.name + "</a>" +
-                        "<a class='btn-xs float-end' data-toggle='popover-hover' data-img='" + oData.file + "'><i class='fas fa-image'></i></a>"); //create links in rows
+                        "<a class='btn-xs float-end' data-toggle='popover-hover' data-img='" + loc_image + oData.file + "'><i class='fas fa-image'></i></a>"); //create links in rows
                 }
             },
             {

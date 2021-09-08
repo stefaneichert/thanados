@@ -325,20 +325,20 @@
                                     {% for row in data.files %}
                                         <div class="col-sm-6 col-lg-4 mb-4 media-col">
                                             <div class="card">
-                                                {% if ".glb" in row.file_name %}
+                                                {% if ".glb" in (row.file_name) %}
                                                     <model-viewer class="img-fluid card-img-bottom"
                                                                   style="min-height: 250px;"
-                                                                  src="{{ row.file_name }}"
+                                                                  src="{{ (row.file_name) }}"
                                                                   alt="3d" auto-rotate camera-controls>
                                                         <div class="annotation" title="enlarge"
                                                              data-file="{{ row }}"
-                                                             onclick="current3dFile = $(this).data('file'); set3D('{{ row.file_name }}')">
+                                                             onclick="current3dFile = $(this).data('file'); set3D('{{ (row.file_name) }}')">
                                                             <i class="fas fa-expand"></i>
                                                         </div>
                                                     </model-viewer>
                                                 {% else %}
-                                                    <a href="{{ row.file_name }}" data-featherlight>
-                                                        <img src="{{ row.file_name }}" alt="image"
+                                                    <a href="{{ (row.file_name) }}" data-featherlight>
+                                                        <img src="{{ (row.file_name) }}" alt="image"
                                                                 {% if row.source %}
                                                              title="{{ row.source }}"
                                                                 {% endif %}
@@ -368,20 +368,20 @@
                                     {% for row in data.files %}
                                         <div class="col-sm-6 col-lg-4 mb-4 media-col">
                                             <div class="card">
-                                                {% if ".glb" in row.file_name %}
+                                                {% if ".glb" in (row.file_name) %}
                                                     <model-viewer class="img-fluid card-img-bottom"
                                                                   style="min-height: 250px;"
-                                                                  src="{{ row.file_name }}"
+                                                                  src="{{ (row.file_name) }}"
                                                                   alt="3d" auto-rotate camera-controls>
                                                         <div class="annotation" title="enlarge"
                                                              data-file="{{ row }}"
-                                                             onclick="current3dFile = $(this).data('file'); set3D('{{ row.file_name }}')">
+                                                             onclick="current3dFile = $(this).data('file'); set3D('{{ (row.file_name) }}')">
                                                             <i class="fas fa-expand"></i>
                                                         </div>
                                                     </model-viewer>
                                                 {% else %}
-                                                    <a href="{{ row.file_name }}" data-featherlight>
-                                                        <img src="{{ row.file_name }}" alt="image"
+                                                    <a href="{{ (row.file_name) }}" data-featherlight>
+                                                        <img src="{{ (row.file_name) }}" alt="image"
                                                                 {% if row.source %}
                                                              title="{{ row.source }}"
                                                                 {% endif %}

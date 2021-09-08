@@ -885,7 +885,7 @@ function CSVtable(csvData) {
                 placement: 'right',
                 //container: $('#CSVmodal'),
                 content: function () {
-                    return '<img class="popover-img" src="' + $(this).data('img') + '" />';
+                    return '<img class="popover-img" src="'+ loc_image + $(this).data('img') + '?image_size=thumbnail" />';
                 }
             });
         },
