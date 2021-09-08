@@ -15,6 +15,12 @@ $(document).ready(function () {
     if (($(window).width()) > 550) dialogPosition = {my: "left+20 top+20", at: "left top", of: "body"}
     if (($(window).width()) <= 550) dialogPosition = {my: "left top", at: "left top", of: "body"}
     mapsearch = false;
+    $(document).on('change', '#checkmysearch', function () {
+        $('#catSearch').toggle()
+        $('#freesearch').toggle()
+        if ($('.freesearch').hasClass('text-muted')) $('.freesearch').toggleClass('text-muted')
+    });
+    $('#freesearch').toggle()
 });
 
 $(window).resize(function () {
@@ -81,7 +87,7 @@ function addSearch() {
         '    </div>' +
         '    <div data-map="map' + Iter + '" id="collapseList' + Iter + '" style="display: none" class="resultCard collapse show" aria-labelledby="headingb' + Iter + '">\n' +
         '        <div class="card-body row">' +
-        '          <div class="col-lg">' +
+        '          <div class="col-lg-6">' +
         '            <table id="myResultlist' + Iter + '" class="display table table-striped table-bordered w-100">' +
         '                    <thead>\n' +
         '                    <tr>\n' +
@@ -94,7 +100,7 @@ function addSearch() {
         '                    </thead>' +
         '            </table>' +
         '          </div>' +
-        '        <div class="col-lg">' +
+        '        <div class="col-lg-6">' +
         '            <div class="m-1 map" id="map' + Iter + '" style="height: 100%; min-height: 500px; min-width: 300px"></div>' +
         '        </div>' +
         '      </div>' +
@@ -446,6 +452,39 @@ function returnQuerystring() {
     $('.combosearchdropdown').removeClass('disabled');
 }
 
+function returnFreeSearch() {
+    mycriteria = $('#searchTerm').val();
+    $.ajax({
+        type: 'POST',
+        url: '/ajax/test',
+        data: {
+            'criteria': mycriteria,
+        },
+        success: function (result) {
+            if (result === null) {
+                $('#freeResult').addClass('d-none')
+                $('#freeCit').addClass('d-none')
+                $('#NoFreeResults').removeClass('d-none')
+                return false
+            } else {
+                $('#freeResult').removeClass('d-none')
+                $('#freeCit').removeClass('d-none')
+                $('#NoFreeResults').addClass('d-none')
+                if (map0 != undefined || map0 != null) {
+                    map0.remove();
+                    $("#map0").html("");
+                    $("#preMap").empty();
+                    $("<div class=\"m-1 map\" id=\"map0\"\n" +
+                        "style=\"height: 100%; min-height: 500px; min-width: 300px\"></div>").appendTo("#preMap");
+                }
+                setFreeDatatable(result);
+                map0.invalidateSize()
+                map0.fitBounds(markers0.getBounds());
+            }
+        }
+    });
+}
+
 function CombinedSearch(oldresult, oldLevel, newresult, newLevel) {
     if (oldLevel === newLevel) {
         oldId = 'id';
@@ -538,7 +577,6 @@ function CombinedSearch(oldresult, oldLevel, newresult, newLevel) {
 function setdatatable(data, tablePosition) {
     var mymarkers = new L.featureGroup([]);
     var heatmarkers = [];
-    //console.log(data)
     var graveIds = [];
     $.each(data, function (i, dataset) {
         if (graveIds.includes(dataset.grave_id) === false) {
@@ -558,7 +596,7 @@ function setdatatable(data, tablePosition) {
                 placement: 'right',
                 container: '#myResultlist' + tablePosition + '_wrapper',
                 content: function () {
-                    return '<img class="popover-img" src="' + $(this).data('img') + '" alt=""/>';
+                    return '<img class="popover-img" src="' + loc_image + $(this).data('img') + '" alt=""/>';
                 }
             });
         },
@@ -566,11 +604,6 @@ function setdatatable(data, tablePosition) {
         "lengthMenu": [10],
         "bLengthChange": false,
         "scrollX": true,
-
-        /*columnDefs: [{
-            targets: 4,
-            render: $.fn.dataTable.render.ellipsis(29, true)
-        }],*/
 
         columns: [
             {
@@ -627,6 +660,72 @@ function setdatatable(data, tablePosition) {
     $('input[type="search"]').addClass('w-75');
 }
 
+function setFreeDatatable(data) {
+    OldIter = Iter
+    Iter = 0
+    result_0 = data;
+    if (typeof (freeTable) !== 'undefined') {
+        freeTable.clear()
+    }
+    var mymarkers = new L.featureGroup([]);
+    var heatmarkers = [];
+    var graveIds = [];
+    $.each(data, function (i, dataset) {
+        if (graveIds.includes(dataset.grave_id) === false) {
+            graveIds.push(dataset.grave_id)
+        }
+    })
+    //console.log(graveIds);
+    graveIds = JSON.stringify(graveIds).replace('[', '')
+    graveIds = graveIds.replace(']', '')
+
+    freeTable = $('#myResultlistfreeResult').DataTable({
+        data: data,
+        drawCallback: function () {
+            $('a[rel=popover]').popover({
+                html: true,
+                trigger: 'hover',
+                placement: 'right',
+                container: '#myResultlistfreeResult_wrapper',
+                content: function () {
+                    return '<img class="popover-img" src="' + loc_image + $(this).data('img') + '" alt=""/>';
+                }
+            });
+        },
+        "pagingType": "numbers",
+        "lengthMenu": [10],
+        "bLengthChange": false,
+        "scrollX": true,
+        "destroy": true,
+        columns: [
+            {
+                data: "name",
+                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                    if (oData.file === null) $(nTd).html("<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + Iter + ")' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.description + " ' target='_blank'>" + oData.name + "</a>");
+                    if (oData.file !== null) $(nTd).html("<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + Iter + ")' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.description + " ' target='_blank'>" + oData.name + "</a>" +
+                        "<a class='btn-xs float-end' rel='popover' data-img='" + oData.file + "'><i class='fas fa-image'></i></a>"); //create links in rows
+                }
+            },
+            {
+                data: 'type',
+                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                    $(nTd).html("<div title='" + oData.maintype + "'>" + oData.type + "</div> ");
+                    myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_blank"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + oData.type + '</i>'
+                    marker = L.marker([((oData.lon)), ((oData.lat))], {title: (oData.context)}).addTo(mymarkers).bindPopup(myPopupLine);
+                    heatmarkers.push([JSON.parse(oData.lon) + ',' + JSON.parse(oData.lat)]);
+                }
+            },
+            {data: 'min'},
+            {data: 'max'},
+            {data: 'context'}
+        ],
+    });
+
+    setmymap(mymarkers, heatmarkers, graveIds);
+    Iter = OldIter
+    $('input[type="search"]').addClass('w-75');
+}
+
 function setmymap(markers, heatmarkers, graveIds) {
 //define basemaps
 
@@ -636,8 +735,6 @@ function setmymap(markers, heatmarkers, graveIds) {
         maxClusterRadius: 0,
 
     });
-
-
 
 
     eval('landscape' + Iter + ' = jQuery.extend(true, {}, OpenStreetMap_HOT);');
@@ -692,8 +789,10 @@ function setmymap(markers, heatmarkers, graveIds) {
     };
 
     eval('MyBaseLayers' + Iter + ' = {"Landscape": landscape' + Iter + ', "Satellite": satellite' + Iter + ', "Streetmap": streets' + Iter + ', "Basemap AT": natural' + Iter + ', "Terrain AT": terrain' + Iter + ', "Blank": blank' + Iter + '};');
-    if (mylevel == 'burial_site') getAllGraves();
-    if (mylevel !== 'burial_site') createFeatureCollection(graveIds)
+    if (typeof (mylevel) !== 'undefined') {
+        if (mylevel == 'burial_site') getAllGraves();
+        if (mylevel !== 'burial_site') createFeatureCollection(graveIds)
+    }
     // Use the custom grouped layer control, not "L.control.layers"
     eval('layerControl' + Iter + ' = L.control.groupedLayers(MyBaseLayers' + Iter + ', groupedOverlays, options)');
     eval('map' + Iter + '.addControl(layerControl' + Iter + ')');
@@ -717,6 +816,7 @@ function setmymap(markers, heatmarkers, graveIds) {
         }]
     }).addTo(eval('map' + Iter));
 
+    if (Iter !== 0) {
     L.Control.Batn = L.Control.extend({
         onAdd: function (map) {
             var div = L.DomUtil.create('div', 'leaflet-bar easy-button-container');
@@ -724,7 +824,7 @@ function setmymap(markers, heatmarkers, graveIds) {
                 '<a title="Download Data" style="background-size: 16px 16px; cursor: pointer; border-top-right-radius: 2px; border-bottom-right-radius: 2px;">' +
                 '<span class="fas fa-download"></span>' +
                 '</a>' +
-                '<ul class="easyBtnHolder" id="btnHolder'+Iter+'">' +
+                '<ul class="easyBtnHolder" id="btnHolder' + Iter + '">' +
                 '<li class="d-inline-block"><a class="csvDownload" title="Download search result as CSV file" data-iter="' + Iter + '"><i class="fas fa-list-alt"></i></a></li>' +
                 '<li class="d-inline-block"><a class="jsonDownload" title="Download search result (sites) as GeoJSON file" data-iter="' + Iter + '"><i class="fas fa-map-marker-alt"></i></a></li>' +
                 '</ul>' +
@@ -741,8 +841,7 @@ function setmymap(markers, heatmarkers, graveIds) {
     }
 
     L.control.batn({position: 'topleft'}).addTo(eval('map' + Iter));
-
-
+    }
 
     printMapbutton(('map' + Iter), 'topleft');
 
@@ -896,8 +995,12 @@ function combinate(operator) {
 }
 
 function getCitation() {
+    if (currentBtn !== 0) {
     currentHeading = document.getElementById('Heading' + currentBtn);
     Search = currentHeading.innerText;
+    } else {
+        Search = "Search for: \"" + $('#searchTerm').val() + "\""
+    }
     mysource = Search.replace("Search", "Search result") + '.' + mycitation1.replace("After:", "");
     $('#mycitation').empty();
     $('#mycitation').html('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');

@@ -1014,7 +1014,6 @@ function enlargeChart(currentConfig) {
             });
         }
         if (percScript === 'valueage') {
-            console.log('valueageshallo')
             $('.boxBtnV').removeClass('d-none');
             $('.absBtn').addClass('d-none');
         }
