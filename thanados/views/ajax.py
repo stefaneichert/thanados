@@ -104,26 +104,27 @@ def ajax_test() -> str:
     else:
         sql = """
         SELECT jsonb_agg(
-                jsonb_build_object(
-                    'id', d.child_id,
-                    'name', d.child_name,
-                    'description', d.description,
-                    'type', d.type,
-                    'type_id', d.type_id,
-                    'maintype', d.maintype,
-                    'min', d.min,
-                    'max', d.max,
-                    'lon', d.lon,
-                    'lat', d.lat,
-                    'system_class', d.system_class,
-                    'burial_id', d.burial_id,
-                    'grave_id', d.grave_id,
-                    'site_id', d.site_id,
-                    'context', d.context,
-                    'file', d.filename
-                )
-            ) AS result FROM (
-                SELECT DISTINCT s.child_id,
+            jsonb_build_object(
+                'id', d.child_id,
+                'name', d.child_name,
+                'description', d.description,
+                'type', d.type,
+                'type_id', d.type_id,
+                'maintype', d.maintype,
+                'min', d.min,
+                'max', d.max,
+                'lon', d.lon,
+                'lat', d.lat,
+                'system_class', d.system_class,
+                'burial_id', d.burial_id,
+                'grave_id', d.grave_id,
+                'site_id', d.site_id,
+                'context', d.context,
+                'file', d.filename
+            )
+        ) AS result FROM (
+            SELECT DISTINCT 
+                s.child_id,
                 s.child_name,
                 split_part(e.description, '##', 1) AS description, 
                 s.type,
@@ -139,16 +140,15 @@ def ajax_test() -> str:
                 s.lat,
                 s.context,
                 s.filename
-from thanados.searchdata s JOIN thanados.entities e ON s.child_id = e.child_id
-WHERE s.maintype = s.path
-                ) d
-                WHERE d.site_id IN %(site_ids)s 
-                    AND (
-                        d.description ILIKE %(criteria)s 
-                        OR d.child_name ILIKE %(criteria)s 
-                        OR d.type ILIKE %(criteria)s
-                        OR d.context ILIKE %(criteria)s)
-        """
+            FROM thanados.searchdata s 
+            JOIN thanados.entities e ON s.child_id = e.child_id
+            WHERE s.maintype = s.path
+        ) d 
+        WHERE d.site_id IN %(site_ids)s AND (
+            UNACCENT(LOWER(d.description)) LIKE UNACCENT(LOWER(%(criteria)s)) 
+            OR UNACCENT(LOWER(d.child_name)) LIKE UNACCENT(LOWER(%(criteria)s)) 
+            OR UNACCENT(LOWER(d.type)) LIKE UNACCENT(LOWER(%(criteria)s))
+            OR UNACCENT(LOWER(d.context)) LIKE UNACCENT(LOWER(%(criteria)s)))"""
         g.cursor.execute(sql, {
             'site_ids': tuple(g.site_list),
             'criteria': f'%{criteria}%'})
