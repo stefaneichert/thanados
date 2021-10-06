@@ -33,10 +33,13 @@ $(document).ready(function () {
 
     popoverRedraw()
 
+    if (typeof (table) != 'undefined') {
+
     table.on('draw', function () {
             popoverRedraw()
         }
     );
+    }
 });
 
 $(window).resize(function () {
@@ -329,5 +332,11 @@ function createNetwork() {
 
 
 
+function getCitation() {
 
+    $('#mycitation').empty();
+    $('#mycitation').html('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' +'"' + data.name + '" ' + mycitation1.replace("After:", "") + '</div>');
+    var citemodal = new bootstrap.Modal(document.getElementById('citeModal'))
+    citemodal.show();
+}
 
