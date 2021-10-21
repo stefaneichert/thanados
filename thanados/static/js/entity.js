@@ -66,7 +66,7 @@ $.each(jsonmysite.features, function (i, feature) {
         })
     })
 })
-//console.log(showDashboard);
+
 
 
 $('#mybreadcrumb').append(
@@ -477,6 +477,21 @@ function getEntityData(parentName, parentId, currentfeature) {
                     }
                 })
             }
+            if (hr.files) {
+                $(".bonediv:last-child").append('<div class="mt-2"></div>')
+                $.each(hr.files, function (i, file) {
+
+                        $(".bonediv:last-child").append(
+                            getImageHtml(file)
+                        )
+                    }
+                )
+            }
+            var lazyLoadInstance = new LazyLoad({
+                elements_selector: ".lazy"
+            });
+            lazyLoadInstance.update();
+
         })
 
 
@@ -1010,7 +1025,7 @@ function setImages(entId, entfiles) {
             firstimage = entfiles[0];
             secondimage = entfiles[1];
             $('#myImagecontainer' + entId).append(
-                '<div id="carouselExampleIndicators' + entId + '" class="cat-image-container carousel slide" data-bs-ride="carousel" data-interval="false">' +
+                '<div id="carouselExampleIndicators' + entId + '" class="cat-image-container carousel slide" data-bs-ride="carousel" data-bs-interval="false">' +
                 '   <div id="mymodalimageindicators' + entId + '" class="carousel-indicators">\n' +
                 '       <button type="button" data-bs-target="#carouselExampleIndicators' + entId + '" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>\n' +
                 '       <button type="button" data-bs-target="#carouselExampleIndicators' + entId + '" data-bs-slide-to="1" aria-label="Slide 2"></button>\n' +
@@ -1269,11 +1284,25 @@ function setcatalogue(currentchildren, parentDiv, iter) {
             setcatalogue(currentfeature.finds, parentDiv + '_' + entId, iter);
         }
 
+        if (typeof (currentfeature.humanremains) != 'undefined') {
+            $('#' + parentDiv + '_' + entId).append(
+                '<button class="btn btn-primary mt-4" type="button" data-bs-toggle="collapse" data-bs-target="#accordibone' + parentDiv + '_' + entId + '" aria-expanded="false" aria-controls="accordibone' + parentDiv + '_' + entId + '">\n' +
+                '        <i class="fas fa-bone me-1"></i>Osteology: ' + currentfeature.humanremains.length +
+                '  </button>' +
+
+                '<div class="collapse" id="accordibone' + parentDiv + '_' + entId + '">\n' +
+                '      <div id="bone-content' + parentDiv + '_' + entId + '">\n' +
+                '</div>'
+            )
+            setcatalogue(currentfeature.humanremains, 'bone-content' + parentDiv + '_' + entId, iter);
+        }
+
     });
     if (loginTrue) {
         $('.backendlink').removeClass('d-none')
     }
 }
+
 
 cataloguetrue = false;
 
