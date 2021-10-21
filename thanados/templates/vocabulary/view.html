@@ -15,7 +15,8 @@
             background-color: #007bff;
         }
     </style>
-    <div class="breadcrumb" id="mybreadcrumbs">{{ data.topparent.type }}: {{ data.path }}</div>
+    <div class="breadcrumb"
+         id="mybreadcrumbs">{{ data.topparent.type }}: {{ data.path }}</div>
     <div id="mycontent">
         <div class="container-fluid">
             <div class="row hierarchy-card">
@@ -23,25 +24,37 @@
 
                     <div class="card mb-3">
                         <div class="card-header" id="typename">
-                             <span class="btn-link" data-bs-toggle="collapse" data-bs-target="#main"
+                             <span class="btn-link" data-bs-toggle="collapse"
+                                   data-bs-target="#main"
                                    aria-expanded="true" aria-controls="main">
                                  {{ data.name }}
                              </span>
+
                         </div>
                         <div class="card-body collapse show" id="main">
+                                                    <div>
+                                <button type="button" onclick="getCitation()"
+                                        title="how to cite this"
+                                        class="btn btn-secondary float-end">
+                                <i class="fas fa-quote-right"></i>
+                                </button>
+                            </div>
 
                             {% if data.description %}
-                                <p class="card-text text-muted" id="typeDescription">
+                                <p class="card-text text-muted"
+                                   id="typeDescription">
                                     {{ data.description }}
                                 </p>
                             {% endif %}
                             <h6 class="card-subtitle mb-2">
                                 Hierarchy:
-                                <a href="/vocabulary/{{ data.topparent.id }}" class="card-link">
+                                <a href="/vocabulary/{{ data.topparent.id }}"
+                                   class="card-link">
                                     {{ data.topparent.name }}
                                 </a>
                                 {% if data.topparent.description and data.parent %}
-                                    <p class="card-text text-muted" id="topparentDescription">
+                                    <p class="card-text text-muted"
+                                       id="topparentDescription">
                                         <i> ({{ data.topparent.description }})
                                         </i>
                                     </p>
@@ -61,7 +74,8 @@
                             {% if data.parent %}
                                 <h6 class="card-subtitle mt-2 mb-2">
                                     Subcategory of:
-                                    <a href="/vocabulary/{{ data.parent }}" class="card-link">
+                                    <a href="/vocabulary/{{ data.parent }}"
+                                       class="card-link">
                                         {{ data.parent_name }}
                                     </a>
                                 </h6>
@@ -72,7 +86,8 @@
                                     <span class="text-muted">
                                     {{ children }}
                                         {% if children != children_recursive-1 %}
-                                            ({{ children_recursive-1 }} - recursively)
+                                            ({{ children_recursive-1 }} -
+                                            recursively)
                                         {% endif %}
                                 </span>
                                 </h6>
@@ -84,7 +99,9 @@
                                     {{ data.entities|length }}
                                         {% if data.entities|length !=
                                         data.entities_recursive|length %}
-                                            ({{ data.entities_recursive|length }} -
+                                            (
+                                            {{ data.entities_recursive|length }}
+                                            -
                                             including subcategories)
                                         {% endif %}
                                 </span>
@@ -96,16 +113,24 @@
                                     <div class="card" id="ImgOne">
 
                                         {% if ".glb" in data.files[0].file_name %}
-                                            <p class="text-muted" title="see Media tab for more">Preview <i
+                                            <p class="text-muted"
+                                               title="see Media tab for more">
+                                                Preview <i
                                                     title="enlarge" onclick="
                                                     current3dFile = JSON.stringify({{ data.files[0] }});
                                                     set3D('{{ data.files[0].file_name }}')
-                                                    " class="hoverfa float-end fas fa-expand-arrows-alt"></i></p>
-                                            <model-viewer class="img-fluid card-img-bottom"
-                                                          src="{{ data.files[0].file_name }}" auto-rotate
-                                                          camera-controls style="min-height: 250px;"></model-viewer>
+                                                    "
+                                                    class="hoverfa float-end fas fa-expand-arrows-alt"></i>
+                                            </p>
+                                            <model-viewer
+                                                    class="img-fluid card-img-bottom"
+                                                    src="{{ data.files[0].file_name }}"
+                                                    auto-rotate
+                                                    camera-controls
+                                                    style="min-height: 250px;"></model-viewer>
                                         {% else %}
-                                            <a href="{{ data.files[0].file_name }}" data-featherlight>
+                                            <a href="{{ data.files[0].file_name }}"
+                                               data-featherlight>
                                                 <img class="card-img-bottom img-fluid"
                                                      src="{{ data.files[0].file_name }}"
                                                      alt="image"
@@ -137,14 +162,16 @@
 
                     <div class="card mb-3">
                         <div class="card-header">
-                            <span class="btn-link" data-bs-toggle="collapse" data-bs-target="#tree"
+                            <span class="btn-link" data-bs-toggle="collapse"
+                                  data-bs-target="#tree"
                                   aria-expanded="true" aria-controls="tree">
                                 Hierarchy
                             </span>
                         </div>
                         <div class="card-body collapse show" id="tree">
                             {% if data.parent %}
-                                <a style="margin-left: -0.5em" href="/vocabulary/{{ data.parent }}">
+                                <a style="margin-left: -0.5em"
+                                   href="/vocabulary/{{ data.parent }}">
                                     {{ data.parent_name }}
                                 </a>
                             {% endif %}
@@ -158,14 +185,16 @@
                             <div class="card-header">
                                 <span class="btn-link" data-bs-toggle="collapse"
                                       data-bs-target="#mapContainer"
-                                      aria-expanded="true" aria-controls="collapseOne">
+                                      aria-expanded="true"
+                                      aria-controls="collapseOne">
                                     Occurences
                                 </span>
                             </div>
                             <div id="mapContainer" class="collapse show">
                                 <div class="card-body" id="map"
                                      style="height: 50vh; width: 100%"></div>
-                                <div class="card-footer text-muted" id="occurence"></div>
+                                <div class="card-footer text-muted"
+                                     id="occurence"></div>
                             </div>
                         </div>
                     </div>
@@ -174,12 +203,14 @@
 
             <div class="hierarchy-card card mb-3">
                 <div class="card-header">
-                            <span class="btn-link" data-bs-toggle="collapse" data-bs-target="#network"
+                            <span class="btn-link" data-bs-toggle="collapse"
+                                  data-bs-target="#network"
                                   aria-expanded="true" aria-controls="tree">
                                 Network
                                 <span id="loadingspinner" class="d-none">
                                 <div class="float-end spinner-border text-primary"
-                                     style="width: 1.3em; height: 1.3em;" role="status">
+                                     style="width: 1.3em; height: 1.3em;"
+                                     role="status">
                                 </div>
                                 <span class="me-3 float-end text-primary">Loading...</span>
                                 </span>
@@ -199,7 +230,8 @@
                     <ul class="nav nav-tabs card-header-tabs">
                         {% if data.entities_recursive %}
                             <li class="nav-item">
-                                <a id="entNav" class="nav-link active" data-bs-toggle="tab"
+                                <a id="entNav" class="nav-link active"
+                                   data-bs-toggle="tab"
                                    href="#entities">Entities</a>
                             </li>
                         {% endif %}
@@ -218,11 +250,13 @@
                         {% if data.gazetteers %}
                             <li class="nav-item">
                                 {% if not data.entities_recursive %}
-                                    <a id="gazNav" class="nav-link active" data-bs-toggle="tab"
+                                    <a id="gazNav" class="nav-link active"
+                                       data-bs-toggle="tab"
                                        href="#gazetteers">Identifiers
                                     </a>
                                 {% else %}
-                                    <a id="gazNav" class="nav-link" data-bs-toggle="tab"
+                                    <a id="gazNav" class="nav-link"
+                                       data-bs-toggle="tab"
                                        href="#gazetteers">Identifiers
                                     </a>
                                 {% endif %}
@@ -231,10 +265,13 @@
                         {% if data.files %}
                             <li class="nav-item">
                                 {% if not data.entities_recursive %}
-                                    <a id="fileNav" class="nav-link active" data-bs-toggle="tab"
+                                    <a id="fileNav" class="nav-link active"
+                                       data-bs-toggle="tab"
                                        href="#images">Media</a>
                                 {% else %}
-                                    <a id="fileNav" class="nav-link" data-bs-toggle="tab" href="#images">Media</a>
+                                    <a id="fileNav" class="nav-link"
+                                       data-bs-toggle="tab"
+                                       href="#images">Media</a>
                                 {% endif %}
                             </li>
                         {% endif %}
@@ -244,7 +281,8 @@
                     {% if data.entities_recursive %}
                         <div class="tab-pane active" id="entities">
                             <table id="entities_tbl"
-                                   class="display table table-striped table-bordered" width="100%">
+                                   class="display table table-striped table-bordered"
+                                   width="100%">
                                 <thead>
                                 <tr>
                                     <th>Name</th>
@@ -258,10 +296,13 @@
                         </div>
                     {% endif %}
                     {% if data.bibliography %}
-                        <div class="tab-pane" id="bibliography">Bibliography</div>
+                        <div class="tab-pane" id="bibliography">Bibliography
+                        </div>
                     {% endif %}
                     {% if data.references %}
-                        <div class="tab-pane" id="references">External References</div>
+                        <div class="tab-pane" id="references">External
+                            References
+                        </div>
                     {% endif %}
                     {% if data.gazetteers %}
                         {% if not data.entities_recursive %}
@@ -276,17 +317,21 @@
 
                                     <div class="card-header">
                                         {% if row.favicon %}
-                                            <span><a title="{{ row.about }}" href="{{ row.url }}"
+                                            <span><a title="{{ row.about }}"
+                                                     href="{{ row.url }}"
                                                      target="_blank">{{ row.domain }}
-                                                    <img style="max-height: 30px" src="{{ row.favicon }}"></a></span>
+                                                    <img style="max-height: 30px"
+                                                         src="{{ row.favicon }}"></a></span>
                                         {% else %}
-                                            <span><a title="{{ row.about }}" href="{{ row.url }}"
+                                            <span><a title="{{ row.about }}"
+                                                     href="{{ row.url }}"
                                                      target="_blank">{{ row.domain }}
                                                     </a></span>
                                         {% endif %}
                                     </div>
                                     <div class="card-body">
-                                        <a title="Identifier from {{ row.domain }}" href="{{ row.url }}"
+                                        <a title="Identifier from {{ row.domain }}"
+                                           href="{{ row.url }}"
                                            target="_blank">{{ row.identifier }}</a>
                                         {% if row.label %}
                                             <br><i>{{ row.label }}</i><br>
@@ -299,13 +344,16 @@
 
                                     </div>
                                     {% if row.image %}
-                                        <a href="{{ row.image.origin }}" target="_blank"
+                                        <a href="{{ row.image.origin }}"
+                                           target="_blank"
                                            title="Image from: {{ row.image.origin }}. Click for details and licence information"><img
                                                 class="card-img-bottom"
                                                 src="{{ row.image.url }}"
                                                 alt=""></a>
                                         <span class="p-2">
-                                                <small><a class="mt-2" href="{{ row.image.origin }}" target="_blank"><i
+                                                <small><a class="mt-2"
+                                                          href="{{ row.image.origin }}"
+                                                          target="_blank"><i
                                                         class="fas fa-info-circle me-2"></i></a>
                                                     {{ license|safe }}
                                                 <br><span>Image: {{ credit|safe }}</span></small>
@@ -326,19 +374,24 @@
                                         <div class="col-sm-6 col-lg-4 mb-4 media-col">
                                             <div class="card">
                                                 {% if ".glb" in (row.file_name) %}
-                                                    <model-viewer class="img-fluid card-img-bottom"
-                                                                  style="min-height: 250px;"
-                                                                  src="{{ (row.file_name) }}"
-                                                                  alt="3d" auto-rotate camera-controls>
-                                                        <div class="annotation" title="enlarge"
+                                                    <model-viewer
+                                                            class="img-fluid card-img-bottom"
+                                                            style="min-height: 250px;"
+                                                            src="{{ (row.file_name) }}"
+                                                            alt="3d" auto-rotate
+                                                            camera-controls>
+                                                        <div class="annotation"
+                                                             title="enlarge"
                                                              data-file="{{ row }}"
                                                              onclick="current3dFile = $(this).data('file'); set3D('{{ (row.file_name) }}')">
                                                             <i class="fas fa-expand"></i>
                                                         </div>
                                                     </model-viewer>
                                                 {% else %}
-                                                    <a href="{{ (row.file_name) }}" data-featherlight>
-                                                        <img src="{{ (row.file_name) }}" alt="image"
+                                                    <a href="{{ (row.file_name) }}"
+                                                       data-featherlight>
+                                                        <img src="{{ (row.file_name) }}"
+                                                             alt="image"
                                                                 {% if row.source %}
                                                              title="{{ row.source }}"
                                                                 {% endif %}
@@ -369,19 +422,24 @@
                                         <div class="col-sm-6 col-lg-4 mb-4 media-col">
                                             <div class="card">
                                                 {% if ".glb" in (row.file_name) %}
-                                                    <model-viewer class="img-fluid card-img-bottom"
-                                                                  style="min-height: 250px;"
-                                                                  src="{{ (row.file_name) }}"
-                                                                  alt="3d" auto-rotate camera-controls>
-                                                        <div class="annotation" title="enlarge"
+                                                    <model-viewer
+                                                            class="img-fluid card-img-bottom"
+                                                            style="min-height: 250px;"
+                                                            src="{{ (row.file_name) }}"
+                                                            alt="3d" auto-rotate
+                                                            camera-controls>
+                                                        <div class="annotation"
+                                                             title="enlarge"
                                                              data-file="{{ row }}"
                                                              onclick="current3dFile = $(this).data('file'); set3D('{{ (row.file_name) }}')">
                                                             <i class="fas fa-expand"></i>
                                                         </div>
                                                     </model-viewer>
                                                 {% else %}
-                                                    <a href="{{ (row.file_name) }}" data-featherlight>
-                                                        <img src="{{ (row.file_name) }}" alt="image"
+                                                    <a href="{{ (row.file_name) }}"
+                                                       data-featherlight>
+                                                        <img src="{{ (row.file_name) }}"
+                                                             alt="image"
                                                                 {% if row.source %}
                                                              title="{{ row.source }}"
                                                                 {% endif %}

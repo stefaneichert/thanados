@@ -1014,3 +1014,11 @@ $('#closeSiteMe').click(function () {
     $('#citeModal').toggle();
     $('#backgroundgray').toggle();
 })
+
+$(function(){
+  $('#searchTerm').keypress(function(e){
+    if(e.which == 13) {
+      returnFreeSearch()
+    }
+  })
+})
