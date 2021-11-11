@@ -16,7 +16,7 @@ def api_download():
     sql_files = """
         SELECT id 
         FROM model.entity 
-        WHERE system_class = 'file' 
+        WHERE openatlas_class_name = 'file' 
             AND id IN (
                 SELECT domain_id FROM model.link 
                 WHERE range_id IN 

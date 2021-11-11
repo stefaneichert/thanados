@@ -12,7 +12,7 @@ from thanados.models.entity import Data
 @app.route('/entity/<int:object_id>/<format_>')
 @app.route('/<api_>/<type_>/<int:object_id>')
 def entity_view(object_id: int, format_=None, api_=None, type_=None):
-    system_class = Data.get_system_class(object_id)
+    openatlas_class_name = Data.get_openatlas_class_name(object_id)
     place_id = Data.get_parent_place_id(object_id)
     data = Data.get_data(place_id)[0].data
     entity = {}
@@ -35,7 +35,7 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
     if format_ == 'network':
         network = Data.getNetwork(object_id)
         return render_template('entity/network.html', place_id=place_id, object_id=object_id,
-                               mysitejson=data, system_class=system_class, entity=entity, network=network)
+                               mysitejson=data, openatlas_class_name=openatlas_class_name, entity=entity, network=network)
     if format_ == 'dashboard':
 
         # prepare AgeData
@@ -885,7 +885,7 @@ GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.ch
                     CREATE TABLE thanados.sexGraveDepth AS
                     
                     (SELECT s.type, g.min FROM thanados.sexDash s JOIN thanados.burials b ON s.burial_id = b.child_id JOIN thanados.searchdata g ON g.child_id = b.parent_id
-                    WHERE g.type = 'Height' AND g.system_class = 'feature');
+                    WHERE g.type = 'Height' AND g.openatlas_class_name = 'feature');
                     
                     DROP TABLE IF EXISTS thanados.sexGraveDepthJSON;
                     CREATE TABLE thanados.sexGraveDepthJSON AS
@@ -1162,4 +1162,4 @@ GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.ch
             return json.dumps(data)
 
     return render_template('entity/view.html', place_id=place_id, object_id=object_id,
-                           mysitejson=data, system_class=system_class, jsonld_url=url)  # , jsonld=output)
+                           mysitejson=data, openatlas_class_name=openatlas_class_name, jsonld_url=url)  # , jsonld=output)

@@ -219,7 +219,7 @@ if (data.entities_recursive) {
                 data: 'context'
             },
             {
-                data: 'system_class'
+                data: 'openatlas_class_name'
             }
         ],
     });

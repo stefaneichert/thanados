@@ -400,17 +400,18 @@ function returnQuerystring() {
     mymin = $('#min' + Iter).val();
     mymax = $('#max' + Iter).val();
     mytypes = $('#type' + Iter).val();
-    system_class = mylevel;
-    if (mylevel === 'osteology') system_class = 'human_remains'
-    if (mylevel === 'burial_site') system_class = 'place';
-    if (mylevel === 'strat') system_class = 'stratigraphic_unit';
+    openatlas_class_name = mylevel;
+    if (mylevel === 'osteology') openatlas_class_name = 'human_remains'
+    if (mylevel === 'burial_site') openatlas_class_name = 'place';
+    if (mylevel === 'strat') openatlas_class_name = 'stratigraphic_unit';
+    if (mylevel === 'find') openatlas_class_name = 'artifact';
     $('#headingb' + Iter).toggle();
     $('#Resultlist' + Iter).html('<span class="spinner-border spinner-border-sm me-3" role="status" aria-hidden="true"></span>...Search in progress');
     $.ajax({
         type: 'POST',
         url: '/ajax/test',
         data: {
-            'system_class': system_class,
+            'openatlas_class_name': openatlas_class_name,
             'types': mytypes,
             'criteria': mycriteria,
             'min': mymin,
@@ -943,7 +944,7 @@ function createCSV(data) {
             newDataset.max = dataset.max;
             newDataset.path = dataset.path.replace(/"/g, '\'');
             newDataset.maintype = dataset.maintype.replace(/"/g, '\'');
-            newDataset.system_class = dataset.system_class;
+            newDataset.openatlas_class_name = dataset.openatlas_class_name;
             newDataset.context = dataset.context.replace(/"/g, '\'');
             newDataset.burial_id = dataset.burial_id;
             newDataset.grave_id = dataset.grave_id;

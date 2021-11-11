@@ -266,7 +266,7 @@ function checkAvailable(appendLevel, type) {
             if (mapsearch) availables = availableTypes.burialtypes;
             break;
         case "find":
-            form = "find";
+            form = "artifact";
             if (mapsearch) availables = availableTypes.findtypes;
             break;
         case "osteology":
@@ -316,7 +316,7 @@ function initiateTree(Iter, appendLevel, criteria, targetField) {
             if (mapsearch) availables = availableTypes.burialtypes;
             break;
         case "find":
-            form = "find";
+            form = "artifact";
             if (mapsearch) availables = availableTypes.findtypes;
             break;
         case "osteology":
@@ -2289,8 +2289,8 @@ function repairJson(data) {
                     $.each(burial.finds, function (i, find) {
                         if (typeof (find.properties.maintype.id) === "undefined") {
                             find.properties.maintype = {
-                                "systemtype": "find",
-                                "name": "find",
+                                "systemtype": "artifact",
+                                "name": "artifact",
                                 "id": 157754,
                                 "parent_id": 157754,
                                 "path": "Find"

@@ -103,7 +103,7 @@ SELECT parent_id FROM thanados.extrefs WHERE name = 'GeoNames')) ng1 WHERE ng1.c
         missingeonames = []
 
     sql_refs = """
-    SELECT jsonb_agg(jsonb_build_object('id', id, 'name', name, 'citation', description)) AS refs FROM (SELECT id, name, description FROM model.entity WHERE class_code = 'E31' AND system_class = 'bibliography' ORDER BY name) a
+    SELECT jsonb_agg(jsonb_build_object('id', id, 'name', name, 'citation', description)) AS refs FROM (SELECT id, name, description FROM model.entity WHERE cidoc_class_code = 'E31' AND openatlas_class_name = 'bibliography' ORDER BY name) a
         """
     try:
         g.cursor.execute(sql_refs)
@@ -193,7 +193,7 @@ WITH RECURSIVE path(id, path, parent, name, description, parent_id, name_path) A
                        link.property_code
                 FROM model.entity
                          LEFT JOIN model.link ON entity.id = link.domain_id
-                WHERE entity.class_code = 'E55') x
+                WHERE entity.cidoc_class_code = 'E55') x
                    LEFT JOIN model.entity e ON x.parent_id = e.id
           ORDER BY e.name) types_all
     WHERE types_all.parent_name IS NULL
@@ -225,7 +225,7 @@ WITH RECURSIVE path(id, path, parent, name, description, parent_id, name_path) A
                        link.property_code
                 FROM model.entity
                          LEFT JOIN model.link ON entity.id = link.domain_id
-                WHERE entity.class_code ~~ 'E55'::text  AND link.property_code = 'P127') x
+                WHERE entity.cidoc_class_code ~~ 'E55'::text  AND link.property_code = 'P127') x
                    LEFT JOIN model.entity e ON x.parent_id = e.id
           ORDER BY e.name) types_all,
          path parentpath
@@ -242,16 +242,16 @@ SELECT path.name,
 FROM path
 ORDER BY path.path;
           
-UPDATE thanados.types_all SET topparent = f.topparent, forms = f.forms 
-    FROM (SELECT tp.id, tp.name_path, tp.topparent, jsonb_agg(DISTINCT f.name) AS forms 
-        FROM (SELECT id::INTEGER, path, name_path, left(path, strpos(path, ' >') -1)::INTEGER AS 
+UPDATE thanados.types_all SET topparent = f.topparent, forms = f.forms
+    FROM (SELECT tp.id, tp.name_path, tp.topparent, jsonb_agg(DISTINCT f.name) AS forms
+        FROM (SELECT id::INTEGER, path, name_path, left(path, strpos(path, ' >') -1)::INTEGER AS
             topparent FROM thanados.types_all WHERE path LIKE '%>%'
-                    UNION ALL 
-            SELECT id::INTEGER, path, name_path, PATH::INTEGER AS topparent FROM 
-                thanados.types_all WHERE path NOT LIKE '%>%' ORDER BY name_path) tp JOIN (select f.name, hierarchy_id FROM  
-	                web.form f JOIN web.hierarchy_form h ON f.id = h.form_id) f 
-	                ON  f.hierarchy_id = tp.topparent 
-	                GROUP BY tp.id, tp.name_path, tp.topparent ORDER BY name_path) f 
+                    UNION ALL
+            SELECT id::INTEGER, path, name_path, PATH::INTEGER AS topparent FROM
+                thanados.types_all WHERE path NOT LIKE '%>%' ORDER BY name_path) tp JOIN (select openatlas_class_name as name, hierarchy_id FROM
+	                web.hierarchy_openatlas_class) f
+	                ON  f.hierarchy_id = tp.topparent
+	                GROUP BY tp.id, tp.name_path, tp.topparent ORDER BY name_path) f
 	WHERE thanados.types_all.id = f.id;
 
 
@@ -268,7 +268,7 @@ CREATE TABLE thanados.sites AS (
            s.end_from,
            s.end_to,
            s.end_comment,
-           s.system_class,
+           s.openatlas_class_name,
            NULL::TEXT    as geom,
            NULL::TEXT as lon,
            NULL::TEXT as lat
@@ -281,12 +281,12 @@ CREATE TABLE thanados.sites AS (
                  date_part('year', e.end_from)::integer   AS end_from,
                  date_part('year', e.end_to)::integer     AS end_to,
                  e.end_comment,
-                 e.system_class,
+                 e.openatlas_class_name,
                  l.range_id
           FROM model.entity e
                    JOIN model.link l ON e.id = l.domain_id
           WHERE l.property_code = 'P2'
-            AND e.system_class = 'place'
+            AND e.openatlas_class_name = 'place'
             )
              AS s
              JOIN thanados.types_all t ON t.id = s.range_id
@@ -352,7 +352,7 @@ SELECT parent.id                                    AS parent_id,
        date_part('year', child.end_from)::integer   AS end_from,
        date_part('year', child.end_to)::integer     AS end_to,
        child.end_comment,
-       child.system_class,
+       child.openatlas_class_name,
        NULL::TEXT                                   as geom,
        NULL::TEXT as lon,
        NULL::TEXT as lat
@@ -361,7 +361,7 @@ FROM model.entity parent
          JOIN model.entity child ON l_p_c.range_id = child.id
 WHERE parent.id in (SELECT child_id FROM thanados.sites)
   AND l_p_c.property_code = 'P46'
-ORDER BY child.system_class, parent.id, child.name;
+ORDER BY child.openatlas_class_name, parent.id, child.name;
 
 -- if no graves are available create an intermediate feature to be displayed on the map
 INSERT INTO thanados.graves (
@@ -376,7 +376,7 @@ SELECT
     end_from,
     end_to,
     end_comment,
-    'feature' AS system_class,
+    'feature' AS openatlas_class_name,
     geom,
     NULL as lon,
     NULL as lat
@@ -420,7 +420,7 @@ SELECT parent.id                                    AS parent_id,
        date_part('year', child.end_from)::integer   AS end_from,
        date_part('year', child.end_to)::integer     AS end_to,
        child.end_comment,
-       child.system_class,
+       child.openatlas_class_name,
        NULL::TEXT                                   as geom,
        NULL::TEXT as lon,
        NULL::TEXT as lat
@@ -429,7 +429,7 @@ FROM model.entity parent
          JOIN model.entity child ON l_p_c.range_id = child.id
 WHERE parent.id in (SELECT child_id FROM thanados.graves)
   AND l_p_c.property_code = 'P46'
-ORDER BY child.system_class, parent.id, child.name;
+ORDER BY child.openatlas_class_name, parent.id, child.name;
 
 
 UPDATE thanados.burials
@@ -466,7 +466,7 @@ SELECT parent.id                                    AS parent_id,
        date_part('year', child.end_from)::integer   AS end_from,
        date_part('year', child.end_to)::integer     AS end_to,
        child.end_comment,
-       child.system_class,
+       child.openatlas_class_name,
        NULL::TEXT                                   as geom,
        NULL::TEXT as lon,
        NULL::TEXT as lat
@@ -474,8 +474,8 @@ FROM model.entity parent
          JOIN model.link l_p_c ON parent.id = l_p_c.domain_id
          JOIN model.entity child ON l_p_c.range_id = child.id
 WHERE parent.id in (SELECT child_id FROM thanados.burials)
-  AND l_p_c.property_code = 'P46' AND child.system_class = 'find'
-ORDER BY child.system_class, parent.id, child.name;
+  AND l_p_c.property_code = 'P46' AND child.openatlas_class_name = 'artifact'
+ORDER BY child.openatlas_class_name, parent.id, child.name;
 
 
 UPDATE thanados.finds
@@ -512,7 +512,7 @@ SELECT parent.id                                    AS parent_id,
        date_part('year', child.end_from)::integer   AS end_from,
        date_part('year', child.end_to)::integer     AS end_to,
        child.end_comment,
-       child.system_class,
+       child.openatlas_class_name,
        NULL::TEXT                                   as geom,
        NULL::TEXT as lon,
        NULL::TEXT as lat
@@ -520,8 +520,8 @@ FROM model.entity parent
          JOIN model.link l_p_c ON parent.id = l_p_c.domain_id
          JOIN model.entity child ON l_p_c.range_id = child.id
 WHERE parent.id in (SELECT child_id FROM thanados.burials)
-  AND l_p_c.property_code = 'P46' AND child.system_class = 'human_remains'
-ORDER BY child.system_class, parent.id, child.name;
+  AND l_p_c.property_code = 'P46' AND child.openatlas_class_name = 'human_remains'
+ORDER BY child.openatlas_class_name, parent.id, child.name;
 
 
 UPDATE thanados.humanremains
@@ -714,7 +714,7 @@ DROP TABLE IF EXISTS thanados.graveDeg;
 CREATE TABLE thanados.graveDeg AS
 SELECT 
 	d.*,
-	e.system_class,
+	e.openatlas_class_name,
 	b.child_id AS burial_id
 	FROM thanados.dimensiontypes d JOIN model.entity e ON d.entity_id = e.id JOIN thanados.burials b ON e.id = b.parent_id WHERE d.id = 26192 AND b.child_id NOT IN 
 		(SELECT 
@@ -726,7 +726,7 @@ INSERT INTO thanados.dimensiontypes SELECT id, parent_id, burial_id, name, descr
 DROP TABLE IF EXISTS thanados.giscleanup2;
 CREATE TABLE thanados.giscleanup2 AS
  (
-SELECT 	e.system_class,
+SELECT 	e.openatlas_class_name,
 	e.child_name,
 	e.parent_id,
 	e.child_id,
@@ -741,7 +741,7 @@ CREATE TABLE thanados.derivedDegtmp AS
 (SELECT 
 	ST_StartPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS startP,
 	ST_EndPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS endP,
-	child_id FROM thanados.giscleanup2 g WHERE system_class = 'feature');
+	child_id FROM thanados.giscleanup2 g WHERE openatlas_class_name = 'feature');
 
 
 -- Get azimuth of grave if a polygon is known
@@ -938,7 +938,7 @@ FROM thanados.entities,
 WHERE entities.child_id = link.range_id
   AND link.domain_id = entity.id
   AND entities.child_id != 0
-  AND entity.system_class ~~ 'file'::text
+  AND entity.openatlas_class_name ~~ 'file'::text
 ORDER BY entities.child_id;
 
 UPDATE thanados.files SET description = NULL WHERE description = '';
@@ -1013,7 +1013,7 @@ FROM thanados.entities,
 WHERE entities.child_id = link.range_id
   AND link.domain_id = entity.id
   AND entities.child_id != 0
-  AND entity.system_class ~~ 'bibliography'::text
+  AND entity.openatlas_class_name ~~ 'bibliography'::text
 ORDER BY entities.child_id;
 
 
@@ -1041,7 +1041,7 @@ FROM thanados.entities,
 WHERE entities.child_id = link.range_id
   AND link.domain_id = entity.id
   AND entities.child_id != 0
-  AND entity.system_class ~~ 'external_reference'::text
+  AND entity.openatlas_class_name ~~ 'external_reference'::text
 ORDER BY entities.child_id;
 
 INSERT INTO thanados.extrefs 
@@ -1458,7 +1458,7 @@ SELECT f.child_id,
                        'path', f.path,
                        'id', f.type_id,
                        'parent_id', f.parenttype_id,
-                       'systemtype', f.system_class
+                       'systemtype', f.openatlas_class_name
                    ),
                'types', f.types,
                'description', f.description,
@@ -1469,7 +1469,7 @@ SELECT f.child_id,
                'externalreference', f.extrefs,
                'radiocarbon', f.radiocarbon
            )) AS finds
-FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'find') f
+FROM (SELECT * FROM thanados.tmp WHERE openatlas_class_name LIKE 'artifact') f
 ORDER BY f.child_name;
 
 
@@ -1516,7 +1516,7 @@ SELECT f.child_id,
                        'path', f.path,
                        'id', f.type_id,
                        'parent_id', f.parenttype_id,
-                       'systemtype', f.system_class
+                       'systemtype', f.openatlas_class_name
                    ),
                'types', f.types,
                'description', f.description,
@@ -1527,7 +1527,7 @@ SELECT f.child_id,
                'externalreference', f.extrefs,
                'radiocarbon', f.radiocarbon
            )) AS humanremains
-FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'human_remains') f
+FROM (SELECT * FROM thanados.tmp WHERE openatlas_class_name LIKE 'human_remains') f
 ORDER BY f.child_name;
 
 
@@ -1576,7 +1576,7 @@ SELECT f.child_id AS id,
                        'path', f.path,
                        'id', f.type_id,
                        'parent_id', f.parenttype_id,
-                       'systemtype', f.system_class
+                       'systemtype', f.openatlas_class_name
                    ),
                'types', f.types,
                'description', f.description,
@@ -1589,10 +1589,10 @@ SELECT f.child_id AS id,
 
            ))     AS burials,
        jsonb_strip_nulls(jsonb_agg(fi.find))--,
-FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'stratigraphic_unit') f
+FROM (SELECT * FROM thanados.tmp WHERE openatlas_class_name LIKE 'stratigraphic_unit') f
          LEFT JOIN thanados.tbl_findscomplete fi ON f.child_id = fi.parent_id         
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.typename, f.path,
-         f.radiocarbon, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.system_class, f.reference, f.extrefs
+         f.radiocarbon, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.openatlas_class_name, f.reference, f.extrefs
 ORDER BY f.child_name;
 
 DROP TABLE IF EXISTS thanados.tbl_findscomplete;
@@ -1661,7 +1661,7 @@ SELECT f.child_id,
                        'path', f.path,
                        'id', f.type_id,
                        'parent_id', f.parenttype_id,
-                       'systemtype', f.system_class
+                       'systemtype', f.openatlas_class_name
                    ),
                'types', f.types,
                'description', f.description,
@@ -1673,11 +1673,11 @@ SELECT f.child_id,
                'radiocarbon', f.radiocarbon
            )) AS graves,
        jsonb_strip_nulls(jsonb_agg(fi.burial))
-FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'feature') f
+FROM (SELECT * FROM thanados.tmp WHERE openatlas_class_name LIKE 'feature') f
          LEFT JOIN thanados.tbl_burialscomplete fi ON f.child_id = fi.parent_id
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.reference, f.extrefs,
          f.radiocarbon, f.geom, f.typename, f.path, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files,
-         f.system_class
+         f.openatlas_class_name
 ORDER BY f.child_name;
 
 DROP TABLE IF EXISTS thanados.tbl_burialscomplete;
@@ -1775,7 +1775,7 @@ SELECT s.id,
                        'path', f.path,
                        'id', f.type_id,
                        'parent_id', f.parenttype_id,
-                       'systemtype', f.system_class
+                       'systemtype', f.openatlas_class_name
                    ),
                'types', f.types,
                'description', f.description,
@@ -1789,11 +1789,11 @@ SELECT s.id,
                'shape', s.polygon::jsonb,
                'radiocarbon', f.radiocarbon
            )) AS sites
-FROM (SELECT * FROM thanados.tmp WHERE system_class LIKE 'place') f
+FROM (SELECT * FROM thanados.tmp WHERE openatlas_class_name LIKE 'place') f
          LEFT JOIN thanados.tbl_sites s ON f.child_id = s.id
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.reference, f.extrefs,
          f.geom, f.typename, f.path, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files,
-         f.radiocarbon, f.system_class, s.id, s.name,
+         f.radiocarbon, f.openatlas_class_name, s.id, s.name,
          s.point, s.polygon
 ORDER BY f.child_name;
 
@@ -2415,9 +2415,9 @@ CREATE TABLE thanados.ageatdeath AS (
           
     DROP TABLE IF EXISTS thanados.searchData;
     CREATE TABLE thanados.searchData AS
-    SELECT e.child_id, e.child_name, 'timespan' AS type, NULL AS path, 0 AS type_id, e.begin_from AS min, e.end_to AS max, e.system_class FROM thanados.entities e WHERE e.child_id != 0
+    SELECT e.child_id, e.child_name, 'timespan' AS type, NULL AS path, 0 AS type_id, e.begin_from AS min, e.end_to AS max, e.openatlas_class_name FROM thanados.entities e WHERE e.child_id != 0
     UNION ALL
-    SELECT e.child_id, e.child_name, t.name AS type, t.path AS path, t.id AS type_id, t.value::double precision AS min, t.value::double precision AS max, e.system_class FROM thanados.entities e LEFT JOIN thanados.types_main t ON e.child_id = t.entity_id WHERE e.child_id != 0 ORDER BY child_id;
+    SELECT e.child_id, e.child_name, t.name AS type, t.path AS path, t.id AS type_id, t.value::double precision AS min, t.value::double precision AS max, e.openatlas_class_name FROM thanados.entities e LEFT JOIN thanados.types_main t ON e.child_id = t.entity_id WHERE e.child_id != 0 ORDER BY child_id;
 
 
 DROP TABLE IF EXISTS thanados.searchData_tmp;
@@ -2439,7 +2439,7 @@ SELECT
 		JOIN thanados.burials b ON f.parent_id = b.child_id
 		JOIN thanados.graves g ON b.parent_id = g.child_id
 		JOIN thanados.sites s ON g.parent_id = s.child_id
-		WHERE se.system_class = 'find' AND s.lon != ''
+		WHERE se.openatlas_class_name = 'artifact' AND s.lon != ''
 
 UNION ALL
 
@@ -2459,7 +2459,7 @@ SELECT
 		JOIN thanados.burials b ON f.parent_id = b.child_id
 		JOIN thanados.graves g ON b.parent_id = g.child_id
 		JOIN thanados.sites s ON g.parent_id = s.child_id
-		WHERE se.system_class = 'human_remains' AND s.lon != ''
+		WHERE se.openatlas_class_name = 'human_remains' AND s.lon != ''
 
 UNION ALL
 
@@ -2478,7 +2478,7 @@ SELECT
 		JOIN thanados.burials b ON se.child_id = b.child_id 
 		JOIN thanados.graves g ON b.parent_id = g.child_id 
 		JOIN thanados.sites s ON g.parent_id = s.child_id 
-		WHERE se.system_class = 'stratigraphic_unit' AND s.lon != ''
+		WHERE se.openatlas_class_name = 'stratigraphic_unit' AND s.lon != ''
 
 UNION ALL		
 
@@ -2496,7 +2496,7 @@ SELECT
 		JOIN thanados.maintype mt ON se.child_id = mt.entity_id
 		JOIN thanados.graves g ON se.child_id = g.child_id 
 		JOIN thanados.sites s ON g.parent_id = s.child_id 
-		WHERE se.system_class = 'feature' AND s.lon != ''
+		WHERE se.openatlas_class_name = 'feature' AND s.lon != ''
 
 UNION ALL		
 
@@ -2513,7 +2513,7 @@ SELECT
 	FROM thanados.searchData se
 		JOIN thanados.maintype mt ON se.child_id = mt.entity_id
 		JOIN thanados.sites s ON se.child_id = s.child_id 
-		WHERE se.system_class = 'place' AND s.lon != ''); 
+		WHERE se.openatlas_class_name = 'place' AND s.lon != ''); 
 
 DROP TABLE IF EXISTS thanados.searchData;
     CREATE TABLE thanados.searchData AS SELECT * FROM thanados.searchData_tmp;
@@ -2892,11 +2892,11 @@ def timeclean_execute():  # pragma: no cover
     filesthere = 0
     print('Cropping files')
     sql = """
-                SELECT id AS file, 0 AS ovl FROM model.entity WHERE system_class = 'file' 
+                SELECT id AS file, 0 AS ovl FROM model.entity WHERE openatlas_class_name = 'file' 
                                 AND id NOT IN
                                 (SELECT image_id FROM web.map_overlay)
                 UNION ALL
-                SELECT id AS file, 1 AS ovl FROM model.entity WHERE system_class = 'file' 
+                SELECT id AS file, 1 AS ovl FROM model.entity WHERE openatlas_class_name = 'file' 
                                 AND id IN
                                 (SELECT image_id FROM web.map_overlay)
                                 """

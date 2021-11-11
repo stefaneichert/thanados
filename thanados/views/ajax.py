@@ -23,7 +23,7 @@ def ajax_test() -> str:
                     'max', d.max,
                     'lon', d.lon,
                     'lat', d.lat,
-                    'system_class', d.system_class,
+                    'openatlas_class_name', d.openatlas_class_name,
                     'burial_id', d.burial_id,
                     'grave_id', d.grave_id,
                     'site_id', d.site_id,
@@ -33,7 +33,7 @@ def ajax_test() -> str:
             ) AS result FROM ( 
                 SELECT * FROM thanados.searchData
                 WHERE site_id IN %(site_ids)s 
-                    AND system_class = %(system_class)s 
+                    AND openatlas_class_name = %(openatlas_class_name)s 
                     AND type_id IN %(type_ids)s) d"""
 
     if criteria == 'timespan':
@@ -50,7 +50,7 @@ def ajax_test() -> str:
                    'max', d.max,
                    'lon', d.lon,
                    'lat', d.lat,
-                   'system_class', d.system_class,
+                   'openatlas_class_name', d.openatlas_class_name,
                    'burial_id', d.burial_id,
                    'grave_id', d.grave_id,
                    'site_id', d.site_id,
@@ -60,7 +60,7 @@ def ajax_test() -> str:
             ) AS result FROM (
                 SELECT * FROM thanados.searchData 
                 WHERE site_id IN %(site_ids)s 
-                    AND system_class = %(system_class)s 
+                    AND openatlas_class_name = %(openatlas_class_name)s 
                     AND type_id = 0 
                     AND min >= %(min)s 
                     AND max <= %(max)s) d"""
@@ -79,7 +79,7 @@ def ajax_test() -> str:
                     'max', d.max,
                     'lon', d.lon,
                     'lat', d.lat,
-                    'system_class', d.system_class,
+                    'openatlas_class_name', d.openatlas_class_name,
                     'burial_id', d.burial_id,
                     'grave_id', d.grave_id,
                     'site_id', d.site_id,
@@ -89,14 +89,14 @@ def ajax_test() -> str:
             ) AS result FROM (
                 SELECT * FROM thanados.searchData 
                 WHERE site_id IN %(site_ids)s 
-                    AND system_class = %(system_class)s 
+                    AND openatlas_class_name = %(openatlas_class_name)s 
                     AND type_id IN %(type_ids)s
                     AND min >= %(min)s
                     AND max <= %(max)s) d"""
     if sql != "":
         g.cursor.execute(sql, {
             'site_ids': tuple(g.site_list),
-            'system_class': request.form['system_class'],
+            'openatlas_class_name': request.form['openatlas_class_name'],
             'type_ids': tuple(ast.literal_eval(f"[{request.form['types']}]")),
             'min': request.form['min'],
             'max': request.form['max']})
@@ -115,7 +115,7 @@ def ajax_test() -> str:
                 'max', d.max,
                 'lon', d.lon,
                 'lat', d.lat,
-                'system_class', d.system_class,
+                'openatlas_class_name', d.openatlas_class_name,
                 'burial_id', d.burial_id,
                 'grave_id', d.grave_id,
                 'site_id', d.site_id,
@@ -130,7 +130,7 @@ def ajax_test() -> str:
                 s.type,
                 s.type_id,
                 s.path AS maintype,
-                s.system_class,
+                s.openatlas_class_name,
                 s.burial_id,
                 s.grave_id,
                 s.site_id,
