@@ -85,8 +85,8 @@ GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.ch
                     isodata = None
             return isodata
 
-        isoAge = getScatterDataX([117199, 117200], 118182, ['min age', 'max age'])
-        isodata = getScatterDataX([118183], 118182, ['Burials'])
+        isoAge = getScatterDataX([117199, 117200], 118183, ['min age', 'max age'])
+        isodata = getScatterDataX([118182], 118183, ['Burials'])
 
         def getAvgValuesPerTypeParent(topparent, label):
 
