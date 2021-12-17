@@ -49,7 +49,7 @@ $(document).ready(function () {
     hoverMarkers = new L.LayerGroup();
     hoverMarkers.addTo(map);
 
-    if ((sitelist).length > 400) {
+    if ((sitelist).length > 300) {
         clustermarkers.addTo(map)
     } else {
         markergroup.addTo(map)

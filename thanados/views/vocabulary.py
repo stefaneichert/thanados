@@ -81,6 +81,16 @@ def vocabulary():
 def vocabulary_view(object_id: int, format_=None):
     object_id = object_id
 
+    loc_image = app.config["API_FILE_DISPLAY"]
+    use_api = app.config["USE_API"]
+    use_jpgs = app.config["USE_JPGS"]
+
+    if not use_api:
+        if use_jpgs:
+            loc_image = app.config["JPG_FOLDER_PATH"] + '/'
+        else:
+            loc_image = app.config["WEB_FOLDER_PATH"] + '/'
+
     if not object_id:
         return render_template('vocabulary/vocabulary.html')
 
@@ -310,7 +320,7 @@ def vocabulary_view(object_id: int, format_=None):
             file_name = (Data.get_file_path(row.id))
             print(file_name)
             file_id = (row.id)
-            file = {'id': file_id, 'file_name': (app.config["WEB_FOLDER_PATH"] + '/' + file_name)}
+            file = {'id': file_id, 'file_name': (loc_image + file_name)}
             g.cursor.execute(sql_file_refs, {'file_id': file_id})
             output_file_refs = g.cursor.fetchone()
             g.cursor.execute(sql_filelicense, {'file_id': file_id})
