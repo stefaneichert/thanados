@@ -15,8 +15,16 @@ OpenAtlas source code on: [GitHub](https://github.com/craws/OpenAtlas)
 
 # Licensing
 
-All THANADOS code unless otherwise noted is licensed under the terms of the MIT License,
-Please refer to the file LICENSE in the root directory of this repository or the online version at https://opensource.org/licenses/MIT
+All THANADOS code unless otherwise noted (see below for exceptions) is licensed 
+under the terms of the MIT License, Please refer to the file LICENSE in the root
+directory of this repository or the online version at 
+https://opensource.org/licenses/MIT
+
+THANADOS uses [IOSACAL](https://doi.org/10.5281/zenodo.630455), an open source 
+radiocarbon calibration software of the [IOSA](http://www.iosa.it/) project,
+to calibrate radiocarbon data.
+IOSACAL Source code is made available under the terms of the GNU General Public
+License.
 
 All documentation and images unless otherwise noted are licensed under the terms of
 Creative Commons Attribution 4.0 International (CC BY 4.0) License.
