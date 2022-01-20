@@ -14,6 +14,8 @@ app.config.from_pyfile('production.py')  # Load instance/INSTANCE_NAME.py
 thunderforest_API_key = app.config["THUNDERFOREST_API_KEY"]
 openatlas_url = app.config["OPENATLAS_URL"]
 domaintypes = app.config["DOMAIN_TYPES"]
+periodtypes = app.config["PERIOD_TYPES"]
+countrytypes = app.config["COUNTRY_TYPES"]
 api_url = app.config["API_URL"]
 loc_image = app.config["API_FILE_DISPLAY"]
 use_api = app.config["USE_API"]
@@ -79,6 +81,8 @@ def global_vars():
         loc_image=loc_image,
         use_api=use_api,
         domaintypes=domaintypes,
+        periodtypes=periodtypes,
+        countrytypes=countrytypes,
         leafletVersion=leafletVersion)
 
 

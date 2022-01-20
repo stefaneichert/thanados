@@ -177,6 +177,7 @@
                                 <thead>
                                 <tr>
                                     <th>Name</th>
+                                    <th>Nearby Geonames</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -185,6 +186,9 @@
                                     <tr>
                                         <td><a href="{{ openatlas_url.replace('entity', 'update') + row.id }}"
                                                target="_blank">{{ row.name }}</a>
+                                        </td>
+                                        <td>
+                                            <span id="{{ row.id }}"></span>
                                         </td>
                                     </tr>
                                 {% endfor %}

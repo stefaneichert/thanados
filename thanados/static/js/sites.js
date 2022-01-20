@@ -1,9 +1,9 @@
 $('#nav-sites').addClass('activePage');
 
 $(window).resize(function () {
-    maximumHeight = ($(window).height() - $('#mynavbar').height());
+    maximumHeight = ($(window).height() - $('#mynavbar').height())
     $('#mycontent').css('max-height', (maximumHeight - 10) + 'px');
-    $('#map').css('height', (maximumHeight) + 'px');
+    $('#map').css('height', (maximumHeight - 15) + 'px');
     map.invalidateSize();
 
 });
@@ -17,7 +17,8 @@ AccRemove();
 $(document).ready(function () {
     maximumHeight = ($(window).height() - $('#mynavbar').height())
     $('#mycontent').css('max-height', (maximumHeight - 10) + 'px');
-    $('#map').css('height', (maximumHeight - 200) + 'px');
+    $('#mycontent').addClass("p-0")
+    $('#map').css('height', (maximumHeight - 15) + 'px');
     getBasemaps();
 
     //$('#siteModal').modal('show');
@@ -96,7 +97,6 @@ $(document).ready(function () {
 //set datatable
     table = $('#sitelist').DataTable({
         data: sitelist,
-        "pagingType": "numbers",
         "scrollX": true,
         initComplete: function () {
             $('div.dataTables_filter input').focus();
@@ -107,6 +107,14 @@ $(document).ready(function () {
             }
         },
         columns: [
+            {
+                data: "id",
+                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                    $(nTd).html(
+                        oData.id
+                    )
+                }
+            },
             {
                 data: "name",
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
@@ -134,6 +142,12 @@ $(document).ready(function () {
             {data: 'end'},
             {data: 'graves'}
         ],
+        "columnDefs": [
+            {
+                "targets": [0],
+                "visible": false
+            }
+        ]
     });
 
 //add markers to map and zoom to content
@@ -238,3 +252,36 @@ $(document).ready(function () {
     $('input[type="search"]').addClass('w-75')
 })
 ;
+
+fillDropdowns(domaintypes, '#case_studies')
+fillDropdowns(periodtypes, '#periods')
+fillDropdowns(countrytypes, '#regions')
+
+function fillDropdowns(types, container) {
+    $.each(types, function (i, domain) {
+        getCaseData(domain, container)
+    });
+}
+
+function filterTable(filterType) {
+    var Newsitelist = []
+    if (filterType === 0) {
+        table.clear().rows.add(sitelist).draw();
+    } else {
+        $.getJSON("/vocabulary/" + filterType + "/json", function (data) {
+            if (typeof (data.entities_recursive) !== 'undefined') {
+                $.each(data.entities_recursive, function (i, ent) {
+                    if (ent.main_type.includes('Place > Burial Site')) {
+                        entID = ent.id
+                        $.each(sitelist, function (i, siteEnt) {
+                            if (entID === siteEnt.id) {
+                                Newsitelist.push(siteEnt)
+                            }
+                        })
+                    }
+                })
+            }
+            table.clear().rows.add(Newsitelist).draw();
+        });
+    }
+}

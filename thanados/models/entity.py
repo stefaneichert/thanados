@@ -21,16 +21,13 @@ CREATE TABLE thanados.tmpsites AS (
            s.path,
            s.lat,
            s.lon,
-           COUNT(s.child_id)::TEXT                                AS graves,
-           jsonb_agg(DISTINCT (d.range_id))                       AS domains
+           COUNT(s.child_id)::TEXT                                AS graves           
 
     FROM thanados.entities s
-             LEFT JOIN thanados.graves g ON s.child_id = g.parent_id
-             JOIN model.link d ON s.child_id = d.domain_id
-             JOIN model.entity e on e.id = d.range_id
+             LEFT JOIN thanados.graves g ON s.child_id = g.parent_id             
     WHERE s.openatlas_class_name = 'place'
       AND s.lat IS NOT NULL
-      AND s.child_id IN  %(sites)s AND d.range_id IN %(domains)s
+      AND s.child_id IN  %(sites)s
                      GROUP BY s.child_name, s.description, s.begin_from, s.end_to, s.child_id, s.typename, s.path, s.lat, s.lon
                      ORDER BY s.child_name);"""
 

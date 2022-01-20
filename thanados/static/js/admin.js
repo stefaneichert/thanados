@@ -303,3 +303,19 @@ function setRefs(imagerefs) {
         }
     });
 }
+
+/*$.each(missingeonames, function (i, geo) {
+
+    if(i===0) getGeonames(geo.lat, geo.lon)
+})
+
+function getGeonames (lat, lon) {
+$.getJSON("http://api.geonames.org/findNearbyJSON?lat="+lon+"&lng="+lat+"&username=thanados", function (data) {
+
+        console.log(data)
+
+    //    var outHtml = '<li><a class="dropdown-item" title="'+ title +'" href="#" onclick="filterTable('+data.id+')">' + data.name + ' (' + sitecount + ')</a></li>'
+    //    $(container).append(outHtml)
+
+    });
+}*/

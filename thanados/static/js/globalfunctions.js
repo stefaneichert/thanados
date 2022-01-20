@@ -2188,6 +2188,31 @@ function getTypeData(id, div, hierarchy) {
     });
 }
 
+function getCaseData(id, container) {
+    $.getJSON("/vocabulary/" + id + "/json", function (data) {
+        var sitecount = 0
+        if (typeof (data.entities_recursive) !== 'undefined') {
+            $.each(data.entities_recursive, function (i, ent) {
+                if (ent.main_type.includes('Place > Burial Site')) {
+                    sitecount += 1
+                }
+            })
+        }
+
+        if (sitecount > 0) {
+
+        var title = data.name
+        if (typeof (data.description) !== 'undefined') {
+            var title = data.description
+        }
+
+        var outHtml = '<li><a class="dropdown-item" title="'+ title +'" href="#" onclick="filterTable('+data.id+')">' + data.name + ' (' + sitecount + ')</a></li>'
+        $(container).append(outHtml)
+        }
+    });
+
+}
+
 function logHTML(value, div) {
 
     div.popover({html: true, content: value, container: div.next()});

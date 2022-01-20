@@ -91,7 +91,7 @@ ORDER BY parent_id)) nma WHERE nma.parent_id IN %(site_ids)s"""
         missingrefs = []
 
     sql_missing_geonames = """
-    SELECT jsonb_agg(jsonb_build_object('id', child_id::TEXT, 'name', child_name)) AS ng FROM (SELECT child_name, child_id FROM thanados.sites WHERE child_id NOT IN (
+    SELECT jsonb_agg(jsonb_build_object('id', child_id::TEXT, 'name', child_name, 'lat', lat, 'lon', lon)) AS ng FROM (SELECT lon::double precision, lat::double precision, child_name, child_id FROM thanados.sites WHERE child_id NOT IN (
 SELECT parent_id FROM thanados.extrefs WHERE name = 'GeoNames')) ng1 WHERE ng1.child_id IN %(site_ids)s
         """
     try:
