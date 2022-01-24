@@ -20,6 +20,7 @@ api_url = app.config["API_URL"]
 loc_image = app.config["API_FILE_DISPLAY"]
 use_api = app.config["USE_API"]
 use_jpgs = app.config["USE_JPGS"]
+geonames_user = app.config["GEONAMES_USERNAME"]
 leafletVersion = ""
 
 if not use_api:
@@ -82,6 +83,7 @@ def global_vars():
         use_api=use_api,
         domaintypes=domaintypes,
         periodtypes=periodtypes,
+        geonames_user=geonames_user,
         countrytypes=countrytypes,
         leafletVersion=leafletVersion)
 

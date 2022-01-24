@@ -27,6 +27,8 @@ USE_JPGS = False
 API_URL = 'https://thanados.openatlas.eu/api/0.2/entity/'
 API_FILE_DISPLAY = 'https://thanados.openatlas.eu/api/display/'
 
+GEONAMES_USERNAME = 'yourgeonamesusername'
+
 HIERARCHY_TYPES = 73, 13362, 13365, 157754, 119334
 DOMAIN_TYPES = 128051, 158220, 181731, 181740
 PERIOD_TYPES = 158070, 161611, 127472, 161610, 161603, 142302, 155395

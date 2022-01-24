@@ -92,7 +92,7 @@ ORDER BY parent_id)) nma WHERE nma.parent_id IN %(site_ids)s"""
 
     sql_missing_geonames = """
     SELECT jsonb_agg(jsonb_build_object('id', child_id::TEXT, 'name', child_name, 'lat', lat, 'lon', lon)) AS ng FROM (SELECT lon::double precision, lat::double precision, child_name, child_id FROM thanados.sites WHERE child_id NOT IN (
-SELECT parent_id FROM thanados.extrefs WHERE name = 'GeoNames')) ng1 WHERE ng1.child_id IN %(site_ids)s
+SELECT parent_id FROM thanados.extrefs WHERE name = 'GeoNames')) ng1 WHERE ng1.child_id IN %(site_ids)s AND ng1.child_id NOT IN (SELECT range_id from model.link WHERE property_code = 'P67' AND domain_id = 155980) 
         """
     try:
         g.cursor.execute(sql_missing_geonames, {'site_ids': tuple(g.site_list)})
@@ -2656,6 +2656,21 @@ def admin_filerefs() -> str:
     for row in refs:
         g.cursor.execute(sql_refs, {'domain_id': row['refId'], 'range_id': row['file_id'], 'page': row['page']})
     return jsonify(refs)
+
+@app.route('/admin/geonames', methods=['POST'])
+def admin_geonames() -> str:
+    id = (request.form['id'])
+    GeoId = (request.form['GeoId'])
+    sql_geonames = """
+        INSERT INTO model.link (domain_id, range_id, property_code, description, type_id) 
+            VALUES (155980, %(range_id)s::INT, 'P67', %(geoId)s::TEXT, 117126)
+    """
+    g.cursor.execute(sql_geonames,
+                     {'range_id': id,
+                      'geoId': GeoId})
+
+    return id
+
 
 
 @app.route('/admin/geoclean/')
