@@ -3,6 +3,8 @@ import collections
 # import json,urllib.request
 
 from flask import json, render_template, g
+from flask_login import current_user, login_required
+
 
 from thanados import app
 from thanados.models.entity import Data
@@ -11,6 +13,7 @@ from thanados.models.entity import Data
 @app.route('/entity/<int:object_id>')
 @app.route('/entity/<int:object_id>/<format_>')
 @app.route('/<api_>/<type_>/<int:object_id>')
+@login_required
 def entity_view(object_id: int, format_=None, api_=None, type_=None):
     openatlas_class_name = Data.get_openatlas_class_name(object_id)
     place_id = Data.get_parent_place_id(object_id)

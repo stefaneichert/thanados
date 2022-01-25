@@ -2650,6 +2650,7 @@ CREATE TABLE thanados.EntCount AS
 
 
 @app.route('/admin/filerefs', methods=['POST'])
+@login_required
 def admin_filerefs() -> str:
     sql_refs = """
     INSERT INTO model.link (range_id, domain_id, property_code, description) VALUES (%(range_id)s, %(domain_id)s, 'P67', %(page)s)
@@ -2661,6 +2662,7 @@ def admin_filerefs() -> str:
     return jsonify(refs)
 
 @app.route('/admin/geonames', methods=['POST'])
+@login_required
 def admin_geonames() -> str:
     id = (request.form['id'])
     GeoId = (request.form['GeoId'])

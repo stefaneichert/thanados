@@ -1,4 +1,6 @@
 from flask import render_template, flash, g
+from flask_login import current_user, login_required
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 
@@ -12,6 +14,7 @@ class SearchForm(FlaskForm):
 
 
 @app.route('/search', methods=["GET", "POST"])
+@login_required
 def search():
     site_list = Data.get_list()
     form = SearchForm()

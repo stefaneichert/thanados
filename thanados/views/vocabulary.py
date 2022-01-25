@@ -1,4 +1,6 @@
 from flask import json, render_template, g, abort
+from flask_login import current_user, login_required
+
 import urllib, json
 
 from thanados import app
@@ -6,6 +8,7 @@ from thanados.models.entity import Data
 
 
 @app.route('/vocabulary/')
+@login_required
 def vocabulary():
     hierarchytypes = app.config["HIERARCHY_TYPES"]
     systemtypes = app.config["SYSTEM_TYPES"]
@@ -78,6 +81,7 @@ def vocabulary():
 
 @app.route('/vocabulary/<int:object_id>')
 @app.route('/vocabulary/<int:object_id>/<format_>')
+@login_required
 def vocabulary_view(object_id: int, format_=None):
     object_id = object_id
 

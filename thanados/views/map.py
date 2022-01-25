@@ -1,4 +1,6 @@
 from flask import render_template, g
+from flask_login import current_user, login_required
+
 
 from thanados import app
 from thanados.models.entity import Data
@@ -6,6 +8,7 @@ from thanados.models.entity import Data
 
 # @login_required
 @app.route('/map/<int:object_id>')
+@login_required
 def map(object_id: int):
     myjson = Data.get_data(object_id)
     g.cursor.execute('SELECT * FROM thanados.typesjson;')

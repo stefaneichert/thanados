@@ -1,10 +1,12 @@
 from flask import render_template, g
+from flask_login import current_user, login_required
 
 from thanados import app
 from thanados.models.entity import Data
 
 
 @app.route('/')
+@login_required
 def index():
     site_list = Data.get_list()
 
