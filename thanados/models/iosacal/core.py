@@ -103,12 +103,12 @@ class CalibrationCurve(np.ndarray):
             curve.shape and curve.size and curve.ndim and curve.title
         except AttributeError:
             try:
-                with open ("./thanados/models/iosacal/data/" + curvefile, encoding='utf8') as curve_file:
+                with open ("./thanados/models/iosacal/data/" + curvefile, encoding='latin-1') as curve_file:
                     title = curve_file.readline().strip('#\n')
             except FileNotFoundError:
                 try:
                     curve_resource_filename = pkg_resources.resource_filename("thanados.models.iosacal", f"data/{curve}.14c")
-                    with open(curve_resource_filename, encoding='utf8') as curve_file:
+                    with open(curve_resource_filename, encoding='latin-1') as curve_file:
                         title = curve_file.readline().strip('#\n')
                 except FileNotFoundError:
                     available = pkg_resources.resource_listdir('thanados.models.iosacal', 'data')
@@ -119,7 +119,7 @@ class CalibrationCurve(np.ndarray):
                     curve_filename = curve_resource_filename
             else:
                 curve_filename = curve
-            title = open("./thanados/models/iosacal/data/" + curvefile, encoding='utf8').readline().strip('#\n')
+            title = open("./thanados/models/iosacal/data/" + curvefile, encoding='latin-1').readline().strip('#\n')
             _genfrom = np.genfromtxt("./thanados/models/iosacal/data/" + curvefile, delimiter=',', encoding='latin-1')
             # linear interpolation
             ud_curve = np.flipud(_genfrom)  # the sequence must be *increasing*
