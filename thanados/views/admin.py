@@ -978,6 +978,7 @@ CREATE TABLE thanados.files AS
     sql_3 = 'SELECT id FROM thanados.files'
     g.cursor.execute(sql_3)
     result = g.cursor.fetchall()
+    missingids = []
     for row in result:
         file_name = (Data.get_file_path(row.id))
         row_id = (row.id)
@@ -985,11 +986,13 @@ CREATE TABLE thanados.files AS
             filesfound = filesfound + 1
         else:
             filesmissing = filesmissing + 1
+            missingids.append(row_id)
         g.cursor.execute("UPDATE thanados.files SET filename = %(file_name)s WHERE id = %(row_id)s",
                          {'file_name': file_name, 'row_id': row_id})
         sys.stdout.write("\rfiles found: " + str(filesfound) + " files missing: " + str(filesmissing))
         sys.stdout.flush()
 
+    print(missingids)
     g.cursor.execute('DELETE FROM thanados.files WHERE filename = NULL')
 
     print("")
