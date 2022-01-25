@@ -536,7 +536,7 @@ class RCData:
                     else:
                         buf.seek(0)
 
-                        with open("thanados/static/images/rc_dates/rc_stacked_" + str(entId) + ".png", "wb") as f:
+                        with open(app.root_path + "/static/images/rc_dates/rc_stacked_" + str(entId) + ".png", "wb") as f:
                             f.write(buf.getbuffer())
                         matplotlib.pyplot.close(fig='all')
 
