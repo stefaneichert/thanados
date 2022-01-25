@@ -455,7 +455,8 @@ class RCData:
                 # abort(400)
             else:
                 buf.seek(0)
-                filename = "thanados/static/images/rc_dates/rc_" + entid + ".png"
+                filename = app.root_path + "/static/images/rc_dates/rc_" + entid + ".png"
+                print(filename)
                 os.makedirs(os.path.dirname(filename), exist_ok=True)
 
                 with open(filename, "wb") as f:
