@@ -25,6 +25,15 @@ def admin():  # pragma: no cover
     if current_user.group not in ['admin']:
         abort(403)
 
+    try:
+        with open("./instance/site_list.txt") as file:
+            g.site_list = json.loads(file.read())
+    except Exception as e:  # pragma: no cover
+        pass
+    if not g.site_list:
+        g.cursor.execute('SELECT child_id FROM thanados.sites;')
+        g.site_list = [row.child_id for row in g.cursor.fetchall()]
+
     if form.validate_on_submit():
         try:
             with open("./instance/site_list.txt", 'w') as file:

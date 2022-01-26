@@ -7,7 +7,6 @@ from flask_login import current_user, login_required
 
 
 @app.route('/charts')
-@login_required
 def charts():
     depth = Data.get_depth()
     site_ids = tuple(g.site_list)

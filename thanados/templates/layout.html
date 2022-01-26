@@ -110,6 +110,15 @@
                             class="fas fa-question"></i></a>
                 </li>
             </ul>
+            {% if current_user.is_authenticated %}
+                <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a id="nav-logout" class="nav-link" href="{{ url_for('logout') }}"><i
+                            title="Logout"
+                            class="ms-2 fas fa-sign-out-alt"></i></a>
+                </li>
+            </ul>
+            {% endif %}
         </div>
     </div>
 </nav>

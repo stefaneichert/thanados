@@ -6,7 +6,6 @@ from thanados.models.entity import Data
 
 
 @app.route('/')
-@login_required
 def index():
     site_list = Data.get_list()
 

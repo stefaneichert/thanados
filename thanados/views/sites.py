@@ -7,7 +7,6 @@ from thanados.models.entity import Data
 
 
 @app.route('/sites')
-@login_required
 def sites():
     site_list = Data.get_list()
     case_studies = app.config["DOMAIN_TYPES"]

@@ -3,6 +3,7 @@ import json
 import psycopg2.extras
 from flask import Flask, g, request
 from flask_wtf.csrf import CSRFProtect
+from flask_login import current_user
 
 app = Flask(__name__, instance_relative_config=True)
 csrf = CSRFProtect(app)  # Make sure all forms are CSRF protected
@@ -58,15 +59,18 @@ def before_request():
 
     # Get site ids of site to be shown, default or if error show all
     g.site_list = []
-    try:
-        with open("./instance/site_list.txt") as file:
-            g.site_list = json.loads(file.read())
-    except Exception as e:  # pragma: no cover
-        pass
-    if not g.site_list:
+    if current_user.is_authenticated:
         g.cursor.execute('SELECT child_id FROM thanados.sites;')
         g.site_list = [row.child_id for row in g.cursor.fetchall()]
-
+    else:
+        try:
+            with open("./instance/site_list.txt") as file:
+                g.site_list = json.loads(file.read())
+        except Exception as e:  # pragma: no cover
+            pass
+        if not g.site_list:
+            g.cursor.execute('SELECT child_id FROM thanados.sites;')
+            g.site_list = [row.child_id for row in g.cursor.fetchall()]
 
 @app.teardown_request
 def teardown_request(exception):

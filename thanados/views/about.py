@@ -6,6 +6,5 @@ from thanados import app
 
 
 @app.route('/about')
-@login_required
 def about():
     return render_template('about/about.html')

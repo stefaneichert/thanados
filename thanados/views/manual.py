@@ -6,6 +6,5 @@ from thanados import app
 
 
 @app.route('/manual')
-@login_required
 def manual():
     return render_template('manual/manual.html')
