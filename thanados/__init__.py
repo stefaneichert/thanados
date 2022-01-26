@@ -64,7 +64,7 @@ def before_request():
         g.site_list = [row.child_id for row in g.cursor.fetchall()]
     else:
         try:
-            with open("./instance/site_list.txt") as file:
+            with open(app.root_path + "/../instance/site_list.txt") as file:
                 g.site_list = json.loads(file.read())
         except Exception as e:  # pragma: no cover
             pass

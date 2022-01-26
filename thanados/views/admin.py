@@ -26,7 +26,7 @@ def admin():  # pragma: no cover
         abort(403)
 
     try:
-        with open("./instance/site_list.txt") as file:
+        with open(app.root_path + "/../instance/site_list.txt") as file:
             g.site_list = json.loads(file.read())
     except Exception as e:  # pragma: no cover
         pass
@@ -36,14 +36,14 @@ def admin():  # pragma: no cover
 
     if form.validate_on_submit():
         try:
-            with open("./instance/site_list.txt", 'w') as file:
+            with open(app.root_path + "/../instance/site_list.txt", 'w') as file:
                 file.write(form.site_list.data)
                 return redirect(url_for('admin'))
         except Exception as e:  # pragma: no cover
             pass
 
     try:
-        with open("./instance/site_list.txt") as file:
+        with open(app.root_path + "/../instance/site_list.txt") as file:
             form.site_list.data = file.read()
     except Exception as e:  # pragma: no cover
         pass
