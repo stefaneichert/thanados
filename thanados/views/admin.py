@@ -2873,7 +2873,7 @@ def geoclean_execute():  # pragma: no cover
 
                 try:
                     response = requests.get(icons[0].url, stream=True)
-                    with open('./thanados/static/images/favicons/' + str(ref_id) + '.{}'.format(icons[0].format), 'wb') as image:
+                    with open(app.root_path + '/static/images/favicons/' + str(ref_id) + '.{}'.format(icons[0].format), 'wb') as image:
                         for chunk in response.iter_content(1024):
                             image.write(chunk)
                         fav_filename = '/static/images/favicons/' + str(ref_id) + '.' + icons[0].format

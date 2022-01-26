@@ -23,6 +23,7 @@ OPENATLAS_URL = 'https://thanados.openatlas.eu/update/'
 
 USE_API = False
 USE_JPGS = False
+LOGIN_REQUIRED = False
 
 API_URL = 'https://thanados.openatlas.eu/api/0.2/entity/'
 API_FILE_DISPLAY = 'https://thanados.openatlas.eu/api/display/'
