@@ -310,7 +310,7 @@ function setRefs(imagerefs) {
 
 function searchGeoName(lat, lon, id, rad) {
     console.log(rad)
-    $.getJSON("http://api.geonames.org/findNearbyJSON?lat=" + lon + "&lng=" + lat + "&radius="+rad+"&maxRows=15&featureClass=P&username="+ geonames_user +"", function (data) {
+    $.getJSON("https://secure.geonames.org/findNearbyJSON?lat=" + lon + "&lng=" + lat + "&radius="+rad+"&maxRows=15&featureClass=P&username="+ geonames_user +"", function (data) {
 
         var geon = "#Geo_" + id.toString()
         console.log(data)
