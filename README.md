@@ -22,9 +22,8 @@ https://opensource.org/licenses/MIT
 
 THANADOS uses [IOSACAL](https://doi.org/10.5281/zenodo.630455), an open source 
 radiocarbon calibration software of the [IOSA](http://www.iosa.it/) project,
-to calibrate radiocarbon data.
-IOSACAL Source code is made available under the terms of the GNU General Public
-License.
+to calibrate radiocarbon data. See [installation notes](install.md) for 
+further instructions.
 
 All documentation and images unless otherwise noted are licensed under the terms of
 Creative Commons Attribution 4.0 International (CC BY 4.0) License.
