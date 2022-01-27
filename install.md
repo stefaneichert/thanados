@@ -1,6 +1,6 @@
 # Installation Notes
 
-This software was developed and tested on Linux/Debian 11 (codename "buster")
+This software was developed and tested on Linux/Debian 11 (codename "bullseye")
 and the easiest way to install would be on Debian 11 system following these
 instructions.
 
@@ -53,7 +53,7 @@ Get them from
 [https://github.com/stefaneichert/IOSACAL-THANADOS.git](https://github.com/stefaneichert/IOSACAL-THANADOS.git) 
 and copy them into the directory:
 
-    'your thanados root directory'/thanados/models/iosacal
+    'your_thanados_root_directory'/thanados/models/iosacal/
 
 
 
