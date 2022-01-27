@@ -8,9 +8,6 @@ install/data_cleanup.sql
 __pycache__/*
 .cache
 
-# iosacal
-thanados/models/iosacal/*
-thanados/models/iosacal/
 
 # compiled files
 *.pyc
