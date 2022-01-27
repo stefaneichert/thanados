@@ -754,7 +754,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
             var iconpath = '/static/images/icons/burial.png';
         }
 
-        if (currentfeature.properties.maintype.systemtype == 'find') {
+        if (currentfeature.properties.maintype.systemtype == 'artifact') {
             var iconpath = '/static/images/icons/find.png';
         }
     }

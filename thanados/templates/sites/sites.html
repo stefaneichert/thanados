@@ -3,26 +3,66 @@
 
     <link href="/static/css/style.css" rel="stylesheet">
 
-    <div id="mycontent" class="pt-5">
+    <div id="mycontent">
         <div class="row p-0 m-0" style="width: 100%">
-            <div class="col-lg-6 pt-3 mb-2 ps-3 ps-xl-4 ps-lg-3 pe-lg-2">
-                <div class="row mb-3"
-                     style="font-size: 0.875em; color: #333; width: 100%; margin-left: 0.1em">
-                    <div class="col-sm mt-2">
-                        <span style="min-width: 200px" id="amount"></span>
-                        <div class="mt-2" id="slider-range"></div>
-                    </div>
-                    <div class="col-sm mt-2">
-                        <span style="min-width: 200px" id="amount2"></span>
-                        <div class="mt-2" id="slider-range2"></div>
 
+            <div class="col-lg-6">
+                <div class="border rounded-3 p-3 mt-3 mb-3">
+                    <div id="filters">
+                        <div class="btn-group">
+                            <button type="button"
+                                    class="btn btn-secondary dropdown-toggle"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                Projects
+                            </button>
+                            <ul class="dropdown-menu" id="case_studies">
+                                <li><a class="dropdown-item" title="show all sites" href="#" onclick="filterTable(0)">All ({{ sitelist|length }})</a></li>
+                            </ul>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button"
+                                    class="btn btn-secondary dropdown-toggle"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                Countries
+                            </button>
+                            <ul class="dropdown-menu" id="regions">
+                                <li><a class="dropdown-item" title="show all sites" href="#" onclick="filterTable(0)">All ({{ sitelist|length }})</a></li>
+                            </ul>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button"
+                                    class="btn btn-secondary dropdown-toggle"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                Periods
+                            </button>
+                            <ul class="dropdown-menu" id="periods">
+                                <li><a class="dropdown-item" title="show all sites" href="#" onclick="filterTable(0)">All ({{ sitelist|length }})</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row mb-3 mt-3"
+                         style="font-size: 0.875em; color: #333; width: 100%; margin-left: 0.1em">
+                        <div class="col-sm mt-2">
+                            <span style="min-width: 200px" id="amount"></span>
+                            <div class="mt-2" id="slider-range"></div>
+                        </div>
+                        <div class="col-sm mt-2">
+                            <span style="min-width: 200px" id="amount2"></span>
+                            <div class="mt-2" id="slider-range2"></div>
+
+                        </div>
                     </div>
                 </div>
-                <table id="sitelist" class="display table table-striped table-bordered"
+                <table id="sitelist"
+                       class="display table table-striped table-bordered"
                        width="100%">
 
                     <thead>
                     <tr>
+                        <th>Id</th>
                         <th>Name</th>
                         <th>Type</th>
                         <th>Begin</th>
@@ -40,7 +80,7 @@
                     any kind of feedback please feel free to contact us under: stefan.eichert@nhm-wien.ac.at
                 </p>
             </div>
-            <div class="col-lg-6 mb-2 ps-3 ps-xl-4 pe-lg-3 pe-xl-4 pe-md-3">
+            <div class="col-lg-6 m-0 p-0">
                 <div id="map" style="min-width: 300px"></div>
             </div>
         </div>

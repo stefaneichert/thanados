@@ -1071,8 +1071,8 @@ function prepareCSV(result, path, value, unit, feature, level, entity) {
     tmpValue.ObjectType = entity.properties.maintype.name.replace(/"/g, '\'');
     tmpValue.ObjectClass = entity.properties.maintype.systemtype;
     tmpValue.Search = level;
-    tmpValue.searchResult = result.replace(/"/g, '\'');
-    tmpValue.path = path.replace(/"/g, '\'');
+    tmpValue.searchResult = result.replace(/'/g, '´');
+    tmpValue.path = path.replace(/'/g, '´');
     tmpValue.value = value;
     tmpValue.unit = unit.replace(/"/g, '\'');
     tmpValue.earliestBegin = null;
@@ -1088,7 +1088,7 @@ function prepareCSV(result, path, value, unit, feature, level, entity) {
     tmpValue.image = null;
 
 
-    if (tmpValue.ObjectClass === 'find' || tmpValue.ObjectClass === 'human_remains') {
+    if (tmpValue.ObjectClass === 'artifact' || tmpValue.ObjectClass === 'human_remains') {
         $.each(myjson.features, function (i, feature) {
             if (feature.id === tmpValue.graveID) {
                 $.each(feature.burials, function (i, burial) {

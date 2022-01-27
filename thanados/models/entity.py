@@ -11,21 +11,23 @@ class Data:
         # noinspection SqlIdentifier
         sql_sites = """
         DROP TABLE IF EXISTS thanados.tmpsites;
-            CREATE TABLE thanados.tmpsites AS (
-                
-                     SELECT s.child_name     AS name,
-                            REPLACE(split_part(s.description, '##', 1), '"', '``')    AS description,
-                            s.begin_from     AS begin,
-                            s.end_to         AS end,
-                            s.child_id       AS id,
-                            s.typename       AS type,
-                            s.path,
-                            s.lat,
-                            s.lon,
-                            COUNT(s.child_id)::TEXT AS graves
+CREATE TABLE thanados.tmpsites AS (
+    SELECT s.child_name                                           AS name,
+           REPLACE(split_part(s.description, '##', 1), '"', '``') AS description,
+           s.begin_from                                           AS begin,
+           s.end_to                                               AS end,
+           s.child_id                                             AS id,
+           s.typename                                             AS type,
+           s.path,
+           s.lat,
+           s.lon,
+           COUNT(s.child_id)::TEXT                                AS graves           
 
-                     FROM thanados.entities s LEFT JOIN thanados.graves g ON s.child_id = g.parent_id
-                     WHERE s.system_class = 'place' AND s.lat IS NOT NULL AND s.child_id IN  %(sites)s 
+    FROM thanados.entities s
+             LEFT JOIN thanados.graves g ON s.child_id = g.parent_id             
+    WHERE s.openatlas_class_name = 'place'
+      AND s.lat IS NOT NULL
+      AND s.child_id IN  %(sites)s
                      GROUP BY s.child_name, s.description, s.begin_from, s.end_to, s.child_id, s.typename, s.path, s.lat, s.lon
                      ORDER BY s.child_name);"""
 
@@ -41,14 +43,15 @@ class Data:
                     s.path,
                     s.lat,
                     s.lon,
-                    COUNT(mt.path) FILTER (WHERE mt.path LIKE '%> Grave%')::TEXT AS graves                           
+                    COUNT(mt.path) FILTER (WHERE mt.path LIKE '%> Grave%')::TEXT AS graves
+                                             
 
                      FROM thanados.tmpsites s LEFT JOIN thanados.graves g ON s.id = g.parent_id LEFT JOIN thanados.maintype mt ON g.child_id = mt.entity_id 
                      GROUP BY s.name, s.description, s.begin, s.end, s.id, s.type, s.path, s.lat, s.lon) a WHERE id = thanados.tmpsites.id);
                      UPDATE thanados.tmpsites SET graves = NULL WHERE graves = '0';     
                      
             SELECT jsonb_agg(a) as sitelist FROM thanados.tmpsites a;"""
-        g.cursor.execute(sql_sites, {"sites": tuple(g.site_list)})
+        g.cursor.execute(sql_sites, {"sites": tuple(g.site_list), "domains": app.config["DOMAIN_TYPES"]})
         g.cursor.execute(sql_sites2)
         return g.cursor.fetchall()
 
@@ -127,17 +130,17 @@ class Data:
         return g.cursor.fetchall()
 
     @staticmethod
-    def get_system_class(id_):
-        sql = "SELECT system_class FROM model.entity WHERE id = %(object_id)s;"
+    def get_openatlas_class_name(id_):
+        sql = "SELECT openatlas_class_name FROM model.entity WHERE id = %(object_id)s;"
         g.cursor.execute(sql, {"object_id": id_})
         return g.cursor.fetchone()[0]
 
     @staticmethod
     def get_parent_place_id(id_):
-        system_class = Data.get_system_class(id_)
-        if system_class == 'place':
+        openatlas_class_name = Data.get_openatlas_class_name(id_)
+        if openatlas_class_name == 'place':
             place_id = id_
-        elif system_class == 'feature':
+        elif openatlas_class_name == 'feature':
             sql = """
                  SELECT p.id
                  FROM model.entity p
@@ -145,7 +148,7 @@ class Data:
                  WHERE lf.range_id = %(object_id)s;"""
             g.cursor.execute(sql, {"object_id": id_})
             place_id = g.cursor.fetchone()[0]
-        elif system_class == 'stratigraphic_unit':
+        elif openatlas_class_name == 'stratigraphic_unit':
             sql = """
                   SELECT p.id
                   FROM model.entity p
@@ -154,7 +157,7 @@ class Data:
                   WHERE ls.range_id = %(object_id)s;"""
             g.cursor.execute(sql, {"object_id": id_})
             place_id = g.cursor.fetchone()[0]
-        elif system_class == 'human_remains':
+        elif openatlas_class_name == 'human_remains':
             sql = """
                   SELECT p.id
                   FROM model.entity p
@@ -318,21 +321,21 @@ class Data:
                 types.append(row.parent_id)
 
         sql2 = """
-                    SELECT id, name, system_class FROM model.entity WHERE id IN %(entities)s OR id IN %(types)s
+                    SELECT id, name, openatlas_class_name FROM model.entity WHERE id IN %(entities)s OR id IN %(types)s
                         """
         g.cursor.execute(sql2, {"entities": entities, "types": tuple(types)})
         result2 = g.cursor.fetchall()
 
         for row in result2:
             if row.id != id:
-                if row.system_class:
-                    group = row.system_class
+                if row.openatlas_class_name:
+                    group = row.openatlas_class_name
                 else:
                     group = 'classification'
                 nodes.append({'label': row.name, 'id': row.id, 'group': group, 'title': group})
             else:
                 nodes.append(
-                    {'label': row.name, 'id': row.id, 'group': row.system_class, 'title': row.system_class, 'size': 30})
+                    {'label': row.name, 'id': row.id, 'group': row.openatlas_class_name, 'title': row.openatlas_class_name, 'size': 30})
 
         network = {}
         network['nodes'] = nodes
@@ -452,7 +455,8 @@ class RCData:
                 # abort(400)
             else:
                 buf.seek(0)
-                filename = "thanados/static/images/rc_dates/rc_" + entid + ".png"
+                filename = app.root_path + "/static/images/rc_dates/rc_" + entid + ".png"
+                print(filename)
                 os.makedirs(os.path.dirname(filename), exist_ok=True)
 
                 with open(filename, "wb") as f:
@@ -532,7 +536,7 @@ class RCData:
                     else:
                         buf.seek(0)
 
-                        with open("thanados/static/images/rc_dates/rc_stacked_" + str(entId) + ".png", "wb") as f:
+                        with open(app.root_path + "/static/images/rc_dates/rc_stacked_" + str(entId) + ".png", "wb") as f:
                             f.write(buf.getbuffer())
                         matplotlib.pyplot.close(fig='all')
 

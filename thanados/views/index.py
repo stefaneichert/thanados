@@ -1,4 +1,5 @@
 from flask import render_template, g
+from flask_login import current_user, login_required
 
 from thanados import app
 from thanados.models.entity import Data
@@ -10,15 +11,15 @@ def index():
 
     sql = """
     SELECT '['
-|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'place' 
+|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE openatlas_class_name = 'place' 
         AND site_id IN %(site_ids)s AND Path LIKE 'Place > Burial Site%%') || ','
-|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'feature' 
+|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE openatlas_class_name = 'feature' 
         AND site_id IN %(site_ids)s AND Path LIKE 'Feature > Grave%%') || ','
-|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'stratigraphic_unit' 
+|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE openatlas_class_name = 'stratigraphic_unit' 
         AND site_id IN %(site_ids)s AND Path LIKE 'Stratigraphic unit > Burial%%') || ','
-|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'find' 
+|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE openatlas_class_name = 'artifact' 
         AND site_id IN %(site_ids)s AND Path LIKE 'Artifact >%%') || ','
-|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE system_class = 'human_remains' 
+|| (SELECT count(child_id)::TEXT FROM thanados.EntCount WHERE openatlas_class_name = 'human_remains' 
         AND site_id IN %(site_ids)s AND Path LIKE 'Human remains >%%') || ']'
     """
 

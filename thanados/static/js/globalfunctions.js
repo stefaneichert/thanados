@@ -266,7 +266,7 @@ function checkAvailable(appendLevel, type) {
             if (mapsearch) availables = availableTypes.burialtypes;
             break;
         case "find":
-            form = "find";
+            form = "artifact";
             if (mapsearch) availables = availableTypes.findtypes;
             break;
         case "osteology":
@@ -316,7 +316,7 @@ function initiateTree(Iter, appendLevel, criteria, targetField) {
             if (mapsearch) availables = availableTypes.burialtypes;
             break;
         case "find":
-            form = "find";
+            form = "artifact";
             if (mapsearch) availables = availableTypes.findtypes;
             break;
         case "osteology":
@@ -2188,6 +2188,31 @@ function getTypeData(id, div, hierarchy) {
     });
 }
 
+function getCaseData(id, container) {
+    $.getJSON("/vocabulary/" + id + "/json", function (data) {
+        var sitecount = 0
+        if (typeof (data.entities_recursive) !== 'undefined') {
+            $.each(data.entities_recursive, function (i, ent) {
+                if (ent.main_type.includes('Place > Burial Site')) {
+                    sitecount += 1
+                }
+            })
+        }
+
+        if (sitecount > 0) {
+
+        var title = data.name
+        if (typeof (data.description) !== 'undefined') {
+            var title = data.description
+        }
+
+        var outHtml = '<li><a class="dropdown-item" title="'+ title +'" href="#" onclick="filterTable('+data.id+')">' + data.name + ' (' + sitecount + ')</a></li>'
+        $(container).append(outHtml)
+        }
+    });
+
+}
+
 function logHTML(value, div) {
 
     div.popover({html: true, content: value, container: div.next()});
@@ -2289,8 +2314,8 @@ function repairJson(data) {
                     $.each(burial.finds, function (i, find) {
                         if (typeof (find.properties.maintype.id) === "undefined") {
                             find.properties.maintype = {
-                                "systemtype": "find",
-                                "name": "find",
+                                "systemtype": "artifact",
+                                "name": "artifact",
                                 "id": 157754,
                                 "parent_id": 157754,
                                 "path": "Find"
@@ -2636,7 +2661,7 @@ function getImageHtml(files) {
     if (files.file_name.includes('.glb')) {
         //console.log(files.file_name);
         imageHtml = '<model-viewer class="modalimg" style="min-height: 400px;" src="' + files.file_name + '" alt="3d" auto-rotate camera-controls>' +
-            '<div class="annotation" title="enlarge" data-file="' + filestring + '" onclick="current3dFile = $(this).data(\'file\'); set3D(\'' + files.file_name + '\')"><i class="fas fa-expand"></i></div></model-viewer>'
+            '<div class="annotation" title="enlarge" data-file="' + filestring + '" onclick="current3dFile = $(this).data(\'file\'); set3D(\'' + files.file_name + '\')"><i class="fas fa-expand" style="margin-right: 3em""></i></div></model-viewer>'
     } else {
         imageHtml = '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" alt="' + myImgSource + '"></a>'
     }

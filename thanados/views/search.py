@@ -1,4 +1,6 @@
 from flask import render_template, flash, g
+from flask_login import current_user, login_required
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 

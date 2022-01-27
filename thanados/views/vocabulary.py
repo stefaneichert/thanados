@@ -1,4 +1,6 @@
 from flask import json, render_template, g, abort
+from flask_login import current_user, login_required
+
 import urllib, json
 
 from thanados import app
@@ -81,6 +83,16 @@ def vocabulary():
 def vocabulary_view(object_id: int, format_=None):
     object_id = object_id
 
+    loc_image = app.config["API_FILE_DISPLAY"]
+    use_api = app.config["USE_API"]
+    use_jpgs = app.config["USE_JPGS"]
+
+    if not use_api:
+        if use_jpgs:
+            loc_image = app.config["JPG_FOLDER_PATH"] + '/'
+        else:
+            loc_image = app.config["WEB_FOLDER_PATH"] + '/'
+
     if not object_id:
         return render_template('vocabulary/vocabulary.html')
 
@@ -94,7 +106,7 @@ def vocabulary_view(object_id: int, format_=None):
     if not output_base:
         abort(403)
     # check if type class
-    CRMclass = output_base.class_code
+    CRMclass = output_base.cidoc_class_code
     if CRMclass not in ['E55']:
         abort(403)
 
@@ -131,7 +143,7 @@ def vocabulary_view(object_id: int, format_=None):
     topparent = g.cursor.fetchone()
 
     sql_topparent_info = """
-        select e.name, e.description, e.id, h.multiple, h.standard AS system_class, h.value_type 
+        select e.name, e.description, e.id, h.multiple, h.category 
         from model.entity e JOIN web.hierarchy h ON e.id = h.id WHERE e.id = %(topparent)s
     """
 
@@ -150,11 +162,11 @@ def vocabulary_view(object_id: int, format_=None):
 
     type = ''
 
-    if result.system_class:
+    if result.category == 'standard':
         type = 'System type'
-    if result.value_type:
+    if result.category == 'value':
         type = 'Value type'
-    elif not result.system_class:
+    elif result.category == 'custom':
         type = 'Custom type'
 
     topparent['selection'] = multi
@@ -163,8 +175,8 @@ def vocabulary_view(object_id: int, format_=None):
     topparent['forms'] = []
 
     sql_forms = """
-        select f.name FROM  
-	    web.form f JOIN web.hierarchy_form h ON f.id = h.form_id WHERE h.hierarchy_id = %(topparent)s
+        select openatlas_class_name as name FROM  
+	    web.hierarchy_openatlas_class WHERE hierarchy_id = %(topparent)s
     """
 
     g.cursor.execute(sql_forms, {'topparent': topparent['id']})
@@ -280,7 +292,7 @@ def vocabulary_view(object_id: int, format_=None):
     sql_files = """SELECT 
                 m.id
                 FROM model.entity m JOIN model.link l ON m.id = l.domain_id
-                WHERE l.range_id = %(object_id)s AND l.property_code = 'P67' AND m.system_class = 
+                WHERE l.range_id = %(object_id)s AND l.property_code = 'P67' AND m.openatlas_class_name = 
                 'file' 
            """
     g.cursor.execute(sql_files, {'object_id': object_id})
@@ -310,7 +322,7 @@ def vocabulary_view(object_id: int, format_=None):
             file_name = (Data.get_file_path(row.id))
             print(file_name)
             file_id = (row.id)
-            file = {'id': file_id, 'file_name': (app.config["WEB_FOLDER_PATH"] + '/' + file_name)}
+            file = {'id': file_id, 'file_name': (loc_image + file_name)}
             g.cursor.execute(sql_file_refs, {'file_id': file_id})
             output_file_refs = g.cursor.fetchone()
             g.cursor.execute(sql_filelicense, {'file_id': file_id})
@@ -351,7 +363,7 @@ def vocabulary_view(object_id: int, format_=None):
     # get all entitites with this type
     sql_entities = """
         SELECT child_id, child_name, maintype, type, type_id, min, lon, lat, context, 
-        filename, system_class FROM 
+        filename, openatlas_class_name FROM 
         thanados.searchdata s
         WHERE type_id IN %(type_id)s AND s.site_id IN %(site_ids)s  
     """
@@ -364,8 +376,8 @@ def vocabulary_view(object_id: int, format_=None):
                 row.maintype, 'type': row.type, 'type_id': row.type_id, 'value': row.min,
                                      'lon': row.lon,
                                      'lat': row.lat, 'context': row.context, 'file': row.filename,
-                                     'system_class':
-                                         row.system_class})
+                                     'openatlas_class_name':
+                                         row.openatlas_class_name})
 
     g.cursor.execute(sql_entities, {'type_id': entlist, 'site_ids': tuple(g.site_list)})
     output_direct_ents = g.cursor.fetchall()
@@ -379,8 +391,8 @@ def vocabulary_view(object_id: int, format_=None):
                                                'lon': row.lon,
                                                'lat': row.lat, 'context': row.context,
                                                'file': row.filename,
-                                               'system_class':
-                                                   row.system_class})
+                                               'openatlas_class_name':
+                                                   row.openatlas_class_name})
 
     # get type tree
     def getchildren(id, node):

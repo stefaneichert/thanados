@@ -177,16 +177,22 @@
                                 <thead>
                                 <tr>
                                     <th>Name</th>
+                                    <th>Nearby Geonames</th>
                                 </tr>
                                 </thead>
                                 <tbody>
 
                                 {% for row in missingeonames %}
+                                    {% if row.lat and row.lon %}
                                     <tr>
                                         <td><a href="{{ openatlas_url.replace('entity', 'update') + row.id }}"
                                                target="_blank">{{ row.name }}</a>
                                         </td>
+                                        <td>
+                                            <a href="#" id="Geo_{{ row.id }}" onclick="searchGeoName({{ row.lat }}, {{ row.lon }}, {{ row.id }}, 2.5)">search</a>
+                                        </td>
                                     </tr>
+                                    {% endif %}
                                 {% endfor %}
 
                                 </tbody>

@@ -103,7 +103,7 @@ if (systemtype == 'stratigraphic_unit') {
 }
 
 
-if (systemtype === 'find' || systemtype === 'human_remains') {
+if (systemtype === 'artifact' || systemtype === 'human_remains') {
     $.each(jsonmysite.features, function (f, feature) {
         var featureName = feature.properties.name;
         var featureID = feature.id;
@@ -111,7 +111,7 @@ if (systemtype === 'find' || systemtype === 'human_remains') {
 
         $.each(feature.burials, function (b, burial) {
 
-            if (systemtype === 'find') {
+            if (systemtype === 'artifact') {
                 currentobjects = burial.finds
             } else {
                 currentobjects = burial.humanremains
@@ -144,7 +144,7 @@ if (systemtype === 'find' || systemtype === 'human_remains') {
             });
         });
     });
-    if (systemtype === 'find') {
+    if (systemtype === 'artifact') {
         $('#mybreadcrumbs').append('<div class="ms-3 text-muted"> (Find) </div>')
     } else {
         $('#mybreadcrumbs').append('<div class="ms-3 text-muted"> (Osteology) </div>');
@@ -208,7 +208,7 @@ networkLegend = network.groups.groups
 network.on("doubleClick", function (params) {
     if (params.nodes.length === 1) {
         var node = nodes.get(params.nodes[0]);
-        var entities = ['place', 'feature', 'stratigraphic_unit', 'find', 'human_remains'];
+        var entities = ['place', 'feature', 'stratigraphic_unit', 'artifact', 'human_remains'];
         if (entities.includes(node.group)) window.open('/entity/' + node.id);
         if (node.group === 'classification' ) window.open('/vocabulary/' + node.id);
         if (node.group === 'external_reference geonames' ) window.open('https://www.geonames.org/' + node.label);

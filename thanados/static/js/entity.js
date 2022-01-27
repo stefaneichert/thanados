@@ -165,7 +165,7 @@ if (systemtype == 'stratigraphic_unit') {
 }
 
 
-if (systemtype === 'find' || systemtype === 'human_remains') {
+if (systemtype === 'artifact' || systemtype === 'human_remains') {
     $.each(jsonmysite.features, function (f, feature) {
         var featureName = feature.properties.name;
         var featureID = feature.id;
@@ -173,7 +173,7 @@ if (systemtype === 'find' || systemtype === 'human_remains') {
 
         $.each(feature.burials, function (b, burial) {
 
-            if (systemtype === 'find') {
+            if (systemtype === 'artifact') {
                 currentobjects = burial.finds
             } else {
                 currentobjects = burial.humanremains
@@ -207,7 +207,7 @@ if (systemtype === 'find' || systemtype === 'human_remains') {
             });
         });
     });
-    if (systemtype === 'find') {
+    if (systemtype === 'artifact') {
         $('#mybreadcrumbs').append('<div class="ms-3 text-muted"> (Find) </div>')
     } else {
         $('#mybreadcrumbs').append('<div class="ms-3 text-muted"> (Osteology) </div>');
@@ -285,7 +285,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         }
     }
 
-    if (currentfeature.properties.maintype.systemtype == 'find' || currentfeature.properties.maintype.systemtype == 'human_remains') {
+    if (currentfeature.properties.maintype.systemtype == 'artifact' || currentfeature.properties.maintype.systemtype == 'human_remains') {
         children = '';
     }
 
