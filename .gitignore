@@ -12,6 +12,7 @@ __pycache__/*
 *.pyc
 
 # created files
+thanados/static/images/entities/
 thanados/static/images/entities/*
 thanados/static/images/rc_dates/*
 
