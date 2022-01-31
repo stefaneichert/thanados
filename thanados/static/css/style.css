@@ -215,6 +215,18 @@ body {
     height: 35px;
 }
 
+.easy-button-button-sitecount {
+    margin-left: 5px!important;
+    line-height: 1.1;
+    padding: 2px 5px 1px;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.5);
+}
+
 .btn-secondary:hover {
     background-color: rgba(108, 117, 125, 0.90) !important;
 }
