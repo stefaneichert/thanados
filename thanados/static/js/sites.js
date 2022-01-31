@@ -39,6 +39,14 @@ $(document).ready(function () {
     });
     attributionChange();
 
+    myCircleStyle = {
+        "color": "#000000",
+        "weight": 1,
+        "fillOpacity": 0.8,
+        "fillColor": "#007bd9",
+        "radius": 10
+    };
+
     //initiate markers
     heatmarkers = []
     mymarkers = new L.featureGroup([]);
@@ -50,7 +58,7 @@ $(document).ready(function () {
     hoverMarkers = new L.LayerGroup();
     hoverMarkers.addTo(map);
 
-    if ((sitelist).length > 300) {
+    if ((sitelist).length > 1000) {
         clustermarkers.addTo(map)
     } else {
         markergroup.addTo(map)
@@ -131,9 +139,7 @@ $(document).ready(function () {
                     //create markers
                     if (oData.lon != null) {
                         heatmarkers.push([JSON.parse(oData.lon) + ',' + JSON.parse(oData.lat)]);
-                        var marker = L.marker([((oData.lon)), ((oData.lat))], {title: oData.name}).addTo(mymarkers).bindPopup('<a href="/entity/' + oData.id + '" title="' + oData.description + '"><b>' + oData.name + '</b></a><br><br>' + oData.type);
-                        //var marker = L.marker([((oData.lon)), ((oData.lat))], {icon: icon}, {title: oData.name}).bindPopup('<a href="/entity/' + oData.id + '" title="' + oData.description + '"><b>' + oData.name + '</b></a><br><br>' + oData.type);
-                        //ciLayer.addMarker(marker);
+                        var marker = L.circleMarker([((oData.lon)), ((oData.lat))], myCircleStyle).addTo(mymarkers).bindPopup('<a href="/entity/' + oData.id + '" title="' + oData.description + '"><b>' + oData.name + '</b></a><br><br>' + oData.type);
                         var marker = L.marker([((oData.lon)), ((oData.lat))], {title: oData.name}).addTo(clustermarkers).bindPopup('<a href="/entity/' + oData.id + '" title="' + oData.description + '"><b>' + oData.name + '</b></a><br><br>' + oData.type);
                     }
                 }
@@ -238,7 +244,7 @@ $(document).ready(function () {
             var data = this.data();
             resultLenght.push(data.id);
             heatmarkers.push([JSON.parse(data.lon) + ',' + JSON.parse(data.lat)]);
-            var marker = L.marker([((data.lon)), ((data.lat))], {title: data.name}).addTo(mymarkers).bindPopup('<a href="/entity/' + data.id + '" title="' + data.description + '"><b>' + data.name + '</b></a><br><br>' + data.type);
+            var marker = L.circleMarker([((data.lon)), ((data.lat))], myCircleStyle).addTo(mymarkers).bindPopup('<a href="/entity/' + data.id + '" title="' + data.description + '"><b>' + data.name + '</b></a><br><br>' + data.type);
             var marker = L.marker([((data.lon)), ((data.lat))], {title: data.name}).addTo(clustermarkers).bindPopup('<a href="/entity/' + data.id + '" title="' + data.description + '"><b>' + data.name + '</b></a><br><br>' + data.type);
 
         });

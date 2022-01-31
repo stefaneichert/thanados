@@ -1,7 +1,9 @@
+
+
 -- various data cleanup queries
 
 UPDATE model.entity
-SET 
+SET
    name = REPLACE (
      name,
    'Grab',
@@ -9,7 +11,7 @@ SET
    ) WHERE id IN (SELECT child_id FROM thanados.entities);
 
  UPDATE model.entity
-SET 
+SET
    name = REPLACE (
      name,
    'Bestattung',
@@ -17,7 +19,7 @@ SET
    ) WHERE id IN (SELECT child_id FROM thanados.entities);
 
  UPDATE model.entity
-SET 
+SET
    name = REPLACE (
      name,
    'Streufund',
@@ -25,7 +27,7 @@ SET
    ) WHERE id IN (SELECT child_id FROM thanados.entities);
 
    UPDATE model.entity
-SET 
+SET
    name = REPLACE (
      name,
    'Inv. Nr.',
@@ -33,7 +35,7 @@ SET
    ) WHERE id IN (SELECT child_id FROM thanados.entities);
 
  UPDATE model.entity
-SET 
+SET
    name = REPLACE (
      name,
    'Invnr.',
@@ -41,7 +43,7 @@ SET
    ) WHERE id IN (SELECT child_id FROM thanados.entities);
 
    UPDATE model.entity
-SET 
+SET
    name = REPLACE (
      name,
    'Grabfund',
@@ -49,7 +51,7 @@ SET
    ) WHERE id IN (SELECT child_id FROM thanados.entities);
 
    UPDATE model.entity
-SET 
+SET
    name = REPLACE (
      name,
    'Ohne',
@@ -57,16 +59,16 @@ SET
    ) WHERE id IN (SELECT child_id FROM thanados.entities);
 
  UPDATE model.entity
-   SET 
+   SET
    name = REPLACE (
      name,
    'Inv Nr.',
    'Inv. No.'
    ) WHERE id IN (SELECT child_id FROM thanados.entities);
 
-   
+
  UPDATE model.entity
-SET 
+SET
    name = REPLACE (
      name,
    'invnr',
@@ -74,7 +76,7 @@ SET
    ) WHERE id IN (SELECT child_id FROM thanados.entities);
 
    UPDATE model.entity
-SET 
+SET
    name = REPLACE (
      name,
    'ohne Inv',
@@ -136,7 +138,7 @@ INSERT INTO thanados.refFilesTmp
 	f.child_id,
 	fi.id AS range_id,
 	fi.filename
-FROM thanados.sites f JOIN thanados.files fi ON f.child_id = fi.parent_id WHERE source ISNULL
+FROM thanados.sites f JOIN thanados.files fi ON f.child_id = fi.parent_id WHERE source ISNULL;
 
 
 
@@ -149,6 +151,17 @@ SELECT 	f.range_id,
 
 FROM thanados.reffilestmp f JOIN thanados.reference r ON r.parent_id = f.child_id;
 
-DROP TABLE IF EXISTS thanados.refFilesTmp;
+
+-- check for files without license
+SELECT * FROM model.entity WHERE id in
+(SELECT entity.id
+FROM thanados.entities,
+     model.link,
+     model.entity
+WHERE entities.child_id = link.range_id
+  AND link.domain_id = entity.id
+  AND entities.child_id != 0
+  AND entity.openatlas_class_name ~~ 'file'::text
+ORDER BY entities.child_id)
 
 
