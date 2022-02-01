@@ -165,7 +165,8 @@ if (data.entities_recursive) {
             zoom: 18,
             maxZoom: 18,
             layers: [landscape],
-            scrollWheelZoom: false
+            zoomControl: false,
+            gestureHandling: true
         });
         loadingControl.addTo(map);
         entPoints.addTo(map)
