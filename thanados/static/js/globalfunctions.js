@@ -2159,6 +2159,7 @@ mycitation1 = ' From: <a href="/about" target="_blank">THANADOS:</a> <a' +
 function getTypeData(id, div, hierarchy) {
     $.getJSON("/vocabulary/" + id + "/json", function (data) {
         returnHtml = '<a title="' + data.path + '" href="/vocabulary/' + id + '" target="_blank">' + data.name + '</a>';
+        if (data.files) returnHtml = returnHtml + '<img class="logo-image mt-2 mb-2" src="' + data.files[0].file_name + '">';
         if (data.description) returnHtml = returnHtml + '<p class="mt-2 text-muted font-italic" >' + data.description + '</p>';
         if (data.parent) returnHtml = returnHtml + '<p class="mt-2"> Subcategory of:' +
             ' <a href="/vocabulary/' + data.parent + '" target="_blank">' + data.parent_name + '</a></p>';
@@ -2191,6 +2192,7 @@ function getTypeData(id, div, hierarchy) {
 function getCaseData(id, container) {
     $.getJSON("/vocabulary/" + id + "/json", function (data) {
         var sitecount = 0
+
         if (typeof (data.entities_recursive) !== 'undefined') {
             $.each(data.entities_recursive, function (i, ent) {
                 if (ent.main_type.includes('Place > Burial Site')) {
@@ -2201,13 +2203,29 @@ function getCaseData(id, container) {
 
         if (sitecount > 0) {
 
-        var title = data.name
-        if (typeof (data.description) !== 'undefined') {
-            var title = data.description
-        }
+            var title = data.name
+            if (typeof (data.description) !== 'undefined') {
+                var title = data.description
+            }
 
-        var outHtml = '<li><a class="dropdown-item" title="'+ title +'" href="#" onclick="filterTable('+data.id+')">' + data.name + ' (' + sitecount + ')</a></li>'
-        $(container).append(outHtml)
+            var projLink = ''
+
+            if (title.includes('http')) {
+                projLink = 'http' + title.slice(title.lastIndexOf('http') + 4);
+                projLink = '<a class="float-end" title="Project website" target="_blank" href="'+ projLink+ '"><i class="logo-link fas fa-external-link-alt"></i></a>'
+
+            }
+            if (data.files) {
+                title = "<img class='logo-image mb-2' src='" + data.files[0].file_name + "'>" + title
+            }
+
+
+            var outHtml = '<li style="display: flex"><a class="dropdown-item" data-bs-offset="35,8" data-bs-append-to-body="true" data-bs-toggle="popover" data-bs-trigger="hover focus" title="' + data.name + '" data-bs-content="' + title + '" href="#" onclick="filterTable(' + data.id + ')">' + data.name + ' (' + sitecount + ')</a>'+ projLink + '</li>'
+            $(container).append(outHtml)
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl, {trigger: 'hover focus', html: true})
+            })
         }
     });
 
@@ -2215,14 +2233,14 @@ function getCaseData(id, container) {
 
 function logHTML(value, div) {
 
-    div.popover({html: true, content: value, container: div.next()});
+    div.popover({html: true, content: value, container: div.next(), offset: [80,8]});
     div.popover('show');
     var btn = '<div> <button class="closePopover btn btn-xs mb-2 mt-2 btn-secondary float-end" onclick="$(this).popover(\'dispose\')">close</button></div>'
     $(div).next().find('.popover-body').append(btn);
 }
 
 function setHierarchyPopup(value, div) {
-    div.popover({html: true, content: value, container: div.parent().next(), placement: 'right',});
+    div.popover({html: true, content: value, container: div.parent().next(), placement: 'right', offset: [80,8]});
     div.popover('show');
     var btn = '<div> <button class="closePopover btn btn-xs mb-2 mt-2 btn-secondary float-end" onclick="$(this).popover(\'dispose\')">close</button></div>'
     $(div).parent().next().find('.popover-body').append(btn);
@@ -2244,9 +2262,6 @@ function initTreePopovers() {
         popover_div = $(this);
         var id = popover_div.data('id');
         getTypeData(id, popover_div, true);
-        //$(this).mouseout(function () {
-        //    $('.treenode').popover('dispose')
-        //})
     });
     $('body').click(function () {
         $('.popover').popover('dispose')

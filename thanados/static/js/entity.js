@@ -324,8 +324,8 @@ function getEntityData(parentName, parentId, currentfeature) {
         '</div>' +
         '</div>' +
         '</div>' +
-        '<div type="button" data-value="' + entTypeId + '" class="modalrowitem typebutton"' +
-        ' data-toggle="popover">' + entType + '</div><span class="popover-wrapper"></span>' +
+        '<div type="button" data-value="' + entTypeId + '" class="modalrowitem typebutton" ' +
+        'data-toggle="popover">' + entType + '</div><span class="popover-wrapper"></span>' +
         '<div id="mytimespan' + entId + '" class="modalrowitem" title="Timespan/daterange of entity">' + dateToInsert + '</div>' +
         ((RCdate) ? '<a id="rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_' + entId + '.png"  class="modalrowitem rc_button" title="Radiocarbon Date">14C cal: ' + entRC.sample + '</a>' : '') +
         ((RC_child) ? '<a id="rc_' + entId + '" data_rc="' + JSON.stringify(entRC) + '" data-featherlight="image" href="/static/images/rc_dates/rc_sub_' + entId + '.png"  class="modalrowitem rc_button" title="Radiocarbon Date of Subunit">14C cal subunit: ' + entRC.child_sample + '</a>' : '') +
