@@ -94,14 +94,20 @@ function setmap(myjson) {
         iconAnchor: [12, 41],
         popupAnchor: [0, -34]
     });
+
+    allsitesStyle ={
+        "color": "#000000",
+        "weight": 1,
+        "fillOpacity": 0.8,
+        "fillColor": "#007bd9",
+        "radius": 10
+    }
+
     //markers for all sites
-    mymarkers = L.markerClusterGroup();
+    mymarkers = L.markerGroup();
     $.each(sitelist[0].sitelist, function (i, site) {
         if (site.id !== myjson.site_id) {
-            var marker = L.marker([((site.lon)), ((site.lat))], {
-                icon: greyicon,
-                title: site.name
-            }).addTo(mymarkers).bindPopup('<a href="/entity/' + site.id + '" title="' + site.description + '"><b>' + site.name + '</b></a><br><br>' + site.type);
+            var marker = L.circleMarker([((site.lon)), ((site.lat))], allsitesStyle).addTo(mymarkers).bindPopup('<a href="/entity/' + site.id + '" title="' + site.description + '"><b>' + site.name + '</b></a><br><br>' + site.type);
         }
     })
 

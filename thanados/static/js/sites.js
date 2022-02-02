@@ -21,6 +21,7 @@ $(document).ready(function () {
     $('#map').css('height', (maximumHeight - 15) + 'px');
     getBasemaps();
 
+
     //$('#siteModal').modal('show');
 
 //define basemaps
@@ -39,18 +40,37 @@ $(document).ready(function () {
     });
     attributionChange();
 
+    myCircleStyle = {
+        "color": "#000000",
+        "weight": 1,
+        "fillOpacity": 0.8,
+        "fillColor": "#007bd9",
+        "radius": 10
+    };
+
+    myInvCircleStyle = {
+        "color": "rgba(255,255,255,0)",
+        "weight": 1,
+        "fillOpacity": 0,
+        "fillColor": "rgba(255,255,255,0)",
+        "radius": 0
+    };
+
     //initiate markers
     heatmarkers = []
     mymarkers = new L.featureGroup([]);
+    myinvisiblemarkers = new L.featureGroup([]);
     markergroup = new L.layerGroup();
+    InvMarkergroup = new L.layerGroup();
     clustermarkers = L.markerClusterGroup();
     heat = L.heatLayer(heatmarkers, {radius: 25, minOpacity: 0.5, blur: 30});
     //var ciLayer = L.canvasIconLayer({}).addTo(map);
     //layergroup for highlighting on popup hover
     hoverMarkers = new L.LayerGroup();
     hoverMarkers.addTo(map);
+    InvMarkergroup.addTo(map);
 
-    if ((sitelist).length > 300) {
+    if ((sitelist).length > 1000) {
         clustermarkers.addTo(map)
     } else {
         markergroup.addTo(map)
@@ -72,6 +92,14 @@ $(document).ready(function () {
     baseControl = L.control.layers(baseLayers, overlays).addTo(map);
 
     L.control.scale({imperial: false}).addTo(map);//scale on map
+
+    var logo = L.control({position: 'bottomleft'});
+    logo.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'easy-button-button-sitecount');
+        div.innerHTML = "<span id='counter'></span>";
+        return div;
+    }
+    logo.addTo(map);
 
     map.addControl(loadingControl);
 
@@ -131,9 +159,8 @@ $(document).ready(function () {
                     //create markers
                     if (oData.lon != null) {
                         heatmarkers.push([JSON.parse(oData.lon) + ',' + JSON.parse(oData.lat)]);
-                        var marker = L.marker([((oData.lon)), ((oData.lat))], {title: oData.name}).addTo(mymarkers).bindPopup('<a href="/entity/' + oData.id + '" title="' + oData.description + '"><b>' + oData.name + '</b></a><br><br>' + oData.type);
-                        //var marker = L.marker([((oData.lon)), ((oData.lat))], {icon: icon}, {title: oData.name}).bindPopup('<a href="/entity/' + oData.id + '" title="' + oData.description + '"><b>' + oData.name + '</b></a><br><br>' + oData.type);
-                        //ciLayer.addMarker(marker);
+                        var marker = L.circleMarker([((oData.lon)), ((oData.lat))], myInvCircleStyle).addTo(myinvisiblemarkers);
+                        var marker = L.circleMarker([((oData.lon)), ((oData.lat))], myCircleStyle).addTo(mymarkers).bindPopup('<a href="/entity/' + oData.id + '" title="' + oData.description + '"><b>' + oData.name + '</b></a><br><br>' + oData.type);
                         var marker = L.marker([((oData.lon)), ((oData.lat))], {title: oData.name}).addTo(clustermarkers).bindPopup('<a href="/entity/' + oData.id + '" title="' + oData.description + '"><b>' + oData.name + '</b></a><br><br>' + oData.type);
                     }
                 }
@@ -152,6 +179,7 @@ $(document).ready(function () {
 
 //add markers to map and zoom to content
     mymarkers.addTo(markergroup);
+    myinvisiblemarkers.addTo(InvMarkergroup);
     heatmarkers = JSON.parse(JSON.stringify(heatmarkers).replace(/"/g, ''));
     var bounds = mymarkers.getBounds();
     bounds._northEast.lat = bounds._northEast.lat + 0.2;
@@ -160,6 +188,14 @@ $(document).ready(function () {
     bounds._southWest.lng = bounds._southWest.lng - 0.2;
     map.fitBounds(bounds);
     heat.setLatLngs(heatmarkers);
+    countVisibleMarkers()
+
+    map.on('zoomend', function () {
+        countVisibleMarkers()
+    });
+    map.on('dragend', function () {
+        countVisibleMarkers()
+    });
 
     $(function () {
         $("#slider-range").slider({
@@ -230,26 +266,33 @@ $(document).ready(function () {
 //update map on search
     table.on('search.dt', function () {
         markergroup.clearLayers();
+        InvMarkergroup.clearLayers();
         clustermarkers.clearLayers();
         heatmarkers = [];
         resultLenght = [];
         mymarkers = new L.featureGroup([]);
+        myinvisiblemarkers = new L.featureGroup([]);
         table.rows({search: 'applied'}).every(function (rowIdx, tableLoop, rowLoop) {
             var data = this.data();
             resultLenght.push(data.id);
             heatmarkers.push([JSON.parse(data.lon) + ',' + JSON.parse(data.lat)]);
-            var marker = L.marker([((data.lon)), ((data.lat))], {title: data.name}).addTo(mymarkers).bindPopup('<a href="/entity/' + data.id + '" title="' + data.description + '"><b>' + data.name + '</b></a><br><br>' + data.type);
+            var marker = L.circleMarker([((data.lon)), ((data.lat))], myInvCircleStyle).addTo(myinvisiblemarkers);
+            var marker = L.circleMarker([((data.lon)), ((data.lat))], myCircleStyle).addTo(mymarkers).bindPopup('<a href="/entity/' + data.id + '" title="' + data.description + '"><b>' + data.name + '</b></a><br><br>' + data.type);
             var marker = L.marker([((data.lon)), ((data.lat))], {title: data.name}).addTo(clustermarkers).bindPopup('<a href="/entity/' + data.id + '" title="' + data.description + '"><b>' + data.name + '</b></a><br><br>' + data.type);
 
         });
         mymarkers.addTo(markergroup);
+        myinvisiblemarkers.addTo(InvMarkergroup);
         heatmarkers = JSON.parse(JSON.stringify(heatmarkers).replace(/"/g, ''));
         heat.setLatLngs(heatmarkers);
         if (resultLenght.length > 0) map.fitBounds(mymarkers.getBounds());
+        countVisibleMarkers()
     });
     map.invalidateSize();
 
     $('input[type="search"]').addClass('w-75')
+
+
 })
 ;
 
@@ -284,4 +327,17 @@ function filterTable(filterType) {
             table.clear().rows.add(Newsitelist).draw();
         });
     }
+}
+
+function countVisibleMarkers() {
+    var bounds = map.getBounds();
+    var count = 0;
+
+    map.eachLayer(function (layer) {
+        if (layer.options.fillColor === "rgba(255,255,255,0)") {
+            if (bounds.contains(layer.getLatLng())) count++;
+        }
+    });
+    $('#counter').html(' ' + count + ' sites')
+    $('.easy-button-button-sitecount').prop('title', count + ' sites in current map bounds')
 }

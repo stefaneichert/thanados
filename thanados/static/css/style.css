@@ -215,6 +215,18 @@ body {
     height: 35px;
 }
 
+.easy-button-button-sitecount {
+    margin-left: 5px!important;
+    line-height: 1.1;
+    padding: 2px 5px 1px;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.5);
+}
+
 .btn-secondary:hover {
     background-color: rgba(108, 117, 125, 0.90) !important;
 }
@@ -1423,4 +1435,22 @@ input {
 
 #checkMe:focus {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='white'/%3e%3c/svg%3e");
+}
+
+.logo-image {
+    max-width: -webkit-fill-available;
+}
+
+.logo-link {
+    margin-right: 1em;
+    margin-top: 8px;
+    color: #b4b4b4;
+}
+
+.logo-link:hover {
+    color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.popover-arrow {
+    display: none!important;
 }

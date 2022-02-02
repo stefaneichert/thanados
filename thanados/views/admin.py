@@ -2896,9 +2896,9 @@ def geoclean_execute():  # pragma: no cover
     return redirect(url_for('admin'))
 
 
-@app.route('/admin/timeclean/')
+@app.route('/admin/imageprocessing/')
 @login_required
-def timeclean_execute():  # pragma: no cover
+def image_processing_execute():  # pragma: no cover
     if current_user.group not in ['admin']:
         abort(403)
 
@@ -2922,12 +2922,7 @@ def timeclean_execute():  # pragma: no cover
     print('Cropping files')
     sql = """
                 SELECT id AS file, 0 AS ovl FROM model.entity WHERE openatlas_class_name = 'file' 
-                                AND id NOT IN
-                                (SELECT image_id FROM web.map_overlay)
-                UNION ALL
-                SELECT id AS file, 1 AS ovl FROM model.entity WHERE openatlas_class_name = 'file' 
-                                AND id IN
-                                (SELECT image_id FROM web.map_overlay)
+                                AND id IN (SELECT id FROM thanados.files)
                                 """
     g.cursor.execute(sql)
     result = g.cursor.fetchall()

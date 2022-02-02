@@ -17,10 +17,23 @@ $(document).ready(function () {
         }, 200);
         return false;
     });
-
-    //$('#back-to-top').tooltip('show');
-
 });
+
+window.onload = function () {
+    $.each(domaintypes, function (i, domain) {
+        getProjectData(domain, '#featProj')
+    })
+    window.setTimeout(makeMasonrywork, 1050)
+};
+
+function makeMasonrywork() {
+    $('#featProj').removeClass('d-none')
+    $('#featProj').masonry({
+        percentPosition: true,
+    });
+    $('#proj-load').addClass('d-none')
+}
+
 
 $(window).resize(function () {
     maximumHeight = (($(window).height() - $('#mynavbar').height()));
@@ -67,7 +80,7 @@ if ($('#map').length) {
         '                            </div>'
     )
 
-    $('.statistic-counter').each(function () {
+    $('.statistic-counter').each(function (i) {
         $(this).prop('Counter', 0).animate({
             Counter: $(this).text()
         }, {
@@ -132,4 +145,69 @@ if ($('#map').length) {
     console.log('no map on index')
 }
 
+function getProjectData(id, container) {
+    $.getJSON("/vocabulary/" + id + "/json", function (data) {
+        var sitecount = 0
 
+        if (typeof (data.entities_recursive) !== 'undefined') {
+            $.each(data.entities_recursive, function (i, ent) {
+                if (ent.main_type.includes('Place > Burial Site')) {
+                    sitecount += 1
+                }
+            })
+        }
+
+        if (sitecount > 0) {
+
+            var ProjName = data.name
+            if (typeof (data.description) !== 'undefined') {
+                var ProjDescr = data.description
+            } else {
+                ProjDescr = ProjName
+            }
+
+            if (ProjDescr.includes('http')) {
+                var projLink = 'http' + ProjDescr.slice(ProjDescr.lastIndexOf('http') + 4);
+                projLink = '<a title="Project website" target="_blank" href="' + projLink + '">Project Website<i class="ms-2 fas fa-external-link-alt"></i></a>'
+                var Linkthere = true
+
+            }
+            if (data.files) {
+                var ProjLogo = data.files[0].file_name
+                var Logothere = true
+            }
+
+
+            var outHtml =
+
+                '<div class="col-lg-4 col-sm-6 mb-4">\n' +
+                '                <div class="card">\n' +
+                '                        <h5 class="card-header text-center">' + ProjName + '</h5>\n' +
+                ((Logothere) ? '         <figure class="figure m-2">\n' +
+                    '                             <img src="' + ProjLogo + '" class="figure-img border p-1 img-fluid rounded" alt="Project Logo">\n' +
+                    '</figure>' : '') +
+                '                    <div class="card-body">\n' +
+                '                        <p class="card-text text-muted"><small>' + ProjDescr + '</small></p>\n' +
+                '                        <h6 class="card-subtitle mt-2 mb-2 text-muted">' + sitecount + ' site(s)</h6>\n' +
+                ((Linkthere) ? projLink : '') +
+                '                    </div>\n' +
+                '                </div>\n' +
+                '</div>'
+
+            $(container).append(outHtml)
+
+        }
+    });
+
+}
+
+
+$(function () {
+    $('.scroll-link').bind('click', function (event) {
+        event.preventDefault();
+        var $anchor = $(this);
+        var element = ($anchor.attr('href'))
+        element = document.querySelector(element);
+        element.scrollIntoView({behavior: 'smooth', block: 'end'});
+    });
+});
