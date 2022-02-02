@@ -10,7 +10,6 @@ $(document).ready(function () {
 
     // scroll body to 0px on click
     $('#back-to-top').click(function () {
-        //$('#back-to-top').tooltip('hide');
         $('#mycontent').animate({
             scrollTop: 0
         }, 200);

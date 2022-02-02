@@ -26,4 +26,4 @@ def index():
     g.cursor.execute(sql, {'site_ids': tuple(g.site_list)})
     counts = g.cursor.fetchone()
 
-    return render_template("/index/index.html", sitelist=site_list[0].sitelist, entitycount=counts[0])
+    return render_template("/index/index.html", isIndex=True, sitelist=site_list[0].sitelist, entitycount=counts[0])
