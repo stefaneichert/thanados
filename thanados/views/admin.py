@@ -3033,6 +3033,7 @@ def image_processing_execute():  # pragma: no cover
 
         if not found:
             filesnotfound += 1
+            print(current_image)
             message_ = str(row.file) + ': file missing'
 
         filesthere += 1
