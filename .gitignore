@@ -1,38 +1,36 @@
 
-# sensitive data (except example files)
-instance/*
-!instance/example_*
-install/data_cleanup.sql
+    # sensitive data (except example files)
+    instance/*
+    !instance/example_*
+    install/data_cleanup.sql
 
-# cache
-__pycache__/*
-.cache
+    # cache
+    __pycache__/*
+    .cache
 
-# iosacal
-thanados/models/iosacal/*
-thanados/models/iosacal/
-thanados/models/iosacal
+    # iosacal
+    thanados/models/iosacal/
 
-# compiled files
-*.pyc
+    # compiled files
+    *.pyc
 
-# created files
-thanados/static/images/entities/
-thanados/static/images/entities/*
-thanados/static/images/rc_dates/*
+    # created files
+    thanados/static/images/entities/
+    thanados/static/images/entities/*
+    thanados/static/images/rc_dates/*
 
-# files for specific projects
-thanados/templates/about/aboutmedcem.html
-thanados/templates/about/aboutthanados.html
-thanados/templates/index/indexmedcem.html
-thanados/templates/index/indexthanados.html
+    # files for specific projects
+    thanados/templates/about/aboutmedcem.html
+    thanados/templates/about/aboutthanados.html
+    thanados/templates/index/indexmedcem.html
+    thanados/templates/index/indexthanados.html
 
-# data cleanup for thanados
-thanados/install/*
+    # data cleanup for thanados
+    thanados/install/*
 
-# ide
-.idea
+    # ide
+    .idea
 
-#tests
-tests/cover/*
-tests/.coverage
+    #tests
+    tests/cover/*
+    tests/.coverage
