@@ -19,7 +19,8 @@
         <h2 class="my-heading container"><img class="logo-heading"
                                               src="/static/images/logos/THANADOS_Logo_RGB.png">
         </h2>
-        <h2 class="my-heading container">The Anthropological and Archaeological Database of
+        <h2 class="my-heading container">The Anthropological and Archaeological
+            Database of
             Sepultures</h2>
 
         <a title="click to open site selection" href="{{ url_for('sites') }}">
@@ -27,325 +28,459 @@
         </a>
         <div id="counters" class="row text-center pt-3"></div>
 
-
-        <div class="container py-5">
-            <div class="row">
-                <div class="col-lg-6">
-                    <h3>The Anthropological and Archaeological <br> Database of
-                        Sepultures</h3>
-                    <p class="text-small text-muted">THANADOS is a Digital Humanities research project on
-                        archaeologically and anthropologically investigated burials.
-                        The project started in June 2019. The region under study is present day Austria and
-                        the period we are dealing with are the Early Middle Ages (600 until 1100 AD).
-                        It is work in progress. New sites are added continuously.
-                        By the end of the project in 2021 this website will provide an online repository of
-                        all hitherto published Early Medieval cemeteries from the area of present day
-                        Austria. <br></p>
-                    <p class="h6 mb-1 text-uppercase mb-3">Features</p>
-                    <ul class="list-unstyled row px-3 mb-4">
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>100s of
-                            cemeteries online
-                        </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Interactive
-                            maps
-                        </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Query
-                            sites, graves, finds
-                        </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Visualise
-                            and analyse data
-                        </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Export
-                            data
-                        </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Domain
-                            specific vocabularies
-                        </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Detailed
-                            anthropological data
-                        </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Network
-                            visualisations
-                        </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Spatial
-                            analyses
-                        </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Images,
-                            3D Models
-                        </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Metadata
-                            and bibliographies
-                        </li>
-                        <li class="text-small text-muted col-xl-6 mb-2"><i class="fas fa-check-circle me-2"></i>Interactive
-                            charts
-                        </li>
-                    </ul>
-                    <p class="text-muted" style="margin-top: 2em; margin-bottom: 2em">
-                        If you want to know more about the features or the project please take a look at the
-                        <a href="/manual">manual</a> or the <a href="/about">about</a> section.
-                    </p>
-                </div>
-                <div class="col-lg-6">
-                    <div id="carouselExampleControls"
-                         style="margin-bottom: 4em; border: 1px solid rgba(0, 0, 0, 0.125)"
-                         class="carousel slide carousel-fade" data-bs-ride="carousel">
-
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img class="d-block w-100" src="/static/images/home/SCRSH04.jpg"
-                                     alt="First slide">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block w-100" src="/static/images/home/SCRSH07.jpg"
-                                     alt="Third slide">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block w-100" src="/static/images/home/SCRSH08.jpg"
-                                     alt="Fourth slide">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block w-100" src="/static/images/home/SCRSH10.jpg"
-                                     alt="Fourth slide">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block w-100" src="/static/images/home/SCRSH09.jpg"
-                                     alt="Fourth slide">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block w-100" src="/static/images/home/SCRSH02.jpg"
-                                     alt="Second slide">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block w-100" src="/static/images/home/SCRSH06.jpg"
-                                     alt="Third slide">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block w-100" src="/static/images/home/SCRSH03.jpg"
-                                     alt="Third slide">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block w-100" src="/static/images/home/SCRSH11.jpg"
-                                     alt="Fourth slide">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block w-100" src="/static/images/home/SCRSH01.jpg"
-                                     alt="Fourth slide">
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block w-100" src="/static/images/home/SCRSH05.jpg"
-                                     alt="Fourth slide">
-                            </div>
+        <div id="feature-container">
+            <div class="container py-5">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div id="feature-text" class="border rounded p-4 mb-2">
+                            <h3>The Anthropological and Archaeological <br>
+                                Database of
+                                Sepultures</h3>
+                            <p class="text-small text-muted">THANADOS is a
+                                Digital Humanities web portal for
+                                archaeologically and anthropologically
+                                investigated burials and their digital
+                                dissemination.
+                                The regions covered are Austria and the
+                                Czech Republic during the the Early Middle Ages
+                                (600 until 1100 AD).
+                                New sites are added continuously to
+                                provide an online open data repository of
+                                Early Medieval cemeteries.
+                                Several <a href="#projects">projects</a>
+                                that contributed data are featured <br></p>
+                            <p class="h6 mb-1 text-uppercase mb-3">Features</p>
+                            <ul class="list-unstyled row px-3 mb-4">
+                                <li class="text-small text-muted col-xl-6 mb-2">
+                                    <i
+                                            class="fas fa-check-circle me-2"></i>100s
+                                    of
+                                    cemeteries online
+                                </li>
+                                <li class="text-small text-muted col-xl-6 mb-2">
+                                    <i
+                                            class="fas fa-check-circle me-2"></i>Interactive
+                                    maps
+                                </li>
+                                <li class="text-small text-muted col-xl-6 mb-2">
+                                    <i
+                                            class="fas fa-check-circle me-2"></i>Query
+                                    sites, graves, finds
+                                </li>
+                                <li class="text-small text-muted col-xl-6 mb-2">
+                                    <i
+                                            class="fas fa-check-circle me-2"></i>Visualise
+                                    and analyse data
+                                </li>
+                                <li class="text-small text-muted col-xl-6 mb-2">
+                                    <i
+                                            class="fas fa-check-circle me-2"></i>Export
+                                    data
+                                </li>
+                                <li class="text-small text-muted col-xl-6 mb-2">
+                                    <i
+                                            class="fas fa-check-circle me-2"></i>Domain
+                                    specific vocabularies
+                                </li>
+                                <li class="text-small text-muted col-xl-6 mb-2">
+                                    <i
+                                            class="fas fa-check-circle me-2"></i>Detailed
+                                    anthropological data
+                                </li>
+                                <li class="text-small text-muted col-xl-6 mb-2">
+                                    <i
+                                            class="fas fa-check-circle me-2"></i>Network
+                                    visualisations
+                                </li>
+                                <li class="text-small text-muted col-xl-6 mb-2">
+                                    <i
+                                            class="fas fa-check-circle me-2"></i>Spatial
+                                    analyses
+                                </li>
+                                <li class="text-small text-muted col-xl-6 mb-2">
+                                    <i
+                                            class="fas fa-check-circle me-2"></i>Images,
+                                    3D Models
+                                </li>
+                                <li class="text-small text-muted col-xl-6 mb-2">
+                                    <i
+                                            class="fas fa-check-circle me-2"></i>Metadata
+                                    and bibliographies
+                                </li>
+                                <li class="text-small text-muted col-xl-6 mb-2">
+                                    <i
+                                            class="fas fa-check-circle me-2"></i>Interactive
+                                    charts
+                                </li>
+                            </ul>
+                            <p class="text-muted"
+                               style="margin-top: 2em; margin-bottom: 2em">
+                                If you want to know more about the features or
+                                the
+                                project please take a look at the
+                                <a href="/manual">manual</a> or the <a
+                                    href="/about">about</a>
+                                section.
+                            </p>
                         </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
-                                data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
-                                data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
+                    </div>
+                    <div class="col-lg-6">
+                        <div id="carouselExampleControls"
+                             style="margin-bottom: 4em; border: 1px solid rgba(0, 0, 0, 0.125)"
+                             class="carousel slide carousel-fade"
+                             data-bs-ride="carousel">
+
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img class="d-block w-100"
+                                         src="/static/images/home/SCRSH04.jpg"
+                                         alt="First slide">
+                                </div>
+                                <div class="carousel-item">
+                                    <img class="d-block w-100"
+                                         src="/static/images/home/SCRSH07.jpg"
+                                         alt="Third slide">
+                                </div>
+                                <div class="carousel-item">
+                                    <img class="d-block w-100"
+                                         src="/static/images/home/SCRSH08.jpg"
+                                         alt="Fourth slide">
+                                </div>
+                                <div class="carousel-item">
+                                    <img class="d-block w-100"
+                                         src="/static/images/home/SCRSH10.jpg"
+                                         alt="Fourth slide">
+                                </div>
+                                <div class="carousel-item">
+                                    <img class="d-block w-100"
+                                         src="/static/images/home/SCRSH09.jpg"
+                                         alt="Fourth slide">
+                                </div>
+                                <div class="carousel-item">
+                                    <img class="d-block w-100"
+                                         src="/static/images/home/SCRSH02.jpg"
+                                         alt="Second slide">
+                                </div>
+                                <div class="carousel-item">
+                                    <img class="d-block w-100"
+                                         src="/static/images/home/SCRSH06.jpg"
+                                         alt="Third slide">
+                                </div>
+                                <div class="carousel-item">
+                                    <img class="d-block w-100"
+                                         src="/static/images/home/SCRSH03.jpg"
+                                         alt="Third slide">
+                                </div>
+                                <div class="carousel-item">
+                                    <img class="d-block w-100"
+                                         src="/static/images/home/SCRSH11.jpg"
+                                         alt="Fourth slide">
+                                </div>
+                                <div class="carousel-item">
+                                    <img class="d-block w-100"
+                                         src="/static/images/home/SCRSH01.jpg"
+                                         alt="Fourth slide">
+                                </div>
+                                <div class="carousel-item">
+                                    <img class="d-block w-100"
+                                         src="/static/images/home/SCRSH05.jpg"
+                                         alt="Fourth slide">
+                                </div>
+                            </div>
+                            <button class="carousel-control-prev" type="button"
+                                    data-bs-target="#carouselExampleControls"
+                                    data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"
+                                  aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button"
+                                    data-bs-target="#carouselExampleControls"
+                                    data-bs-slide="next">
+                            <span class="carousel-control-next-icon"
+                                  aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
+            </div>
         </div>
 
-        <footer id="myfooter2" class="mb-4 p-5">
+        <footer id="myfooter2" class="p-5">
             <div class="container"
                  style="flex-wrap: wrap; display: flex; align-items: center; justify-content: space-between">
-                <a href="https://www.nhm-wien.ac.at/" target="_blank"><img class="footerimg"
-                                                                           src="/static/images/logos/nhm_logo.png"></a>
-                <a href="https://www.oeaw.ac.at/oeai/" target="_blank"><img class="footerimg"
-                                                                            src="/static/images/logos/oeai_logo.png"></a>
-                <a href="https://www.oeaw.ac.at/" target="_blank"><img class="footerimg"
-                                                                       src="/static/images/logos/oeaw_logo.png"></a>
-                <a href="https://www.oeaw.ac.at/acdh/" target="_blank"><img class="footerimg"
-                                                                            src="/static/images/logos/acdh_logo.png"></a>
-                <a href="https://openatlas.eu/" target="_blank"><img class="footerimg"
-                                                                     src="/static/images/logos/openatlas_logo.png"></a>
+                <a href="https://www.nhm-wien.ac.at/" target="_blank"><img
+                        class="footerimg"
+                        src="/static/images/logos/nhm_logo.png"></a>
+                <a href="https://www.oeaw.ac.at/oeai/" target="_blank"><img
+                        class="footerimg"
+                        src="/static/images/logos/oeai_logo.png"></a>
+                <a href="https://www.oeaw.ac.at/" target="_blank"><img
+                        class="footerimg"
+                        src="/static/images/logos/oeaw_logo.png"></a>
+                <a href="https://www.oeaw.ac.at/acdh/" target="_blank"><img
+                        class="footerimg"
+                        src="/static/images/logos/acdh_logo.png"></a>
+                <a href="https://openatlas.eu/" target="_blank"><img
+                        class="footerimg"
+                        src="/static/images/logos/openatlas_logo.png"></a>
             </div>
         </footer>
-        <div class="pt-3 pb-3">
 
-            <div class="d-none row d-flex justify-content-center m-4"
-                 id="featProj"></div>
-        </div>
-
-            <div id="news">
-                <div class="container"><p class="h6 text-uppercase pt-3 mb-3">News and Highlights:</p></div>
-                <div class="container p-3">
-
-                    <h4 class="mt-3">February 2022: Version 4.0 released</h4>
-                    <p class="text-muted">
-                        With version 4.0 of THANADOS new filters habe been
-                        introduced for the selection of
-                        <a target="_blank" href="/sites">sites</a>. In the near
-                        future THANADOS' scope will be enlarged for further
-                        periods, projects, case studies and regions. This will
-                        allow for a quick selection of the respective sites.
-                        <br>
-                        The data collection has also been enlarged and currently
-                        There are more than 400 Austrian cemeteries online.
-                        <br>
-                        Furthermore THANADOS has become a
-                        <a href="https://www.timemachine.eu/the-greek-god-of-death-goes-digital-or-how-an-austrian-based-project-works-on-building-a-time-machine-for-grave-finds-across-europe/" target="_blank" ">
-                            local time machine
-                        within the Time Machine Organisation</a>.
-                    </p>
-
-                    <h4 class="mt-5">September 2021: Version 3.1 released</h4>
-                    <p class="text-muted">
-                        Introducing a new <a target="_blank" href="/search">search</a> functionality that allows for text search all over the entire database.
-                        Now you can search for any term defined by you in the name, description, context and type
-                        fields of all entities.
-                        Also automatic image processing has been implemented that crops and converts image files
-                        in order to load them faster into your browser.
-                    </p>
-
-                    <h4 class="mt-5">August 2021: Version 3.0 released</h4>
-                    <p class="text-muted">
-                        We have added several new <a target="_blank" href="/charts">chart</a> visualisations on the
-                        inter-site level, such as bodyheight comparisons, age at death estimations based on absolute
-                        age etc.
-                        <br>
-                        Also many (however mostly) invisible things have been implemented in the backend:
-                        The CSS framework has been updated from Bootstrap 4 to Bootstrap 5 along with many JavaScript
-                        libraries and new CSS classes. In total there have been
-                        <a target="_blank" href="https://github.com/stefaneichert/thanados/commit/ae25a5f7b9c0ffe1634630b7066eb76274ea7d03">
-                            4,852 changed files with 558,679 additions and 398,905 deletions.
-                        </a> <i class="far fa-grin-beam-sweat"></i>
-                    </p>
-
-                    <h4 class="mt-5">July 2021: Version 2.9 released</h4>
-                    <p class="text-muted">
-                        Introducing new dashboard visualisations for isotopic analyses and bodyheight of individuals.
-                        E.g. at<a target="_blank" href="/entity/50625/dashboard"> Oberleiserberg</a> (see burial tab).
-                        Also 30 new sites were added to the repository including many from Tyrol.
-                    </p>
-
-                    <h4 class="mt-5">June 2021: Version 2.8 released</h4>
-                    <p class="text-muted">
-                        Introducing radiocarbon calibration using the excellent open source Python library
-                        <a target="_blank" href="https://doi.org/10.5281/zenodo.630455"> IOSACal</a>.
-                        Now, if available, radiocarbon data (years, range, laboratory and specimen number) are used to
-                        "on the fly"
-                        create plots of the calibrated dates based on the most recent calibration curve:
-                        Eg. <a data-featherlight="image" href="/static/images/rc_dates/rc_sub_57319.png">Grave 1</a>
-                        from Oberleiserberg.
-                        Also <a data-featherlight="image" href="/static/images/rc_dates/rc_stacked_50625.png">stacked
-                        plots</a> are created if
-                        there is more than one date for the respective entity and or its subunits.
-                    </p>
-
-                    <h4 class="mt-5">Mar. 2021: Version 2.7 released</h4>
-                    <p class="text-muted">
-                        Introducing linked data to various vocabularies, gazetteers and thesauri, such as
-                        <a target="_blank" href="https://www.wikidata.org/wiki/Wikidata:Main_Page">Wikidata</a>,
-                        <a target="_blank" href="https://www.getty.edu/research/tools/vocabularies/aat/">Getty Art and
-                            Architecture Thesaurus</a>,
-                        <a target="_blank" href="https://archwort.dainst.org/">ArchWort</a> etc.
-                    <p class="text-muted">When available they are listed in the properties info fields and in the
-                        vocabulary view with detailed information. E.g.
-                        <a href="/vocabulary/26351"> Disc Brooch </a> (See "identifier" tab)
-                    </p>
-
-                    <h4 class="mt-5">THANADOS is now listed in <a
-                            href="https://www.data.gv.at/anwendungen/thanados/"
-                            target="_blank">Open Data Österreich</a></h4>
-
-                    <h4 class="mt-5">Feb. 2021: Version 2.6 released</h4>
-                    <p class="text-muted">Introducing new map backgrounds including hillshade overlays for basic maps
-                        and a detailed terrain model for Austria based on lidar data by
-                        <a target="_blank" href="https://www.basemap.at/">basemap.at</a>
-                    <p class="text-muted">41 new sites including for example <a href="/entity/128117">Zwentendorf</a>
-                        with rich anthropological data</p>
-
-                    <h4 class="mt-5">Jan. 2021: THANADOS presented in DerStandard.at Science Blog</h4>
-                    <p class="text-muted"><a
-                            href="https://www.derstandard.at/story/2000123448701/tausende-graeber-zum-selbsterforschen"
-                            target="_blank">Tausende Gräber zum Selbsterforschen</a></p>
-
-                    <h4 class="mt-5">Two new academic publications on THANADOS</h4>
-                    <p class="text-muted"><a
-                            href="https://doi.org/10.3390/heritage3040077"
-                            target="_blank">Towards an Online Database for Archaeological Landscapes</a></p>
-                    <p class="text-muted"><a
-                            href="https://doi.org/10.1145/3406535"
-                            target="_blank">Digital Mapping of Medieval Cemeteries</a></p>
-
-                    <h4 class="mt-5">Best App Award at the 2020 CHNT Conference!</h4>
-                    <p class="text-muted">We are proud to announce that THANADOS has won the 2020
-                        <a href="/static/images/home/chnt_award.jpg" data-featherlight>"Best App Award"</a>
-                        at the International Conference on Cultural Heritage and New Technology -
-                        <a href="https://www.chnt.at/chnt25-over/" target="_blank">CHNT</a></p>
-
-                    <h4 class="mt-5">Dez. 2020: Version 2.5 released</h4>
-                    <p class="text-muted">Introducing additional dashboard visualisations (finds, burials, graves).
-                        Click <a href="/entity/50505/dashboard">here</a> for an example</p>
-                    <p class="text-muted">Nearest neighbour distance calculation for each grave</p>
-                    <p class="text-muted">30 more cemeteries added. Amongst them the Avar period sites of
-                        <a href="/map/127381">Leobersdorf</a> and <a href="/map/118196">Sommerein</a>.
-                        (Acknowledgements for Leobersdorf go to the cooperation with the
-                        <a href="https://www.oeaw.ac.at/imafo/das-institut/detail/histogenes">
-                            ERC Synergy Grant HistoGenes</a>
-                        )</p>
-
-                    <h4 class="mt-5">Oct. 2020: Version 2.4 released</h4>
-                    <p class="text-muted">Introducing a dashboard with various visualisations for graves and burials.
-                        Click <a href="/entity/50505/dashboard">here</a> for an example</p>
-
-                    <h4 class="mt-5">3D models</h4>
-                    <p class="text-muted">If 3D files are available for finds or features they are displayed
-                        interactively in the browser: <a href="#"
-                                                         data-file="{'description':'Model by Ronny Weßling','file_name':'/static/images/entities/137015.glb','id':137015,'license':'CC BY 4.0','name':'rz2'}"
-                                                         title="open 3d model" src="/static/images/icons/3d.png"
-                                                         alt="3d"
-                                                         onclick="current3dFile = $(this).data('file'); set3D('/static/images/entities/137015.glb')">Example</a>
-                    </p>
-
-                    <h4 class="mt-5">Interactive Osteology Skeleton</h4>
-                    <p class="text-muted">With data on osteology for individual bones, these are mapped directly on an
-                        anatomic correct skeleton showing the bones' position and listing their attributes: <a
-                                href="/entity/76097">Example</a> (see "Osteology" tab)</p>
-
-                    <h4 class="mt-5">THANADOS on Facebook</h4>
-                    <p class="text-muted">THANADOS now has its own <a
-                            href="https://www.facebook.com/Thanados-101563005015151/">Facebook </a>account</p>
-
-                    <h4 class="mt-5">100% coverage for Carinthia</h4>
-                    <p class="text-muted">All published Early Medieval cemeteries from Carinthia are digitised and
-                        online. E.g. the earliest monastery of Molzbichl (8th c.) with its later <a
-                                href="/entity/45789">churchyard</a> or the nearby cemetery of <a
-                                href="/map/49637">Baldramsdorf/Rosenheim</a></p>
-
-                    <h4 class="mt-5">Highlight: Thunau obere Holzwiese</h4>
-                    <p class="text-muted">One of the biggest 8th to 10th century cemeteries in Austria and also the most
-                        recent one to be published: <a
-                                href="/map/50505">Thunau obere Holzwiese</a></p>
-
+        <div class="bg-img">
+            <div class="pt-4 container" id="projects">
+                <h1 class="h4 text-uppercase pt-3 mb-3 text-white">Featured
+                    Projects:</h1>
+                <div id="proj-load" class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status"></div>
+                    <span>Loading Projects...</span>
                 </div>
-            </div>
 
+                <div class="d-none row d-flex justify-content-center"
+                     id="featProj"></div>
+            </div>
         </div>
 
+        <div class="pt-4" id="news">
+            <div class="container"><p class="h4 text-uppercase pt-3 mb-3">News
+                and Highlights:</p></div>
+            <div class="container p-3">
+
+                <h4 class="mt-3">February 2022: Version 4.0 released</h4>
+                <p class="text-muted">
+                    With version 4.0 of THANADOS new filters habe been
+                    introduced for the selection of
+                    <a target="_blank" href="/sites">sites</a>. In the near
+                    future THANADOS' scope will be enlarged for further
+                    periods, projects, case studies and regions. This will
+                    allow for a quick selection of the respective sites.
+                    <br>
+                    The data collection has also been enlarged and currently
+                    There are more than 400 Austrian cemeteries online.
+                    <br>
+                    Furthermore THANADOS has become a
+                    <a href="https://www.timemachine.eu/the-greek-god-of-death-goes-digital-or-how-an-austrian-based-project-works-on-building-a-time-machine-for-grave-finds-across-europe/"
+                       target="_blank">
+                        local time machine
+                        within the Time Machine Organisation</a>.
+                </p>
+
+                <h4 class="mt-5">September 2021: Version 3.1 released</h4>
+                <p class="text-muted">
+                    Introducing a new <a target="_blank"
+                                         href="/search">search</a> functionality
+                    that allows for text search all over the entire database.
+                    Now you can search for any term defined by you in the name,
+                    description, context and type
+                    fields of all entities.
+                    Also automatic image processing has been implemented that
+                    crops and converts image files
+                    in order to load them faster into your browser.
+                </p>
+
+                <h4 class="mt-5">August 2021: Version 3.0 released</h4>
+                <p class="text-muted">
+                    We have added several new <a target="_blank" href="/charts">chart</a>
+                    visualisations on the
+                    inter-site level, such as bodyheight comparisons, age at
+                    death estimations based on absolute
+                    age etc.
+                    <br>
+                    Also many (however mostly) invisible things have been
+                    implemented in the backend:
+                    The CSS framework has been updated from Bootstrap 4 to
+                    Bootstrap 5 along with many JavaScript
+                    libraries and new CSS classes. In total there have been
+                    <a target="_blank"
+                       href="https://github.com/stefaneichert/thanados/commit/ae25a5f7b9c0ffe1634630b7066eb76274ea7d03">
+                        4,852 changed files with 558,679 additions and 398,905
+                        deletions.
+                    </a> <i class="far fa-grin-beam-sweat"></i>
+                </p>
+
+                <h4 class="mt-5">July 2021: Version 2.9 released</h4>
+                <p class="text-muted">
+                    Introducing new dashboard visualisations for isotopic
+                    analyses and bodyheight of individuals.
+                    E.g. at<a target="_blank" href="/entity/50625/dashboard">
+                    Oberleiserberg</a> (see burial tab).
+                    Also 30 new sites were added to the repository including
+                    many from Tyrol.
+                </p>
+
+                <h4 class="mt-5">June 2021: Version 2.8 released</h4>
+                <p class="text-muted">
+                    Introducing radiocarbon calibration using the excellent open
+                    source Python library
+                    <a target="_blank"
+                       href="https://doi.org/10.5281/zenodo.630455"> IOSACal</a>.
+                    Now, if available, radiocarbon data (years, range,
+                    laboratory and specimen number) are used to
+                    "on the fly"
+                    create plots of the calibrated dates based on the most
+                    recent calibration curve:
+                    Eg. <a data-featherlight="image"
+                           href="/static/images/rc_dates/rc_sub_57319.png">Grave
+                    1</a>
+                    from Oberleiserberg.
+                    Also <a data-featherlight="image"
+                            href="/static/images/rc_dates/rc_stacked_50625.png">stacked
+                    plots</a> are created if
+                    there is more than one date for the respective entity and or
+                    its subunits.
+                </p>
+
+                <h4 class="mt-5">Mar. 2021: Version 2.7 released</h4>
+                <p class="text-muted">
+                    Introducing linked data to various vocabularies, gazetteers
+                    and thesauri, such as
+                    <a target="_blank"
+                       href="https://www.wikidata.org/wiki/Wikidata:Main_Page">Wikidata</a>,
+                    <a target="_blank"
+                       href="https://www.getty.edu/research/tools/vocabularies/aat/">Getty
+                        Art and
+                        Architecture Thesaurus</a>,
+                    <a target="_blank" href="https://archwort.dainst.org/">ArchWort</a>
+                    etc.
+                <p class="text-muted">When available they are listed in the
+                    properties info fields and in the
+                    vocabulary view with detailed information. E.g.
+                    <a href="/vocabulary/26351"> Disc Brooch </a> (See
+                    "identifier" tab)
+                </p>
+
+                <h4 class="mt-5">THANADOS is now listed in <a
+                        href="https://www.data.gv.at/anwendungen/thanados/"
+                        target="_blank">Open Data Österreich</a></h4>
+
+                <h4 class="mt-5">Feb. 2021: Version 2.6 released</h4>
+                <p class="text-muted">Introducing new map backgrounds including
+                    hillshade overlays for basic maps
+                    and a detailed terrain model for Austria based on lidar data
+                    by
+                    <a target="_blank"
+                       href="https://www.basemap.at/">basemap.at</a>
+                <p class="text-muted">41 new sites including for example <a
+                        href="/entity/128117">Zwentendorf</a>
+                    with rich anthropological data</p>
+
+                <h4 class="mt-5">Jan. 2021: THANADOS presented in DerStandard.at
+                    Science Blog</h4>
+                <p class="text-muted"><a
+                        href="https://www.derstandard.at/story/2000123448701/tausende-graeber-zum-selbsterforschen"
+                        target="_blank">Tausende Gräber zum Selbsterforschen</a>
+                </p>
+
+                <h4 class="mt-5">Two new academic publications on THANADOS</h4>
+                <p class="text-muted"><a
+                        href="https://doi.org/10.3390/heritage3040077"
+                        target="_blank">Towards an Online Database for
+                    Archaeological Landscapes</a></p>
+                <p class="text-muted"><a
+                        href="https://doi.org/10.1145/3406535"
+                        target="_blank">Digital Mapping of Medieval
+                    Cemeteries</a></p>
+
+                <h4 class="mt-5">Best App Award at the 2020 CHNT
+                    Conference!</h4>
+                <p class="text-muted">We are proud to announce that THANADOS has
+                    won the 2020
+                    <a href="/static/images/home/chnt_award.jpg"
+                       data-featherlight>"Best App Award"</a>
+                    at the International Conference on Cultural Heritage and New
+                    Technology -
+                    <a href="https://www.chnt.at/chnt25-over/" target="_blank">CHNT</a>
+                </p>
+
+                <h4 class="mt-5">Dez. 2020: Version 2.5 released</h4>
+                <p class="text-muted">Introducing additional dashboard
+                    visualisations (finds, burials, graves).
+                    Click <a href="/entity/50505/dashboard">here</a> for an
+                    example</p>
+                <p class="text-muted">Nearest neighbour distance calculation for
+                    each grave</p>
+                <p class="text-muted">30 more cemeteries added. Amongst them the
+                    Avar period sites of
+                    <a href="/map/127381">Leobersdorf</a> and <a
+                            href="/map/118196">Sommerein</a>.
+                    (Acknowledgements for Leobersdorf go to the cooperation with
+                    the
+                    <a href="https://www.oeaw.ac.at/imafo/das-institut/detail/histogenes">
+                        ERC Synergy Grant HistoGenes</a>
+                    )</p>
+
+                <h4 class="mt-5">Oct. 2020: Version 2.4 released</h4>
+                <p class="text-muted">Introducing a dashboard with various
+                    visualisations for graves and burials.
+                    Click <a href="/entity/50505/dashboard">here</a> for an
+                    example</p>
+
+                <h4 class="mt-5">3D models</h4>
+                <p class="text-muted">If 3D files are available for finds or
+                    features they are displayed
+                    interactively in the browser: <a href="#"
+                                                     data-file="{'description':'Model by Ronny Weßling','file_name':'/static/images/entities/137015.glb','id':137015,'license':'CC BY 4.0','name':'rz2'}"
+                                                     title="open 3d model"
+                                                     src="/static/images/icons/3d.png"
+                                                     alt="3d"
+                                                     onclick="current3dFile = $(this).data('file'); set3D('/static/images/entities/137015.glb')">Example</a>
+                </p>
+
+                <h4 class="mt-5">Interactive Osteology Skeleton</h4>
+                <p class="text-muted">With data on osteology for individual
+                    bones, these are mapped directly on an
+                    anatomic correct skeleton showing the bones' position and
+                    listing their attributes: <a
+                            href="/entity/76097">Example</a> (see "Osteology"
+                    tab)</p>
+
+                <h4 class="mt-5">THANADOS on Facebook</h4>
+                <p class="text-muted">THANADOS now has its own <a
+                        href="https://www.facebook.com/Thanados-101563005015151/">Facebook </a>account
+                </p>
+
+                <h4 class="mt-5">100% coverage for Carinthia</h4>
+                <p class="text-muted">All published Early Medieval cemeteries
+                    from Carinthia are digitised and
+                    online. E.g. the earliest monastery of Molzbichl (8th c.)
+                    with its later <a
+                            href="/entity/45789">churchyard</a> or the nearby
+                    cemetery of <a
+                            href="/map/49637">Baldramsdorf/Rosenheim</a></p>
+
+                <h4 class="mt-5">Highlight: Thunau obere Holzwiese</h4>
+                <p class="text-muted">One of the biggest 8th to 10th century
+                    cemeteries in Austria and also the most
+                    recent one to be published: <a
+                            href="/map/50505">Thunau obere Holzwiese</a></p>
+
+            </div>
+        </div>
         <footer id="myfooter">
             <div class="container"
                  style="flex-wrap: wrap; display: flex; align-items: center; justify-content: space-between">
-                <a href="https://www.nhm-wien.ac.at/" target="_blank"><img class="footerimg"
-                                                                           src="/static/images/logos/nhm_logo.png"></a>
-                <a href="https://www.oeaw.ac.at/oeai/" target="_blank"><img class="footerimg"
-                                                                            src="/static/images/logos/oeai_logo.png"></a>
-                <a href="https://www.oeaw.ac.at/" target="_blank"><img class="footerimg"
-                                                                       src="/static/images/logos/oeaw_logo.png"></a>
-                <a href="https://www.oeaw.ac.at/acdh/" target="_blank"><img class="footerimg"
-                                                                            src="/static/images/logos/acdh_logo.png"></a>
-                <a href="https://openatlas.eu/" target="_blank"><img class="footerimg"
-                                                                     src="/static/images/logos/openatlas_logo.png"></a>
+                <a href="https://www.nhm-wien.ac.at/" target="_blank"><img
+                        class="footerimg"
+                        src="/static/images/logos/nhm_logo.png"></a>
+                <a href="https://www.oeaw.ac.at/oeai/" target="_blank"><img
+                        class="footerimg"
+                        src="/static/images/logos/oeai_logo.png"></a>
+                <a href="https://www.oeaw.ac.at/" target="_blank"><img
+                        class="footerimg"
+                        src="/static/images/logos/oeaw_logo.png"></a>
+                <a href="https://www.oeaw.ac.at/acdh/" target="_blank"><img
+                        class="footerimg"
+                        src="/static/images/logos/acdh_logo.png"></a>
+                <a href="https://openatlas.eu/" target="_blank"><img
+                        class="footerimg"
+                        src="/static/images/logos/openatlas_logo.png"></a>
             </div>
         </footer>
     </div>
+
+
     <script>    sitelist = {{ sitelist|tojson }};    </script>
     <script>    entitycount = {{ entitycount|safe }};    </script>
     <script src="/static/js/index.js"></script>

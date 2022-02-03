@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    $('#feature-container').css('background-image', "url('/static/images/home/skulls.jpg'")
     maximumHeight = (($(window).height() - $('#mynavbar').height()));
     $('#container1').css('max-height', (maximumHeight - 13) + 'px');
 
@@ -23,7 +24,7 @@ window.onload = function () {
     $.each(domaintypes, function (i, domain) {
         getProjectData(domain, '#featProj')
     })
-    window.setTimeout(makeMasonrywork, 1050)
+    window.setTimeout(makeMasonrywork, 2000)
 };
 
 function makeMasonrywork() {
@@ -31,6 +32,7 @@ function makeMasonrywork() {
     $('#featProj').masonry({
         percentPosition: true,
     });
+    $('.bg-img').css('background-image', "url('/static/images/home/skulls.jpg'")
     $('#proj-load').addClass('d-none')
 }
 
@@ -181,14 +183,14 @@ function getProjectData(id, container) {
             var outHtml =
 
                 '<div class="col-lg-4 col-sm-6 mb-4">\n' +
-                '                <div class="card">\n' +
+                '                <div class="card" style="opacity: 0.85">\n' +
                 '                        <h5 class="card-header text-center">' + ProjName + '</h5>\n' +
                 ((Logothere) ? '         <figure class="figure m-2">\n' +
                     '                             <img src="' + ProjLogo + '" class="figure-img border p-1 img-fluid rounded" alt="Project Logo">\n' +
                     '</figure>' : '') +
                 '                    <div class="card-body">\n' +
-                '                        <p class="card-text text-muted"><small>' + ProjDescr + '</small></p>\n' +
-                '                        <h6 class="card-subtitle mt-2 mb-2 text-muted">' + sitecount + ' site(s)</h6>\n' +
+                '                        <p class="card-text"><small>' + ProjDescr + '</small></p>\n' +
+                '                        <h6 class="card-subtitle mt-2 mb-2">' + sitecount + ' site(s)</h6>\n' +
                 ((Linkthere) ? projLink : '') +
                 '                    </div>\n' +
                 '                </div>\n' +
@@ -208,6 +210,24 @@ $(function () {
         var $anchor = $(this);
         var element = ($anchor.attr('href'))
         element = document.querySelector(element);
-        element.scrollIntoView({behavior: 'smooth', block: 'end'});
+        element.scrollIntoView({behavior: 'smooth', block: 'start'});
     });
+});
+
+window.addEventListener('DOMContentLoaded', event => {
+
+
+    // Collapse responsive navbar when toggler is visible
+    const navbarToggler = document.body.querySelector('.navbar-toggler');
+    const responsiveNavItems = [].slice.call(
+        document.querySelectorAll('.scroll-link')
+    );
+    responsiveNavItems.map(function (responsiveNavItem) {
+        responsiveNavItem.addEventListener('click', () => {
+            if (window.getComputedStyle(navbarToggler).display !== 'none') {
+                navbarToggler.click();
+            }
+        });
+    });
+
 });
