@@ -58,7 +58,7 @@ CREATE TABLE thanados.tmpsites AS (
     @staticmethod
     def get_file_path(id_: int):
         if app.config['USE_JPGS']:
-            path = glob.glob(os.path.join((app.config['UPLOAD_FOLDER_PATH'] + '/jpgs'), str(id_) + '.*'))
+            path = glob.glob(os.path.join((app.config['UPLOAD_JPG_FOLDER_PATH']), str(id_) + '.*'))
         else:
             path = glob.glob(os.path.join(app.config['UPLOAD_FOLDER_PATH'], str(id_) + '.*'))
         if path:
