@@ -16,6 +16,7 @@ thanados/models/iosacal/*
 
 # created files
 thanados/static/images/entities/*
+thanados/static/images/jpgs/*
 thanados/static/images/rc_dates/*
 
 # files for specific projects

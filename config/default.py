@@ -15,8 +15,9 @@ MEDIA_EXTENSION = ['.png', '.bmp', '.jpg', '.jpeg', '.glb']
 
 # Path
 WEB_FOLDER_PATH = '/static/images/entities'
-JPG_FOLDER_PATH = '/static/images/entities/jpgs'
+JPG_FOLDER_PATH = '/static/images/jpgs'
 UPLOAD_FOLDER_PATH = os.path.dirname(__file__) + '/../thanados' + WEB_FOLDER_PATH
+UPLOAD_JPG_FOLDER_PATH = os.path.dirname(__file__) + '/../thanados' + JPG_FOLDER_PATH
 
 THUNDERFOREST_API_KEY = 'yourAPIKey'
 OPENATLAS_URL = 'https://thanados.openatlas.eu/update/'

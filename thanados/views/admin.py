@@ -3007,7 +3007,7 @@ def image_processing_execute():  # pragma: no cover
                     try:
                         copy(
                         current_image,
-                        'thanados' + app.config["WEB_FOLDER_PATH"] + '/jpgs/')
+                        'thanados' + app.config["JPG_FOLDER_PATH"] + '/')
                         message_ = ('kept original file, check:' + current_image)
                         failedlist.append(str(filesthere) + ':' + str(row.file) + ' kept the original. Check the file')
                     except Exception:
@@ -3023,7 +3023,7 @@ def image_processing_execute():  # pragma: no cover
             try:
                 copy(
                     current_image,
-                    'thanados' + app.config["WEB_FOLDER_PATH"] + '/jpgs/')
+                    'thanados' + app.config["JPG_FOLDER_PATH"] + '/')
                 message_ = ('kept original file, Map Overlay:' + current_image)
             except Exception:
                 message_ = ('Error, Map Overlay:' + current_image)
