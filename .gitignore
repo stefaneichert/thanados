@@ -9,13 +9,12 @@ __pycache__/*
 .cache
 
 # iosacal
-thanados/models/iosacal/
+thanados/models/iosacal/*
 
 # compiled files
 *.pyc
 
 # created files
-thanados/static/images/entities/
 thanados/static/images/entities/*
 thanados/static/images/rc_dates/*
 
