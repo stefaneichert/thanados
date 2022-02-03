@@ -2943,7 +2943,7 @@ def image_processing_execute():  # pragma: no cover
 
             newimage = ('thanados' + app.config["JPG_FOLDER_PATH"] + '/' + str(row.file)
                 + '.jpg')
-            #os.makedirs(os.path.dirname(newimage), exist_ok=True)
+            os.makedirs(os.path.dirname(newimage), exist_ok=True)
             if os.path.isfile(current_image):
                 found = True
                 break
