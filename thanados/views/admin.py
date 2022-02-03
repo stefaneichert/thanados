@@ -2938,10 +2938,10 @@ def image_processing_execute():  # pragma: no cover
         found = False
         imagetypes = ['.png', '.bmp', '.jpg', '.jpeg', '.glb']
         for extension in imagetypes:
-            current_image = 'thanados' + app.config[
-                "WEB_FOLDER_PATH"] + '/' + str(row.file) + extension
+            current_image = app.config[
+                "UPLOAD_FOLDER_PATH"] + '/' + str(row.file) + extension
 
-            newimage = ('thanados' + app.config["JPG_FOLDER_PATH"] + '/' + str(row.file)
+            newimage = (app.config["UPLOAD_JPG_FOLDER_PATH"] + '/' + str(row.file)
                 + '.jpg')
             #os.makedirs(os.path.dirname(newimage), exist_ok=True)
             if os.path.isfile(current_image):
@@ -3007,7 +3007,7 @@ def image_processing_execute():  # pragma: no cover
                     try:
                         copy(
                         current_image,
-                        'thanados' + app.config["JPG_FOLDER_PATH"] + '/')
+                        app.config["UPLOAD_JPG_FOLDER_PATH"] + '/')
                         message_ = ('kept original file, check:' + current_image)
                         failedlist.append(str(filesthere) + ':' + str(row.file) + ' kept the original. Check the file')
                     except Exception:
@@ -3023,7 +3023,7 @@ def image_processing_execute():  # pragma: no cover
             try:
                 copy(
                     current_image,
-                    'thanados' + app.config["JPG_FOLDER_PATH"] + '/')
+                    app.config["UPLOAD_JPG_FOLDER_PATH"] + '/')
                 message_ = ('kept original file, Map Overlay:' + current_image)
             except Exception:
                 message_ = ('Error, Map Overlay:' + current_image)
