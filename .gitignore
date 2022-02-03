@@ -9,7 +9,6 @@ __pycache__/*
 .cache
 
 # iosacal
-thanados/models/iosacal/*
 thanados/models/iosacal/
 
 # compiled files
