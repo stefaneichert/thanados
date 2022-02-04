@@ -2219,7 +2219,7 @@ function getCaseData(id, container) {
             }
 
 
-            var outHtml = '<li style="display: flex"><a class="dropdown-item" data-bs-offset="35,8" data-bs-append-to-body="true" data-bs-toggle="popover" data-bs-trigger="hover focus" title="' + data.name + '" data-bs-content="' + title + '" href="#" onclick="filterTable(' + data.id + ')">' + data.name + ' (' + sitecount + ')</a>'+ projLink + '</li>'
+            var outHtml = '<li style="display: flex"><a class="dropdown-item" data-bs-offset="55,8" data-bs-append-to-body="true" data-bs-toggle="popover" data-bs-trigger="hover focus" title="' + data.name + '" data-bs-content="' + title + '" href="#" onclick="filterTable(' + data.id + ')">' + data.name + ' (' + sitecount + ')</a>'+ projLink + '</li>'
             $(container).append(outHtml)
             var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
             var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {

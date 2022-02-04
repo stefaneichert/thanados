@@ -170,6 +170,7 @@ function getProjectData(id, container) {
 
             if (ProjDescr.includes('http')) {
                 var projLink = 'http' + ProjDescr.slice(ProjDescr.lastIndexOf('http') + 4);
+                ProjDescr = ProjDescr.replace(projLink, '')
                 projLink = '<a title="Project website" target="_blank" href="' + projLink + '">Project Website<i class="ms-2 fas fa-external-link-alt"></i></a>'
                 var Linkthere = true
 
@@ -185,8 +186,8 @@ function getProjectData(id, container) {
                 '<div class="col-lg-4 col-sm-6 mb-4">\n' +
                 '                <div class="card" style="opacity: 0.85">\n' +
                 '                        <h5 class="card-header text-center">' + ProjName + '</h5>\n' +
-                ((Logothere) ? '         <figure class="figure m-2">\n' +
-                    '                             <img src="' + ProjLogo + '" class="figure-img border p-1 img-fluid rounded" alt="Project Logo">\n' +
+                ((Logothere) ? '         <figure class="figure mx-auto ps-2 pt-3 pe-2">\n' +
+                    '                             <img src="' + ProjLogo + '" class="figure-img p-1 img-fluid " alt="Project Logo">\n' +
                     '</figure>' : '') +
                 '                    <div class="card-body">\n' +
                 '                        <p class="card-text"><small>' + ProjDescr + '</small></p>\n' +

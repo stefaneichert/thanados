@@ -2922,7 +2922,6 @@ def image_processing_execute():  # pragma: no cover
     print('Cropping files')
     sql = """
                 SELECT id AS file, 0 AS ovl FROM model.entity WHERE openatlas_class_name = 'file' 
-                                AND id IN (SELECT id FROM thanados.files)
                                 """
     g.cursor.execute(sql)
     result = g.cursor.fetchall()
