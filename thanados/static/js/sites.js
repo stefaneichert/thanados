@@ -237,7 +237,7 @@ $(document).ready(function () {
         function (settings, data, dataIndex) {
             var min = parseInt($('#min').val(), 10);
             var max = parseInt($('#max').val(), 10);
-            var age = parseFloat(data[2]) || 0; // use data for the age column
+            var age = parseFloat(data[3]) || 0; // use data for the age column
 
             return (isNaN(min) && isNaN(max)) ||
                 (isNaN(min) && age <= max) ||
@@ -251,7 +251,7 @@ $(document).ready(function () {
         function (settings, data, dataIndex) {
             var min = parseInt($('#min1').val(), 10);
             var max = parseInt($('#max1').val(), 10);
-            var age = parseFloat(data[3]) || 0; // use data for the age column
+            var age = parseFloat(data[4]) || 0; // use data for the age column
 
             return (isNaN(min) && isNaN(max)) ||
                 (isNaN(min) && age <= max) ||
@@ -286,8 +286,10 @@ $(document).ready(function () {
         heat.setLatLngs(heatmarkers);
         if (resultLenght.length > 0) map.fitBounds(mymarkers.getBounds());
         countVisibleMarkers()
+        removeHoverMarker();
     });
     map.invalidateSize();
+
 
     $('input[type="search"]').addClass('w-75')
 
