@@ -1,5 +1,6 @@
 $('#nav-sites').addClass('activePage');
 
+
 $(window).resize(function () {
     maximumHeight = ($(window).height() - $('#mynavbar').height())
     $('#mycontent').css('max-height', (maximumHeight - 10) + 'px');
@@ -21,9 +22,6 @@ $(document).ready(function () {
     $('#map').css('height', (maximumHeight - 15) + 'px');
     getBasemaps();
 
-
-    //$('#siteModal').modal('show');
-
 //define basemaps
     map = L.map('map', {
         renderer: L.canvas(),
@@ -31,7 +29,8 @@ $(document).ready(function () {
         zoom: 18,
         maxZoom: 18,
         zoomControl: false,
-        layers: [landscape]
+        layers: [landscape],
+        gestureHandling: mobileMap
     }).setView([51.505, -0.09], 13);
 
     //hack for right order of basemaps

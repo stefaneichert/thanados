@@ -21,6 +21,7 @@ $(document).ready(function () {
         if ($('.freesearch').hasClass('text-muted')) $('.freesearch').toggleClass('text-muted')
     });
     $('#freesearch').toggle()
+    if ($(window).width() <= 991) mobileMap = true
 });
 
 $(window).resize(function () {
@@ -750,7 +751,7 @@ function setmymap(markers, heatmarkers, graveIds) {
     eval('markers' + Iter + '= markers;')
 
 
-    eval('map' + Iter + ' = L.map(\'map\' + Iter, {fullscreenControl: true, maxZoom: 25, zoomControl: false, layers: [landscape' + Iter + ']}).fitBounds(markers.getBounds());')
+    eval('map' + Iter + ' = L.map(\'map\' + Iter, {fullscreenControl: true, maxZoom: 25, zoomControl: false, gestureHandling: mobileMap, layers: [landscape' + Iter + ']}).fitBounds(markers.getBounds());')
 
     clustermarkers.addTo((eval('map' + Iter)));
 

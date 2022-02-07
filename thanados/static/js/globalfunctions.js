@@ -3616,3 +3616,6 @@ function setChartData(originalData, axesswitch, percentageset, zeroslice, prepar
     if (axesswitch) dataToWorkWith = switchaxes(dataToWorkWith);
     return dataToWorkWith;
 }
+
+mobileMap = false
+if ($(window).width() <=990) mobileMap = true

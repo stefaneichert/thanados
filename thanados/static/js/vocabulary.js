@@ -35,10 +35,10 @@ $(document).ready(function () {
 
     if (typeof (table) != 'undefined') {
 
-    table.on('draw', function () {
-            popoverRedraw()
-        }
-    );
+        table.on('draw', function () {
+                popoverRedraw()
+            }
+        );
     }
 });
 
@@ -159,6 +159,7 @@ if (data.entities_recursive) {
             exclusiveGroups: ['Entities']
         };
 
+        if ($(window).width() <= 1199) mobileMap = true
 
         map = L.map('map', {
             renderer: L.canvas(),
@@ -166,8 +167,9 @@ if (data.entities_recursive) {
             maxZoom: 18,
             layers: [landscape],
             zoomControl: false,
-            gestureHandling: true
+            gestureHandling: mobileMap
         });
+
         loadingControl.addTo(map);
         entPoints.addTo(map)
         map.fitBounds(entPoints.getBounds())
@@ -332,11 +334,10 @@ function createNetwork() {
 }
 
 
-
 function getCitation() {
 
     $('#mycitation').empty();
-    $('#mycitation').html('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' +'"' + data.name + '" ' + mycitation1.replace("After:", "") + '</div>');
+    $('#mycitation').html('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + '"' + data.name + '" ' + mycitation1.replace("After:", "") + '</div>');
     var citemodal = new bootstrap.Modal(document.getElementById('citeModal'))
     citemodal.show();
 }
