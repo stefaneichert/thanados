@@ -67,11 +67,11 @@ def vocabulary():
                 node['nodes'].append(currentnode)
                 maketree(row.id, currentnode, typeClass)
 
-    tabsToCreate = ['Classifications', 'Standard', 'User defined', 'Value types']
+    tabsToCreate = ['Main classes', 'Types', 'Value types']
 
-    makeparents(hierarchytypes, 'Classifications')
-    makeparents(systemtypes, 'Standard')
-    makeparents(customtypes, 'User defined')
+    makeparents(hierarchytypes, 'Main classes')
+    #makeparents(systemtypes, 'Standard') #uncomment to display system types
+    makeparents(customtypes, 'Types')
     makeparents(valuetypes, 'Value types')
 
     # return json.dumps(parenttree)
