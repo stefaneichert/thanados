@@ -5,7 +5,6 @@
 
     <div id="mycontent">
         <div id="firstrow" class="row p-0 m-0" style="width: 100%">
-
             <div class="col-lg-6">
                 <div class="border rounded-3 p-3 mt-3 mb-3">
                     <div id="filters">
@@ -17,7 +16,10 @@
                                 Projects
                             </button>
                             <ul class="dropdown-menu" id="case_studies">
-                                <li><a class="dropdown-item" title="show all sites" href="#" onclick="filterTable(0)">All ({{ sitelist|length }})</a></li>
+                                <li><a class="dropdown-item"
+                                       title="show all sites" href="#"
+                                       onclick="filterTable(0)">
+                                    All ({{ sitelist|length }})</a></li>
                             </ul>
                         </div>
                         <div class="btn-group">
@@ -28,7 +30,10 @@
                                 Countries
                             </button>
                             <ul class="dropdown-menu" id="regions">
-                                <li><a class="dropdown-item" title="show all sites" href="#" onclick="filterTable(0)">All ({{ sitelist|length }})</a></li>
+                                <li><a class="dropdown-item"
+                                       title="show all sites" href="#"
+                                       onclick="filterTable(0)">
+                                    All ({{ sitelist|length }})</a></li>
                             </ul>
                         </div>
                         <div class="btn-group">
@@ -39,7 +44,10 @@
                                 Periods
                             </button>
                             <ul class="dropdown-menu" id="periods">
-                                <li><a class="dropdown-item" title="show all sites" href="#" onclick="filterTable(0)">All ({{ sitelist|length }})</a></li>
+                                <li><a class="dropdown-item"
+                                       title="show all sites" href="#"
+                                       onclick="filterTable(0)">
+                                    All ({{ sitelist|length }})</a></li>
                             </ul>
                         </div>
                     </div>
@@ -52,14 +60,12 @@
                         <div class="col-sm mt-2">
                             <span style="min-width: 200px" id="amount2"></span>
                             <div class="mt-2" id="slider-range2"></div>
-
                         </div>
                     </div>
                 </div>
                 <table id="sitelist"
                        class="display table table-striped table-bordered"
                        width="100%">
-
                     <thead>
                     <tr>
                         <th>Id</th>
@@ -73,11 +79,16 @@
                 </table>
                 <p></p>
                 <p class="text-muted font-weight-light ms-1 me-1">
-                    Here you can find a list of sites that are already prepared for online dissemination. You can select
-                    detailed views and maps by clicking the names respectively the map markers. They are currently being
-                    translated and edited and it is still work in progress. The number of online sites will be increased
-                    in the course of the project. If you encounter any bugs or mistakes in the content as well as for
-                    any kind of feedback please feel free to contact us under: info@thanados.net
+                    Here you can find a list of sites that are provided by
+                    THANADOS and cooperation partners for online dissemination.
+                    You can select detailed views and maps by clicking the names
+                    respectively the map markers. New sites are added
+                    continuously. <br>
+                    If you encounter any bugs or mistakes in the content as well
+                    as for any kind of feedback please feel free to contact us
+                    under:
+                    <a href="mailto:info@thanados.net" target="_blank">
+                        info@thanados.net</a>
                 </p>
             </div>
             <div class="col-lg-6 m-0 p-0">
@@ -90,7 +101,6 @@
             <label for="min1"></label><input type="text" id="min1" name="min">
             <label for="max1"></label><input type="text" id="max1" name="max">
         </div>
-
     </div>
 
     <script>    sitelist = {{ sitelist|tojson }};    </script>
