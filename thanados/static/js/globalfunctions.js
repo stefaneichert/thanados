@@ -2215,11 +2215,11 @@ function getCaseData(id, container) {
 
             }
             if (data.files) {
-                title = "<img class='logo-image mb-2' src='" + data.files[0].file_name + "'>" + title
+                title = "<img class='logo-image mb-2' src='" + data.files[0].file_name + "'><br>" + title
             }
 
 
-            var outHtml = '<li style="display: flex"><a class="dropdown-item" data-bs-offset="55,8" data-bs-append-to-body="true" data-bs-toggle="popover" data-bs-trigger="hover focus" title="' + data.name + '" data-bs-content="' + title + '" href="#" onclick="removeHoverMarker, filterTable(' + data.id + ')">' + data.name + ' (' + sitecount + ')</a>'+ projLink + '</li>'
+            var outHtml = '<li style="display: flex"><a class="dropdown-item" data-bs-offset="85,8" data-bs-append-to-body="true" data-bs-toggle="popover" data-bs-trigger="hover focus" title="' + data.name + '" data-bs-content="' + title + '" href="#" onclick="removeHoverMarker, filterTable(' + data.id + ')">' + data.name + ' (' + sitecount + ')</a>'+ projLink + '</li>'
             $(container).append(outHtml)
             var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
             var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {

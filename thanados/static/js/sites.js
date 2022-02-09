@@ -17,7 +17,7 @@ AccRemove();
 
 $(document).ready(function () {
     maximumHeight = ($(window).height() - $('#mynavbar').height())
-    $('#mycontent').css('max-height', (maximumHeight - 10) + 'px');
+    $('#mycontent').css('max-height', (maximumHeight - 16) + 'px');
     $('#mycontent').addClass("p-0")
     $('#map').css('height', (maximumHeight - 15) + 'px');
     getBasemaps();
