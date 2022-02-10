@@ -342,3 +342,117 @@ function getCitation() {
     citemodal.show();
 }
 
+function makeTimeBar(time) {
+
+    var startTrue = false
+    var endTrue = false
+    var start = []
+    var end = []
+    var text1
+    var text2
+
+    $.each(time, function (key, value) {
+        if (key.includes('begin')) {
+            start.push(parseInt(value))
+            startTrue = true
+        }
+        if (key.includes('end')) {
+            end.push(parseInt(value))
+            endTrue = true
+        }
+
+    })
+
+    if (startTrue && endTrue) {
+        var earlBeg = (Math.min.apply(Math, start))
+        var lateBeg = (Math.max.apply(Math, start))
+        var earlEnd = (Math.min.apply(Math, end))
+        var lateEnd = (Math.max.apply(Math, end))
+        var totaltime = lateEnd - earlBeg
+        var startSpan = 0
+        var endSpan = 0
+        var begintext = ''
+        var endtext = ''
+        if (start.length > 1 && start[0] !== start[1]) {
+            startSpan = Math.abs(start[0] - start[1]);
+            text1 = 'Begin: between ' + earlBeg + ' and ' + lateBeg
+            begintext = lateBeg
+        } else text1 = 'Begin: ' + start[0]
+
+
+        if (end.length > 1 && end[0] !== end[1]) {
+            endSpan = Math.abs(end[0] - end[1]);
+            text2 = 'End: between ' + earlEnd + ' and ' + lateEnd
+            endtext = earlEnd
+            console.log('hallo')
+        } else text2 = 'End: ' + end[0];
+
+
+
+        var scale = 0
+        if (totaltime <= 50) scale = 10
+        if (totaltime > 50 && totaltime <= 250) scale = 20
+        if (totaltime > 250 && totaltime <= 500) scale = 50
+        if (totaltime > 500 && totaltime <= 1000) scale = 100
+        if (totaltime > 1000 && totaltime <= 2000) scale = 200
+        if (totaltime > 2000 && totaltime <= 5000) scale = 500
+        if (totaltime > 5000) scale = 1000
+
+        var scalebegin = (Math.floor(earlBeg / scale) * scale)
+        var scaleend = (Math.ceil(lateEnd / scale) * scale)
+
+        if ((earlBeg - scalebegin) < scale / 2) scalebegin -= scale
+        if ((lateEnd - scaleend) < scale / 2) scaleend += scale
+
+        var scaletime = scaleend - scalebegin
+        var minDur = earlEnd - lateBeg
+        var scalegap = (scale / scaletime * 100)
+        var scalegaps = scaletime / scale
+
+        for (let i = 0; i < scalegaps; i++) {
+            {
+                var interval = scalebegin + (i * scale)
+                console.log(i + ': ' + interval)
+                $('#timeline_heading').append('<td class="text-muted" style="width: ' + scalegap + '%"><small>' + interval + '</small></td>')
+            }
+        }
+
+        var firstgap = (earlBeg - scalebegin) / scaletime * 100
+        var secondgap = startSpan / scaletime * 100
+        var thirdgap = minDur / scaletime * 100
+        var fourthgap = endSpan / scaletime * 100
+        var fifthgap = (scaleend - lateEnd) / scaletime * 100
+
+        var border1Width = 0
+        var border2Width = 0
+        earlBeg = earlBeg + '&nbsp;'
+        if (begintext !== '') {
+            begintext = '&nbsp;' + begintext;
+            border1Width = 1
+        }
+        if (endtext !== '') {
+            endtext += '&nbsp;';
+            border2Width = 1
+        }
+        lateEnd = '&nbsp;' + lateEnd
+
+        $('#timeline_bars').append('<td class="text-muted" style="width: ' + firstgap + '%; height: 2rem"></td>')
+        $('#timeline_bars').append('<td class="text-muted" style="width: ' + secondgap + '%; height: 2rem; background: linear-gradient(to right, #ffffff 0%, #99bae3 100%)"></td>')
+        $('#timeline_bars').append('<td class="text-muted" style="width: ' + thirdgap + '%; height: 2rem; background-color: #99bae3"></td>');
+        $('#timeline_bars').append('<td class="text-muted" style="width: ' + fourthgap + '%; height: 2rem; background: linear-gradient(to left, #ffffff 0%, #99bae3 100%)"></td>')
+        $('#timeline_bars').append('<td class="text-muted" style="width: ' + fifthgap + '%; height: 2rem"></td>')
+
+        $('#timeline_spans').append('<td class="text-muted" style="width: ' + firstgap + '%; height: 2rem; text-align: right; vertical-align: bottom"><small>' + earlBeg + '</small></td>')
+        $('#timeline_spans').append('<td class="text-muted" style="width: ' + secondgap + '%; height: 2rem; border-left: 1px solid #a09b9b; border-right: ' + border1Width + 'px solid #a09b9b"></td>')
+        $('#timeline_spans').append('<td class="text-muted" style="width: ' + thirdgap / 2 + '%; height: 2rem; vertical-align: bottom"><small>' + begintext + '</small></td>');
+        $('#timeline_spans').append('<td class="text-muted" style="width: ' + thirdgap / 2 + '%; height: 2rem; vertical-align: bottom; text-align: right"><small>' + endtext + '</small></td>');
+        $('#timeline_spans').append('<td class="text-muted" style="width: ' + fourthgap + '%; height: 2rem; border-left: ' + border2Width + 'px solid #a09b9b; border-right: 1px solid #a09b9b"></td>')
+        $('#timeline_spans').append('<td class="text-muted" style="width: ' + fifthgap + '%; height: 2rem; vertical-align: bottom"><small>' + lateEnd + '</small></td>')
+
+        $('#time').append('<br><ul class="list-inline">\n' +
+            '  <small class="float-start list-inline-item text-muted">' + text1 + '</small>\n' +
+            '  <small class="float-end list-inline-item text-muted">' + text2 + '</small>\n')
+    }
+}
+
+if (typeof (data.time) !== 'undefined') makeTimeBar(data.time)

@@ -129,6 +129,17 @@ def vocabulary_view(object_id: int, format_=None):
     g.cursor.execute(sql_base, {'object_id': object_id})
     output_base = g.cursor.fetchone()
 
+    sql_date = """
+    SELECT 
+        date_part('year', begin_from) AS begin_from, 
+        date_part('year', begin_to) AS begin_to,
+        date_part('year', end_from) AS end_from,
+        date_part('year', end_to) AS end_to
+        FROM model.entity WHERE id = %(object_id)s;
+    """
+    g.cursor.execute(sql_date, {'object_id': object_id})
+    output_date = g.cursor.fetchone()
+
     # check if exists
     if not output_base:
         abort(403)
@@ -221,6 +232,17 @@ def vocabulary_view(object_id: int, format_=None):
     g.cursor.execute(sql_parentname, {'object_id': output_path_parent.parent_id})
     output_parentname = g.cursor.fetchone()
 
+    #define time
+    time = {}
+    if output_base.begin_from:
+        time['earliest_begin'] = output_date.begin_from
+    if output_base.begin_to:
+        time['latest_begin'] = output_date.begin_to
+    if output_base.end_from:
+        time['earliest_end'] = output_date.end_from
+    if output_base.end_to:
+        time['latest_end'] = output_date.end_to
+
     # define json
     data = {}
     data['id'] = output_base.id
@@ -228,21 +250,11 @@ def vocabulary_view(object_id: int, format_=None):
     data['path'] = output_path_parent.name_path
     if output_base.description:
         data['description'] = output_base.description
-    if output_base.begin_from:
-        data['earliest_begin'] = output_base.begin_from
-    if output_base.begin_to:
-        data['latest_begin'] = output_base.begin_to
-    if output_base.begin_comment:
-        data['begin_comment'] = output_base.begin_comment
-    if output_base.end_from:
-        data['earliest_end'] = output_base.end_from
-    if output_base.end_to:
-        data['latest_end'] = output_base.end_to
-    if output_base.end_comment:
-        data['end_comment'] = output_base.end_comment
     if output_path_parent.parent_id:
         data['parent'] = output_path_parent.parent_id
         data['parent_name'] = output_parentname.name
+    if len(time) > 0:
+        data['time'] = time
     credits = None
     license = None
     if extresult.ext_types:
