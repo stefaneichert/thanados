@@ -67,33 +67,6 @@ def vocabulary():
                 node['nodes'].append(currentnode)
                 maketree(row.id, currentnode, typeClass)
 
-    def getEntCount (id):
-        sql_main = """
-            SELECT COUNT(child_id) AS maincount FROM thanados.searchdata 
-            WHERE type_id = %(id)s
-            """
-        sql_path = """
-            SELECT name_path AS path FROM thanados.types_all WHERE id = %(id)s
-            """
-        sql_rec = """
-            SELECT COUNT(child_id) AS reccount FROM thanados.searchdata 
-            WHERE path LIKE %(path)s AND type_id != %(id)s
-            """
-
-        g.cursor.execute(sql_main, {'id': id})
-        maincount = (g.cursor.fetchone().maincount)
-
-        g.cursor.execute(sql_path, {'id': id})
-        path = (g.cursor.fetchone().path)
-
-        g.cursor.execute(sql_rec, {'id': id, 'path': path + '%'})
-        reccount = (g.cursor.fetchone().reccount)
-
-        Entstring = ' ' + str(maincount) + ' (' + str(reccount) + ')'
-        return Entstring
-
-
-
     tabsToCreate = ['Main classes', 'Types', 'Value types']
 
     makeparents(hierarchytypes, 'Main classes')
@@ -201,11 +174,11 @@ def vocabulary_view(object_id: int, format_=None):
     type = ''
 
     if result.category == 'standard':
-        type = 'System type'
+        type = 'Classification'
     if result.category == 'value':
         type = 'Value type'
     elif result.category == 'custom':
-        type = 'Custom type'
+        type = 'Type'
 
     topparent['selection'] = multi
     topparent['type'] = type

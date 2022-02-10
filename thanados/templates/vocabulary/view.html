@@ -147,8 +147,7 @@
                                         </p>
                                         <p>
                                             {% if data.files[0].license %}
-                                                <a href="/vocabulary/{{ data.files[0].licenseId }}"
-                                                   target="_blank">{{ data.files[0].license }}</a>
+                                                <span>{{ data.files[0].license }}</span>
                                             {% endif %}
                                         </p>
 
@@ -430,8 +429,7 @@
                                                 </p>
                                                 <p>
                                                     {% if row.license %}
-                                                        <a href="/vocabulary/{{ row.licenseId }}"
-                                                           target="_blank">{{ row.license }}</a>
+                                                        <span>{{ row.license }}</span>
                                                     {% endif %}
                                                 </p>
                                             </div>
@@ -477,8 +475,7 @@
                                                 </p>
                                                 <p>
                                                     {% if row.license %}
-                                                        <a href="/vocabulary/{{ row.licenseId }}"
-                                                           target="_blank">{{ row.license }}</a>
+                                                        <span>{{ row.license }}</span>
                                                     {% endif %}
                                                 </p>
                                             </div>

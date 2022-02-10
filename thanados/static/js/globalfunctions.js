@@ -2155,15 +2155,15 @@ mycitation1 = ' From: <a href="/about" target="_blank">THANADOS:</a> <a' +
     'Licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a><br> After: ';
 
 //retrieve type data for popover
-function getTypeData(id, div, hierarchy) {
+function getTypeData(id, div, hierarchy, target='_blank') {
     $.getJSON("/vocabulary/" + id + "/json", function (data) {
-        returnHtml = '<a title="' + data.path + '" href="/vocabulary/' + id + '" target="_blank">' + data.name + '</a>';
+        returnHtml = '<a title="' + data.path + '" href="/vocabulary/' + id + '" target="'+target+'">' + data.name + '</a>';
         if (data.files) returnHtml = returnHtml + '<img class="logo-image mt-2 mb-2" src="' + data.files[0].file_name + '">';
         if (data.description) returnHtml = returnHtml + '<p class="mt-2 text-muted font-italic" >' + data.description + '</p>';
         if (data.parent) returnHtml = returnHtml + '<p class="mt-2"> Subcategory of:' +
-            ' <a href="/vocabulary/' + data.parent + '" target="_blank">' + data.parent_name + '</a></p>';
+            ' <a href="/vocabulary/' + data.parent + '" target="'+target+'">' + data.parent_name + '</a></p>';
         if (data.topparent.name) returnHtml = returnHtml + '<span class="mt-2"> Hierarchy:' +
-            ' <a href="/vocabulary/' + data.topparent.id + '" target="_blank">' + data.topparent.name + '</a></span>';
+            ' <a href="/vocabulary/' + data.topparent.id + '" target="'+target+'">' + data.topparent.name + '</a></span>';
         if (data.topparent.description) returnHtml = returnHtml + '<br><span><i' +
             ' class="text-muted">' + data.topparent.description + '</i></span>';
         if (data.gazetteers) {
@@ -2260,7 +2260,7 @@ function initTreePopovers() {
     $('.popCont').click(function () {
         popover_div = $(this);
         var id = popover_div.data('id');
-        getTypeData(id, popover_div, true);
+        getTypeData(id, popover_div, true, '_self');
     });
     $('body').click(function () {
         $('.popover').popover('dispose')
