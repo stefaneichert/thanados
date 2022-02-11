@@ -2158,7 +2158,7 @@ mycitation1 = ' From: <a href="/about" target="_self">THANADOS:</a> <a' +
 function getTypeData(id, div, hierarchy, target='_self') {
     $.getJSON("/vocabulary/" + id + "/json", function (data) {
         returnHtml = '<a title="' + data.path + '" href="/vocabulary/' + id + '" target="'+target+'">' + data.name + '</a>';
-        if (data.files) returnHtml = returnHtml + '<img class="logo-image mt-2 mb-2" src="' + data.files[0].file_name + '">';
+        if (data.files && !data.files[0].file_name.includes('glb')) returnHtml = returnHtml + '<img class="logo-image mt-2 mb-2" src="' + data.files[0].file_name + '">';
         if (data.description) returnHtml = returnHtml + '<p class="mt-2 text-muted font-italic" >' + data.description + '</p>';
         if (data.parent) returnHtml = returnHtml + '<p class="mt-2"> Subcategory of:' +
             ' <a href="/vocabulary/' + data.parent + '" target="'+target+'">' + data.parent_name + '</a></p>';
