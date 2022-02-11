@@ -893,8 +893,8 @@ function CSVtable(csvData) {
             {
                 data: "ObjectName",
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                    if (oData.image === null) $(nTd).html("<a href='/entity/" + oData.ObjectId + "' target='_blank' title='open in new tab'>" + oData.ObjectName + "</a>");
-                    if (oData.image !== null) $(nTd).html("<a href='/entity/" + oData.ObjectId + "' target='_blank' title='open in new tab'>" + oData.ObjectName + "</a>" +
+                    if (oData.image === null) $(nTd).html("<a href='/entity/" + oData.ObjectId + "' target='_self' title='open in new tab'>" + oData.ObjectName + "</a>");
+                    if (oData.image !== null) $(nTd).html("<a href='/entity/" + oData.ObjectId + "' target='_self' title='open in new tab'>" + oData.ObjectName + "</a>" +
                         "<a class='btn-xs float-end' tabindex='0' data-toggle='popover-hover' data-img='" + oData.image + "'><i class='fas fa-image'></i></a>"); //create links in rows
                 }
             },

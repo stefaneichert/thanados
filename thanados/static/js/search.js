@@ -611,8 +611,8 @@ function setdatatable(data, tablePosition) {
             {
                 data: "name",
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                    if (oData.file === null) $(nTd).html("<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + Iter + ")' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.maintype + " ' target='_blank'>" + oData.name + "</a>");
-                    if (oData.file !== null) $(nTd).html("<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + Iter + ")' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.maintype + " ' target='_blank'>" + oData.name + "</a>" +
+                    if (oData.file === null) $(nTd).html("<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + Iter + ")' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.maintype + " ' target='_self'>" + oData.name + "</a>");
+                    if (oData.file !== null) $(nTd).html("<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + Iter + ")' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.maintype + " ' target='_self'>" + oData.name + "</a>" +
                         "<a class='btn-xs float-end' rel='popover' data-img='" + oData.file + "'><i class='fas fa-image'></i></a>"); //create links in rows
                 }
             },
@@ -620,15 +620,15 @@ function setdatatable(data, tablePosition) {
                 data: 'type',
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                     $(nTd).html("<div title='" + oData.path + "'>" + oData.type + "</div> ");
-                    if (mycriteria === 'type' || mycriteria === 'maintype') myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_blank"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + oData.type + '</i>'
-                    if (mycriteria === 'timespan') myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_blank"><b>' + oData.context + '</b></a><br><br><i>Timespan: ' + oData.min + ' to ' + oData.max + '</i>'
-                    if (mycriteria === 'dimension') myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_blank"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + oData.type + ': ' + oData.min + '</i>'
+                    if (mycriteria === 'type' || mycriteria === 'maintype') myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_self"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + oData.type + '</i>'
+                    if (mycriteria === 'timespan') myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_self"><b>' + oData.context + '</b></a><br><br><i>Timespan: ' + oData.min + ' to ' + oData.max + '</i>'
+                    if (mycriteria === 'dimension') myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_self"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + oData.type + ': ' + oData.min + '</i>'
                     if (mycriteria === 'material') {
                         matString = oData.type;
                         if (oData.min > 0) matString = oData.type + ': ' + oData.min + '%';
-                        myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_blank"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + matString + '</i>'
+                        myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_self"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + matString + '</i>'
                     }
-                    if (mycriteria === 'value') myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_blank"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + oData.type + ': ' + oData.min + '</i>'
+                    if (mycriteria === 'value') myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_self"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + oData.type + ': ' + oData.min + '</i>'
 
                     //create markers
                     marker = L.marker([((oData.lon)), ((oData.lat))], {title: (oData.context)}).addTo(mymarkers).bindPopup(myPopupLine);
@@ -703,8 +703,8 @@ function setFreeDatatable(data) {
             {
                 data: "name",
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                    if (oData.file === null) $(nTd).html("<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + Iter + ")' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.description + " ' target='_blank'>" + oData.name + "</a>");
-                    if (oData.file !== null) $(nTd).html("<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + Iter + ")' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.description + " ' target='_blank'>" + oData.name + "</a>" +
+                    if (oData.file === null) $(nTd).html("<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + Iter + ")' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.description + " ' target='_self'>" + oData.name + "</a>");
+                    if (oData.file !== null) $(nTd).html("<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + Iter + ")' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.description + " ' target='_self'>" + oData.name + "</a>" +
                         "<a class='btn-xs float-end' rel='popover' data-img='" + oData.file + "'><i class='fas fa-image'></i></a>"); //create links in rows
                 }
             },
@@ -712,7 +712,7 @@ function setFreeDatatable(data) {
                 data: 'type',
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                     $(nTd).html("<div title='" + oData.maintype + "'>" + oData.type + "</div> ");
-                    myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_blank"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + oData.type + '</i>'
+                    myPopupLine = '<a href="/entity/' + oData.id + '" title="' + oData.maintype + '" target="_self"><b>' + oData.context + '</b></a><br><br><i title="' + oData.path + '">' + oData.type + '</i>'
                     marker = L.marker([((oData.lon)), ((oData.lat))], {title: (oData.context)}).addTo(mymarkers).bindPopup(myPopupLine);
                     heatmarkers.push([JSON.parse(oData.lon) + ',' + JSON.parse(oData.lat)]);
                 }
@@ -916,7 +916,7 @@ function createResult(data, iter) { //finish query and show results on map
         'return L.circleMarker(latlng, myStyle)' +
         '},' +
         'onEachFeature: function (feature, layer) {' +
-        'var myPopup = \'<a href="/entity/\' + feature.id + \'" title="\' + feature.properties.path + \'" target="_blank"><b>\' + feature.properties.name + \'</b></a><br><br><i>Search results here: \' + feature.results + \'</i>\';' +
+        'var myPopup = \'<a href="/entity/\' + feature.id + \'" title="\' + feature.properties.path + \'" target="_self"><b>\' + feature.properties.name + \'</b></a><br><br><i>Search results here: \' + feature.results + \'</i>\';' +
         'layer.bindPopup(myPopup);' +
         '}' +
         '});');

@@ -202,7 +202,7 @@ function exportToCSV(data) {
 }
 
 function openInNewTab(url) {
-    var win = window.open(url, '_self'); //change to _blank for new tabs.
+    var win = window.open(url, '_self'); //change to _self for new tabs.
     win.focus();
 }
 
@@ -1525,7 +1525,7 @@ function getBasemaps() {
         maxZoom: 25,
         maxNativeZoom: 17,
         attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a></div>'
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_self">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_self">OpenStreetMap France</a></div>'
     });
 
     /*Stamen_Terrain = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}', {
@@ -1639,7 +1639,7 @@ function getBasemaps() {
 
     relief = new L.layerGroup([OpenStreetMap_HOT_ov, Esri_WorldHillshade], {
         attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>. Hillshade Sources: Esri, Airbus DS, USGS, NGA, NASA, CGIAR, N Robinson, NCEAS, NLS, OS, NMA, Geodatastyrelsen, Rijkswaterstaat, GSA, Geoland, FEMA, Intermap, and the GIS user community</div>'
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_self">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_self">OpenStreetMap France</a>. Hillshade Sources: Esri, Airbus DS, USGS, NGA, NASA, CGIAR, N Robinson, NCEAS, NLS, OS, NMA, Geodatastyrelsen, Rijkswaterstaat, GSA, Geoland, FEMA, Intermap, and the GIS user community</div>'
     });
 
     satellite = Esri_WorldImagery; //define aerial image layer
@@ -1670,7 +1670,7 @@ function getBasemaps() {
             minZoom: 0,
             maxZoom: 20,
             attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-                '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a></div>'
+                '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_self">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_self">OpenStreetMap France</a></div>'
         }
     );
 
@@ -2150,12 +2150,12 @@ $.featherlight.prototype.afterContent = function () {
 thisUrl = window.location.href;
 if (thisUrl.includes('#')) thisUrl = thisUrl.substring(0, thisUrl.indexOf('#'));
 
-mycitation1 = ' From: <a href="/about" target="_blank">THANADOS:</a> <a' +
+mycitation1 = ' From: <a href="/about" target="_self">THANADOS:</a> <a' +
     ' href="' + thisUrl + '">' + thisUrl + '</a> [Accessed: ' + today() + ']<br>' +
     'Licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a><br> After: ';
 
 //retrieve type data for popover
-function getTypeData(id, div, hierarchy, target='_blank') {
+function getTypeData(id, div, hierarchy, target='_self') {
     $.getJSON("/vocabulary/" + id + "/json", function (data) {
         returnHtml = '<a title="' + data.path + '" href="/vocabulary/' + id + '" target="'+target+'">' + data.name + '</a>';
         if (data.files) returnHtml = returnHtml + '<img class="logo-image mt-2 mb-2" src="' + data.files[0].file_name + '">';
@@ -2171,9 +2171,9 @@ function getTypeData(id, div, hierarchy, target='_blank') {
             $.each(data.gazetteers, function (i, gaz) {
                 if (typeof gaz.about === "undefined") gaz.about = gaz.domain;
                 if (typeof gaz.favicon !== "undefined") {
-                    gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.about + '" target="_blank"><img class="me-2" height="20px"src="' + gaz.favicon + '">' + gaz.domain + ': ' + gaz.identifier + '</a><br>'
+                    gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.about + '" target="_self"><img class="me-2" height="20px"src="' + gaz.favicon + '">' + gaz.domain + ': ' + gaz.identifier + '</a><br>'
                 } else {
-                    gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.about + '" target="_blank">' + gaz.domain + ': ' + gaz.identifier + '</a><br>'
+                    gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.about + '" target="_self">' + gaz.domain + ': ' + gaz.identifier + '</a><br>'
                 }
             })
             returnHtml = returnHtml + gazetteer
@@ -2211,7 +2211,7 @@ function getCaseData(id, container) {
 
             if (title.includes('http')) {
                 projLink = 'http' + title.slice(title.lastIndexOf('http') + 4);
-                projLink = '<a class="float-end" title="Project website" target="_blank" href="'+ projLink+ '"><i class="logo-link fas fa-external-link-alt"></i></a>'
+                projLink = '<a class="float-end" title="Project website" target="_self" href="'+ projLink+ '"><i class="logo-link fas fa-external-link-alt"></i></a>'
 
             }
             if (data.files) {
@@ -2285,7 +2285,7 @@ function getHierarchyData(id, div) {
         if (usage !== '') content = content + '<p>Usage: <span class="text-muted">' + usage + '</span></p>';
         if (data.types_recursive) content = content + '<p>Subcategories: <span class="text-muted">' + data.types_recursive.length + '</span></p>';
         if (data.entities_recursive) content = content + '<p>Entities: <span class="text-muted">' + data.entities_recursive.length + '</span></p>';
-        content = content + '<p><a href="/vocabulary/' + data.id + '" target="_blank">Permalink</a></p>';
+        content = content + '<p><a href="/vocabulary/' + data.id + '" target="_self">Permalink</a></p>';
         div.html(content)
     });
 }
@@ -2621,7 +2621,7 @@ function getAllGraves() {
 }
 
 function getPopUp(feature) {
-    var myPopup = '<a href="entity\/' + feature.id + '" title="' + feature.properties.path + '" target="_blank"><b>' + feature.properties.name + '</b></a>' +
+    var myPopup = '<a href="entity\/' + feature.id + '" title="' + feature.properties.path + '" target="_self"><b>' + feature.properties.name + '</b></a>' +
         '<br>' + feature.site.name
     return myPopup
 }
@@ -3311,7 +3311,7 @@ function bodyheightmodal(method) {
 
 
     $('#bodyheight').append(
-        '<div class="mb-3 mt-3 text-muted">Calculation after: <a href="' + citeUrl + '" target="_blank">' + citeName + '</a></div>' +
+        '<div class="mb-3 mt-3 text-muted">Calculation after: <a href="' + citeUrl + '" target="_self">' + citeName + '</a></div>' +
         '<div class="mb-2 p-2 border rounded" id="chartwrapper"><canvas id="bhChart">' +
         '</canvas><div class="text-center text-muted" id="avgLegend"><b class="me-2">- - - - - - - -</b> Average: ' + avg + ' cm.</div></div>' +
         '<div class="input-group input-group-sm mt-2 mb-2">\n' +

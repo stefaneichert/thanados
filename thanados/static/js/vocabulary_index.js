@@ -53,7 +53,7 @@ $(document).ready(function () {
                             }
                         })
                     }
-                    var content = '<h5 title="' + data.path + '" class="text-muted">' + data.name + '<a class="ms-4 detailLink" title="Open details in new tab" href="/vocabulary/' + id + '" target="_blank"><i class="fas fa-external-link-alt"></i></a></h5>';
+                    var content = '<h5 title="' + data.path + '" class="text-muted">' + data.name + '<a class="ms-4 detailLink" title="Open details in new tab" href="/vocabulary/' + id + '" target="_self"><i class="fas fa-external-link-alt"></i></a></h5>';
                     if (data.description) content = content + '<p class="text-muted font-italic" >' + data.description + '</p>';
                     if (data.parent) content = content + '<p> Subcategory of:' +
                         ' <span class="text-muted"> ' + data.parent_name + '</span></p>';

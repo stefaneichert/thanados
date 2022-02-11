@@ -171,7 +171,7 @@ function getProjectData(id, container) {
             if (ProjDescr.includes('http')) {
                 var projLink = 'http' + ProjDescr.slice(ProjDescr.lastIndexOf('http') + 4);
                 ProjDescr = ProjDescr.replace(projLink, '')
-                projLink = '<a title="Project website" target="_blank" href="' + projLink + '">Project Website<i class="ms-2 fas fa-external-link-alt"></i></a>'
+                projLink = '<a title="Project website" target="_self" href="' + projLink + '">Project Website<i class="ms-2 fas fa-external-link-alt"></i></a>'
                 var Linkthere = true
 
             }

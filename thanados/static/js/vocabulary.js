@@ -85,7 +85,7 @@ if (data.entities_recursive) {
                 entRecCount += 1;
 
                 var marker = L.marker([entity.lon, entity.lat]).bindPopup(
-                    '<a href="/entity/' + entity.id + '" target="_blank">' + entity.context + '</a>');
+                    '<a href="/entity/' + entity.id + '" target="_self">' + entity.context + '</a>');
 
                 entPointsRec.addLayer(marker);
             }
@@ -104,7 +104,7 @@ if (data.entities_recursive) {
                 entCount += 1;
 
                 var marker = L.marker([entity.lon, entity.lat]).bindPopup(
-                    '<a href="/entity/' + entity.id + '" target="_blank">' + entity.context + '</a>');
+                    '<a href="/entity/' + entity.id + '" target="_self">' + entity.context + '</a>');
 
                 entPoints.addLayer(marker);
             }
@@ -210,8 +210,8 @@ if (data.entities_recursive) {
             {
                 data: "name",
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
-                    if (oData.file === null) $(nTd).html("<a id='" + oData.id + "' href='/entity/" + oData.id + "' title='" + oData.main_type + " ' target='_blank'>" + oData.name + "</a>");
-                    if (oData.file !== null) $(nTd).html("<a id='" + oData.id + "' href='/entity/" + oData.id + "' title='" + oData.main_type + " ' target='_blank'>" + oData.name + "</a>" +
+                    if (oData.file === null) $(nTd).html("<a id='" + oData.id + "' href='/entity/" + oData.id + "' title='" + oData.main_type + " ' target='_self'>" + oData.name + "</a>");
+                    if (oData.file !== null) $(nTd).html("<a id='" + oData.id + "' href='/entity/" + oData.id + "' title='" + oData.main_type + " ' target='_self'>" + oData.name + "</a>" +
                         "<a class='btn-xs float-end' data-toggle='popover-hover' data-img='" + loc_image + oData.file + "'><i class='fas fa-image'></i></a>"); //create links in rows
                 }
             },

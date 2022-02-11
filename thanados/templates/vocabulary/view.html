@@ -342,20 +342,20 @@
                                         {% if row.favicon %}
                                             <span><a title="{{ row.about }}"
                                                      href="{{ row.url }}"
-                                                     target="_blank">{{ row.domain }}
+                                                     target="_self">{{ row.domain }}
                                                     <img style="max-height: 30px"
                                                          src="{{ row.favicon }}"></a></span>
                                         {% else %}
                                             <span><a title="{{ row.about }}"
                                                      href="{{ row.url }}"
-                                                     target="_blank">{{ row.domain }}
+                                                     target="_self">{{ row.domain }}
                                                     </a></span>
                                         {% endif %}
                                     </div>
                                     <div class="card-body">
                                         <a title="Identifier from {{ row.domain }}"
                                            href="{{ row.url }}"
-                                           target="_blank">{{ row.identifier }}</a>
+                                           target="_self">{{ row.identifier }}</a>
                                         {% if row.label %}
                                             <br><i>{{ row.label }}</i><br>
                                         {% endif %}
@@ -368,7 +368,7 @@
                                     </div>
                                     {% if row.image %}
                                         <a href="{{ row.image.origin }}"
-                                           target="_blank"
+                                           target="_self"
                                            title="Image from: {{ row.image.origin }}. Click for details and licence information"><img
                                                 class="card-img-bottom"
                                                 src="{{ row.image.url }}"
@@ -376,7 +376,7 @@
                                         <span class="p-2">
                                                 <small><a class="mt-2"
                                                           href="{{ row.image.origin }}"
-                                                          target="_blank"><i
+                                                          target="_self"><i
                                                         class="fas fa-info-circle me-2"></i></a>
                                                     {{ license|safe }}
                                                 <br><span>Image: {{ credit|safe }}</span></small>
