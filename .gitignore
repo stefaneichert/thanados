@@ -20,12 +20,6 @@ thanados/static/images/jpgs/*
 thanados/static/images/rc_dates/*
 thanados/static/images/favicons/*
 
-# files for specific projects
-thanados/templates/about/about_medcem.html
-thanados/templates/about/about_thanados.html
-thanados/templates/index/index_medcem.html
-thanados/templates/index/index_thanados.html
-
 # data cleanup for thanados
 thanados/install/*
 
