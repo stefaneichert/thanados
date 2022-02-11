@@ -22,7 +22,7 @@ def api_download():
                 WHERE range_id IN 
                 (SELECT id FROM thanados.types_all WHERE topparent = '12935')
                 AND property_code = 'P2')
-            AND id IN (SELECT id FROM thanados.files)"""
+            """
     g.cursor.execute(sql_files)
     licensed_file_entities = g.cursor.fetchall()
 

@@ -1,5 +1,6 @@
 $('#nav-sites').addClass('activePage');
 
+
 $(window).resize(function () {
     maximumHeight = ($(window).height() - $('#mynavbar').height())
     $('#mycontent').css('max-height', (maximumHeight - 10) + 'px');
@@ -16,13 +17,10 @@ AccRemove();
 
 $(document).ready(function () {
     maximumHeight = ($(window).height() - $('#mynavbar').height())
-    $('#mycontent').css('max-height', (maximumHeight - 10) + 'px');
+    $('#mycontent').css('max-height', (maximumHeight - 16) + 'px');
     $('#mycontent').addClass("p-0")
     $('#map').css('height', (maximumHeight - 15) + 'px');
     getBasemaps();
-
-
-    //$('#siteModal').modal('show');
 
 //define basemaps
     map = L.map('map', {
@@ -31,7 +29,8 @@ $(document).ready(function () {
         zoom: 18,
         maxZoom: 18,
         zoomControl: false,
-        layers: [landscape]
+        layers: [landscape],
+        gestureHandling: mobileMap
     }).setView([51.505, -0.09], 13);
 
     //hack for right order of basemaps
@@ -148,7 +147,7 @@ $(document).ready(function () {
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                     $(nTd).html(
                         "<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + ")' class='hovermarker' data-type='" + oData.type + "' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" +
-                        '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + oData.id + '" target="_blank""><i class="float-end text-secondary fas fa-database"></i></a>' +
+                        '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + oData.id + '" target="_self""><i class="float-end text-secondary fas fa-database"></i></a>' +
                         "<a href='/map/" + oData.id + "' title='open map' class='btn-xs float-end'><i class=\"fas fa-map-marked-alt\"></i></a>"); //create links in rows
                 }
             },
@@ -238,7 +237,7 @@ $(document).ready(function () {
         function (settings, data, dataIndex) {
             var min = parseInt($('#min').val(), 10);
             var max = parseInt($('#max').val(), 10);
-            var age = parseFloat(data[2]) || 0; // use data for the age column
+            var age = parseFloat(data[3]) || 0; // use data for the age column
 
             return (isNaN(min) && isNaN(max)) ||
                 (isNaN(min) && age <= max) ||
@@ -252,7 +251,7 @@ $(document).ready(function () {
         function (settings, data, dataIndex) {
             var min = parseInt($('#min1').val(), 10);
             var max = parseInt($('#max1').val(), 10);
-            var age = parseFloat(data[3]) || 0; // use data for the age column
+            var age = parseFloat(data[4]) || 0; // use data for the age column
 
             return (isNaN(min) && isNaN(max)) ||
                 (isNaN(min) && age <= max) ||
@@ -287,8 +286,10 @@ $(document).ready(function () {
         heat.setLatLngs(heatmarkers);
         if (resultLenght.length > 0) map.fitBounds(mymarkers.getBounds());
         countVisibleMarkers()
+        removeHoverMarker();
     });
     map.invalidateSize();
+
 
     $('input[type="search"]').addClass('w-75')
 

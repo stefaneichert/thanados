@@ -124,7 +124,7 @@ function setmap(myjson) {
             '<div title="' + myjson.properties.maintype.path + '" style="display: block; padding: 1em"><b>Type: </b>' +
             myjson.properties.maintype.name
             + '<a class="float-end ms-2 sitepermalink" style="color: #696969" href="../entity/' + myjson.site_id + '" title="Permalink to this entity"><h6><i class="fas fa-link"></i></h6></a>' +
-            '<a title="Link to backend" class="backendlink d-none float-end" href="' + openAtlasUrl + myjson.site_id + '" target="_blank""><i class="float-end text-secondary fas fa-database"></i></a></div>'
+            '<a title="Link to backend" class="backendlink d-none float-end" href="' + openAtlasUrl + myjson.site_id + '" target="_self""><i class="float-end text-secondary fas fa-database"></i></a></div>'
         );
         if (typeof (myjson.properties.timespan) !== 'undefined') {
             $('#accordion1').append(
@@ -826,7 +826,7 @@ function getModalData(parentDiv, currentfeature, parenttimespan) {
 
     $('#myModalPermalink' + entId).append(
         //'<a href="../entity/' + entId + '" title="Permalink to this entity" class="float-end ms-2"><h6><i class="fas fa-link"></i></h6></a>' +
-        '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + entId + '" target="_blank""><i class="float-end text-secondary fas fa-database"></i></a>'
+        '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + entId + '" target="_self""><i class="float-end text-secondary fas fa-database"></i></a>'
     );
 
     if (dateToInsert == '') {
