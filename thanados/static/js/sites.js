@@ -293,6 +293,8 @@ $(document).ready(function () {
 
     $('input[type="search"]').addClass('w-75')
 
+    if(domain != 0) filterTable(domain)
+
 
 })
 ;
