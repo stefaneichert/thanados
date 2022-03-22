@@ -6,5 +6,9 @@ from thanados import app
 
 
 @app.route('/about')
-def about():
+@app.route('/about/<domain_>')
+def about(domain_=None):
+
+    if str(domain_) == 'medcem':
+        return render_template('about/medcem.html')
     return render_template('about/about.html')
