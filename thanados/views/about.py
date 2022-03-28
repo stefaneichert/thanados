@@ -9,6 +9,8 @@ from thanados import app
 @app.route('/about/<domain_>')
 def about(domain_=None):
 
-    if str(domain_) == 'medcem':
-        return render_template('about/medcem.html')
+    domains = ['medcem', 'thanados']
+
+    if str(domain_) in domains:
+        return render_template('about/' + str(domain_) + '.html')
     return render_template('about/about.html')

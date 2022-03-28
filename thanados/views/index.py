@@ -1,3 +1,4 @@
+import json, os
 from flask import render_template, g
 from flask_login import current_user, login_required
 
@@ -8,6 +9,11 @@ from thanados.models.entity import Data
 @app.route('/')
 def index():
     site_list = Data.get_list()
+
+    f = open('./instance/domains.json')
+
+    data = json.load(f)
+    f.close()
 
     sql = """
     SELECT '['
@@ -26,4 +32,4 @@ def index():
     g.cursor.execute(sql, {'site_ids': tuple(g.site_list)})
     counts = g.cursor.fetchone()
 
-    return render_template("/index/index.html", isIndex=True, sitelist=site_list[0].sitelist, entitycount=counts[0])
+    return render_template("/index/index.html", isIndex=True, domains=data, sitelist=site_list[0].sitelist, entitycount=counts[0])

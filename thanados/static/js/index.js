@@ -158,8 +158,11 @@ function getProjectData(id, container) {
                 }
             })
         }
-
         if (sitecount > 0) {
+            var label = ''
+            $.each(domains, function (i, proj_) {
+                if (id === proj_.id) label = '/' + proj_.name
+            } )
 
             var ProjName = data.name
             if (typeof (data.description) !== 'undefined') {
@@ -191,7 +194,7 @@ function getProjectData(id, container) {
                     '</figure>' : '') +
                 '                    <div class="card-body">\n' +
                 '                        <p class="card-text"><small>' + ProjDescr + '</small></p>\n' +
-                '                        <h6 class="card-subtitle mt-2 mb-2">' + sitecount + ' site(s)</h6>\n' +
+                '                        <h6 class="card-subtitle mt-2 mb-2"><a href="/sites'+label+'">' + sitecount + ' site(s)</a></h6>\n' +
                 ((Linkthere) ? projLink : '') +
                 '                    </div>\n' +
                 '                </div>\n' +
