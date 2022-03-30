@@ -2,6 +2,7 @@
 # sensitive data (except example files)
 instance/*
 !instance/example_*
+!instance/domains.json
 install/data_cleanup.sql
 
 # cache
