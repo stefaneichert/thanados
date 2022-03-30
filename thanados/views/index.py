@@ -10,7 +10,7 @@ from thanados.models.entity import Data
 def index():
     site_list = Data.get_list()
 
-    f = open('./instance/domains.json')
+    f = open(app.root_path + '/../instance/domains.json')
 
     data = json.load(f)
     f.close()

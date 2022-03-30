@@ -13,7 +13,7 @@ def sites(domain_=None):
 
     case_studies = app.config["DOMAIN_TYPES"]
 
-    f = open('./instance/domains.json')
+    f = open(app.root_path + '/../instance/domains.json')
 
     data = json.load(f)
 
