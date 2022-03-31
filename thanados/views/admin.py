@@ -202,7 +202,7 @@ WITH RECURSIVE path(id, path, parent, name, description, parent_id, name_path) A
                        link.property_code
                 FROM model.entity
                          LEFT JOIN model.link ON entity.id = link.domain_id
-                WHERE entity.cidoc_class_code = 'E55') x
+                WHERE openatlas_class_name = 'type') x
                    LEFT JOIN model.entity e ON x.parent_id = e.id
           ORDER BY e.name) types_all
     WHERE types_all.parent_name IS NULL
@@ -234,7 +234,7 @@ WITH RECURSIVE path(id, path, parent, name, description, parent_id, name_path) A
                        link.property_code
                 FROM model.entity
                          LEFT JOIN model.link ON entity.id = link.domain_id
-                WHERE entity.cidoc_class_code ~~ 'E55'::text  AND link.property_code = 'P127') x
+                WHERE openatlas_class_name LIKE 'type'::text  AND link.property_code = 'P127') x
                    LEFT JOIN model.entity e ON x.parent_id = e.id
           ORDER BY e.name) types_all,
          path parentpath
@@ -2430,10 +2430,7 @@ CREATE TABLE thanados.ageatdeath AS (
     SELECT e.child_id, e.child_name, 'timespan' AS type, NULL AS path, 0 AS type_id, e.begin_from AS min, e.end_to AS max, e.openatlas_class_name FROM thanados.entities e WHERE e.child_id != 0
     UNION ALL
     SELECT e.child_id, e.child_name, t.name AS type, t.path AS path, t.id AS type_id, t.value::double precision AS min, t.value::double precision AS max, e.openatlas_class_name FROM thanados.entities e LEFT JOIN thanados.types_main t ON e.child_id = t.entity_id
-    WHERE e.child_id != 0 AND t.value !~ '[a-zA-Z]'
-    UNION ALL
-    SELECT e.child_id, e.child_name, t.name AS type, t.path AS path, t.id AS type_id, t.value::double precision AS min, t.value::double precision AS max, e.openatlas_class_name FROM thanados.entities e LEFT JOIN thanados.types_main t ON e.child_id = t.entity_id
-    WHERE e.child_id != 0 AND t.value IS NULL
+    WHERE e.child_id != 0
     ORDER BY child_id;
 
 DROP TABLE IF EXISTS thanados.searchData_tmp;
