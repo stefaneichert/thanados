@@ -17,11 +17,17 @@ def sites(domain_=None):
 
     data = json.load(f)
 
+    f = open(app.root_path + '/../instance/site_list.txt')
+    siteArray = json.load(f)
+
     nameArray = []
 
     for i in data:
         nameArray.append(i['name'])
     f.close()
+
+    if domain_ and str(domain_) == 'sitelist':
+        return json.dumps(siteArray)
 
     if domain_ and str(domain_) in nameArray:
         print(domain_)
