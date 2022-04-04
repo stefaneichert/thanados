@@ -96,6 +96,75 @@ def vocabulary_view(object_id: int, format_=None):
     if not object_id:
         return render_template('vocabulary/vocabulary.html')
 
+    def getExtTypes(extdata):
+        data['gazetteers'] = []
+        gazetteers = extdata
+
+        for row in gazetteers:
+            if 'about' in row:
+                about = row['about']
+            else:
+                about = row['domain']
+                if row['website']:
+                    about = row['domain'] + ': ' + row['website']
+            if 'SKOS' in row:
+                SKOS = row['SKOS']
+            else:
+                SKOS = None
+
+            extid = {'SKOS': SKOS, 'url': row['url'], 'about': about,
+                     'domain': row['domain'],
+                     'identifier': row['identifier']}
+
+            if row['domain'] == 'Wikidata' and format_ != 'json':
+                extid['description'] = Data.getWikidata(row['identifier'])[
+                    'description']
+                extid['label'] = Data.getWikidata(row['identifier'])['label']
+                extid['image'] = Data.getWikidataimage(row['identifier'])
+                if extid['image']:
+                    try:
+                        credits = extid['image']['metadata']['Artist']['value']
+                        try:
+                            credits = credits + '<br>Credit: ' + \
+                                      extid['image']['metadata']['Credit'][
+                                          'value']
+                        except KeyError:
+                            credits = extid['image']['metadata']['Artist'][
+                                'value']
+                    except KeyError:
+                        try:
+                            credits = extid['image']['metadata']['Credit'][
+                                'value']
+                        except KeyError:
+                            credits = 'Author unknown'
+                    try:
+                        license = '<a href="' + \
+                                  extid['image']['metadata']['LicenseUrl'][
+                                      'value'] + '" target="blank_">'
+                        try:
+                            license = license + extid['image']['metadata'][
+                                'LicenseShortName']['value'] + '</a>'
+                        except KeyError:
+                            license = ''
+                    except KeyError:
+                        try:
+                            license = \
+                            extid['image']['metadata']['LicenseShortName'][
+                                'value']
+                        except KeyError:
+                            license = '<a href="' + extid['image'][
+                                'origin'] + '">' + extid['image'][
+                                          'origin'] + '</a>'
+
+            if row['icon']:
+                extid['favicon'] = row['icon']
+            data['gazetteers'].append(extid)
+
+            if row['domain'] == 'Getty AAT' and format_ != 'json':
+                gettydata = Data.getGettyData(row['identifier'])
+                extid['description'] = gettydata['description']
+                extid['label'] = gettydata['label']
+                extid['qualifier'] = gettydata['qualifier']
 
     # get dataset for type entity
     sql_base = 'SELECT * FROM model.entity WHERE id = %(object_id)s;'
@@ -121,21 +190,64 @@ def vocabulary_view(object_id: int, format_=None):
     if CRMclass not in ['E55']:
         abort(403)
 
-    extrefs = """
-            SELECT jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
-        'identifier', t.identifier,
-        'domain', t.name,
-        'website', t.website,
-        'about', t.description,
-        'SKOS', t.skos,
-        'url', t.url,
-        'icon', r.icon_url
-    ))) AS ext_types
-    FROM thanados.ext_types t JOIN thanados.refsys r ON t.id = r.entity_id  
-    WHERE t.type_id = %(object_id)s;
-            """
-    g.cursor.execute(extrefs, {'object_id': object_id})
-    extresult = g.cursor.fetchone()
+
+    def getExtData(id):
+        extrefs = """
+                SELECT jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
+            'identifier', t.identifier,
+            'domain', t.name,
+            'website', t.website,
+            'about', t.description,
+            'SKOS', t.skos,
+            'url', t.url,
+            'icon', r.icon_url
+        ))) AS ext_types
+        FROM thanados.ext_types t JOIN thanados.refsys r ON t.id = r.entity_id  
+        WHERE t.type_id = %(object_id)s;
+                """
+        g.cursor.execute(extrefs, {'object_id': id})
+        extresulttmp = g.cursor.fetchone()
+        #print (extresulttmp)
+        if extresulttmp.ext_types:
+            print('first match')
+            return extresulttmp
+        else:
+            getBroadMatch(id)
+
+    def getBroadMatch(id):
+        sql = 'SELECT parent_id from thanados.types_all WHERE id = %(id)s'
+        g.cursor.execute(sql, {'id': id})
+        parent = g.cursor.fetchone()
+        print ('trying with')
+        print (parent.parent_id)
+        print (parent)
+        if parent.parent_id:
+
+            extrefs = """
+                        SELECT jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
+                    'identifier', t.identifier,
+                    'domain', t.name,
+                    'website', t.website,
+                    'about', t.description,
+                    'SKOS', 'broad match',
+                    'url', t.url,
+                    'icon', r.icon_url
+                ))) AS ext_types
+                FROM thanados.ext_types t JOIN thanados.refsys r ON t.id = r.entity_id  
+                WHERE t.type_id = %(object_id)s;
+                        """
+            g.cursor.execute(extrefs, {'object_id': parent.parent_id})
+            extresulttmp = g.cursor.fetchone()
+            #print(extresulttmp)
+            if extresulttmp.ext_types:
+                print('broad match')
+                #print(extresulttmp)
+                return extresulttmp
+            else:
+                print ('next try')
+                getBroadMatch(parent.parent_id)
+        else:
+            pass
 
     # get top parent
     sql_topparent = """
@@ -230,63 +342,12 @@ def vocabulary_view(object_id: int, format_=None):
         data['time'] = time
     credits = None
     license = None
-    if extresult.ext_types:
-        data['gazetteers'] = []
-        gazetteers = extresult.ext_types
 
-
-        for row in gazetteers:
-            if 'about' in row:
-                about = row['about']
-            else:
-                about = row['domain']
-                if row['website']:
-                    about = row['domain'] + ': ' + row['website']
-            if 'SKOS' in row:
-                SKOS = row['SKOS']
-            else:
-                SKOS = None
-
-            extid = {'SKOS': SKOS, 'url': row['url'], 'about': about, 'domain': row['domain'],
-                     'identifier': row['identifier']}
-
-            if row['domain'] == 'Wikidata' and format_ != 'json':
-                extid['description'] = Data.getWikidata(row['identifier'])['description']
-                extid['label'] = Data.getWikidata(row['identifier'])['label']
-                extid['image'] = Data.getWikidataimage(row['identifier'])
-                if extid['image']:
-                    try:
-                        credits = extid['image']['metadata']['Artist']['value']
-                        try:
-                            credits = credits + '<br>Credit: ' + extid['image']['metadata']['Credit']['value']
-                        except KeyError:
-                            credits = extid['image']['metadata']['Artist']['value']
-                    except KeyError:
-                        try:
-                            credits = extid['image']['metadata']['Credit']['value']
-                        except KeyError:
-                            credits = 'Author unknown'
-                    try:
-                        license = '<a href="' + extid['image']['metadata']['LicenseUrl']['value'] + '" target="blank_">'
-                        try:
-                            license = license + extid['image']['metadata']['LicenseShortName']['value'] + '</a>'
-                        except KeyError:
-                            license = ''
-                    except KeyError:
-                        try:
-                            license = extid['image']['metadata']['LicenseShortName']['value']
-                        except KeyError:
-                            license = '<a href="'+ extid['image']['origin'] +'">' + extid['image']['origin'] + '</a>'
-
-            if row['icon']:
-                extid['favicon'] = row['icon']
-            data['gazetteers'].append(extid)
-
-            if row['domain'] == 'Getty AAT' and format_ != 'json':
-                gettydata = Data.getGettyData(row['identifier'])
-                extid['description'] = gettydata['description']
-                extid['label'] = gettydata['label']
-                extid['qualifier'] = gettydata['qualifier']
+    print('whatsthere')
+    extresult = getExtData(object_id)
+    print (extresult)
+    #if (getExtData(object_id)).ext_types:
+    #    getExtTypes(extresult)
 
 
 
