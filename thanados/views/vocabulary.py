@@ -14,9 +14,9 @@ def vocabulary(format_=None):
     systemtypes = app.config["SYSTEM_TYPES"]
     customtypes = app.config["CUSTOM_TYPES"]
     valuetypes = app.config["VALUE_TYPES"]
-    alltypesused = list(
-        set().union(hierarchytypes, systemtypes, customtypes, valuetypes))
+    alltypesused = list(set().union(hierarchytypes, systemtypes, customtypes, valuetypes))
     parenttree = []
+
 
     sql_list = """
                    SELECT name, id, name_path FROM (
@@ -28,12 +28,12 @@ def vocabulary(format_=None):
                     WHERE topparent IN %(list)s 
                     """
 
+
     g.cursor.execute(sql_list, {'list': tuple(alltypesused)})
     results = g.cursor.fetchall()
     Typelist = []
     for row in results:
-        Typelist.append(
-            {'label': row.name, 'path': row.name_path, 'id': row.id})
+        Typelist.append({'label': row.name, 'path': row.name_path, 'id': row.id})
 
     def makeparents(typelist, typeClass):
         for id in typelist:
@@ -60,7 +60,7 @@ def vocabulary(format_=None):
             node['nodes'] = []
             for row in results:
                 currentnode = {
-                    'text': row.name,  # + getEntCount(row.id),
+                    'text': row.name, # + getEntCount(row.id),
                     'id': row.id,
                     'type': typeClass,
                     'class': 'treenode'
@@ -71,7 +71,7 @@ def vocabulary(format_=None):
     tabsToCreate = ['Main classes', 'Types', 'Value types']
 
     makeparents(hierarchytypes, 'Main classes')
-    # makeparents(systemtypes, 'Standard') #uncomment to display system types
+    #makeparents(systemtypes, 'Standard') #uncomment to display system types
     makeparents(customtypes, 'Types')
     makeparents(valuetypes, 'Value types')
 
@@ -83,15 +83,14 @@ def vocabulary(format_=None):
             type = {'thanadosId': row.type_id, 'vocabulary': row.name,
                     'vocabularyId': row.identifier, 'SKOS': row.skos,
                     'URL': row.url}
-            if row.prefterm:
+            if row.prefterm != None:
                 type['prefTerm'] = row.prefterm
 
             gaz_data.append(type)
         return json.dumps(gaz_data)
 
     # return json.dumps(parenttree)
-    return render_template('vocabulary/vocabulary.html', tree=parenttree,
-                           tabsToCreate=tabsToCreate, typelist=Typelist)
+    return render_template('vocabulary/vocabulary.html', tree=parenttree, tabsToCreate=tabsToCreate, typelist=Typelist)
 
 
 @app.route('/vocabulary/<int:object_id>')
@@ -112,75 +111,6 @@ def vocabulary_view(object_id: int, format_=None):
     if not object_id:
         return render_template('vocabulary/vocabulary.html')
 
-    def getExtTypes(extdata):
-        data['gazetteers'] = []
-        gazetteers = extdata
-
-        for row in gazetteers:
-            if 'about' in row:
-                about = row['about']
-            else:
-                about = row['domain']
-                if row['website']:
-                    about = row['domain'] + ': ' + row['website']
-            if 'SKOS' in row:
-                SKOS = row['SKOS']
-            else:
-                SKOS = None
-
-            extid = {'SKOS': SKOS, 'url': row['url'], 'about': about,
-                     'domain': row['domain'],
-                     'identifier': row['identifier']}
-
-            if row['domain'] == 'Wikidata' and format_ != 'json':
-                extid['description'] = Data.getWikidata(row['identifier'])[
-                    'description']
-                extid['label'] = Data.getWikidata(row['identifier'])['label']
-                extid['image'] = Data.getWikidataimage(row['identifier'])
-                if extid['image']:
-                    try:
-                        credits = extid['image']['metadata']['Artist']['value']
-                        try:
-                            credits = credits + '<br>Credit: ' + \
-                                      extid['image']['metadata']['Credit'][
-                                          'value']
-                        except KeyError:
-                            credits = extid['image']['metadata']['Artist'][
-                                'value']
-                    except KeyError:
-                        try:
-                            credits = extid['image']['metadata']['Credit'][
-                                'value']
-                        except KeyError:
-                            credits = 'Author unknown'
-                    try:
-                        license = '<a href="' + \
-                                  extid['image']['metadata']['LicenseUrl'][
-                                      'value'] + '" target="blank_">'
-                        try:
-                            license = license + extid['image']['metadata'][
-                                'LicenseShortName']['value'] + '</a>'
-                        except KeyError:
-                            license = ''
-                    except KeyError:
-                        try:
-                            license = \
-                                extid['image']['metadata']['LicenseShortName'][
-                                    'value']
-                        except KeyError:
-                            license = '<a href="' + extid['image'][
-                                'origin'] + '">' + extid['image'][
-                                          'origin'] + '</a>'
-
-            if row['icon']:
-                extid['favicon'] = row['icon']
-            data['gazetteers'].append(extid)
-
-            if row['domain'] == 'Getty AAT' and format_ != 'json':
-                gettydata = Data.getGettyData(row['identifier'])
-                extid['description'] = gettydata['description']
-                extid['label'] = gettydata['label']
-                extid['qualifier'] = gettydata['qualifier']
 
     # get dataset for type entity
     sql_base = 'SELECT * FROM model.entity WHERE id = %(object_id)s;'
@@ -206,64 +136,21 @@ def vocabulary_view(object_id: int, format_=None):
     if CRMclass not in ['E55']:
         abort(403)
 
-    def getExtData(id):
-        extrefs = """
-                SELECT jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
-            'identifier', t.identifier,
-            'domain', t.name,
-            'website', t.website,
-            'about', t.description,
-            'SKOS', t.skos,
-            'url', t.url,
-            'icon', r.icon_url
-        ))) AS ext_types
-        FROM thanados.ext_types t JOIN thanados.refsys r ON t.id = r.entity_id  
-        WHERE t.type_id = %(object_id)s;
-                """
-        g.cursor.execute(extrefs, {'object_id': id})
-        extresult = g.cursor.fetchone()
-        # print (extresult)
-        if extresult.ext_types:
-            print('first match')
-            return extresult
-
-        else:
-            pass  # return getBroadMatch(id)
-
-    def getBroadMatch(id):
-        sql = 'SELECT parent_id from thanados.types_all WHERE id = %(id)s'
-        g.cursor.execute(sql, {'id': id})
-        parent = g.cursor.fetchone()
-        print('trying with')
-        print(parent.parent_id)
-        print(parent)
-        if parent.parent_id:
-
-            extrefs = """
-                        SELECT jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
-                    'identifier', t.identifier,
-                    'domain', t.name,
-                    'website', t.website,
-                    'about', t.description,
-                    'SKOS', 'broad match',
-                    'url', t.url,
-                    'icon', r.icon_url
-                ))) AS ext_types
-                FROM thanados.ext_types t JOIN thanados.refsys r ON t.id = r.entity_id  
-                WHERE t.type_id = %(object_id)s;
-                        """
-            g.cursor.execute(extrefs, {'object_id': parent.parent_id})
-            extresult = g.cursor.fetchone()
-            # print(extresult)
-            if extresult.ext_types:
-                print('broad match')
-                return extresult
-
-            else:
-                print('next try')
-                # getBroadMatch(parent.parent_id)
-        else:
-            pass
+    extrefs = """
+            SELECT jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
+        'identifier', t.identifier,
+        'domain', t.name,
+        'website', t.website,
+        'about', t.description,
+        'SKOS', t.skos,
+        'url', t.url,
+        'icon', r.icon_url
+    ))) AS ext_types
+    FROM thanados.ext_types t JOIN thanados.refsys r ON t.id = r.entity_id  
+    WHERE t.type_id = %(object_id)s;
+            """
+    g.cursor.execute(extrefs, {'object_id': object_id})
+    extresult = g.cursor.fetchone()
 
     # get top parent
     sql_topparent = """
@@ -277,9 +164,8 @@ def vocabulary_view(object_id: int, format_=None):
     g.cursor.execute(sql_topparent, {'object_id': object_id})
     topparent = g.cursor.fetchone().topparent
 
-    g.cursor.execute(
-        'select name, description, id from model.entity WHERE id = %(object_id)s',
-        {'object_id': topparent})
+    g.cursor.execute('select name, description, id from model.entity WHERE id = %(object_id)s',
+                     {'object_id': topparent})
     topparent = g.cursor.fetchone()
 
     sql_topparent_info = """
@@ -331,11 +217,10 @@ def vocabulary_view(object_id: int, format_=None):
 
     # get name of parent
     sql_parentname = 'SELECT name FROM thanados.types_all WHERE id = %(object_id)s;'
-    g.cursor.execute(sql_parentname,
-                     {'object_id': output_path_parent.parent_id})
+    g.cursor.execute(sql_parentname, {'object_id': output_path_parent.parent_id})
     output_parentname = g.cursor.fetchone()
 
-    # define time
+    #define time
     time = {}
     if output_base.begin_from:
         time['earliest_begin'] = output_date.begin_from
@@ -360,12 +245,65 @@ def vocabulary_view(object_id: int, format_=None):
         data['time'] = time
     credits = None
     license = None
+    if extresult.ext_types:
+        data['gazetteers'] = []
+        gazetteers = extresult.ext_types
 
-    print('whatsthere')
-    extresult = getExtData(object_id)
-    print(extresult)
-    if extresult != None:
-        getExtTypes(extresult.ext_types)
+
+        for row in gazetteers:
+            if 'about' in row:
+                about = row['about']
+            else:
+                about = row['domain']
+                if row['website']:
+                    about = row['domain'] + ': ' + row['website']
+            if 'SKOS' in row:
+                SKOS = row['SKOS']
+            else:
+                SKOS = None
+
+            extid = {'SKOS': SKOS, 'url': row['url'], 'about': about, 'domain': row['domain'],
+                     'identifier': row['identifier']}
+
+            if row['domain'] == 'Wikidata' and format_ != 'json':
+                extid['description'] = Data.getWikidata(row['identifier'])['description']
+                extid['label'] = Data.getWikidata(row['identifier'])['label']
+                extid['image'] = Data.getWikidataimage(row['identifier'])
+                if extid['image']:
+                    try:
+                        credits = extid['image']['metadata']['Artist']['value']
+                        try:
+                            credits = credits + '<br>Credit: ' + extid['image']['metadata']['Credit']['value']
+                        except KeyError:
+                            credits = extid['image']['metadata']['Artist']['value']
+                    except KeyError:
+                        try:
+                            credits = extid['image']['metadata']['Credit']['value']
+                        except KeyError:
+                            credits = 'Author unknown'
+                    try:
+                        license = '<a href="' + extid['image']['metadata']['LicenseUrl']['value'] + '" target="blank_">'
+                        try:
+                            license = license + extid['image']['metadata']['LicenseShortName']['value'] + '</a>'
+                        except KeyError:
+                            license = ''
+                    except KeyError:
+                        try:
+                            license = extid['image']['metadata']['LicenseShortName']['value']
+                        except KeyError:
+                            license = '<a href="'+ extid['image']['origin'] +'">' + extid['image']['origin'] + '</a>'
+
+            if row['icon']:
+                extid['favicon'] = row['icon']
+            data['gazetteers'].append(extid)
+
+            if row['domain'] == 'Getty AAT' and format_ != 'json':
+                gettydata = Data.getGettyData(row['identifier'])
+                extid['description'] = gettydata['description']
+                extid['label'] = gettydata['label']
+                extid['qualifier'] = gettydata['qualifier']
+
+
 
     # get subtypes
     sql_children = 'SELECT id, name FROM thanados.types_all WHERE parent_id = %(object_id)s;'
@@ -438,8 +376,7 @@ def vocabulary_view(object_id: int, format_=None):
     entlist = []
 
     g.cursor.execute(sql_subtypesrec,
-                     {'type_id': object_id,
-                      'type_name': '%> ' + str(output_base.id) + ' >%',
+                     {'type_id': object_id, 'type_name': '%> ' + str(output_base.id) + ' >%',
                       'type_name2': str(output_base.id) + ' >%'})
     output_subtypesrec = g.cursor.fetchall()
     if output_subtypesrec:
@@ -457,37 +394,32 @@ def vocabulary_view(object_id: int, format_=None):
         thanados.searchdata s
         WHERE type_id IN %(type_id)s AND s.site_id IN %(site_ids)s  
     """
-    g.cursor.execute(sql_entities, {'type_id': tuple([object_id]),
-                                    'site_ids': tuple(g.site_list)})
+    g.cursor.execute(sql_entities, {'type_id': tuple([object_id]), 'site_ids': tuple(g.site_list)})
     output_direct_ents = g.cursor.fetchall()
     if output_direct_ents:
         data['entities'] = []
         for row in output_direct_ents:
-            data['entities'].append(
-                {'id': row.child_id, 'name': row.child_name, 'main_type':
-                    row.maintype, 'type': row.type, 'type_id': row.type_id,
-                 'value': row.min,
-                 'lon': row.lon,
-                 'lat': row.lat, 'context': row.context, 'file': row.filename,
-                 'openatlas_class_name':
-                     row.openatlas_class_name})
+            data['entities'].append({'id': row.child_id, 'name': row.child_name, 'main_type':
+                row.maintype, 'type': row.type, 'type_id': row.type_id, 'value': row.min,
+                                     'lon': row.lon,
+                                     'lat': row.lat, 'context': row.context, 'file': row.filename,
+                                     'openatlas_class_name':
+                                         row.openatlas_class_name})
 
-    g.cursor.execute(sql_entities,
-                     {'type_id': entlist, 'site_ids': tuple(g.site_list)})
+    g.cursor.execute(sql_entities, {'type_id': entlist, 'site_ids': tuple(g.site_list)})
     output_direct_ents = g.cursor.fetchall()
     if output_direct_ents:
         data['entities_recursive'] = []
         for row in output_direct_ents:
-            data['entities_recursive'].append(
-                {'id': row.child_id, 'name': row.child_name,
-                 'main_type':
-                     row.maintype, 'type': row.type,
-                 'type_id': row.type_id, 'value': row.min,
-                 'lon': row.lon,
-                 'lat': row.lat, 'context': row.context,
-                 'file': row.filename,
-                 'openatlas_class_name':
-                     row.openatlas_class_name})
+            data['entities_recursive'].append({'id': row.child_id, 'name': row.child_name,
+                                               'main_type':
+                                                   row.maintype, 'type': row.type,
+                                               'type_id': row.type_id, 'value': row.min,
+                                               'lon': row.lon,
+                                               'lat': row.lat, 'context': row.context,
+                                               'file': row.filename,
+                                               'openatlas_class_name':
+                                                   row.openatlas_class_name})
 
     # get type tree
     def getchildren(id, node):
@@ -519,8 +451,7 @@ def vocabulary_view(object_id: int, format_=None):
     if object_id == topparent['id']:
         currentcolor = '#ff8c8c'
 
-    alltreeNodes = [{'id': topparent['id'], 'label': topparent['name'],
-                     'color': currentcolor}]
+    alltreeNodes = [{'id': topparent['id'], 'label': topparent['name'], 'color' : currentcolor}]
     alltreeEdges = []
 
     def getTree(id):
@@ -533,9 +464,8 @@ def vocabulary_view(object_id: int, format_=None):
             for row in results:
                 currentcolor = '#97C2FC';
                 if row.id == object_id:
-                    currentcolor = '#ff8c8c'
-                currentnode = {'id': row.id, 'label': row.name,
-                               'color': currentcolor}
+                    currentcolor= '#ff8c8c'
+                currentnode = {'id': row.id, 'label': row.name, 'color' : currentcolor}
                 currentedge = {'from': id, 'to': row.id, 'color': '#757575'}
                 alltreeNodes.append(currentnode)
                 alltreeEdges.append(currentedge)
@@ -554,9 +484,6 @@ def vocabulary_view(object_id: int, format_=None):
         return json.dumps(data)
 
     if object_id:
-        return render_template('vocabulary/view.html', object_id=object_id,
-                               data=data,
-                               children=len(output_children), credit=credits,
-                               license=license,
-                               children_recursive=len(entlist),
-                               webfolder=app.config["WEB_FOLDER_PATH"])
+        return render_template('vocabulary/view.html', object_id=object_id, data=data,
+                               children=len(output_children), credit=credits, license=license,
+                               children_recursive=len(entlist), webfolder=app.config["WEB_FOLDER_PATH"])
