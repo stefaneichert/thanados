@@ -36,7 +36,8 @@ def admin():  # pragma: no cover
 
     if form.validate_on_submit():
         try:
-            with open(app.root_path + "/../instance/site_list.txt", 'w') as file:
+            with open(app.root_path + "/../instance/site_list.txt",
+                      'w') as file:
                 file.write(form.site_list.data)
                 return redirect(url_for('admin'))
         except Exception as e:  # pragma: no cover
@@ -68,7 +69,6 @@ def admin():  # pragma: no cover
     except Exception:
         currentsitelist = []
 
-
     sql_missing_refs = """
         
 SELECT jsonb_agg(jsonb_build_object('id', parent_id::TEXT, 'name', child_name)) AS nm FROM (SELECT DISTINCT r.parent_id, e.child_name
@@ -95,7 +95,7 @@ ORDER BY parent_id)) nma WHERE nma.parent_id IN %(site_ids)s"""
         if missingrefs == None:
             missingrefs = []
         print('Missing references:')
-        print (missingrefs)
+        print(missingrefs)
     except Exception:
         missingrefs = []
 
@@ -121,7 +121,6 @@ SELECT parent_id FROM thanados.extrefs WHERE name = 'GeoNames')) ng1 WHERE ng1.c
             refs = []
     except Exception:
         refs = []
-
 
     sql_missing_fileref = """
                 SELECT jsonb_agg(jsonb_build_object('site', sitename, 'site_id', site_id, 'id', id::TEXT, 'name', name, 'file', filename)) AS ng FROM
@@ -161,7 +160,12 @@ FROM (SELECT DISTINCT f.name,
     except Exception:
         missingeo = []
 
-    return render_template('admin/index.html', form=form, refs=refs, sites=currentsitelist, openatlas_url = app.config["OPENATLAS_URL"].replace('update', 'entity'), missingrefs=missingrefs, missingeonames=missingeonames, missingfileref=missingfileref, missingeo=missingeo)
+    return render_template('admin/index.html', form=form, refs=refs,
+                           sites=currentsitelist,
+                           openatlas_url=app.config["OPENATLAS_URL"].replace(
+                               'update', 'entity'), missingrefs=missingrefs,
+                           missingeonames=missingeonames,
+                           missingfileref=missingfileref, missingeo=missingeo)
 
 
 @app.route('/admin/execute/')
@@ -171,7 +175,8 @@ def jsonprepare_execute():  # pragma: no cover
         abort(403)
 
     start = datetime.now()
-    print("starting processing basic queries at: " + str(start.strftime("%H:%M:%S")))
+    print("starting processing basic queries at: " + str(
+        start.strftime("%H:%M:%S")))
 
     sql_1 = """ 
 DROP SCHEMA IF EXISTS thanados CASCADE;
@@ -996,9 +1001,12 @@ CREATE TABLE thanados.files AS
         else:
             filesmissing = filesmissing + 1
             missingids.append(row_id)
-        g.cursor.execute("UPDATE thanados.files SET filename = %(file_name)s WHERE id = %(row_id)s",
-                         {'file_name': file_name, 'row_id': row_id})
-        sys.stdout.write("\rfiles found: " + str(filesfound) + " files missing: " + str(filesmissing))
+        g.cursor.execute(
+            "UPDATE thanados.files SET filename = %(file_name)s WHERE id = %(row_id)s",
+            {'file_name': file_name, 'row_id': row_id})
+        sys.stdout.write(
+            "\rfiles found: " + str(filesfound) + " files missing: " + str(
+                filesmissing))
         sys.stdout.flush()
 
     print(missingids)
@@ -1008,7 +1016,6 @@ CREATE TABLE thanados.files AS
     filesdone = datetime.now()
     print("time elapsed:" + str((filesdone - endnext)))
     print("processing types and files")
-
 
     sql_4 = """
     --references
@@ -1088,8 +1095,6 @@ DROP TABLE IF EXISTS thanados.refsys;
 
     g.cursor.execute(sql_4)
 
-
-
     from thanados.models.entity import RCData
 
     sql_rc = """
@@ -1117,10 +1122,14 @@ DROP TABLE IF EXISTS thanados.refsys;
                 sample = 'Unknown Sample Id'
             else:
                 sample = row.sample
-            print(row.entity_id + ': Sample: ' + sample + ', ' + row.date + ' +- ' + row.range)
-            RCData_ = json.dumps(RCData.radiocarbon(row.entity_id, int(row.date), int(row.range), 'ad', sample, 'intcal20.14c', False))
-            g.cursor.execute('UPDATE thanados.radiocarbon SET description = %(RCdata)s WHERE entity_id = %(entid)s',
-                             {'RCdata': RCData_, 'entid': row.entity_id})
+            print(
+                row.entity_id + ': Sample: ' + sample + ', ' + row.date + ' +- ' + row.range)
+            RCData_ = json.dumps(
+                RCData.radiocarbon(row.entity_id, int(row.date), int(row.range),
+                                   'ad', sample, 'intcal20.14c', False))
+            g.cursor.execute(
+                'UPDATE thanados.radiocarbon SET description = %(RCdata)s WHERE entity_id = %(entid)s',
+                {'RCdata': RCData_, 'entid': row.entity_id})
 
         sql_stacked = """
                         DROP TABLE IF EXISTS thanados.rc_parents;
@@ -1211,10 +1220,6 @@ INSERT INTO thanados.radiocarbon_tmp SELECT r.entity_id, r.description::JSONB FR
 
         RCData.radiocarbonmulti()
 
-
-
-
-
     sql_5 = """
 -- create table with types and files of all entities
 DROP TABLE IF EXISTS thanados.types_and_files;
@@ -1241,7 +1246,8 @@ SELECT types_all.id                                      AS type_id,
        entity.description                                AS description,
        entity.id,
        link.description                                  AS identifier,
-       entitysk.name                                     AS SKOS
+       entitysk.name                                     AS SKOS,
+       NULL                                              AS prefTerm
 FROM thanados.types_all,
      model.link,
      model.entity,
@@ -2650,6 +2656,14 @@ CREATE TABLE thanados.EntCount AS
     """
 
     g.cursor.execute(sql7)
+    Data.get_ext_type_data()
+    g.cursor.execute('SELECT * FROM thanados.ext_types ORDER BY type_id')
+    types = g.cursor.fetchall()
+    for row in types:
+        if row.name == 'Getty AAT':
+            prefTerm = (Data.getGettyData(str(row.identifier)))['label']
+            g.cursor.execute('UPDATE thanados.ext_types SET prefterm = %(prefTerm)s WHERE type_id = %(type_id)s', {'prefTerm': prefTerm, 'type_id': row.type_id})
+
     restdone = datetime.now()
     print("time elapsed: " + str((restdone - jsonsdone)))
 
@@ -2668,8 +2682,11 @@ def admin_filerefs() -> str:
 
     refs = json.loads(request.form['refs'])
     for row in refs:
-        g.cursor.execute(sql_refs, {'domain_id': row['refId'], 'range_id': row['file_id'], 'page': row['page']})
+        g.cursor.execute(sql_refs,
+                         {'domain_id': row['refId'], 'range_id': row['file_id'],
+                          'page': row['page']})
     return jsonify(refs)
+
 
 @app.route('/admin/geonames', methods=['POST'])
 @login_required
@@ -2685,7 +2702,6 @@ def admin_geonames() -> str:
                       'geoId': GeoId})
 
     return id
-
 
 
 @app.route('/admin/geoclean/')
@@ -2729,7 +2745,8 @@ def geoclean_execute():  # pragma: no cover
 
     META_NAMES = ['msapplication-TileImage', 'og:image']
 
-    SIZE_RE = re.compile(r'(?P<width>\d{2,4})x(?P<height>\d{2,4})', flags=re.IGNORECASE)
+    SIZE_RE = re.compile(r'(?P<width>\d{2,4})x(?P<height>\d{2,4})',
+                         flags=re.IGNORECASE)
 
     Icon = namedtuple('Icon', ['url', 'width', 'height', 'format'])
 
@@ -2777,7 +2794,8 @@ def geoclean_execute():  # pragma: no cover
         :rtype: :class:`Icon` or None
         """
         parsed = urlparse(url)
-        favicon_url = urlunparse((parsed.scheme, parsed.netloc, 'favicon.ico', '', '', ''))
+        favicon_url = urlunparse(
+            (parsed.scheme, parsed.netloc, 'favicon.ico', '', '', ''))
         response = requests.head(favicon_url, **request_kwargs)
         if response.status_code == 200:
             return Icon(response.url, 0, 0, 'ico')
@@ -2799,7 +2817,8 @@ def geoclean_execute():  # pragma: no cover
         link_tags = set()
         for rel in LINK_RELS:
             for link_tag in soup.find_all(
-                    'link', attrs={'rel': lambda r: r and r.lower() == rel, 'href': True}
+                    'link', attrs={'rel': lambda r: r and r.lower() == rel,
+                                   'href': True}
             ):
                 link_tags.add(link_tag)
 
@@ -2872,28 +2891,34 @@ def geoclean_execute():  # pragma: no cover
 
     user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
     headers = {'User-Agent': user_agent}
-    for row in resultRefs:
-        try:
-            icons = get(row.website_url, headers=headers, timeout=2)
-            ref_id = row.entity_id
-            print(row.website_url)
-            if icons:
-                print(icons[0].url)
-                print(icons[0].format)
+    if resultRefs != None:
+        for row in resultRefs:
+            try:
+                icons = get(row.website_url, headers=headers, timeout=2)
+                ref_id = row.entity_id
+                print(row.website_url)
+                if icons:
+                    print(icons[0].url)
+                    print(icons[0].format)
 
-                try:
-                    response = requests.get(icons[0].url, stream=True)
-                    with open(app.root_path + '/static/images/favicons/' + str(ref_id) + '.{}'.format(icons[0].format), 'wb') as image:
-                        for chunk in response.iter_content(1024):
-                            image.write(chunk)
-                        fav_filename = '/static/images/favicons/' + str(ref_id) + '.' + icons[0].format
+                    try:
+                        response = requests.get(icons[0].url, stream=True)
+                        with open(
+                                app.root_path + '/static/images/favicons/' + str(
+                                        ref_id) + '.{}'.format(icons[0].format),
+                                'wb') as image:
+                            for chunk in response.iter_content(1024):
+                                image.write(chunk)
+                            fav_filename = '/static/images/favicons/' + str(
+                                ref_id) + '.' + icons[0].format
 
-                    g.cursor.execute("UPDATE thanados.refsys SET icon_url = %(favicon_)s WHERE entity_id = %(ref_id)s",
-                                  {'favicon_': fav_filename, 'ref_id': ref_id})
-                except Exception:
-                    print('Error downloading ' + row.website_url)
-        except Exception:
-            print('Error with ' + row.website_url)
+                        g.cursor.execute(
+                            "UPDATE thanados.refsys SET icon_url = %(favicon_)s WHERE entity_id = %(ref_id)s",
+                            {'favicon_': fav_filename, 'ref_id': ref_id})
+                    except Exception:
+                        print('Error downloading ' + row.website_url)
+            except Exception:
+                print('Error with ' + row.website_url)
     return redirect(url_for('admin'))
 
 
@@ -2939,11 +2964,13 @@ def image_processing_execute():  # pragma: no cover
         imagetypes = ['.png', '.bmp', '.jpg', '.jpeg', '.glb']
         for extension in imagetypes:
             current_image = app.config[
-                "UPLOAD_FOLDER_PATH"] + '/' + str(row.file) + extension
+                                "UPLOAD_FOLDER_PATH"] + '/' + str(
+                row.file) + extension
 
-            newimage = (app.config["UPLOAD_JPG_FOLDER_PATH"] + '/' + str(row.file)
-                + '.jpg')
-            #os.makedirs(os.path.dirname(newimage), exist_ok=True)
+            newimage = (app.config["UPLOAD_JPG_FOLDER_PATH"] + '/' + str(
+                row.file)
+                        + '.jpg')
+            # os.makedirs(os.path.dirname(newimage), exist_ok=True)
             if os.path.isfile(current_image):
                 found = True
                 break
@@ -2961,7 +2988,7 @@ def image_processing_execute():  # pragma: no cover
                 diff = ImageChops.add(diff, diff, 2.0, -100)
                 bbox = diff.getbbox()
                 newbbox = list(bbox)
-                if newbbox[0]  >= 25:
+                if newbbox[0] >= 25:
                     newbbox[0] -= 25
                 else:
                     newbbox[0] = 0
@@ -2983,7 +3010,7 @@ def image_processing_execute():  # pragma: no cover
 
                 bbox = tuple(newbbox)
                 if bbox:
-                    if not im.crop(bbox).size == (0,0):
+                    if not im.crop(bbox).size == (0, 0):
                         try:
                             im.crop(bbox)
                             im = remove_transparency(im)
@@ -2995,24 +3022,27 @@ def image_processing_execute():  # pragma: no cover
                             im.load()
                             im.convert('RGB').save(newimage)
                             message_ = 'old image kept ' + newimage
-                            filesonlyconverted +=1
+                            filesonlyconverted += 1
                     else:
                         message_ = 'size 0? at ' + str(row.file)
-                        filessizezero +=1
-                        failedlist.append(str(filesthere) + ':' + str(row.file) + ' + size 0')
+                        filessizezero += 1
+                        failedlist.append(
+                            str(filesthere) + ':' + str(row.file) + ' + size 0')
 
 
             except Exception:
-                    message_ = ('Cropping error with file ' + current_image + '.')
-                    try:
-                        copy(
+                message_ = ('Cropping error with file ' + current_image + '.')
+                try:
+                    copy(
                         current_image,
                         app.config["UPLOAD_JPG_FOLDER_PATH"] + '/')
-                        message_ = ('kept original file, check:' + current_image)
-                        failedlist.append(str(filesthere) + ':' + str(row.file) + ' kept the original. Check the file')
-                    except Exception:
-                        filesfailed += 1
-                        failedlist.append(str(filesthere) + ':' + str(row.file) +  ' general error')
+                    message_ = ('kept original file, check:' + current_image)
+                    failedlist.append(str(filesthere) + ':' + str(
+                        row.file) + ' kept the original. Check the file')
+                except Exception:
+                    filesfailed += 1
+                    failedlist.append(str(filesthere) + ':' + str(
+                        row.file) + ' general error')
 
 
 
@@ -3038,12 +3068,13 @@ def image_processing_execute():  # pragma: no cover
 
         filesthere += 1
         print(str(int(
-            filesthere / filestotal * 100)) + "% - File: " + str(row.file) + " - " + str(
+            filesthere / filestotal * 100)) + "% - File: " + str(
+            row.file) + " - " + str(
             filesthere) + " of " + str(filestotal) + ": " + message_)
 
-
-    print(str(filestotal - (filesfailed + filesnotfound)) + ' of ' + str(filestotal) + ' successully done. ' + str(filesnotfound) + ' not found')
-    print( str(len(failedlist)) + ' failed files:')
+    print(str(filestotal - (filesfailed + filesnotfound)) + ' of ' + str(
+        filestotal) + ' successully done. ' + str(filesnotfound) + ' not found')
+    print(str(len(failedlist)) + ' failed files:')
     print(failedlist)
     return redirect(url_for('admin'))
 

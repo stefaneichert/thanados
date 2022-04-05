@@ -4,6 +4,7 @@ import os
 from flask import g
 from thanados import app
 
+
 class Data:
 
     @staticmethod
@@ -51,16 +52,107 @@ CREATE TABLE thanados.tmpsites AS (
                      UPDATE thanados.tmpsites SET graves = NULL WHERE graves = '0';     
                      
             SELECT jsonb_agg(a) as sitelist FROM thanados.tmpsites a;"""
-        g.cursor.execute(sql_sites, {"sites": tuple(g.site_list), "domains": app.config["DOMAIN_TYPES"]})
+        g.cursor.execute(sql_sites, {"sites": tuple(g.site_list),
+                                     "domains": app.config["DOMAIN_TYPES"]})
         g.cursor.execute(sql_sites2)
         return g.cursor.fetchall()
 
     @staticmethod
+    def get_ext_type_data():
+        sql = """
+                SELECT id FROM thanados.types_all 
+                    WHERE id NOT IN 
+                        (SELECT DISTINCT type_id FROM thanados.ext_types) 
+                """
+        g.cursor.execute(sql)
+        result = g.cursor.fetchall()
+
+        g.cursor.execute('SELECT entity_id from web.reference_system')
+        refsys = g.cursor.fetchall()
+
+
+
+
+
+        def getBroadMatch(type_id, refId):
+            g.cursor.execute(
+                'SELECT parent_id FROM thanados.types_all WHERE id = %(type_id)s',
+                {'type_id': type_id})
+            parent = g.cursor.fetchone()
+
+            broadsql = """
+                            SELECT 
+                                type_id, 
+                                url,
+                                website,
+                                name,
+                                description,
+                                id,
+                                identifier,
+                                skos
+                            FROM thanados.ext_types WHERE type_id = %(parent_id)s AND id = %(refId)s
+                        """
+
+            if parent.parent_id:
+                g.cursor.execute(broadsql, {'parent_id': parent.parent_id,
+                                            'refId': refId})
+                broadresult = g.cursor.fetchone()
+                print(broadresult)
+                if broadresult:
+                    insertbroad = """
+                                        INSERT INTO thanados.ext_types (
+                                        type_id, 
+                                        url,
+                                        website,
+                                        name,
+                                        description,
+                                        id,
+                                        identifier,
+                                        skos)
+                                        VALUES (
+                                        %(type_id)s,
+                                        %(url)s,
+                                        %(website)s,
+                                        %(name)s,
+                                        %(description)s,
+                                        %(id)s,
+                                        %(identifier)s,
+                                        'broad match'
+                                        )
+                                """
+                    g.cursor.execute(insertbroad, {'type_id': type_id,
+                                                   'url': broadresult.url,
+                                                   'website': broadresult.website,
+                                                   'name': broadresult.name,
+                                                   'description': broadresult.description,
+                                                   'id': broadresult.id,
+                                                   'identifier': broadresult.identifier})
+                else:
+                    print('next try')
+                    getBroadMatch(parent.parent_id, refId)
+            else:
+                pass
+
+        for row in refsys:
+            refId = row.entity_id
+            print('refId')
+            print(refId)
+            for ent in result:
+                type_id = ent.id
+                getBroadMatch(type_id, refId)
+
+
+
+
+    @staticmethod
     def get_file_path(id_: int):
         if app.config['USE_JPGS']:
-            path = glob.glob(os.path.join((app.config['UPLOAD_JPG_FOLDER_PATH']), str(id_) + '.*'))
+            path = glob.glob(
+                os.path.join((app.config['UPLOAD_JPG_FOLDER_PATH']),
+                             str(id_) + '.*'))
         else:
-            path = glob.glob(os.path.join(app.config['UPLOAD_FOLDER_PATH'], str(id_) + '.*'))
+            path = glob.glob(
+                os.path.join(app.config['UPLOAD_FOLDER_PATH'], str(id_) + '.*'))
         if path:
             filename, file_extension = os.path.splitext(path[0])
             return str(id_) + file_extension
@@ -69,12 +161,13 @@ CREATE TABLE thanados.tmpsites AS (
     @staticmethod
     def get_data(place_id):
         sql = 'SELECT data FROM thanados.tbl_thanados_data WHERE id = %(place_id)s AND id IN %(sites)s;'
-        g.cursor.execute(sql, {'place_id': place_id, 'sites': tuple(g.site_list)})
+        g.cursor.execute(sql,
+                         {'place_id': place_id, 'sites': tuple(g.site_list)})
         return g.cursor.fetchall()
 
     @staticmethod
     def get_wordcloud(place_id):
-        sql =   """
+        sql = """
                 SELECT types FROM
                     (SELECT jsonb_agg(jsonb_build_object(
                      'weight', t.weight,
@@ -84,7 +177,8 @@ CREATE TABLE thanados.tmpsites AS (
                             WHERE site_id = %(place_id)s AND site_id IN %(sites)s 
                             GROUP BY type order by weight desc) t) w
                 """
-        g.cursor.execute(sql, {'place_id': place_id, 'sites': tuple(g.site_list)})
+        g.cursor.execute(sql,
+                         {'place_id': place_id, 'sites': tuple(g.site_list)})
         result = g.cursor.fetchone()
         return result[0]
 
@@ -332,10 +426,13 @@ CREATE TABLE thanados.tmpsites AS (
                     group = row.openatlas_class_name
                 else:
                     group = 'classification'
-                nodes.append({'label': row.name, 'id': row.id, 'group': group, 'title': group})
+                nodes.append({'label': row.name, 'id': row.id, 'group': group,
+                              'title': group})
             else:
                 nodes.append(
-                    {'label': row.name, 'id': row.id, 'group': row.openatlas_class_name, 'title': row.openatlas_class_name, 'size': 30})
+                    {'label': row.name, 'id': row.id,
+                     'group': row.openatlas_class_name,
+                     'title': row.openatlas_class_name, 'size': 30})
 
         network = {}
         network['nodes'] = nodes
@@ -347,15 +444,17 @@ CREATE TABLE thanados.tmpsites AS (
     def getWikidataimage(id):
         import urllib, json, hashlib, requests
 
-        with urllib.request.urlopen("https://www.wikidata.org/w/api.php?action=wbgetclaims&format=json&property=P18&entity=" + id) as url:
+        with urllib.request.urlopen(
+                "https://www.wikidata.org/w/api.php?action=wbgetclaims&format=json&property=P18&entity=" + id) as url:
             wdata = json.loads(url.read().decode())
 
         if wdata['claims']:
-            wfilename = (wdata['claims']['P18'][0]['mainsnak']['datavalue']['value'])
-            newfile = (wfilename.replace(' ','_'))
-            #print(newfile)
+            wfilename = (
+            wdata['claims']['P18'][0]['mainsnak']['datavalue']['value'])
+            newfile = (wfilename.replace(' ', '_'))
+            # print(newfile)
             md5 = (hashlib.md5(newfile.encode('utf-8')).hexdigest())
-            #print(md5)
+            # print(md5)
             print(newfile)
 
             def extract_image_license(image_name):
@@ -363,18 +462,23 @@ CREATE TABLE thanados.tmpsites AS (
                 start_of_end_point_str = 'https://commons.wikimedia.org' \
                                          '/w/api.php?action=query&titles=File:'
                 end_of_end_point_str = '&prop=imageinfo&iiprop=extmetadata&format=json'
-                result = requests.get(start_of_end_point_str + image_name + end_of_end_point_str)
+                result = requests.get(
+                    start_of_end_point_str + image_name + end_of_end_point_str)
                 result = result.json()
                 page_id = next(iter(result['query']['pages']))
                 image_info = result['query']['pages'][page_id]['imageinfo']
 
                 return image_info
+
             metadata = extract_image_license(newfile)
 
-
             image = {
-                'url': 'https://upload.wikimedia.org/wikipedia/commons/' + md5[0:1]+'/'+md5[0:2] + '/'+newfile,
-                'urlthumb': 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + md5[0:1]+'/'+md5[0:2] + '/'+newfile + '/200px-' + newfile,
+                'url': 'https://upload.wikimedia.org/wikipedia/commons/' + md5[
+                                                                           0:1] + '/' + md5[
+                                                                                        0:2] + '/' + newfile,
+                'urlthumb': 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + md5[
+                                                                                      0:1] + '/' + md5[
+                                                                                                   0:2] + '/' + newfile + '/200px-' + newfile,
                 'metadata': metadata[0]['extmetadata'],
                 'origin': 'https://commons.wikimedia.org/wiki/File:' + newfile
             }
@@ -388,7 +492,7 @@ CREATE TABLE thanados.tmpsites AS (
         import urllib, json
 
         with urllib.request.urlopen(
-                "https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json&search="+ id + "&language=en") as url:
+                "https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json&search=" + id + "&language=en") as url:
             wdata = json.loads(url.read().decode())
 
         try:
@@ -400,7 +504,6 @@ CREATE TABLE thanados.tmpsites AS (
         except KeyError:
             label = None
 
-
         return {'description': description, 'label': label}
 
     @staticmethod
@@ -411,11 +514,58 @@ CREATE TABLE thanados.tmpsites AS (
         url = "http://vocabsservices.getty.edu/AATService.asmx/AATGetSubject?subjectID=" + id
         wdata = requests.get(url)
         soup = BeautifulSoup(wdata.content, "lxml-xml")
-        GettyData= {}
+        GettyData = {}
         GettyData['label'] = soup.find('Preferred_Term').Term_Text.string
         GettyData['qualifier'] = soup.find('Qualifier').string
-        GettyData['description'] = soup.find('Descriptive_Note').Note_Text.string
+        GettyData['description'] = soup.find(
+            'Descriptive_Note').Note_Text.string
         return GettyData
+
+    @staticmethod
+    def get_type_data(level, searchterm, site_id):
+        if level == 'grave':
+            sql = """
+                    SELECT jsonb_agg(jsonb_build_object (
+    	            'site_id', t.id,
+    	            'site', t.sitename,
+    	            'type', t.type,
+    	            'count', t.count
+    	            )) as types FROM
+    		        (SELECT 
+    		        m.id,
+    		        m.name AS sitename,
+    		        t.name AS type,
+    		        count(t.name) 
+    		        FROM model.entity m 
+    		        JOIN thanados.entities e ON e.parent_id = m.id 
+    		        JOIN thanados.types_main t ON e.child_id = t.entity_id
+    		        WHERE t.path LIKE %(term)s AND m.id IN %(site_ids)s
+    		        GROUP BY m.id, sitename, type
+    		        ORDER BY 1) as t;"""
+            g.cursor.execute(sql, {"term": searchterm, "site_ids": site_id})
+            return g.cursor.fetchall()
+        if level == 'burial':
+            sql = """
+                                SELECT jsonb_agg(jsonb_build_object (
+                	            'site_id', t.id,
+                	            'site', t.sitename,
+                	            'type', t.type,
+                	            'count', t.count
+                	            )) as types FROM
+                		        (SELECT 
+                		        m.id,
+                		        m.name AS sitename,
+                		        t.name AS type,
+                		        count(t.name) 
+                		        FROM model.entity m 
+                		        JOIN thanados.entities e ON e.parent_id = m.id
+                		        JOIN thanados.entities e1 ON e1.parent_id = e.child_id
+                		        JOIN thanados.types_main t ON e1.child_id = t.entity_id
+                		        WHERE t.path LIKE %(term)s AND m.id IN %(site_ids)s
+                		        GROUP BY m.id, sitename, type
+                		        ORDER BY 1) as t;"""
+            g.cursor.execute(sql, {"term": searchterm, "site_ids": site_id})
+            return g.cursor.fetchall()
 
 
 class RCData:
@@ -429,18 +579,20 @@ class RCData:
         from thanados.models.iosacal import core, plot
         import pkg_resources
         curvefile = curve
-        curve_data_bytes = pkg_resources.resource_string("thanados.models.iosacal", "data/%s" % curve)
+        curve_data_bytes = pkg_resources.resource_string(
+            "thanados.models.iosacal", "data/%s" % curve)
         curve_data_string = curve_data_bytes.decode('latin1')
         curve = core.CalibrationCurve(curve_data_string, curvefile)
         if childsample:
             rid = "Subunit sample: " + rid
-            entid= "sub_" + str(entid)
+            entid = "sub_" + str(entid)
         rs = core.RadiocarbonDetermination(d, s, rid)
         ca = rs.calibrate(curve)
         rc_output = {}
-        #rc_output['intervals'] = ca.intervals
-        #rc_output['calibration'] = (str(ca.calibration_curve).replace('CalibrationCurve( ', ''))[:-2]
-        rc_output['sample'] = (str(ca.radiocarbon_sample).replace('RadiocarbonSample( ', ''))[:-2]
+        # rc_output['intervals'] = ca.intervals
+        # rc_output['calibration'] = (str(ca.calibration_curve).replace('CalibrationCurve( ', ''))[:-2]
+        rc_output['sample'] = (str(ca.radiocarbon_sample).replace(
+            'RadiocarbonSample( ', ''))[:-2]
 
         try:
             buf = BytesIO()
@@ -474,8 +626,6 @@ class RCData:
         from thanados.models.iosacal import core, plot
         import pkg_resources
 
-
-
         sql = """
             SELECT entity_id, jsonb_agg(sample::JSONB) AS sample FROM
                 (WITH RECURSIVE superents AS (
@@ -495,12 +645,15 @@ class RCData:
         g.cursor.execute(sql)
         result = g.cursor.fetchall()
 
-        g.cursor.execute('SELECT jsonb_agg(entity_id) AS ids FROM thanados.radiocarbon')
+        g.cursor.execute(
+            'SELECT jsonb_agg(entity_id) AS ids FROM thanados.radiocarbon')
         idlist = g.cursor.fetchone()
 
         for row in result:
             entId = row.entity_id
-            g.cursor.execute('SELECT name FROM model.entity WHERE id = %(entid)s', {'entid':entId})
+            g.cursor.execute(
+                'SELECT name FROM model.entity WHERE id = %(entid)s',
+                {'entid': entId})
             entName = g.cursor.fetchone().name
             count = len(row.sample)
 
@@ -511,8 +664,9 @@ class RCData:
                 date = int((spec.split(' ± ', 1)[0]).replace((lab + ' : '), ''))
                 range = int(spec.split(' ± ', 1)[1])
                 curvefile = "intcal20.14c"
-                curve_data_bytes = pkg_resources.resource_string("thanados.models.iosacal",
-                                                                 "data/%s" % curvefile)
+                curve_data_bytes = pkg_resources.resource_string(
+                    "thanados.models.iosacal",
+                    "data/%s" % curvefile)
                 curve_data_string = curve_data_bytes.decode('latin1')
 
                 if count > 1:
@@ -529,18 +683,21 @@ class RCData:
                     # abort(400)
                 else:
                     try:
-                        plot.stacked_plot(Calages, entName, oxcal=False, output=buf, BP='ad')
+                        plot.stacked_plot(Calages, entName, oxcal=False,
+                                          output=buf, BP='ad')
                     except ValueError:
                         app.logger.error('Error plotting')
                         # abort(400)
                     else:
                         buf.seek(0)
 
-                        with open(app.root_path + "/static/images/rc_dates/rc_stacked_" + str(entId) + ".png", "wb") as f:
+                        with open(
+                                app.root_path + "/static/images/rc_dates/rc_stacked_" + str(
+                                        entId) + ".png", "wb") as f:
                             f.write(buf.getbuffer())
                         matplotlib.pyplot.close(fig='all')
 
             if count == 1:
                 if int(entId) not in idlist.ids:
-                    RCData.radiocarbon(entId, date, range, 'ad', lab, "intcal20.14c", True)
-
+                    RCData.radiocarbon(entId, date, range, 'ad', lab,
+                                       "intcal20.14c", True)

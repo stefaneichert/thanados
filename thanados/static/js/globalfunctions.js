@@ -2171,9 +2171,9 @@ function getTypeData(id, div, hierarchy, target='_self') {
             $.each(data.gazetteers, function (i, gaz) {
                 if (typeof gaz.about === "undefined") gaz.about = gaz.domain;
                 if (typeof gaz.favicon !== "undefined") {
-                    gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.about + '" target="_self"><img class="me-2" height="20px"src="' + gaz.favicon + '">' + gaz.domain + ': ' + gaz.identifier + '</a><br>'
+                    gazetteer = gazetteer + '<a href="' + gaz.url + '" title="'+ gaz.SKOS + ' in: '  + gaz.about + '" target="_self"><img class="me-2" height="20px"src="' + gaz.favicon + '">' + gaz.domain + ': ' + gaz.identifier + '</a><br>'
                 } else {
-                    gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.about + '" target="_self">' + gaz.domain + ': ' + gaz.identifier + '</a><br>'
+                    gazetteer = gazetteer + '<a href="' + gaz.url + '" title="'+ gaz.SKOS + ' in: ' + gaz.about + '" target="_self">' + gaz.domain + ': ' + gaz.identifier + '</a><br>'
                 }
             })
             returnHtml = returnHtml + gazetteer

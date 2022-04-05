@@ -8,14 +8,15 @@ from thanados.models.entity import Data
 
 
 @app.route('/vocabulary/')
-def vocabulary():
+@app.route('/vocabulary/<format_>')
+def vocabulary(format_=None):
     hierarchytypes = app.config["HIERARCHY_TYPES"]
     systemtypes = app.config["SYSTEM_TYPES"]
     customtypes = app.config["CUSTOM_TYPES"]
     valuetypes = app.config["VALUE_TYPES"]
-    alltypesused = list(set().union(hierarchytypes, systemtypes, customtypes, valuetypes))
+    alltypesused = list(
+        set().union(hierarchytypes, systemtypes, customtypes, valuetypes))
     parenttree = []
-
 
     sql_list = """
                    SELECT name, id, name_path FROM (
@@ -27,12 +28,12 @@ def vocabulary():
                     WHERE topparent IN %(list)s 
                     """
 
-
     g.cursor.execute(sql_list, {'list': tuple(alltypesused)})
     results = g.cursor.fetchall()
     Typelist = []
     for row in results:
-        Typelist.append({'label': row.name, 'path': row.name_path, 'id': row.id})
+        Typelist.append(
+            {'label': row.name, 'path': row.name_path, 'id': row.id})
 
     def makeparents(typelist, typeClass):
         for id in typelist:
@@ -59,7 +60,7 @@ def vocabulary():
             node['nodes'] = []
             for row in results:
                 currentnode = {
-                    'text': row.name, # + getEntCount(row.id),
+                    'text': row.name,  # + getEntCount(row.id),
                     'id': row.id,
                     'type': typeClass,
                     'class': 'treenode'
@@ -70,12 +71,27 @@ def vocabulary():
     tabsToCreate = ['Main classes', 'Types', 'Value types']
 
     makeparents(hierarchytypes, 'Main classes')
-    #makeparents(systemtypes, 'Standard') #uncomment to display system types
+    # makeparents(systemtypes, 'Standard') #uncomment to display system types
     makeparents(customtypes, 'Types')
     makeparents(valuetypes, 'Value types')
 
+    if format_ == 'gazetteers':
+        gaz_data = []
+        g.cursor.execute('SELECT * FROM thanados.ext_types ORDER BY type_id')
+        types = g.cursor.fetchall()
+        for row in types:
+            type = {'thanadosId': row.type_id, 'vocabulary': row.name,
+                    'vocabularyId': row.identifier, 'SKOS': row.skos,
+                    'URL': row.url}
+            if row.prefterm:
+                type['prefTerm'] = row.prefterm
+
+            gaz_data.append(type)
+        return json.dumps(gaz_data)
+
     # return json.dumps(parenttree)
-    return render_template('vocabulary/vocabulary.html', tree=parenttree, tabsToCreate=tabsToCreate, typelist=Typelist)
+    return render_template('vocabulary/vocabulary.html', tree=parenttree,
+                           tabsToCreate=tabsToCreate, typelist=Typelist)
 
 
 @app.route('/vocabulary/<int:object_id>')
@@ -149,8 +165,8 @@ def vocabulary_view(object_id: int, format_=None):
                     except KeyError:
                         try:
                             license = \
-                            extid['image']['metadata']['LicenseShortName'][
-                                'value']
+                                extid['image']['metadata']['LicenseShortName'][
+                                    'value']
                         except KeyError:
                             license = '<a href="' + extid['image'][
                                 'origin'] + '">' + extid['image'][
@@ -190,7 +206,6 @@ def vocabulary_view(object_id: int, format_=None):
     if CRMclass not in ['E55']:
         abort(403)
 
-
     def getExtData(id):
         extrefs = """
                 SELECT jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
@@ -206,21 +221,22 @@ def vocabulary_view(object_id: int, format_=None):
         WHERE t.type_id = %(object_id)s;
                 """
         g.cursor.execute(extrefs, {'object_id': id})
-        extresulttmp = g.cursor.fetchone()
-        #print (extresulttmp)
-        if extresulttmp.ext_types:
+        extresult = g.cursor.fetchone()
+        # print (extresult)
+        if extresult.ext_types:
             print('first match')
-            return extresulttmp
+            return extresult
+
         else:
-            getBroadMatch(id)
+            pass  # return getBroadMatch(id)
 
     def getBroadMatch(id):
         sql = 'SELECT parent_id from thanados.types_all WHERE id = %(id)s'
         g.cursor.execute(sql, {'id': id})
         parent = g.cursor.fetchone()
-        print ('trying with')
-        print (parent.parent_id)
-        print (parent)
+        print('trying with')
+        print(parent.parent_id)
+        print(parent)
         if parent.parent_id:
 
             extrefs = """
@@ -237,15 +253,15 @@ def vocabulary_view(object_id: int, format_=None):
                 WHERE t.type_id = %(object_id)s;
                         """
             g.cursor.execute(extrefs, {'object_id': parent.parent_id})
-            extresulttmp = g.cursor.fetchone()
-            #print(extresulttmp)
-            if extresulttmp.ext_types:
+            extresult = g.cursor.fetchone()
+            # print(extresult)
+            if extresult.ext_types:
                 print('broad match')
-                #print(extresulttmp)
-                return extresulttmp
+                return extresult
+
             else:
-                print ('next try')
-                getBroadMatch(parent.parent_id)
+                print('next try')
+                # getBroadMatch(parent.parent_id)
         else:
             pass
 
@@ -261,8 +277,9 @@ def vocabulary_view(object_id: int, format_=None):
     g.cursor.execute(sql_topparent, {'object_id': object_id})
     topparent = g.cursor.fetchone().topparent
 
-    g.cursor.execute('select name, description, id from model.entity WHERE id = %(object_id)s',
-                     {'object_id': topparent})
+    g.cursor.execute(
+        'select name, description, id from model.entity WHERE id = %(object_id)s',
+        {'object_id': topparent})
     topparent = g.cursor.fetchone()
 
     sql_topparent_info = """
@@ -314,10 +331,11 @@ def vocabulary_view(object_id: int, format_=None):
 
     # get name of parent
     sql_parentname = 'SELECT name FROM thanados.types_all WHERE id = %(object_id)s;'
-    g.cursor.execute(sql_parentname, {'object_id': output_path_parent.parent_id})
+    g.cursor.execute(sql_parentname,
+                     {'object_id': output_path_parent.parent_id})
     output_parentname = g.cursor.fetchone()
 
-    #define time
+    # define time
     time = {}
     if output_base.begin_from:
         time['earliest_begin'] = output_date.begin_from
@@ -345,11 +363,9 @@ def vocabulary_view(object_id: int, format_=None):
 
     print('whatsthere')
     extresult = getExtData(object_id)
-    print (extresult)
-    #if (getExtData(object_id)).ext_types:
-    #    getExtTypes(extresult)
-
-
+    print(extresult)
+    if extresult != None:
+        getExtTypes(extresult.ext_types)
 
     # get subtypes
     sql_children = 'SELECT id, name FROM thanados.types_all WHERE parent_id = %(object_id)s;'
@@ -422,7 +438,8 @@ def vocabulary_view(object_id: int, format_=None):
     entlist = []
 
     g.cursor.execute(sql_subtypesrec,
-                     {'type_id': object_id, 'type_name': '%> ' + str(output_base.id) + ' >%',
+                     {'type_id': object_id,
+                      'type_name': '%> ' + str(output_base.id) + ' >%',
                       'type_name2': str(output_base.id) + ' >%'})
     output_subtypesrec = g.cursor.fetchall()
     if output_subtypesrec:
@@ -440,32 +457,37 @@ def vocabulary_view(object_id: int, format_=None):
         thanados.searchdata s
         WHERE type_id IN %(type_id)s AND s.site_id IN %(site_ids)s  
     """
-    g.cursor.execute(sql_entities, {'type_id': tuple([object_id]), 'site_ids': tuple(g.site_list)})
+    g.cursor.execute(sql_entities, {'type_id': tuple([object_id]),
+                                    'site_ids': tuple(g.site_list)})
     output_direct_ents = g.cursor.fetchall()
     if output_direct_ents:
         data['entities'] = []
         for row in output_direct_ents:
-            data['entities'].append({'id': row.child_id, 'name': row.child_name, 'main_type':
-                row.maintype, 'type': row.type, 'type_id': row.type_id, 'value': row.min,
-                                     'lon': row.lon,
-                                     'lat': row.lat, 'context': row.context, 'file': row.filename,
-                                     'openatlas_class_name':
-                                         row.openatlas_class_name})
+            data['entities'].append(
+                {'id': row.child_id, 'name': row.child_name, 'main_type':
+                    row.maintype, 'type': row.type, 'type_id': row.type_id,
+                 'value': row.min,
+                 'lon': row.lon,
+                 'lat': row.lat, 'context': row.context, 'file': row.filename,
+                 'openatlas_class_name':
+                     row.openatlas_class_name})
 
-    g.cursor.execute(sql_entities, {'type_id': entlist, 'site_ids': tuple(g.site_list)})
+    g.cursor.execute(sql_entities,
+                     {'type_id': entlist, 'site_ids': tuple(g.site_list)})
     output_direct_ents = g.cursor.fetchall()
     if output_direct_ents:
         data['entities_recursive'] = []
         for row in output_direct_ents:
-            data['entities_recursive'].append({'id': row.child_id, 'name': row.child_name,
-                                               'main_type':
-                                                   row.maintype, 'type': row.type,
-                                               'type_id': row.type_id, 'value': row.min,
-                                               'lon': row.lon,
-                                               'lat': row.lat, 'context': row.context,
-                                               'file': row.filename,
-                                               'openatlas_class_name':
-                                                   row.openatlas_class_name})
+            data['entities_recursive'].append(
+                {'id': row.child_id, 'name': row.child_name,
+                 'main_type':
+                     row.maintype, 'type': row.type,
+                 'type_id': row.type_id, 'value': row.min,
+                 'lon': row.lon,
+                 'lat': row.lat, 'context': row.context,
+                 'file': row.filename,
+                 'openatlas_class_name':
+                     row.openatlas_class_name})
 
     # get type tree
     def getchildren(id, node):
@@ -497,7 +519,8 @@ def vocabulary_view(object_id: int, format_=None):
     if object_id == topparent['id']:
         currentcolor = '#ff8c8c'
 
-    alltreeNodes = [{'id': topparent['id'], 'label': topparent['name'], 'color' : currentcolor}]
+    alltreeNodes = [{'id': topparent['id'], 'label': topparent['name'],
+                     'color': currentcolor}]
     alltreeEdges = []
 
     def getTree(id):
@@ -510,8 +533,9 @@ def vocabulary_view(object_id: int, format_=None):
             for row in results:
                 currentcolor = '#97C2FC';
                 if row.id == object_id:
-                    currentcolor= '#ff8c8c'
-                currentnode = {'id': row.id, 'label': row.name, 'color' : currentcolor}
+                    currentcolor = '#ff8c8c'
+                currentnode = {'id': row.id, 'label': row.name,
+                               'color': currentcolor}
                 currentedge = {'from': id, 'to': row.id, 'color': '#757575'}
                 alltreeNodes.append(currentnode)
                 alltreeEdges.append(currentedge)
@@ -530,6 +554,9 @@ def vocabulary_view(object_id: int, format_=None):
         return json.dumps(data)
 
     if object_id:
-        return render_template('vocabulary/view.html', object_id=object_id, data=data,
-                               children=len(output_children), credit=credits, license=license,
-                               children_recursive=len(entlist), webfolder=app.config["WEB_FOLDER_PATH"])
+        return render_template('vocabulary/view.html', object_id=object_id,
+                               data=data,
+                               children=len(output_children), credit=credits,
+                               license=license,
+                               children_recursive=len(entlist),
+                               webfolder=app.config["WEB_FOLDER_PATH"])
