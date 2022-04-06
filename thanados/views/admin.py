@@ -2656,13 +2656,35 @@ CREATE TABLE thanados.EntCount AS
     """
 
     g.cursor.execute(sql7)
+
+    print("processing external vocabularies")
+
     Data.get_ext_type_data()
+
     g.cursor.execute('SELECT * FROM thanados.ext_types ORDER BY type_id')
     types = g.cursor.fetchall()
+
+    sqlPrefs = """
+                        UPDATE thanados.ext_types SET prefterm = %(prefTerm)s 
+                        WHERE type_id = %(type_id)s AND name = %(vocab)s
+            """
+
     for row in types:
+        prefTerm = None
+        vocab = row.name
+        print(vocab)
         if row.name == 'Getty AAT':
             prefTerm = (Data.getGettyData(str(row.identifier)))['label']
-            g.cursor.execute('UPDATE thanados.ext_types SET prefterm = %(prefTerm)s WHERE type_id = %(type_id)s', {'prefTerm': prefTerm, 'type_id': row.type_id})
+            print(prefTerm)
+            g.cursor.execute(sqlPrefs,
+                             {'prefTerm': prefTerm, 'type_id': row.type_id,
+                              'vocab': vocab})
+        if row.name == 'Wikidata':
+            prefTerm = (Data.getWikidata(str(row.identifier)))['label']
+            print(prefTerm)
+            g.cursor.execute(sqlPrefs,
+                             {'prefTerm': prefTerm, 'type_id': row.type_id,
+                              'vocab': vocab})
 
     restdone = datetime.now()
     print("time elapsed: " + str((restdone - jsonsdone)))
@@ -2905,7 +2927,7 @@ def geoclean_execute():  # pragma: no cover
                         response = requests.get(icons[0].url, stream=True)
                         with open(
                                 app.root_path + '/static/images/favicons/' + str(
-                                        ref_id) + '.{}'.format(icons[0].format),
+                                    ref_id) + '.{}'.format(icons[0].format),
                                 'wb') as image:
                             for chunk in response.iter_content(1024):
                                 image.write(chunk)

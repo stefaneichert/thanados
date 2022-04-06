@@ -77,12 +77,19 @@ def vocabulary(format_=None):
 
     if format_ == 'gazetteers':
         gaz_data = []
-        g.cursor.execute('SELECT * FROM thanados.ext_types ORDER BY type_id')
+        typesSql = """
+        SELECT e.*, t.name as tname 
+            FROM thanados.ext_types e 
+            JOIN thanados.types_all t ON e.type_id = t.id 
+            ORDER BY type_id
+        """
+        g.cursor.execute(typesSql)
         types = g.cursor.fetchall()
         for row in types:
-            type = {'thanadosId': row.type_id, 'vocabulary': row.name,
-                    'vocabularyId': row.identifier, 'SKOS': row.skos,
-                    'URL': row.url}
+            type = {'thanadosId': row.type_id, 'thanadosTerm': row.tname,
+                    'thanadosUrl': 'https://thanados.net/vocabulary/' + str(row.type_id),
+                    'vocabulary': row.name, 'vocabularyId': row.identifier,
+                    'SKOS': row.skos, 'URL': row.url}
             if row.prefterm != None:
                 type['prefTerm'] = row.prefterm
 
