@@ -8,3 +8,7 @@ def update_db(e):
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('error/404.html'), 404
+
+@app.errorhandler(504)
+def update_db(e):
+    return render_template('error/504.html'), 504
