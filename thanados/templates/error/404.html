@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <div id="container1">
+        <h2 class="my-heading container"><img class="logo-heading"
+                                              src="/static/images/logos/THANADOS_Logo_RGB.png">
+        </h2>
+        <h2 class="my-heading container">The Anthropological and Archaeological
+            Database of
+            Sepultures</h2>
+
+
+        <div class="container col-xxl-8 px-4 py-5">
+            <div class="row flex-lg-row-reverse align-items-center rounded-3 border shadow-lg">
+                <div class="col-lg-6 p-0 m-0">
+                    <img src="static/images/error/500.jpg" class="d-block mx-lg-auto img-fluid" alt="Skeleton"
+                         width="100%" loading="lazy">
+                </div>
+                <div class="col-lg-6 p-5">
+                    <h1 class="display-5 fw-bold lh-1 mb-3">404</h1>
+                    <p class="lead">Sorry, This page cannot be found</p>
+                </div>
+            </div>
+        </div>
+
+        <footer id="myfooter">
+            {% include 'footer.html' %}
+        </footer>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            maximumHeight = (($(window).height() - $('#mynavbar').height()));
+            $('#container1').css('max-height', (maximumHeight - 13) + 'px')
+        });
+
+        $(window).resize(function () {
+            maximumHeight = (($(window).height() - $('#mynavbar').height()));
+            $('#container1').css('max-height', (maximumHeight - 13) + 'px');
+        });
+    </script>
+{% endblock %}

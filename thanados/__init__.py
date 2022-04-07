@@ -34,7 +34,7 @@ if not use_api:
 
 from thanados.views import (
     index, map, about, entity, charts, login, manual, sites, admin, search,
-    ajax, vocabulary)
+    ajax, vocabulary, error)
 
 
 def connect():
