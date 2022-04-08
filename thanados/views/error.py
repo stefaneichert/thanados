@@ -10,5 +10,5 @@ def page_not_found(e):
     return render_template('error/404.html'), 404
 
 @app.errorhandler(504)
-def update_db(e):
+def gateway_timeout(e):
     return render_template('error/504.html'), 504
