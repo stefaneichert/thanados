@@ -512,13 +512,25 @@ CREATE TABLE thanados.tmpsites AS (
         from bs4 import BeautifulSoup
 
         url = "http://vocabsservices.getty.edu/AATService.asmx/AATGetSubject?subjectID=" + id
+        GettyData = {}
         wdata = requests.get(url)
         soup = BeautifulSoup(wdata.content, "lxml-xml")
-        GettyData = {}
-        GettyData['label'] = soup.find('Preferred_Term').Term_Text.string
-        GettyData['qualifier'] = soup.find('Qualifier').string
-        GettyData['description'] = soup.find(
-            'Descriptive_Note').Note_Text.string
+
+        try:
+            GettyData['label'] = soup.find('Preferred_Term').Term_Text.string
+        except:
+            GettyData['label'] = 'no preferred term found'
+
+        try:
+            GettyData['qualifier'] = soup.find('Qualifier').string
+        except: GettyData['qualifier'] = ''
+
+        try:
+            GettyData['description'] = soup.find(
+                'Descriptive_Note').Note_Text.string
+        except:
+            GettyData['description'] = ''
+
         return GettyData
 
     @staticmethod

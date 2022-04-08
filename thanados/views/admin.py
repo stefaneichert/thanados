@@ -2672,13 +2672,18 @@ CREATE TABLE thanados.EntCount AS
     for row in types:
         prefTerm = None
         vocab = row.name
+        print(row.type_id)
         print(vocab)
         if row.name == 'Getty AAT':
-            prefTerm = (Data.getGettyData(str(row.identifier)))['label']
-            print(prefTerm)
-            g.cursor.execute(sqlPrefs,
+            try:
+                prefTerm = (Data.getGettyData(str(row.identifier)))['label']
+                print(prefTerm)
+                g.cursor.execute(sqlPrefs,
                              {'prefTerm': prefTerm, 'type_id': row.type_id,
                               'vocab': vocab})
+            except:
+                print('something went wrong with ' + str(row.type_id))
+
         if row.name == 'Wikidata':
             prefTerm = (Data.getWikidata(str(row.identifier)))['label']
             print(prefTerm)
