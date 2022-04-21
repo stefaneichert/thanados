@@ -310,46 +310,46 @@ CREATE TABLE thanados.sites AS (
 -- set polygons as main geometry where available
 UPDATE thanados.sites
 SET geom = poly.geom
-FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
+FROM (SELECT ST_AsGeoJSON(pl.geom_polygon) AS geom,
              e.id
       FROM model.entity e
                JOIN model.link l ON e.id = l.domain_id
-               JOIN gis.polygon pl ON l.range_id = pl.entity_id
-      WHERE l.property_code = 'P53') AS poly
+               JOIN model.gis pl ON l.range_id = pl.entity_id
+      WHERE l.property_code = 'P53' AND pl.geom_polygon IS NOT NULL) AS poly       
 WHERE child_id = poly.id;
 
 -- get centerpoint data if a point geometry is available
 UPDATE thanados.sites
-SET (lat, lon) = (ST_X(point.geom), ST_Y(point.geom))
-FROM (SELECT geom,
+SET (lat, lon) = (ST_X(point.geom_point), ST_Y(point.geom_point))
+FROM (SELECT geom_point,
              e.id
       FROM model.entity e
                JOIN model.link l ON e.id = l.domain_id
-               JOIN gis.point pl ON l.range_id = pl.entity_id
-      WHERE l.property_code = 'P53') AS point
+               JOIN model.gis pl ON l.range_id = pl.entity_id
+      WHERE l.property_code = 'P53' AND pl.geom_point IS NOT NULL) AS point
 WHERE child_id = point.id;
 
 -- set point as main geometry if no polygon is available
 UPDATE thanados.sites
 SET geom = point.geom
-FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
+FROM (SELECT ST_AsGeoJSON(pnt.geom_point) AS geom,
              e.id
       FROM model.entity e
                JOIN model.link l ON e.id = l.domain_id
-               JOIN gis.point pnt ON l.range_id = pnt.entity_id
-      WHERE l.property_code = 'P53') AS point
+               JOIN model.gis pnt ON l.range_id = pnt.entity_id
+      WHERE l.property_code = 'P53' AND pnt.geom_point IS NOT NULL) AS point
 WHERE child_id = point.id
   AND thanados.sites.geom ISNULL;
 
 -- get centerpoint data of polygons
 UPDATE thanados.sites
 SET (lat, lon) = (ST_X(center), ST_Y(center))
-FROM (SELECT ST_PointOnSurface(geom) AS center,
+FROM (SELECT ST_PointOnSurface(geom_polygon) AS center,
              e.id
       FROM model.entity e
                JOIN model.link l ON e.id = l.domain_id
-               JOIN gis.polygon pl ON l.range_id = pl.entity_id
-      WHERE l.property_code = 'P53') AS poly
+               JOIN model.gis pl ON l.range_id = pl.entity_id
+      WHERE l.property_code = 'P53' AND pl.geom_polygon IS NOT NULL) AS poly
 WHERE child_id = poly.id;
 
 
@@ -398,22 +398,22 @@ SELECT
 
 UPDATE thanados.graves
 SET geom = poly.geom
-FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
+FROM (SELECT ST_AsGeoJSON(pl.geom_polygon) AS geom,
              e.id
       FROM model.entity e
                JOIN model.link l ON e.id = l.domain_id
-               JOIN gis.polygon pl ON l.range_id = pl.entity_id
-      WHERE l.property_code = 'P53') AS poly
+               JOIN model.gis pl ON l.range_id = pl.entity_id
+      WHERE l.property_code = 'P53' AND pl.geom_polygon IS NOT NULL) AS poly
 WHERE child_id = poly.id;
 
 UPDATE thanados.graves
 SET geom = point.geom
-FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
+FROM (SELECT ST_AsGeoJSON(pnt.geom_point) AS geom,
              e.id
       FROM model.entity e
                JOIN model.link l ON e.id = l.domain_id
-               JOIN gis.point pnt ON l.range_id = pnt.entity_id
-      WHERE l.property_code = 'P53') AS point
+               JOIN model.gis pnt ON l.range_id = pnt.entity_id
+      WHERE l.property_code = 'P53' AND pnt.geom_point IS NOT NULL) AS point
 WHERE child_id = point.id
   AND thanados.graves.geom ISNULL;
 
@@ -448,22 +448,22 @@ ORDER BY child.openatlas_class_name, parent.id, child.name;
 
 UPDATE thanados.burials
 SET geom = poly.geom
-FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
+FROM (SELECT ST_AsGeoJSON(pl.geom_polygon) AS geom,
              e.id
       FROM model.entity e
                JOIN model.link l ON e.id = l.domain_id
-               JOIN gis.polygon pl ON l.range_id = pl.entity_id
-      WHERE l.property_code = 'P53') AS poly
+               JOIN model.gis pl ON l.range_id = pl.entity_id
+      WHERE l.property_code = 'P53' AND pl.geom_polygon IS NOT NULL) AS poly
 WHERE child_id = poly.id;
 
 UPDATE thanados.burials
 SET geom = point.geom
-FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
+FROM (SELECT ST_AsGeoJSON(pnt.geom_point) AS geom,
              e.id
       FROM model.entity e
                JOIN model.link l ON e.id = l.domain_id
-               JOIN gis.point pnt ON l.range_id = pnt.entity_id
-      WHERE l.property_code = 'P53') AS point
+               JOIN model.gis pnt ON l.range_id = pnt.entity_id
+      WHERE l.property_code = 'P53' AND pnt.geom_point IS NOT NULL) AS point
 WHERE child_id = point.id
   AND thanados.burials.geom ISNULL;
 
@@ -494,22 +494,22 @@ ORDER BY child.openatlas_class_name, parent.id, child.name;
 
 UPDATE thanados.finds
 SET geom = poly.geom
-FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
+FROM (SELECT ST_AsGeoJSON(pl.geom_polygon) AS geom,
              e.id
       FROM model.entity e
                JOIN model.link l ON e.id = l.domain_id
-               JOIN gis.polygon pl ON l.range_id = pl.entity_id
-      WHERE l.property_code = 'P53') AS poly
+               JOIN model.gis pl ON l.range_id = pl.entity_id
+      WHERE l.property_code = 'P53' AND pl.geom_polygon IS NOT NULL) AS poly
 WHERE child_id = poly.id;
 
 UPDATE thanados.finds
 SET geom = point.geom
-FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
+FROM (SELECT ST_AsGeoJSON(pnt.geom_point) AS geom,
              e.id
       FROM model.entity e
                JOIN model.link l ON e.id = l.domain_id
-               JOIN gis.point pnt ON l.range_id = pnt.entity_id
-      WHERE l.property_code = 'P53') AS point
+               JOIN model.gis pnt ON l.range_id = pnt.entity_id
+      WHERE l.property_code = 'P53' AND pnt.geom_point IS NOT NULL) AS point
 WHERE child_id = point.id
   AND thanados.finds.geom ISNULL;
   
@@ -540,22 +540,22 @@ ORDER BY child.openatlas_class_name, parent.id, child.name;
 
 UPDATE thanados.humanremains
 SET geom = poly.geom
-FROM (SELECT ST_AsGeoJSON(pl.geom) AS geom,
+FROM (SELECT ST_AsGeoJSON(pl.geom_polygon) AS geom,
              e.id
       FROM model.entity e
                JOIN model.link l ON e.id = l.domain_id
-               JOIN gis.polygon pl ON l.range_id = pl.entity_id
-      WHERE l.property_code = 'P53') AS poly
+               JOIN model.gis pl ON l.range_id = pl.entity_id
+      WHERE l.property_code = 'P53' AND pl.geom_polygon IS NOT NULL) AS poly
 WHERE child_id = poly.id;
 
 UPDATE thanados.humanremains
 SET geom = point.geom
-FROM (SELECT ST_AsGeoJSON(pnt.geom) AS geom,
+FROM (SELECT ST_AsGeoJSON(pnt.geom_point) AS geom,
              e.id
       FROM model.entity e
                JOIN model.link l ON e.id = l.domain_id
-               JOIN gis.point pnt ON l.range_id = pnt.entity_id
-      WHERE l.property_code = 'P53') AS point
+               JOIN model.gis pnt ON l.range_id = pnt.entity_id
+      WHERE l.property_code = 'P53' AND pnt.geom_point IS NOT NULL) AS point
 WHERE child_id = point.id
   AND thanados.humanremains.geom ISNULL;
 
@@ -616,7 +616,7 @@ UPDATE thanados.entitiestmp SET end_from = end_to WHERE end_to IS NOT NULL and e
                            g.parent_id,
                            e.name,
                            e.id,
-                           (st_pointonsurface(pl.geom)) AS centerpoint,
+                           (st_pointonsurface(pl.geom_polygon)) AS centerpoint,
                            NULL::INTEGER AS nid,
                            NULL::TEXT AS nname,
                            NULL::DOUBLE PRECISION AS distance,
@@ -625,8 +625,9 @@ UPDATE thanados.entitiestmp SET end_from = end_to WHERE end_to IS NOT NULL and e
                           FROM model.entity e
                                    JOIN model.link l ON e.id = l.domain_id
                                     JOIN thanados.graves g ON e.id = g.child_id
-                                   JOIN gis.polygon pl ON l.range_id = pl.entity_id
-                          WHERE l.property_code = 'P53';
+                                   JOIN model.gis pl ON l.range_id = pl.entity_id
+                          WHERE l.property_code = 'P53' AND pl.geom_polygon IS NOT NULL
+                          AND g.child_id != 0;
 
                           --delete sites with  only one grave
                           DELETE FROM thanados.knn WHERE parent_id IN (
@@ -634,7 +635,7 @@ UPDATE thanados.entitiestmp SET end_from = end_to WHERE end_to IS NOT NULL and e
                            g.parent_id,
                            e.name,
                            e.id,
-                           (st_pointonsurface(pl.geom)) AS centerpoint,
+                           (st_pointonsurface(pl.geom_polygon)) AS centerpoint,
                            NULL::INTEGER AS nid,
                            NULL::TEXT AS nname,
                            NULL::DOUBLE PRECISION AS distance,
@@ -643,8 +644,8 @@ UPDATE thanados.entitiestmp SET end_from = end_to WHERE end_to IS NOT NULL and e
                           FROM model.entity e
                                    JOIN model.link l ON e.id = l.domain_id
                                     JOIN thanados.graves g ON e.id = g.child_id
-                                   JOIN gis.polygon pl ON l.range_id = pl.entity_id
-                          WHERE l.property_code = 'P53') a GROUP BY parent_id) b WHERE b.count <= 1 ORDER BY b.count ASC);
+                                   JOIN model.gis pl ON l.range_id = pl.entity_id
+                          WHERE l.property_code = 'P53' AND pl.geom_polygon IS NOT NULL) a GROUP BY parent_id) b WHERE b.count <= 1 ORDER BY b.count ASC);
 
                     SELECT * FROM thanados.knn;
                     """
@@ -747,8 +748,8 @@ SELECT 	e.openatlas_class_name,
 	l.property_code,
 	l.range_id,
 	g.id,
-	g.geom
-	FROM thanados.graves e JOIN model.link l ON e.child_id = l.domain_id JOIN gis.polygon g ON l.range_id = g.entity_id WHERE l.property_code = 'P53');
+	g.geom_polygon AS geom
+	FROM thanados.graves e JOIN model.link l ON e.child_id = l.domain_id JOIN model.gis g ON l.range_id = g.entity_id WHERE l.property_code = 'P53' AND g.geom_polygon IS NOT NULL);
 
 DROP TABLE IF EXISTS thanados.derivedDegtmp;
 CREATE TABLE thanados.derivedDegtmp AS
@@ -1755,26 +1756,29 @@ FROM thanados.sites;
 
 UPDATE thanados.tbl_sites
 SET polygon = geom
-FROM (SELECT ST_AsGeoJSON(geom) AS geom,
+FROM (SELECT ST_AsGeoJSON(geom_polygon) AS geom,
              domain_id
-      FROM gis.polygon p
-               JOIN model.link l ON p.entity_id = l.range_id) g
+      FROM model.gis p
+               JOIN model.link l ON p.entity_id = l.range_id 
+               WHERE p.geom_polygon IS NOT NULL) g
 WHERE thanados.tbl_sites.id = g.domain_id;
 
 UPDATE thanados.tbl_sites
 SET point = geom
-FROM (SELECT ST_AsGeoJSON(geom) AS geom,
+FROM (SELECT ST_AsGeoJSON(geom_point) AS geom,
              domain_id
-      FROM gis.point p
-               JOIN model.link l ON p.entity_id = l.range_id) g
+      FROM model.gis p
+               JOIN model.link l ON p.entity_id = l.range_id
+               WHERE p.geom_point IS NOT NULL) g
 WHERE thanados.tbl_sites.id = g.domain_id;
 
 UPDATE thanados.tbl_sites
 SET point = geom
-FROM (SELECT ST_AsGeoJSON(ST_PointOnSurface(geom)) AS geom,
+FROM (SELECT ST_AsGeoJSON(ST_PointOnSurface(geom_polygon)) AS geom,
              domain_id
-      FROM gis.polygon p
-               JOIN model.link l ON p.entity_id = l.range_id) g
+      FROM model.gis p
+               JOIN model.link l ON p.entity_id = l.range_id
+               WHERE p.geom_polygon IS NOT NULL) g
 WHERE thanados.tbl_sites.id = g.domain_id AND tbl_sites.point ISNULL;
 
 DROP TABLE IF EXISTS thanados.tbl_sitescomplete;
