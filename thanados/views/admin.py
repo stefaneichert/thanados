@@ -184,6 +184,9 @@ DROP SCHEMA IF EXISTS thanados CASCADE;
 CREATE SCHEMA thanados;
 -- create temp tables
 
+DROP TABLE IF EXISTS thanados.entity;
+CREATE TABLE thanados.entity AS SELECT * FROM model.entity;
+
 -- all types tree
 DROP TABLE IF EXISTS thanados.types_all;
 CREATE TABLE thanados.types_all AS
@@ -2660,41 +2663,6 @@ CREATE TABLE thanados.EntCount AS
     """
 
     g.cursor.execute(sql7)
-
-    print("processing external vocabularies")
-
-    Data.get_ext_type_data()
-
-    g.cursor.execute('SELECT * FROM thanados.ext_types ORDER BY type_id')
-    types = g.cursor.fetchall()
-
-    sqlPrefs = """
-                        UPDATE thanados.ext_types SET prefterm = %(prefTerm)s 
-                        WHERE type_id = %(type_id)s AND name = %(vocab)s
-            """
-
-    for row in types:
-        prefTerm = None
-        vocab = row.name
-        print(row.type_id)
-        print(vocab)
-        if row.name == 'Getty AAT':
-            try:
-                prefTerm = (Data.getGettyData(str(row.identifier)))['label']
-                print(prefTerm)
-                g.cursor.execute(sqlPrefs,
-                             {'prefTerm': prefTerm, 'type_id': row.type_id,
-                              'vocab': vocab})
-            except:
-                print('something went wrong with ' + str(row.type_id))
-
-        if row.name == 'Wikidata':
-            prefTerm = (Data.getWikidata(str(row.identifier)))['label']
-            print(prefTerm)
-            g.cursor.execute(sqlPrefs,
-                             {'prefTerm': prefTerm, 'type_id': row.type_id,
-                              'vocab': vocab})
-
     restdone = datetime.now()
     print("time elapsed: " + str((restdone - jsonsdone)))
 
@@ -2740,6 +2708,40 @@ def admin_geonames() -> str:
 def geoclean_execute():  # pragma: no cover
     if current_user.group not in ['admin']:
         abort(403)
+
+    print("processing external vocabularies")
+
+    Data.get_ext_type_data()
+
+    g.cursor.execute('SELECT * FROM thanados.ext_types ORDER BY type_id')
+    types = g.cursor.fetchall()
+
+    sqlPrefs = """
+                            UPDATE thanados.ext_types SET prefterm = %(prefTerm)s 
+                            WHERE type_id = %(type_id)s AND name = %(vocab)s
+                """
+
+    for row in types:
+        prefTerm = None
+        vocab = row.name
+        print(row.type_id)
+        print(vocab)
+        if row.name == 'Getty AAT':
+            try:
+                prefTerm = (Data.getGettyData(str(row.identifier)))['label']
+                print(prefTerm)
+                g.cursor.execute(sqlPrefs,
+                                 {'prefTerm': prefTerm, 'type_id': row.type_id,
+                                  'vocab': vocab})
+            except:
+                print('something went wrong with ' + str(row.type_id))
+
+        if row.name == 'Wikidata':
+            prefTerm = (Data.getWikidata(str(row.identifier)))['label']
+            print(prefTerm)
+            g.cursor.execute(sqlPrefs,
+                             {'prefTerm': prefTerm, 'type_id': row.type_id,
+                              'vocab': vocab})
 
     g.cursor.execute("SELECT * FROM thanados.refsys")
     resultRefs = g.cursor.fetchall()
@@ -3115,5 +3117,6 @@ def image_processing_execute():  # pragma: no cover
 def download_files():
     if current_user.group != 'admin':
         abort(403)
+
     api_download()
     return redirect(url_for('admin'))

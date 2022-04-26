@@ -86,12 +86,12 @@ def vocabulary(format_=None):
         g.cursor.execute(typesSql)
         types = g.cursor.fetchall()
         for row in types:
-            type = {'thanadosId': row.type_id, 'thanadosTerm': row.tname,
-                    'thanadosUrl': 'https://thanados.net/vocabulary/' + str(row.type_id),
-                    'vocabulary': row.name, 'vocabularyId': row.identifier,
-                    'SKOS': row.skos, 'URL': row.url}
+            type = {'"thanadosId"': row.type_id, '"thanadosTerm"': row.tname,
+                    '"thanadosUrl"': 'https://thanados.net/vocabulary/' + str(row.type_id),
+                    '"vocabulary"': row.name, '"vocabularyId"': row.identifier,
+                    '"SKOS"': row.skos, '"URL"': row.url}
             if row.prefterm != None:
-                type['prefTerm'] = row.prefterm
+                type['"prefTerm"'] = row.prefterm
 
             gaz_data.append(type)
         return json.dumps(gaz_data)
