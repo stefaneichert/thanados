@@ -118,7 +118,7 @@ def sites(domain_=None, date_=None):
 
         return json.dumps({
             '"description"': 'updated sites on https://thanados.net',
-            '"update time"': date_,
+            '"updated after"': date_,
             '"count"': len(sites_per_date),
             '"sites"': sites_per_date
         })
