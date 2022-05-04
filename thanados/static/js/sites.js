@@ -147,7 +147,7 @@ $(document).ready(function () {
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                     $(nTd).html(
                         "<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + ")' class='hovermarker' data-type='" + oData.type + "' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" +
-                        '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + oData.id + '" target="_self""><i class="float-end text-secondary fas fa-database"></i></a>' +
+                        '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + oData.id + '" target="_blank""><i class="float-end text-secondary fas fa-database"></i></a>' +
                         "<a href='/map/" + oData.id + "' title='open map' class='btn-xs float-end'><i class=\"fas fa-map-marked-alt\"></i></a>"); //create links in rows
                 }
             },

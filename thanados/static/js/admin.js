@@ -119,7 +119,7 @@ table = $('#sitelist').DataTable({
             data: "name",
             "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                 $(nTd).html(
-                    oData.name + '<a title="Link to backend" class="backendlink" href="' + openAtlasUrl + oData.id + '" target="_self""><i class="float-end text-secondary fas fa-database"></i></a>'); //create links in rows
+                    oData.name + '<a title="Link to backend" class="backendlink" href="' + openAtlasUrl + oData.id + '" target="_blank""><i class="float-end text-secondary fas fa-database"></i></a>'); //create links in rows
             }
         },
         {data: 'type'},

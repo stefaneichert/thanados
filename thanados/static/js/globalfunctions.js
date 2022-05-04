@@ -1525,7 +1525,7 @@ function getBasemaps() {
         maxZoom: 25,
         maxNativeZoom: 17,
         attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_self">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_self">OpenStreetMap France</a></div>'
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a></div>'
     });
 
     /*Stamen_Terrain = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}', {
@@ -1639,7 +1639,7 @@ function getBasemaps() {
 
     relief = new L.layerGroup([OpenStreetMap_HOT_ov, Esri_WorldHillshade], {
         attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_self">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_self">OpenStreetMap France</a>. Hillshade Sources: Esri, Airbus DS, USGS, NGA, NASA, CGIAR, N Robinson, NCEAS, NLS, OS, NMA, Geodatastyrelsen, Rijkswaterstaat, GSA, Geoland, FEMA, Intermap, and the GIS user community</div>'
+            '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>. Hillshade Sources: Esri, Airbus DS, USGS, NGA, NASA, CGIAR, N Robinson, NCEAS, NLS, OS, NMA, Geodatastyrelsen, Rijkswaterstaat, GSA, Geoland, FEMA, Intermap, and the GIS user community</div>'
     });
 
     satellite = Esri_WorldImagery; //define aerial image layer
@@ -1670,7 +1670,7 @@ function getBasemaps() {
             minZoom: 0,
             maxZoom: 20,
             attribution: '<a href="#" style="display: inline-block" class="togglebtn" onclick="$( this ).next().toggle()">&copy; Info</a>' +
-                '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_self">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_self">OpenStreetMap France</a></div>'
+                '<div id="myattr" class="mapAttr" style="display: inline-block">&nbsp ' + mywindowtitle + '. Map Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a></div>'
         }
     );
 
@@ -2150,7 +2150,7 @@ $.featherlight.prototype.afterContent = function () {
 thisUrl = window.location.href;
 if (thisUrl.includes('#')) thisUrl = thisUrl.substring(0, thisUrl.indexOf('#'));
 
-mycitation1 = ' From: <a href="/about" target="_self">THANADOS:</a> <a' +
+mycitation1 = ' From: <a href="/about" target="_blank">THANADOS:</a> <a' +
     ' href="' + thisUrl + '">' + thisUrl + '</a> [Accessed: ' + today() + ']<br>' +
     'Licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a><br> After: ';
 
@@ -2171,9 +2171,9 @@ function getTypeData(id, div, hierarchy, target='_self') {
             $.each(data.gazetteers, function (i, gaz) {
                 if (typeof gaz.about === "undefined") gaz.about = gaz.domain;
                 if (typeof gaz.favicon !== "undefined") {
-                    gazetteer = gazetteer + '<a href="' + gaz.url + '" title="'+ gaz.SKOS + ' in: '  + gaz.about + '" target="_self"><img class="me-2" height="20px"src="' + gaz.favicon + '">' + gaz.domain + ': ' + gaz.identifier + '</a><br>'
+                    gazetteer = gazetteer + '<a href="' + gaz.url + '" title="'+ gaz.SKOS + ' in: '  + gaz.about + '" target="_blank"><img class="me-2" height="20px"src="' + gaz.favicon + '">' + gaz.domain + ': ' + gaz.identifier + '</a><br>'
                 } else {
-                    gazetteer = gazetteer + '<a href="' + gaz.url + '" title="'+ gaz.SKOS + ' in: ' + gaz.about + '" target="_self">' + gaz.domain + ': ' + gaz.identifier + '</a><br>'
+                    gazetteer = gazetteer + '<a href="' + gaz.url + '" title="'+ gaz.SKOS + ' in: ' + gaz.about + '" target="_blank">' + gaz.domain + ': ' + gaz.identifier + '</a><br>'
                 }
             })
             returnHtml = returnHtml + gazetteer
@@ -2211,7 +2211,7 @@ function getCaseData(id, container) {
 
             if (title.includes('http')) {
                 projLink = 'http' + title.slice(title.lastIndexOf('http') + 4);
-                projLink = '<a class="float-end" title="Project website" target="_self" href="'+ projLink+ '"><i class="logo-link fas fa-external-link-alt"></i></a>'
+                projLink = '<a class="float-end" title="Project website" target="_blank" href="'+ projLink+ '"><i class="logo-link fas fa-external-link-alt"></i></a>'
 
             }
             if (data.files) {
@@ -3311,7 +3311,7 @@ function bodyheightmodal(method) {
 
 
     $('#bodyheight').append(
-        '<div class="mb-3 mt-3 text-muted">Calculation after: <a href="' + citeUrl + '" target="_self">' + citeName + '</a></div>' +
+        '<div class="mb-3 mt-3 text-muted">Calculation after: <a href="' + citeUrl + '" target="_blank">' + citeName + '</a></div>' +
         '<div class="mb-2 p-2 border rounded" id="chartwrapper"><canvas id="bhChart">' +
         '</canvas><div class="text-center text-muted" id="avgLegend"><b class="me-2">- - - - - - - -</b> Average: ' + avg + ' cm.</div></div>' +
         '<div class="input-group input-group-sm mt-2 mb-2">\n' +

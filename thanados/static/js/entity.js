@@ -309,7 +309,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         ((showDashboard) ? '<a style="margin-left: 0.2em" onclick="this.blur();" href="/entity/' + place_id + '/dashboard" class="btn btn-sm btn-secondary" title="Dashboard"><i class="fas fa-chart-line"></i></a>' : '') +
         '<button type="button" style="margin-left: 0.2em" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" class="btn btn-sm btn-secondary" title="Open detailed map of this site"><i class="fas fa-map-marked-alt"></i></button>' +
 
-        '<a style="margin-left: 0.2em" onclick="this.blur();" href="' + openAtlasUrl + entId + '" target="_self" class="backendlink d-none btn btn-sm btn-secondary" title="Backend link"><i class="fas fa-database"></i></a>' +
+        '<a style="margin-left: 0.2em" onclick="this.blur();" href="' + openAtlasUrl + entId + '" target="_blank" class="backendlink d-none btn btn-sm btn-secondary" title="Backend link"><i class="fas fa-database"></i></a>' +
 
         '<div class="dropdown" style="display: inline-block; margin-left: 0.2em;" >\n' +
         '  <button class="btn btn-sm btn-secondary" type="button" id="dropdownMenuButton" title="More" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
@@ -791,7 +791,7 @@ function getEntityData(parentName, parentId, currentfeature) {
                     data: "name",
                     "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                         $(nTd).html("<a href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" +
-                            '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + oData.id + '" target="_self""><i class="float-end text-secondary fas fa-database"></i></a>'); //create links in rows
+                            '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + oData.id + '" target="_blank""><i class="float-end text-secondary fas fa-database"></i></a>'); //create links in rows
                     }
                 },
                 {
@@ -1128,7 +1128,7 @@ function setcatalogue(currentchildren, parentDiv, iter) {
         var entId = currentfeature.id;
         var entName =
             '<a href="../entity/' + entId + '" title="Permalink to this entity">' + currentfeature.properties.name + '</a>' +
-            '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + entId + '" target="_self""><i class="ms-4 text-secondary fas fa-database"></i></a>';
+            '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + entId + '" target="_blank""><i class="ms-4 text-secondary fas fa-database"></i></a>';
         var entDesc = currentfeature.properties.description;
         if (typeof entDesc == 'undefined') {
             var entDesc = '';

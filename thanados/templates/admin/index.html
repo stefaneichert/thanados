@@ -155,7 +155,7 @@
 
                                 {% for row in missingrefs %}
                                     <tr>
-                                        <td><a href="{{ openatlas_url + row.id }}" target="_self">{{ row.name }}</a>
+                                        <td><a href="{{ openatlas_url + row.id }}" target="_blank">{{ row.name }}</a>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -186,7 +186,7 @@
                                     {% if row.lat and row.lon %}
                                     <tr>
                                         <td><a href="{{ openatlas_url.replace('entity', 'update') + row.id }}"
-                                               target="_self">{{ row.name }}</a>
+                                               target="_blank">{{ row.name }}</a>
                                         </td>
                                         <td>
                                             <a href="#" id="Geo_{{ row.id }}" onclick="searchGeoName({{ row.lat }}, {{ row.lon }}, {{ row.id }}, 2.5)">search</a>
@@ -221,7 +221,7 @@
                                 {% for row in missingeo %}
                                     <tr>
                                         <td><a href="{{ openatlas_url.replace('entity', 'update') + row.id }}"
-                                               target="_self">{{ row.name }}</a>
+                                               target="_blank">{{ row.name }}</a>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -258,7 +258,7 @@
                                                value=""><label for="{{ row.id }}"></label></td>
                                     <td>{{ row.site }}</td>
                                     <td><a href="{{ openatlas_url + row.id }}"
-                                           target="_self">
+                                           target="_blank">
                                         <img style="width: auto; max-width: 150px; max-height: 100px"
                                              src="{{ loc_image + row.file }}"/>
                                     </a></td>
