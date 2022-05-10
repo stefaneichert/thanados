@@ -108,16 +108,23 @@ def sites(domain_=None, date_=None):
                 latest = (latest.latest)
                 latest = datetime.strptime(str(latest), "%Y-%m-%d %H:%M:%S.%f")
                 latest = latest.strftime('%Y-%m-%d')
+                today = datetime.now()
+                today = today.strftime('%Y-%m-%d')
 
-                return (
-                        'No sites updated since ' + date_ + '. The latest '
-                                    'update was done on ' + str(latest))
+                return json.dumps({
+                    '"description"': 'No sites updated since ' + date_ + '. The latest update was done on ' + str(latest),
+                    '"date"': today,
+                    '"count"': 0,
+                    '"sites"': []
+                })
+
+
         except Exception:
             return 'Something went wrong. Did you use the following format: ' \
                    'https://thanados.net/sites/sitelist/YYYY-MM-DD ?'
 
         return json.dumps({
-            '"description"': 'updated sites on https://thanados.net',
+            '"description"': "updated sites on https://thanados.net",
             '"updated after"': date_,
             '"count"': len(sites_per_date),
             '"sites"': sites_per_date
