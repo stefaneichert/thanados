@@ -1,5 +1,44 @@
 $('#nav-charts').addClass('activePage');
 
+
+if (typeof (age_data.age) == 'undefined') {
+    age_data = JSON.parse(JSON.stringify({
+        'age': age_data[0]
+    }
+    ));
+}
+
+if (typeof (valueage_data.age) == 'undefined') {
+    valueage_data = JSON.parse(JSON.stringify({
+        'age': valueage_data[0]
+    }
+    ));
+}
+
+if (typeof (gravetypes.types) == 'undefined') {
+    gravetypes = JSON.parse(JSON.stringify({
+        'types': gravetypes[0]
+    }
+    ));
+}
+
+if (typeof (graveconstr.types) == 'undefined') {
+    graveconstr = JSON.parse(JSON.stringify({
+        'types': graveconstr[0]
+    }
+    ));
+}
+
+if (typeof (burialtypes.types) == 'undefined') {
+    burialtypes = JSON.parse(JSON.stringify({
+        'types': burialtypes[0]
+    }
+    ));
+}
+
+
+
+
 //prepare charts/plots and data
 //remove sites without graves
 site_ids = [];

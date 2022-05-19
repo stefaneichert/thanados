@@ -1,3 +1,10 @@
+if (typeof (tabledata.sites) == 'undefined') {
+    tabledata = JSON.parse(JSON.stringify({
+        'sites': tabledata[0]
+    }
+    ));
+}
+
 maximumHeight = ($(window).height() - $('#mynavbar').height())
 $('#mycontent').css('max-height', (maximumHeight - 10) + 'px');
 
@@ -310,29 +317,29 @@ function setRefs(imagerefs) {
 
 function searchGeoName(lat, lon, id, rad) {
     console.log(rad)
-    $.getJSON("https://secure.geonames.org/findNearbyJSON?lat=" + lon + "&lng=" + lat + "&radius="+rad+"&maxRows=15&featureClass=P&username="+ geonames_user +"", function (data) {
+    $.getJSON("https://secure.geonames.org/findNearbyJSON?lat=" + lon + "&lng=" + lat + "&radius=" + rad + "&maxRows=15&featureClass=P&username=" + geonames_user + "", function (data) {
 
         var geon = "#Geo_" + id.toString()
         console.log(data)
-        $(geon).replaceWith('<div id="Geo_'+id+'" class="dropdown">\n' +
+        $(geon).replaceWith('<div id="Geo_' + id + '" class="dropdown">\n' +
             '  <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">\n' +
-                data.geonames.length+ ' results\n' +
+            data.geonames.length + ' results\n' +
             '  </button>\n' +
-            '  <ul id="Dropd_'+ id + '" class="dropdown-menu" aria-labelledby="dropdownMenuButton1">\n' +
+            '  <ul id="Dropd_' + id + '" class="dropdown-menu" aria-labelledby="dropdownMenuButton1">\n' +
             '  </ul>\n' +
             '</div>')
 
         var dropd = "#Dropd_" + id.toString()
 
         if (data.geonames.length > 2) {
-        $.each(data.geonames, function (i, geo) {
-            toponame = geo.toponymName
-            ins_toponame = '\'' + geo.toponymName +'\''
-            geoN_id = geo.geonameId
-            $(dropd).append('<li><a title="' + geo.fcodeName + ', distance: '+ parseFloat(geo.distance).toFixed(2) + 'km" class="dropdown-item" href="#" id="Geo_ins' + id.toString() + '" onclick="setGeonames(' + id + ', ' + geoN_id + ',' + ins_toponame + ')">' + toponame + '?</a></li>')
-        })
+            $.each(data.geonames, function (i, geo) {
+                toponame = geo.toponymName
+                ins_toponame = '\'' + geo.toponymName + '\''
+                geoN_id = geo.geonameId
+                $(dropd).append('<li><a title="' + geo.fcodeName + ', distance: ' + parseFloat(geo.distance).toFixed(2) + 'km" class="dropdown-item" href="#" id="Geo_ins' + id.toString() + '" onclick="setGeonames(' + id + ', ' + geoN_id + ',' + ins_toponame + ')">' + toponame + '?</a></li>')
+            })
         } else {
-            searchGeoName(lat, lon, id, rad+1)
+            searchGeoName(lat, lon, id, rad + 1)
         }
 
     });
