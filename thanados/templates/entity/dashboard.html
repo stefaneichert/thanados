@@ -18,14 +18,22 @@
         jsonmysite = {{ mysitejson|tojson }};
         findBubble = {{ findBubble|tojson }};
         findBubble2 = {{ findBubble2|tojson }};
-        depthData = {{ depthData|tojson }};
-        lengthData = {{ lengthData|tojson }};
-        widthData = {{ widthData|tojson }};
-        degData = {{ degData|tojson }};
-        aziData = {{ aziData|tojson }};
+        depthData = {{ depthData|safe }};
+        lengthData = {{ lengthData|safe }};
+        widthData = {{ widthData|safe }};
+        degData = {{ degData|safe }};
+        aziData = {{ aziData|safe }};
         knn = {{ knn|tojson }};
         SexData = {{ SexData|tojson }};
         constrData = {{ constrData|tojson }};
+
+        if (typeof (constrData.types) == 'undefined') {
+    constrData = JSON.parse(JSON.stringify({
+        'types': constrData[0]
+    }
+    ));
+}
+
         DashAgeData = {{ DashAgeData|tojson }};
         ValueAgeData = {{ ValueAgeData|tojson }};
         bodyheightAvg = {{ bodyheightAvg|tojson }};
@@ -33,14 +41,14 @@
         GenderData = {{ GenderData|tojson }};
         SexDepthData = {{ SexDepthData|tojson }};
         pathoBubble = {{ pathoBubble|tojson }};
-        findsPerDepth = {{ findsPerDepth|tojson }};
+        findsPerDepth = {{ findsPerDepth|safe }};
         preciousMetalfinds = {{ preciousMetalfinds|tojson }};
         prestigiousfinds = {{ prestigiousfinds|tojson }};
         BoxPlotData = {{ BoxPlotData|tojson }};
-        findAges = {{ findAges|tojson }};
+        findAges = {{ findAges|safe }};
         isodata = {{ isodata|tojson }};
         isoage = {{ isoage|tojson }};
-        findBracketAges = {{ findBracketAges|tojson }};
+        findBracketAges = {{ findBracketAges|safe }};
         preciousMetalfindsAgeValue = {{ preciousMetalfindsAgeValue|tojson }};
         preciousMetalfindsAgeBracket = {{ preciousMetalfindsAgeBracket|tojson }};
         prestigiousfindsValueAge = {{ prestigiousfindsValueAge|tojson }};

@@ -1,8 +1,16 @@
 import ast
 import collections
-# import json,urllib.request
+import json
+from decimal import Decimal
 
-from flask import json, render_template, g
+#Does quasi the same things as json.loads from here: https://pypi.org/project/dynamodb-json/
+class JSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return float(obj)
+        return json.JSONEncoder.default(self, obj)
+
+from flask import json, render_template, g, jsonify
 from flask_login import current_user, login_required
 
 
@@ -241,10 +249,13 @@ GROUP BY site_id, child_id, child_name ORDER BY avg) f
 
             g.cursor.execute(sql_dim, {'place_id': place_id, 'dim': _dim, 'term': term})
             result = g.cursor.fetchone()
+            #print(result)
+
             if result:
-                _data = {"labels": result.labels,
-                         "datasets": result.data}
-                return _data
+                _data = json.dumps({"labels": result.labels,
+                         "datasets": result.data}, cls=JSONEncoder)
+                #print(_data)
+                return (_data)
             else:
                 return {"labels": [],
                         "datasets": []}
@@ -309,8 +320,8 @@ GROUP BY site_id, child_id, child_name ORDER BY avg) f
             g.cursor.execute(sql_dim, {'place_id': place_id, 'dim': _dim})
             result = g.cursor.fetchone()
             if result:
-                _data = {"labels": result.labels,
-                         "datasets": result.data}
+                _data = json.dumps({"labels": result.labels,
+                         "datasets": result.data}, cls=JSONEncoder)
                 return _data
             else:
                 return {"labels": [],
@@ -358,8 +369,8 @@ GROUP BY site_id, child_id, child_name ORDER BY avg) f
             result = g.cursor.fetchone()
 
             if result:
-                _data = {"labels": result.labels,
-                         "datasets": result.data}
+                _data = json.dumps({"labels": result.labels,
+                         "datasets": result.data}, cls=JSONEncoder)
                 return _data
             else:
                 _data = {"labels": [],
@@ -398,8 +409,8 @@ GROUP BY site_id, child_id, child_name ORDER BY avg) f
             result = g.cursor.fetchone()
 
             if result:
-                _data = {"labels": result.labels,
-                         "datasets": result.data}
+                _data = json.dumps({"labels": result.labels,
+                         "datasets": result.data}, cls=JSONEncoder)
                 return _data
             else:
                 return {"labels": [],
@@ -722,8 +733,8 @@ GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.ch
             result = g.cursor.fetchone()
 
             if result:
-                _data = {"labels": result.labels,
-                         "datasets": result.data}
+                _data = json.dumps({"labels": result.labels,
+                         "datasets": result.data}, cls=JSONEncoder)
                 return _data
             else:
                 return {"labels": [],
@@ -757,8 +768,8 @@ GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.ch
             result = g.cursor.fetchone()
 
             if result:
-                _data = {"labels": result.labels,
-                         "datasets": result.data}
+                _data = json.dumps({"labels": result.labels,
+                         "datasets": result.data}, cls=JSONEncoder)
                 return _data
             else:
                 return {"labels": [],
@@ -792,8 +803,8 @@ GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.ch
             g.cursor.execute(sql_Findages)
             result = g.cursor.fetchone()
             if result:
-                _data = {"labels": result.labels,
-                         "datasets": result.data}
+                _data = json.dumps({"labels": result.labels,
+                         "datasets": result.data}, cls=JSONEncoder)
                 return _data
             else:
                 return {"labels": [],
@@ -836,8 +847,8 @@ GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.ch
             g.cursor.execute(sql_Findages, {'place_id': place_id})
             result = g.cursor.fetchone()
             if result:
-                _data = {"labels": result.labels,
-                         "datasets": result.data}
+                _data = json.dumps({"labels": result.labels,
+                         "datasets": result.data}, cls=JSONEncoder)
                 return _data
             else:
                 return {"labels": [],
@@ -1033,107 +1044,109 @@ GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.ch
         findAges = getFindAges()
         findBracketAges = getBracketFindAges()
 
+        print(json.loads(getFindsPerDim('Height', 'Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%')))
+
         preciousMetalfinds = {
-            "labels": getFindsPerDim('Height', 'Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get(
+            "labels": json.loads(getFindsPerDim('Height', 'Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%')).get(
                 'labels'),
             "datasets": [
                 {'label': 'Gold',
-                 'data': getFindsPerDim('Height', 'Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get(
+                 'data': json.loads(getFindsPerDim('Height', 'Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%')).get(
                      'datasets')},
                 {'label': 'Silver',
-                 'data': getFindsPerDim('Height',
-                                        'Material > Metal > Non-Ferrous Metal > Precious Metal > Silver%').get(
+                 'data': json.loads(getFindsPerDim('Height',
+                                        'Material > Metal > Non-Ferrous Metal > Precious Metal > Silver%')).get(
                      'datasets')},
                 {'label': 'Copper/Copper Alloys',
-                 'data': getFindsPerDim('Height',
-                                        'Material > Metal > Non-Ferrous Metal > Copper%').get(
+                 'data': json.loads(getFindsPerDim('Height',
+                                        'Material > Metal > Non-Ferrous Metal > Copper%')).get(
                      'datasets')}
             ]}
 
         preciousMetalfindsAgeValue = {
-            "labels": getAgeValueFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get(
+            "labels": json.loads(getAgeValueFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%')).get(
                 'labels'),
             "datasets": [
                 {'label': 'Gold',
-                 'data': getAgeValueFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get(
+                 'data': json.loads(getAgeValueFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%')).get(
                      'datasets')},
                 {'label': 'Silver',
-                 'data': getAgeValueFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Silver%').get(
+                 'data': json.loads(getAgeValueFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Silver%')).get(
                      'datasets')},
                 {'label': 'Copper/Copper Alloys',
-                 'data': getAgeValueFindsPerTerm('Material > Metal > Non-Ferrous Metal > Copper%').get(
+                 'data': json.loads(getAgeValueFindsPerTerm('Material > Metal > Non-Ferrous Metal > Copper%')).get(
                      'datasets')}
             ]}
 
         preciousMetalfindsAgeBracket = {
-            "labels": getAgeBracketFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get(
+            "labels": json.loads(getAgeBracketFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%')).get(
                 'labels'),
             "datasets": [
                 {'label': 'Gold',
-                 'data': getAgeBracketFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%').get(
+                 'data': json.loads(getAgeBracketFindsPerTerm('Material > Metal > Non-Ferrous Metal > Precious Metal > Gold%')).get(
                      'datasets')},
                 {'label': 'Silver',
-                 'data': getAgeBracketFindsPerTerm(
-                     'Material > Metal > Non-Ferrous Metal > Precious Metal > Silver%').get(
+                 'data': json.loads(getAgeBracketFindsPerTerm(
+                     'Material > Metal > Non-Ferrous Metal > Precious Metal > Silver%')).get(
                      'datasets')},
                 {'label': 'Copper/Copper Alloys',
-                 'data': getAgeBracketFindsPerTerm('Material > Metal > Non-Ferrous Metal > Copper%').get(
+                 'data': json.loads(getAgeBracketFindsPerTerm('Material > Metal > Non-Ferrous Metal > Copper%')).get(
                      'datasets')}
             ]}
 
         prestigiousfinds = {
-            "labels": getFindsPerDim('Height', 'Artifact > %').get(
+            "labels": json.loads(getFindsPerDim('Height', 'Artifact > %')).get(
                 'labels'),
             "datasets": [
                 {'label': 'Weapons/Riding Equipment',
-                 'data': getFindsPerDim('Height', 'Artifact > Weapons/Armour/Riding%').get(
+                 'data': json.loads(getFindsPerDim('Height', 'Artifact > Weapons/Armour/Riding%')).get(
                      'datasets')},
                 {'label': 'Jewellery',
-                 'data': getFindsPerDim('Height',
-                                        'Artifact > Accessories > Jewellery%').get(
+                 'data': json.loads(getFindsPerDim('Height',
+                                        'Artifact > Accessories > Jewellery%')).get(
                      'datasets')},
                 {'label': 'Belt Accessories',
-                 'data': getFindsPerDim('Height',
-                                        'Artifact > Accessories > Belt Accessories%').get(
+                 'data': json.loads(getFindsPerDim('Height',
+                                        'Artifact > Accessories > Belt Accessories%')).get(
                      'datasets')},
                 {'label': 'Pottery',
-                 'data': getFindsPerDim('Height',
-                                        'Artifact > Pottery%').get(
+                 'data': json.loads(getFindsPerDim('Height',
+                                        'Artifact > Pottery%')).get(
                      'datasets')},
                 {'label': 'Knife',
-                 'data': getFindsPerDim('Height',
-                                        'Artifact > Equipment > Knife%').get(
+                 'data': json.loads(getFindsPerDim('Height',
+                                        'Artifact > Equipment > Knife%')).get(
                      'datasets')}
             ]}
 
         prestigiousfindsValueAge = {
-            "labels": getAgeValueFindsPerTerm('Artifact > Weapons/Armour/Riding%').get('labels'),
+            "labels": json.loads(getAgeValueFindsPerTerm('Artifact > Weapons/Armour/Riding%')).get('labels'),
             "datasets": [
                 {'label': 'Weapons/Riding Equipment',
-                 'data': getAgeValueFindsPerTerm('Artifact > Weapons/Armour/Riding%').get('datasets')},
+                 'data': json.loads(getAgeValueFindsPerTerm('Artifact > Weapons/Armour/Riding%')).get('datasets')},
                 {'label': 'Jewellery',
-                 'data': getAgeValueFindsPerTerm('Artifact > Accessories > Jewellery%').get('datasets')},
+                 'data': json.loads(getAgeValueFindsPerTerm('Artifact > Accessories > Jewellery%')).get('datasets')},
                 {'label': 'Belt Accessories',
-                 'data': getAgeValueFindsPerTerm('Artifact > Accessories > Belt Accessories%').get('datasets')},
+                 'data': json.loads(getAgeValueFindsPerTerm('Artifact > Accessories > Belt Accessories%')).get('datasets')},
                 {'label': 'Pottery',
-                 'data': getAgeValueFindsPerTerm('Artifact > Pottery%').get('datasets')},
+                 'data': json.loads(getAgeValueFindsPerTerm('Artifact > Pottery%')).get('datasets')},
                 {'label': 'Knife',
-                 'data': getAgeValueFindsPerTerm('Artifact > Equipment > Knife%').get('datasets')}
+                 'data': json.loads(getAgeValueFindsPerTerm('Artifact > Equipment > Knife%')).get('datasets')}
             ]}
 
         prestigiousfindsBracketAge = {
-            "labels": getAgeBracketFindsPerTerm('Artifact > Weapons/Armour/Riding%').get('labels'),
+            "labels": json.loads(getAgeBracketFindsPerTerm('Artifact > Weapons/Armour/Riding%')).get('labels'),
             "datasets": [
                 {'label': 'Weapons/Riding Equipment',
-                 'data': getAgeBracketFindsPerTerm('Artifact > Weapons/Armour/Riding%').get('datasets')},
+                 'data': json.loads(getAgeBracketFindsPerTerm('Artifact > Weapons/Armour/Riding%')).get('datasets')},
                 {'label': 'Jewellery',
-                 'data': getAgeBracketFindsPerTerm('Artifact > Accessories > Jewellery%').get('datasets')},
+                 'data': json.loads(getAgeBracketFindsPerTerm('Artifact > Accessories > Jewellery%')).get('datasets')},
                 {'label': 'Belt Accessories',
-                 'data': getAgeBracketFindsPerTerm('Artifact > Accessories > Belt Accessories%').get('datasets')},
+                 'data': json.loads(getAgeBracketFindsPerTerm('Artifact > Accessories > Belt Accessories%')).get('datasets')},
                 {'label': 'Pottery',
-                 'data': getAgeBracketFindsPerTerm('Artifact > Pottery%').get('datasets')},
+                 'data': json.loads(getAgeBracketFindsPerTerm('Artifact > Pottery%')).get('datasets')},
                 {'label': 'Knife',
-                 'data': getAgeBracketFindsPerTerm('Artifact > Equipment > Knife%').get('datasets')}
+                 'data': json.loads(getAgeBracketFindsPerTerm('Artifact > Equipment > Knife%')).get('datasets')}
             ]}
 
         network = Data.getNetwork(place_id)
