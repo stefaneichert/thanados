@@ -1,0 +1,96 @@
+<script type="application/ld+json">
+    {
+        "@context": {
+            "@vocab": "https://schema.org/",
+            "skos": "http://www.w3.org/2004/02/skos/core.html",
+            "crm": "http://erlangen-crm.org/current/"
+        },
+        "@id": "https://doi.org/xx.xxxx",
+        "@type": "Dataset",
+        "Name": "the dataset name",
+        "Description": "description",
+        "spatialCoverage": {
+            "@type": "Place",
+            "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": "40.75",
+                "longitude": "-73.98"
+            },
+            "containedInPlace": {
+                "@type": "Place",
+                "name": "Austria",
+                "sameAs": "wikidata"
+            },
+            "sameAs": "geonames"
+        },
+        "dateCreated": "2019-10-02T11:54:31+00:00",
+        "dateModified": "2019-10-02T11:54:31+00:00",
+        "url": "sameasabove",
+        "publisher": {
+            "@type": "ResearchProject",
+            "name": "THANADOS",
+            "sameAs": "https://thanados.net",
+            "parentOrganization": {
+                "@type": "Organization",
+                "name": "Natural History Museum Vienna",
+                "sameAs": "https://nhm-wien.ac.at"
+            }
+        },
+        "distribution": {
+                "@type": "DataDownload",
+                "contentUrl": "https://data.dtu.dk/ndownloader/files/17798807",
+                "encodingFormat": "text/javascript",
+                "license": "https://creativecommons.org/licenses/by/4.0/"
+            },
+        "license": "https://creativecommons.org/licenses/by/4.0/",
+        "keywords": {
+            "@type": "DefinedTerm",
+            "@id": "http://openjurist.org/dictionary/Ballentine/term/calendar-year",
+            "name": "calendar year",
+            "description": "The period from January 1st to December 31st, inclusive, of any year.",
+            "inDefinedTermSet": "http://openjurist.org/dictionary/Ballentine",
+            "skos:broadMatch": {
+                "@type": "DefinedTerm",
+                "@id": "http://openjurist.org/dictionary/Ballentine/term/calendar-year",
+                "name": "calendar year",
+                "description": "The period from January 1st to December 31st, inclusive, of any year.",
+                "inDefinedTermSet": "http://openjurist.org/dictionary/Ballentine"
+            }
+        },
+        "temporalCoverage": {
+            "startTime": "0800-01-01",
+            "endTime": "0900-01-01",
+            "sameAs": {
+                "@type": "DefinedTerm",
+                "@id": "http://openjurist.org/dictionary/Ballentine/term/calendar-year",
+                "name": "calendar year",
+                "description": "The period from January 1st to December 31st, inclusive, of any year.",
+                "inDefinedTermSet": "http://openjurist.org/dictionary/Ballentine"
+            }
+        },
+        "about": {
+            "@type": "Thing",
+            "crmClass": "crm:E18 Physical Thing"
+        },
+        "contributor": [
+            {
+                "@type": "ResearchProject",
+                "name": "THANADOS"
+            },
+            {
+                "@type": "ResearchProject",
+                "name": "MEDCEM"
+            }],
+        "citation": [
+        {
+            "@type": "CreativeWork",
+            "citation": "Smith et al, \"Some cited work\" Some Journal, Jan. 2015. "
+        },
+        {
+            "@type": "CreativeWork",
+            "citation": "Hatcher et al, \"Some other cited work\" Another Journal, Mar. 2019. doi: 12.3456/abc.01.123"
+        }]
+            }
+
+</script>
+

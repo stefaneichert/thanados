@@ -3,7 +3,9 @@
 
     <script src="/static/vendor/node_modules/chart.js/dist/Chart.min.js"></script>
     <script src="/static/vendor/node_modules/chartjs-plugin-annotation/chartjs-plugin-annotation.min.js"></script>
-
+    <script type="application/ld+json">
+    {{ metadata|tojson }}
+    </script>
     <div id="containerPermalink">
         <div id="mybreadcrumb"></div>
         <div id="mycontent"></div>

@@ -1,6 +1,6 @@
 import ast
 import collections
-# import json,urllib.request
+#import json,urllib.request
 
 from flask import json, render_template, g
 from flask_login import current_user, login_required
@@ -8,6 +8,7 @@ from flask_login import current_user, login_required
 
 from thanados import app
 from thanados.models.entity import Data
+from thanados.util.metadata import get_metadata
 
 
 @app.route('/entity/<int:object_id>')
@@ -20,6 +21,8 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
     entity = {}
     api_url = app.config["API_URL"]
     url = api_url + str(object_id)
+    metadata = get_metadata(object_id)
+    #return json.dumps(metadata)
     # jsondata = urllib.request.urlopen(url).read()
     # output = json.loads(jsondata)
 
@@ -1163,5 +1166,6 @@ GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.ch
         if type_ == 'JSON':
             return json.dumps(data)
 
-    return render_template('entity/view.html', place_id=place_id, object_id=object_id,
+
+    return render_template('entity/view.html', metadata = metadata, place_id=place_id, object_id=object_id,
                            mysitejson=data, openatlas_class_name=openatlas_class_name, jsonld_url=url)  # , jsonld=output)

@@ -36,3 +36,12 @@ PERIOD_TYPES = 158070, 161611, 127472, 161610, 161603, 142302, 155395
 VALUE_TYPES = 117198, 118155, 118181, 128783, 15678, 21160, 131985
 COUNTRY_TYPES = 184895, 184896
 
+META_RESOLVE_URL = 'https://thanados.net'
+META_PUBLISHER = 'THANADOS'
+META_ORGANISATION = 'Natural History Museum Vienna'
+META_ORG_URL = 'https://nhm-wien.ac.at'
+META_ORG_WD = 'https://www.wikidata.org/wiki/Q688704'
+META_LICENSE = 'https://creativecommons.org/licenses/by/4.0/'
+
+
+
