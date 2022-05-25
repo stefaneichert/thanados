@@ -1,11 +1,17 @@
 {% extends "layout.html" %}
 {% block content %}
 
+    <script type="application/ld+json">
+
+        {{ metadata|tojson }}
+
+    </script>
+
     <script src="/static/vendor/node_modules/chart.js/dist/Chart.min.js"></script>
     <script src="/static/vendor/node_modules/chartjs-plugin-annotation/chartjs-plugin-annotation.min.js"></script>
-    <script type="application/ld+json">
-    {{ metadata|tojson }}
-    </script>
+
+
+
     <div id="containerPermalink">
         <div id="mybreadcrumb"></div>
         <div id="mycontent"></div>
@@ -16,20 +22,21 @@
     </div>
 
     <div class="modal fade" id="HeightModal" tabindex="-1" role="dialog"
-     aria-labelledby="Body Height (calculated)" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header custom-header-bg">
-                <h5 class="modal-title" id="HeightModalLabel">Body Height Estimation</h5>
-                <button id="closeBodyheight" type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal" aria-label="Close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body" id="bodyheight">
+         aria-labelledby="Body Height (calculated)" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header custom-header-bg">
+                    <h5 class="modal-title" id="HeightModalLabel">Body Height Estimation</h5>
+                    <button id="closeBodyheight" type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal"
+                            aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body" id="bodyheight">
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <div id="tooltip" display="none" style="position: absolute; display: none;"></div>
 

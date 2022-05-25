@@ -12,7 +12,14 @@ def get_metadata(id):
             "@vocab": "https://schema.org/",
             "skos": "http://www.w3.org/2004/02/skos/core#",
             "loud": "https://linked.art/ns/v1/linked-art.json",
-            "dct": "http://purl.org/dc/terms/"
+            "dct": "http://purl.org/dc/terms/",
+            "aat": "http://vocab.getty.edu/aat/",
+            "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+            "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+            "lawd": "http://lawd.info/ontology/",
+            "gvp": "http://vocab.getty.edu/ontology#",
+            "tgn": "http://vocab.getty.edu/tgn/",
+            "crm": "http://erlangen-crm.org/current/",
         },
         "@id": app.config["META_RESOLVE_URL"] + '/entity/' + str(id),
         "url": app.config["META_RESOLVE_URL"] + '/entity/' + str(id),
@@ -98,8 +105,10 @@ def get_metadata(id):
 
     resultExtTypes = g.cursor.fetchall()
 
+    keywords = [keyword1]
+
     if resultExtTypes:
-        keywords = [keyword1]
+
         matches = []
         matchentries = []
 
@@ -107,14 +116,14 @@ def get_metadata(id):
             if row.prefterm not in keywords:
                 keywords.append(row.prefterm)
             match = 'skos:' + (row.skos).replace(' match', 'Match')
-            matchEntry = (row.url).replace('getty.edu/page', 'getty.edu')
+            matchEntry = (row.url).replace('http://vocab.getty.edu/page/aat/', 'aat:')
             matchentries.append({match:matchEntry})
             if match not in matches:
                 about['@additionalType'].update({match: []})
 
         for row in resultExtTypes:
             match = 'skos:' + (row.skos).replace(' match', 'Match')
-            matchEntry = (row.url).replace('getty.edu/page', 'getty.edu')
+            matchEntry = (row.url).replace('http://vocab.getty.edu/page/aat/', 'aat:')
             about['@additionalType'][match].append(matchEntry)
 
 
