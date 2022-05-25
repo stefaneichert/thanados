@@ -165,7 +165,6 @@ def get_metadata(id):
     g.cursor.execute("SELECT url FROM thanados.extrefs WHERE parent_id = " \
                      "%(id)s AND name = 'GeoNames' LIMIT 1", {"id": id})
     resultGN = g.cursor.fetchone()
-    print(resultGN)
 
     if resultGN:
         spatial.update({"skos:closeMatch": resultGN.url})
@@ -176,7 +175,8 @@ def get_metadata(id):
                      "WHERE child_id = %(id)s AND type = 'timespan'",
                      {"id": id})
     result = g.cursor.fetchone()
-    if result.min and result.max:
+    print (result)
+    if result and result.min and result.max:
         metadata.update(
             {"temporalCoverage": str(result.min) + '/' + str(result.max)})
 
