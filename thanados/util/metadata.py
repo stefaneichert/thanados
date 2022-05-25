@@ -11,18 +11,31 @@ def get_metadata(id):
         "@context": {
             "@vocab": "https://schema.org/",
             "skos": "http://www.w3.org/2004/02/skos/core#",
-            "loud": "https://linked.art/ns/v1/linked-art.json"
+            "loud": "https://linked.art/ns/v1/linked-art.json",
+            "dct": "http://purl.org/dc/terms/"
         },
-        "@id": app.config["META_RESOLVE_URL"] + '/entity/' + str(id) + '/json',
+        "@id": app.config["META_RESOLVE_URL"] + '/entity/' + str(id),
         "url": app.config["META_RESOLVE_URL"] + '/entity/' + str(id),
-        "@type": "Dataset",
+        "@type": ["WebPage", "Dataset"],
         "license": "https://creativecommons.org/licenses/by/4.0/",
         "distribution": {
             "@type": "DataDownload",
             "contentUrl": app.config["META_RESOLVE_URL"] + '/entity/' + str(
                 id) + '/json',
-            "encodingFormat": "text/javascript",
+            "encodingFormat": ["text/javascript", "text/html"],
             "license": "https://creativecommons.org/licenses/by/4.0/"
+        },
+        "accessMode": ["textual", "visual"],
+        "creator": {
+            "@type": "ResearchProject",
+            "name": app.config["META_PUBLISHER"],
+            "sameAs": app.config["META_RESOLVE_URL"],
+            "parentOrganization": {
+                "@type": "Organization",
+                "name": app.config["META_ORGANISATION"],
+                "sameAs": [app.config["META_ORG_URL"],
+                           app.config["META_ORG_WD"]]
+            }
         },
         "publisher": {
             "@type": "ResearchProject",
@@ -50,6 +63,8 @@ def get_metadata(id):
         modified = created
 
     metadata.update({"Name": result1.name})
+    metadata.update({"dct:title": result1.name})
+    metadata.update({"dct:abstract": result1.desc})
     metadata.update({"Description": result1.desc})
     metadata.update({"dateCreated": created})
     metadata.update({"dateModified": modified})
@@ -63,14 +78,17 @@ def get_metadata(id):
                      "WHERE entity_id = %(id)s", {"id": id})
     result = g.cursor.fetchone()
 
+    keyword1 = result.name
+
     about = {
-        "@id": app.config["META_RESOLVE_URL"] + '/entity/' + str(id),
+        "@id": app.config["META_RESOLVE_URL"] + '/map/' + str(id),
         "@type": "Thing",
         "loud:type": (crm.name).replace(' ', ''),
         "@additionalType": {
             "@type": "DefinedTerm",
             "@id": app.config["META_RESOLVE_URL"] + '/vocabulary/' + str(
-                result.id)
+                result.id),
+            "name": keyword1
         }
 
     }
@@ -81,12 +99,32 @@ def get_metadata(id):
     resultExtTypes = g.cursor.fetchall()
 
     if resultExtTypes:
+        keywords = [keyword1]
+        matches = []
+        matchentries = []
+
+        for row in resultExtTypes:
+            if row.prefterm not in keywords:
+                keywords.append(row.prefterm)
+            match = 'skos:' + (row.skos).replace(' match', 'Match')
+            matchEntry = (row.url).replace('getty.edu/page', 'getty.edu')
+            matchentries.append({match:matchEntry})
+            if match not in matches:
+                about['@additionalType'].update({match: []})
+
         for row in resultExtTypes:
             match = 'skos:' + (row.skos).replace(' match', 'Match')
-            matchEntry = (row.url).replace('getty.edu/page', 'getty.edu/')
-            about['@additionalType'].update({match: matchEntry})
+            matchEntry = (row.url).replace('getty.edu/page', 'getty.edu')
+            about['@additionalType'][match].append(matchEntry)
+
+
+
+
+
+        #about['@additionalType'].update([matches])
 
     metadata.update({"about": about})
+    metadata.update({"keywords": keywords})
 
     g.cursor.execute("SELECT lon, lat FROM thanados.searchdata " \
                      "WHERE child_id = %(id)s LIMIT 1",
