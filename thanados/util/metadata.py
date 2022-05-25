@@ -11,6 +11,7 @@ def get_metadata(id):
         "@context": {
             "@vocab": "https://schema.org/",
             "skos": "http://www.w3.org/2004/02/skos/core#",
+            "tha": "https://thanados.net/entity/",
             "loud": "https://linked.art/ns/v1/linked-art.json",
             "dct": "http://purl.org/dc/terms/",
             "aat": "http://vocab.getty.edu/aat/",
@@ -21,7 +22,7 @@ def get_metadata(id):
             "tgn": "http://vocab.getty.edu/tgn/",
             "crm": "http://erlangen-crm.org/current/",
         },
-        "@id": app.config["META_RESOLVE_URL"] + '/entity/' + str(id),
+        "@id": 'tha:' + str(id),
         "url": app.config["META_RESOLVE_URL"] + '/entity/' + str(id),
         "@type": ["WebPage", "Dataset"],
         "license": "https://creativecommons.org/licenses/by/4.0/",
@@ -88,7 +89,7 @@ def get_metadata(id):
     keyword1 = result.name
 
     about = {
-        "@id": app.config["META_RESOLVE_URL"] + '/map/' + str(id),
+        "@id": app.config["META_RESOLVE_URL"] + '/entity/' + str(id) + '#',
         "@type": "Thing",
         "loud:type": (crm.name).replace(' ', ''),
         "@additionalType": {
