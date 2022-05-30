@@ -30,7 +30,7 @@ def get_metadata(id):
             "@type": "DataDownload",
             "contentUrl": app.config["META_RESOLVE_URL"] + '/entity/' + str(
                 id) + '/json',
-            "encodingFormat": ["text/javascript", "text/html"],
+            "encodingFormat": ["text/plain"],
             "license": "https://creativecommons.org/licenses/by/4.0/"
         },
         "isAccessibleForFree": "true",
@@ -61,8 +61,8 @@ def get_metadata(id):
         modified = created
 
     metadata.update({"Name": result1.name})
-    metadata.update({"dct:title": result1.name})
-    metadata.update({"dct:abstract": result1.desc})
+    #metadata.update({"dct:title": result1.name})
+    #metadata.update({"dct:abstract": result1.desc})
     metadata.update({"Description": result1.desc})
     metadata.update({"dateCreated": created})
     metadata.update({"dateModified": modified})
