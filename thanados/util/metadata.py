@@ -61,6 +61,8 @@ def get_metadata(id):
         modified = created
 
     metadata.update({"Name": result1.name})
+    metadata.update({"dct:title": result1.name})
+    metadata.update({"dct:abstract": result1.desc})
     metadata.update({"Description": result1.desc})
     metadata.update({"dateCreated": created})
     metadata.update({"dateModified": modified})
