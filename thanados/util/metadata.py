@@ -45,6 +45,17 @@ def get_metadata(id):
                 "sameAs": [app.config["META_ORG_URL"],
                            app.config["META_ORG_WD"]]
             }
+        },
+        "publisher": {
+            "@type": "ResearchProject",
+            "name": app.config["META_PUBLISHER"],
+            "sameAs": app.config["META_RESOLVE_URL"],
+            "parentOrganization": {
+                "@type": "Organization",
+                "name": app.config["META_ORGANISATION"],
+                "sameAs": [app.config["META_ORG_URL"],
+                           app.config["META_ORG_WD"]]
+            }
         }
     }
 
@@ -61,6 +72,8 @@ def get_metadata(id):
         modified = created
 
     metadata.update({"Name": result1.name})
+    metadata.update({"dct:title": result1.name})
+    metadata.update({"abstract": result1.desc})
     metadata.update({"Description": result1.desc})
     metadata.update({"dateCreated": created})
     metadata.update({"dateModified": modified})
