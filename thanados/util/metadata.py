@@ -33,6 +33,7 @@ def get_metadata(id):
             "encodingFormat": ["text/javascript", "text/html"],
             "license": "https://creativecommons.org/licenses/by/4.0/"
         },
+        "isAccessibleForFree": "true",
         "accessMode": ["textual", "visual"],
         "creator": {
             "@type": "ResearchProject",
@@ -104,14 +105,14 @@ def get_metadata(id):
             if row.prefterm not in keywords:
                 keywords.append(row.prefterm)
             match = 'skos:' + (row.skos).replace(' match', 'Match')
-            matchEntry = (row.url).replace('http://vocab.getty.edu/page/aat/', 'aat:')
+            matchEntry = (row.url).replace('http://vocab.getty.edu/page/aat/', 'http://vocab.getty.edu/aat/')
             matchentries.append({match:matchEntry})
             if match not in matches:
                 about['@additionalType'].update({match: []})
 
         for row in resultExtTypes:
             match = 'skos:' + (row.skos).replace(' match', 'Match')
-            matchEntry = (row.url).replace('http://vocab.getty.edu/page/aat/', 'aat:')
+            matchEntry = (row.url).replace('http://vocab.getty.edu/page/aat/', 'http://vocab.getty.edu/aat/')
             about['@additionalType'][match].append(matchEntry)
 
 
