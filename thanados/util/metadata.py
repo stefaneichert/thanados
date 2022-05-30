@@ -45,17 +45,6 @@ def get_metadata(id):
                 "sameAs": [app.config["META_ORG_URL"],
                            app.config["META_ORG_WD"]]
             }
-        },
-        "publisher": {
-            "@type": "ResearchProject",
-            "name": app.config["META_PUBLISHER"],
-            "sameAs": app.config["META_RESOLVE_URL"],
-            "parentOrganization": {
-                "@type": "Organization",
-                "name": app.config["META_ORGANISATION"],
-                "sameAs": [app.config["META_ORG_URL"],
-                           app.config["META_ORG_WD"]]
-            }
         }
     }
 
