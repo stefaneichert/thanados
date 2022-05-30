@@ -24,7 +24,7 @@ def get_metadata(id):
         },
         "@id": 'tha:' + str(id),
         "url": app.config["META_RESOLVE_URL"] + '/entity/' + str(id),
-        "@type": ["WebPage", "Dataset"],
+        "@type": "Dataset",
         "license": "https://creativecommons.org/licenses/by/4.0/",
         "distribution": {
             "@type": "DataDownload",
@@ -35,17 +35,6 @@ def get_metadata(id):
         },
         "accessMode": ["textual", "visual"],
         "creator": {
-            "@type": "ResearchProject",
-            "name": app.config["META_PUBLISHER"],
-            "sameAs": app.config["META_RESOLVE_URL"],
-            "parentOrganization": {
-                "@type": "Organization",
-                "name": app.config["META_ORGANISATION"],
-                "sameAs": [app.config["META_ORG_URL"],
-                           app.config["META_ORG_WD"]]
-            }
-        },
-        "publisher": {
             "@type": "ResearchProject",
             "name": app.config["META_PUBLISHER"],
             "sameAs": app.config["META_RESOLVE_URL"],
@@ -71,8 +60,6 @@ def get_metadata(id):
         modified = created
 
     metadata.update({"Name": result1.name})
-    metadata.update({"dct:title": result1.name})
-    metadata.update({"dct:abstract": result1.desc})
     metadata.update({"Description": result1.desc})
     metadata.update({"dateCreated": created})
     metadata.update({"dateModified": modified})
@@ -179,7 +166,7 @@ def get_metadata(id):
     if resultGN:
         spatial.update({"skos:closeMatch": resultGN.url})
 
-    metadata.update({"contentLocation": spatial})
+    metadata.update({"spatialCoverage": spatial})
 
     g.cursor.execute("SELECT min::INT, max::INT FROM thanados.searchdata " \
                      "WHERE child_id = %(id)s AND type = 'timespan'",
