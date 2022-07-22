@@ -30,7 +30,7 @@ def get_metadata(id):
             "@type": "DataDownload",
             "contentUrl": app.config["META_RESOLVE_URL"] + '/entity/' + str(
                 id) + '/json',
-            "encodingFormat": ["text/plain"],
+            "encodingFormat": ["text/javascript", "text/html"],
             "license": "https://creativecommons.org/licenses/by/4.0/"
         },
         "isAccessibleForFree": "true",
