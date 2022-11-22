@@ -13,6 +13,13 @@ from thanados.models.entity import Data
 def sites(domain_=None, date_=None):
     site_list = Data.get_list()
 
+    try:
+        with open(app.root_path + "/../instance/site_list.txt") as file:
+            g.sites_online = json.loads(file.read())
+            online_sites = tuple(g.sites_online)
+    except Exception as e:  # pragma: no cover
+        pass
+
     f = open(app.root_path + '/../instance/domains.json')
     data = json.load(f)
 
@@ -141,5 +148,5 @@ def sites(domain_=None, date_=None):
     elif domain_ or domain_ and date_:
         abort(404)
 
-    return render_template('/sites/sites.html', sitelist=site_list[0].sitelist,
+    return render_template('/sites/sites.html', online_sites = online_sites, sitelist=site_list[0].sitelist,
                            domain=0)
