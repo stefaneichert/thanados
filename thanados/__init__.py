@@ -90,7 +90,3 @@ def global_vars():
         geonames_user=geonames_user,
         countrytypes=countrytypes,
         leafletVersion=leafletVersion)
-
-
-if __name__ == "__main__":  # pragma: no cover
-    app.run()
