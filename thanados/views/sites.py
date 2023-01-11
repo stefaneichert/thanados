@@ -1,6 +1,6 @@
 from datetime import datetime, date
 
-from flask import render_template, g, abort
+from flask import render_template, g, abort, jsonify
 import json
 
 from thanados import app
@@ -16,7 +16,8 @@ def sites(domain_=None, date_=None):
     try:
         with open(app.root_path + "/../instance/site_list.txt") as file:
             g.sites_online = json.loads(file.read())
-            online_sites = tuple(g.sites_online)
+            online_sites = str(g.sites_online)
+            print(online_sites)
     except Exception as e:  # pragma: no cover
         pass
 
@@ -143,7 +144,7 @@ def sites(domain_=None, date_=None):
             if arr['name'] == str(domain_):
                 id_ = arr['id']
                 print(id_)
-        return render_template('/sites/sites.html',
+        return render_template('/sites/sites.html', online_sites = online_sites,
                                sitelist=site_list[0].sitelist, domain=id_)
     elif domain_ or domain_ and date_:
         abort(404)
