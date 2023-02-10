@@ -29,7 +29,7 @@ $(document).ready(function () {
 //define basemaps
     map = L.map('map', {
         renderer: L.canvas(),
-        fullscreenControl: true,
+        fullscreenControl: false,
         zoom: 18,
         maxZoom: 18,
         zoomControl: false,
