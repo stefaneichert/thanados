@@ -806,7 +806,7 @@ INSERT INTO thanados.dimensiontypes
 DROP TABLE IF EXISTS thanados.azimuth;
 
 --hack for setting burial orientation to grave orientation if grave does not have any. Comment/Uncomment depending on your preferences
-/*INSERT INTO thanados.dimensiontypes (id, parent_id, entity_id, name, description, value, path)
+INSERT INTO thanados.dimensiontypes (id, parent_id, entity_id, name, description, value, path)
 SELECT id, 15678, domain, name, description, orientation::Text, path FROM
 (SELECT
 26192 AS id,
@@ -835,7 +835,7 @@ WHERE DOMAIN || ':' || range NOT IN
                     count(parent_id) as count
              FROM thanados.burials
              GROUP BY parent_id) c
-       WHERE c.count > 1);*/
+       WHERE c.count > 1);
        
        
 --hack for getting graves azimuth from polygon orientation. Comment/Uncomment depending on your preferences
