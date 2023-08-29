@@ -462,6 +462,7 @@ CREATE TABLE thanados.tmpsites AS (
                 start_of_end_point_str = 'https://commons.wikimedia.org' \
                                          '/w/api.php?action=query&titles=File:'
                 end_of_end_point_str = '&prop=imageinfo&iiprop=extmetadata&format=json'
+                print(start_of_end_point_str + image_name + end_of_end_point_str)
                 result = requests.get(
                     start_of_end_point_str + image_name + end_of_end_point_str)
                 result = result.json()
@@ -470,7 +471,10 @@ CREATE TABLE thanados.tmpsites AS (
 
                 return image_info
 
-            metadata = extract_image_license(newfile)
+            try:
+                metadata = extract_image_license(newfile)
+            except Exception:
+                return None
 
             image = {
                 'url': 'https://upload.wikimedia.org/wikipedia/commons/' + md5[
