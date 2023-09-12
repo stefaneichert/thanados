@@ -444,53 +444,55 @@ CREATE TABLE thanados.tmpsites AS (
     def getWikidataimage(id):
         import urllib, json, hashlib, requests
 
-        with urllib.request.urlopen(
-                "https://www.wikidata.org/w/api.php?action=wbgetclaims&format=json&property=P18&entity=" + id) as url:
-            wdata = json.loads(url.read().decode())
+        try:
+            with urllib.request.urlopen(
+                    "https://www.wikidata.org/w/api.php?action=wbgetclaims&format=json&property=P18&entity=" + id) as url:
+                wdata = json.loads(url.read().decode())
+                
+            if wdata['claims']:
+                wfilename = (
+                wdata['claims']['P18'][0]['mainsnak']['datavalue']['value'])
+                newfile = (wfilename.replace(' ', '_'))
+                # print(newfile)
+                md5 = (hashlib.md5(newfile.encode('utf-8')).hexdigest())
+                # print(md5)
+                print(newfile)
 
-        if wdata['claims']:
-            wfilename = (
-            wdata['claims']['P18'][0]['mainsnak']['datavalue']['value'])
-            newfile = (wfilename.replace(' ', '_'))
-            # print(newfile)
-            md5 = (hashlib.md5(newfile.encode('utf-8')).hexdigest())
-            # print(md5)
-            print(newfile)
+                def extract_image_license(image_name):
 
-            def extract_image_license(image_name):
+                    start_of_end_point_str = 'https://commons.wikimedia.org' \
+                                             '/w/api.php?action=query&titles=File:'
+                    end_of_end_point_str = '&prop=imageinfo&iiprop=extmetadata&format=json'
+                    print(start_of_end_point_str + image_name + end_of_end_point_str)
+                    result = requests.get(
+                        start_of_end_point_str + image_name + end_of_end_point_str)
+                    result = result.json()
+                    page_id = next(iter(result['query']['pages']))
+                    image_info = result['query']['pages'][page_id]['imageinfo']
 
-                start_of_end_point_str = 'https://commons.wikimedia.org' \
-                                         '/w/api.php?action=query&titles=File:'
-                end_of_end_point_str = '&prop=imageinfo&iiprop=extmetadata&format=json'
-                print(start_of_end_point_str + image_name + end_of_end_point_str)
-                result = requests.get(
-                    start_of_end_point_str + image_name + end_of_end_point_str)
-                result = result.json()
-                page_id = next(iter(result['query']['pages']))
-                image_info = result['query']['pages'][page_id]['imageinfo']
+                    return image_info
 
-                return image_info
+                try:
+                    metadata = extract_image_license(newfile)
+                except Exception:
+                    return None
 
-            try:
-                metadata = extract_image_license(newfile)
-            except Exception:
+                image = {
+                    'url': 'https://upload.wikimedia.org/wikipedia/commons/' + md5[
+                                                                               0:1] + '/' + md5[
+                                                                                            0:2] + '/' + newfile,
+                    'urlthumb': 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + md5[
+                                                                                          0:1] + '/' + md5[
+                                                                                                       0:2] + '/' + newfile + '/200px-' + newfile,
+                    'metadata': metadata[0]['extmetadata'],
+                    'origin': 'https://commons.wikimedia.org/wiki/File:' + newfile
+                }
+
+                return image
+            else:
                 return None
-
-            image = {
-                'url': 'https://upload.wikimedia.org/wikipedia/commons/' + md5[
-                                                                           0:1] + '/' + md5[
-                                                                                        0:2] + '/' + newfile,
-                'urlthumb': 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + md5[
-                                                                                      0:1] + '/' + md5[
-                                                                                                   0:2] + '/' + newfile + '/200px-' + newfile,
-                'metadata': metadata[0]['extmetadata'],
-                'origin': 'https://commons.wikimedia.org/wiki/File:' + newfile
-            }
-
-            return image
-        else:
+        except Exception:
             return None
-
     @staticmethod
     def getWikidata(id):
         import urllib, json
