@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div id="mycontent">
+        <h2 class="my-heading container">About</h2>
+        <div class="container with-margin">
+            <p class="lead text-muted" style="margin-top: 0.3em; margin-bottom: 2em"><b>Mediaeval Field Cemeteries in
+               Central Bohemia (MFC-CB)</b> is dedicated to collecting, harmonizing, and publishing data on inhumation
+               cemeteries in Central Bohemia from the 9th to the 11th century through the THANADOS interface.
+            </p>
+            <p class="lead text-muted" style="margin-top: 0.3em; margin-bottom: 2em">Before the mid-9th century,
+               the population of Central Bohemia practised a specific, likely cremation burial rite, which left
+               no archaeological traces. The emergence of field cemeteries signifies a profound social transformation
+               within the population of Central Bohemia during the formation of the early Premyslid state. The decline
+               and gradual abandonment of these burial sites are intimately linked to another significant social process
+               — the Christianization of Bohemian societies during the 10th century, primarily in the first half of the
+               11th century.
+            </p>
+            <h3 id="project">The project</h3>
+            <p class="lead text-muted" style="margin-top: 0.3em; margin-bottom: 2em">MFC-CB is a thematically focused
+               project that provides accessible data through the THANADOS interface. It specifically concentrates on
+               one of the most prominent subjects in early medieval Archaeology in Central Europe, which is the study
+               of flat (inhumation) cemeteries that appeared in various regions from late antiquity to the beginning of
+               the high medieval transformation. All information regarding the presented sites is derived from original
+               publications or proprietary datasets, and it is presented as a digital catalogue featuring interactive maps
+               and visualizations of the cemeteries. The project primarily focuses on the region of Central Bohemia. If
+               you are interested in collaborating on data production or publishing your own dataset pertaining to other
+               regions of the Czech Republic, please contact the project team (contact details provided below).
+            </p>
+            <p class="lead text-muted" style="margin-top: 0.3em; margin-bottom: 2em">The MFC-CB initiative has emerged
+               from the long-term research activities conducted at the Department of Historical Archaeology and the Department
+               of Informational Sources and Landscape Archaeology of the Institute of Archaeology of the CAS in Prague. The
+               acquisition of data is supported by the <a href="https://strategie.avcr.cz/en" target="_blank">funding program
+               Strategy AV21</a> of the Czech Academy of Sciences.
+            </p>         
+            <h3>License and data re-use</h3>
+            <p class="lead text-muted" style="margin-top: 0.3em; margin-bottom: 2em">The data is published in accordance
+               with an open data access policy and with the consent of copyright holders. Data usage is subject (unless
+               explicitly stated otherwise) to a <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">
+               CC-BY 4.0 (Creative Commons Attribution 4.0 International)</a>. The data can therefore only be used with
+               citation of the author/provider. This provision does not restrict the use of MFC-CB by virtue of other
+               contractual arrangements or by virtue of a legal title.
+            </p>
+            <p class="lead text-muted" style="margin-top: 0.3em; margin-bottom: 2em">As a component of the Archaeological
+               Information System of the Czech Republic (AIS CR) infrastructure, we predominantly provide data in an open
+               mode (Open Access). However, we do not have the capability to monitor the usage of this data or track the
+               resulting outputs. Nevertheless, we have a legal obligation to report this information, so we kindly request
+               your cooperation as a data user to report any scientific outputs generated using the data or other components
+               of the AIS CR.
+            </p>
+            <p class="lead text-muted" style="margin-top: 0.3em; margin-bottom: 2em"> Each user is therefore obliged to:
+            </p>
+            <p class="lead text-muted" style="margin-top: 0.3em; margin-bottom: 2em">- always indicate in the usual
+                manner in specific outputs that the AIS CR infrastructure has been used to produce them, referring to
+                the data or tool used;
+                <br/>- when entering output information into <a href="https://www.isvavai.cz/riv" target="_blank">Results
+                    Information Index - RIV</a> (e.g. at Czech Academy of Sciences sites via the ASEP database), select
+                the proper link of the result to the AIS CR infrastructure in the field of LRI (Large Research
+                Infrastructure) from the offered project code list of large research infrastructures;
+                <br/>- kindly let us know via <a href="https://www.aiscr.cz/vystupy" target="_blank">this questionnaire
+                    (https://www.aiscr.cz/vystupy)</a>, that the output has been published.
+                <br/>
+            </p>
+            <h3 id="Contact">Contact</h3>
+            <p class="lead text-muted" style="margin-top: 0.3em; margin-bottom: 2em"><b>Host: </b><a
+                    href="http://www.arup.cas.cz/" target="_blank">Institute of Archaeology of the Czech Academy of
+                Sciences, Prague</a>.
+                <br/><b>Affiliated with: </b><a href="http://www.aiscr.cz/en/" target="_blank">Archaeological
+                    Information System of the Czech Republic</a>.
+                <br/><b>Address:</b> Institute of Archaeology of the CAS, Prague, Letenská 123/4, 118 01 Prague
+                1
+                <br/><b>Contact Persons:</b> Jan Hasil: <a href="mailto:hasil@arup.cas.cz">hasil@arup.cas.cz</a>
+            </p>
+        </div>
+        <footer id="myfooter" style="background-color: #f8f9fa">
+            <div class="container"
+                 style="flex-wrap: wrap; display: flex; align-items: center; justify-content: space-around">
+                <a href="http://www.arup.cas.cz/" target="_blank">
+                    <img class="footerimg" src="/static/images/logos/ARUP.png"></a>
+                <a href="https://strategie.avcr.cz/en" target="_blank">
+                    <img class="footerimg" src="/static/images/logos/AV21.png"></a>
+            </div>
+        </footer>
+    </div>
+    <script src="/static/js/about.js"></script>
+{% endblock %}
