@@ -19,7 +19,7 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
     place_id = Data.get_parent_place_id(object_id)
     data = Data.get_data(place_id)[0].data
     entity = {}
-    api_url = app.config["API_URL"]
+    api_url = app.config["API_URL"] + 'entity/'
     url = api_url + str(object_id)
     metadata = get_metadata(object_id)
     #return json.dumps(metadata)

@@ -44,7 +44,7 @@ CREATE TABLE thanados.tmpsites AS (
                     s.path,
                     s.lat,
                     s.lon,
-                    COUNT(mt.path) FILTER (WHERE mt.path LIKE '%> Grave%')::TEXT AS graves
+                    COUNT(mt.path) FILTER (WHERE mt.path LIKE 'Feature%')::TEXT AS graves
                                              
 
                      FROM thanados.tmpsites s LEFT JOIN thanados.graves g ON s.id = g.parent_id LEFT JOIN thanados.maintype mt ON g.child_id = mt.entity_id 
@@ -146,6 +146,17 @@ CREATE TABLE thanados.tmpsites AS (
 
     @staticmethod
     def get_file_path(id_: int):
+
+        if app.config['USE_IIIF']:
+            g.cursor.execute(f'SELECT id::TEXT || extension AS filename FROM thanados.filelist WHERE id = {id_}')
+            file = g.cursor.fetchone()
+
+            if file:
+                print(file.filename)
+                return file.filename
+            else:
+                return ""
+
         if app.config['USE_JPGS']:
             path = glob.glob(
                 os.path.join((app.config['UPLOAD_JPG_FOLDER_PATH']),
@@ -153,6 +164,7 @@ CREATE TABLE thanados.tmpsites AS (
         else:
             path = glob.glob(
                 os.path.join(app.config['UPLOAD_FOLDER_PATH'], str(id_) + '.*'))
+
         if path:
             filename, file_extension = os.path.splitext(path[0])
             return str(id_) + file_extension

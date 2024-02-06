@@ -24,8 +24,9 @@ OPENATLAS_URL = 'https://thanados.openatlas.eu/update/'
 
 USE_API = False
 USE_JPGS = False
+USE_IIIF = False
 
-API_URL = 'https://thanados.openatlas.eu/api/0.2/entity/'
+API_URL = 'https://thanados.openatlas.eu/api/'
 API_FILE_DISPLAY = 'https://thanados.openatlas.eu/api/display/'
 
 GEONAMES_USERNAME = 'yourgeonamesusername'
@@ -43,5 +44,7 @@ META_ORG_URL = 'https://nhm-wien.ac.at'
 META_ORG_WD = 'https://www.wikidata.org/wiki/Q688704'
 META_LICENSE = 'https://creativecommons.org/licenses/by/4.0/'
 
-
-
+IIIF_BASE = 'https://iiif.bitem.at/iiif/'
+IIIF_VERSION = '3'
+IIIF_URL = IIIF_BASE + IIIF_VERSION + '/'
+FILETYPE_API = '/licensed_file_overview/'

@@ -307,8 +307,8 @@ CREATE TABLE thanados.sites AS (
             )
              AS s
              JOIN thanados.types_all t ON t.id = s.range_id
-    WHERE t.name_path LIKE 'Place > Burial Site%' -- replace with the top parent of the place category of which you want to show
-    --WHERE t.name_path LIKE 'Place > Burial Site%' AND s.id IN (SELECT domain_id FROM model.link WHERE range_id = 198159 AND property_code = 'P2') -- replace with the top parent of the place category of which you want to show
+    --WHERE t.name_path LIKE 'Place > Burial Site%' -- replace with the top parent of the place category of which you want to show
+    WHERE t.name_path LIKE 'Place > %' AND s.id IN (SELECT domain_id FROM model.link WHERE range_id = 198159 AND property_code = 'P2') -- replace with the top parent of the place category of which you want to show
 );
 
 -- set polygons as main geometry where available
@@ -994,6 +994,41 @@ CREATE TABLE thanados.files AS
     filesfound = 0
     filesmissing = 0
 
+    if app.config['USE_IIIF']:
+
+        filetypeJson = app.config['API_URL'] + app.config['FILETYPE_API']
+        import urllib, json
+        print("creating filelist via API")
+        sql1 = """
+                DROP TABLE IF EXISTS thanados.filelist;
+                CREATE TABLE thanados.filelist (id INT, extension TEXT, filename TEXT, mimetype TEXT);
+        """
+        g.cursor.execute(sql1)
+
+        with urllib.request.urlopen(
+                filetypeJson) as url:
+            filedata = json.loads(url.read().decode())
+            for file_id, data in filedata.items():
+                extension = data['extension']
+                if extension:
+                    license = data['license']
+                    print("ID:", file_id)
+                    print("Extension:", extension)
+                    print("License:", license)
+                    if extension in ('.png', '.bmp', '.jpg', '.jpeg'):
+                        mimetype = 'img'
+                    if extension == '.glb':
+                        mimetype = '3d'
+                    if extension == '.webp':
+                        mimetype = 'poster'
+                    if extension == '.pdf':
+                        mimetype = 'pdf'
+                    sql = """
+                            INSERT INTO thanados.filelist (id, extension, filename, mimetype) VALUES (%(file_id)s, %(extension)s, %(filename)s, %(mimetype)s)
+                    """
+                    g.cursor.execute(sql, {'file_id': file_id, 'extension': extension,
+                                           'filename': str(file_id) + extension, 'mimetype': mimetype})
+
     sql_3 = 'SELECT id FROM thanados.files'
     g.cursor.execute(sql_3)
     result = g.cursor.fetchall()
@@ -1016,6 +1051,7 @@ CREATE TABLE thanados.files AS
 
     print(missingids)
     g.cursor.execute('DELETE FROM thanados.files WHERE filename = NULL')
+    g.cursor.execute("DELETE FROM thanados.files WHERE filename = ''")
 
     print("")
     filesdone = datetime.now()
@@ -1103,12 +1139,14 @@ DROP TABLE IF EXISTS thanados.refsys;
     from thanados.models.entity import RCData
 
     sql_rc = """
+            CREATE TABLE thanados.radiocarbon_tmp AS (SELECT NULL::INTEGER AS entity_id, NULL AS sample);
+            
             SELECT 
                     r.entity_id::TEXT,
                     split_part(r.value::numeric(10,2)::TEXT,'.',1) AS "date",
                     split_part(r.value::numeric(10,2)::TEXT,'.',2) AS "range",
                     split_part(e.description,'##RCD ',2) AS "sample"
-            FROM thanados.radiocarbon r JOIN thanados.entities e ON e.child_id = r.entity_id 
+            FROM thanados.radiocarbon r JOIN thanados.entities e ON e.child_id = r.entity_id; 
         """
     try:
         g.cursor.execute(sql_rc)

@@ -2155,10 +2155,10 @@ mycitation1 = ' From: <a href="/about" target="_blank">THANADOS:</a> <a' +
     'Licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a><br> After: ';
 
 //retrieve type data for popover
-function getTypeData(id, div, hierarchy, target='_self') {
+function getTypeData(id, div, hierarchy, target = '_self') {
     $.getJSON("/vocabulary/" + id + "/json", function (data) {
-        returnHtml = '<a title="' + data.path + '" href="/vocabulary/' + id + '" target="'+target+'">' + data.name + '</a>';
-        if (loginTrue) returnHtml = returnHtml + '<a href="' + openAtlasUrl + id +'"\n' +
+        returnHtml = '<a title="' + data.path + '" href="/vocabulary/' + id + '" target="' + target + '">' + data.name + '</a>';
+        if (loginTrue) returnHtml = returnHtml + '<a href="' + openAtlasUrl + id + '"\n' +
             '                                       target="_blank"\n' +
             '                                       title="Backend"\n' +
             '                                       class="float-end">\n' +
@@ -2166,9 +2166,9 @@ function getTypeData(id, div, hierarchy, target='_self') {
         if (data.files && !data.files[0].file_name.includes('glb')) returnHtml = returnHtml + '<img class="logo-image mt-2 mb-2" src="' + data.files[0].file_name + '">';
         if (data.description) returnHtml = returnHtml + '<p class="mt-2 text-muted font-italic" >' + data.description + '</p>';
         if (data.parent) returnHtml = returnHtml + '<p class="mt-2"> Subcategory of:' +
-            ' <a href="/vocabulary/' + data.parent + '" target="'+target+'">' + data.parent_name + '</a></p>';
+            ' <a href="/vocabulary/' + data.parent + '" target="' + target + '">' + data.parent_name + '</a></p>';
         if (data.topparent.name) returnHtml = returnHtml + '<span class="mt-2"> Hierarchy:' +
-            ' <a href="/vocabulary/' + data.topparent.id + '" target="'+target+'">' + data.topparent.name + '</a></span>';
+            ' <a href="/vocabulary/' + data.topparent.id + '" target="' + target + '">' + data.topparent.name + '</a></span>';
         if (data.topparent.description) returnHtml = returnHtml + '<br><span><i' +
             ' class="text-muted">' + data.topparent.description + '</i></span>';
         if (data.gazetteers) {
@@ -2176,9 +2176,9 @@ function getTypeData(id, div, hierarchy, target='_self') {
             $.each(data.gazetteers, function (i, gaz) {
                 if (typeof gaz.about === "undefined") gaz.about = gaz.domain;
                 if (typeof gaz.favicon !== "undefined") {
-                    gazetteer = gazetteer + '<a href="' + gaz.url + '" title="'+ gaz.SKOS + ' in: '  + gaz.about + '" target="_blank"><img class="me-2" height="20px"src="' + gaz.favicon + '">' + gaz.domain + ': ' + gaz.identifier + '</a><br>'
+                    gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.SKOS + ' in: ' + gaz.about + '" target="_blank"><img class="me-2" height="20px"src="' + gaz.favicon + '">' + gaz.domain + ': ' + gaz.identifier + '</a><br>'
                 } else {
-                    gazetteer = gazetteer + '<a href="' + gaz.url + '" title="'+ gaz.SKOS + ' in: ' + gaz.about + '" target="_blank">' + gaz.domain + ': ' + gaz.identifier + '</a><br>'
+                    gazetteer = gazetteer + '<a href="' + gaz.url + '" title="' + gaz.SKOS + ' in: ' + gaz.about + '" target="_blank">' + gaz.domain + ': ' + gaz.identifier + '</a><br>'
                 }
             })
             returnHtml = returnHtml + gazetteer
@@ -2216,7 +2216,7 @@ function getCaseData(id, container) {
 
             if (title.includes('http')) {
                 projLink = 'http' + title.slice(title.lastIndexOf('http') + 4);
-                projLink = '<a class="float-end" title="Project website" target="_blank" href="'+ projLink+ '"><i class="logo-link fas fa-external-link-alt"></i></a>'
+                projLink = '<a class="float-end" title="Project website" target="_blank" href="' + projLink + '"><i class="logo-link fas fa-external-link-alt"></i></a>'
 
             }
             if (data.files) {
@@ -2224,7 +2224,7 @@ function getCaseData(id, container) {
             }
 
 
-            var outHtml = '<li style="display: flex"><a class="dropdown-item" data-bs-offset="85,8" data-bs-append-to-body="true" data-bs-toggle="popover" data-bs-trigger="hover focus" title="' + data.name + '" data-bs-content="' + title + '" href="#" onclick="removeHoverMarker, filterTable(' + data.id + ')">' + data.name + ' (' + sitecount + ')</a>'+ projLink + '</li>'
+            var outHtml = '<li style="display: flex"><a class="dropdown-item" data-bs-offset="85,8" data-bs-append-to-body="true" data-bs-toggle="popover" data-bs-trigger="hover focus" title="' + data.name + '" data-bs-content="' + title + '" href="#" onclick="removeHoverMarker, filterTable(' + data.id + ')">' + data.name + ' (' + sitecount + ')</a>' + projLink + '</li>'
             $(container).append(outHtml)
             var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
             var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
@@ -2237,14 +2237,14 @@ function getCaseData(id, container) {
 
 function logHTML(value, div) {
 
-    div.popover({html: true, content: value, container: div.next(), offset: [80,8]});
+    div.popover({html: true, content: value, container: div.next(), offset: [80, 8]});
     div.popover('show');
     var btn = '<div> <button class="closePopover btn btn-xs mb-2 mt-2 btn-secondary float-end" onclick="$(this).popover(\'dispose\')">close</button></div>'
     $(div).next().find('.popover-body').append(btn);
 }
 
 function setHierarchyPopup(value, div) {
-    div.popover({html: true, content: value, container: div.parent().next(), placement: 'right', offset: [80,8]});
+    div.popover({html: true, content: value, container: div.parent().next(), placement: 'right', offset: [80, 8]});
     div.popover('show');
     var btn = '<div> <button class="closePopover btn btn-xs mb-2 mt-2 btn-secondary float-end" onclick="$(this).popover(\'dispose\')">close</button></div>'
     $(div).parent().next().find('.popover-body').append(btn);
@@ -2671,19 +2671,44 @@ function set3D(file) {
 
 function getImageHtml(files) {
     var filestring = JSON.stringify(files).replace(/'/g, '').replace(/"/g, '\'');
-    files.file_name = loc_image + files.file_name;
+    const imgExtensions = ['.bmp', '.png', '.jpg', '.jpeg'];
+    const docExtensions = ['.pdf'];
+    const vectorExtensions = ['.svg'];
+    const threeDeeExtensions = ['.glb'];
+
+    const hasImgExtension = imgExtensions.some(extension => files.file_name.includes(extension));
+    const hasDocExtension = docExtensions.some(extension => files.file_name.includes(extension));
+    const hasVectorExtension = vectorExtensions.some(extension => files.file_name.includes(extension));
+    const hasThreeDeeExtension = threeDeeExtensions.some(extension => files.file_name.includes(extension));
+
     var myImgSource = '';
     if (typeof (files.source) != 'undefined') myImgSource = files.source;
     if (typeof (files.source) == 'undefined') myImgSource = "unknown source";
     if ((typeof (files.source) != 'undefined') && (typeof (files.reference) != 'undefined')) myImgSource = files.source + ' ' + files.reference;
-    var imageHtml
-    if (files.file_name.includes('.glb')) {
-        //console.log(files.file_name);
+
+    var imageHtml = '<h3>This file cannot be displayed: ' + files.file_name + '</h3><img src="/static/images/icons/loading.gif">'
+
+    if (hasImgExtension) {
+        files.file_name = loc_image + files.file_name + image_suffix;
+        imageHtml = '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" alt="' + myImgSource + '"></a>'
+        return imageHtml
+    }
+
+
+    if (hasThreeDeeExtension) {
+        files.file_name = web_folder + files.file_name
         imageHtml = '<model-viewer class="modalimg" style="min-height: 400px;" src="' + files.file_name + '" alt="3d" auto-rotate camera-controls>' +
             '<div class="annotation" title="enlarge" data-file="' + filestring + '" onclick="current3dFile = $(this).data(\'file\'); set3D(\'' + files.file_name + '\')"><i class="fas fa-expand" style="margin-right: 3em""></i></div></model-viewer>'
-    } else {
-        imageHtml = '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" alt="' + myImgSource + '"></a>'
+        return imageHtml
     }
+
+    if (hasDocExtension) {
+        files.file_nameDisplay = loc_image + files.file_name + image_suffix;
+        files.file_name = web_folder + files.file_name
+        imageHtml = '<a href="' + files.file_name + '" title="' + myImgSource + '"><span class="pdf-label">PDF</span><img title="' + myImgSource + '" src="' + files.file_nameDisplay +'" class="modalimg" alt="' + myImgSource + '"></a>'
+        return imageHtml
+    }
+
     return imageHtml
 }
 
@@ -3623,7 +3648,7 @@ function setChartData(originalData, axesswitch, percentageset, zeroslice, prepar
 }
 
 mobileMap = false
-if ($(window).width() <=990) mobileMap = true
+if ($(window).width() <= 990) mobileMap = true
 
 function removeHoverMarker() {
     if (typeof (hovermarker) !== 'undefined') hovermarker.removeFrom(map);

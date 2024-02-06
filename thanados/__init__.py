@@ -19,10 +19,18 @@ periodtypes = app.config["PERIOD_TYPES"]
 countrytypes = app.config["COUNTRY_TYPES"]
 api_url = app.config["API_URL"]
 loc_image = app.config["API_FILE_DISPLAY"]
+web_folder = app.config["WEB_FOLDER_PATH"] + '/'
+web_folder = app.config["API_FILE_DISPLAY"]
 use_api = app.config["USE_API"]
+use_iiif = app.config["USE_IIIF"]
 use_jpgs = app.config["USE_JPGS"]
 geonames_user = app.config["GEONAMES_USERNAME"]
 leafletVersion = ""
+
+if use_iiif:
+    image_suffix = "/full/max/0/default.jpg"
+else:
+    image_suffix = ""
 
 if not use_api:
     if use_jpgs:
@@ -30,7 +38,8 @@ if not use_api:
     else:
         loc_image = app.config["WEB_FOLDER_PATH"] + '/'
 
-
+if use_iiif:
+    loc_image = app.config["IIIF_URL"]
 
 from thanados.views import (
     index, map, about, entity, charts, login, manual, sites, admin, search,
@@ -83,7 +92,9 @@ def global_vars():
         thunderforest=thunderforest_API_key,
         openAtlasUrl=openatlas_url,
         api_url=api_url,
+        image_suffix=image_suffix,
         loc_image=loc_image,
+        web_folder=web_folder,
         use_api=use_api,
         domaintypes=domaintypes,
         periodtypes=periodtypes,

@@ -212,7 +212,7 @@ if (data.entities_recursive) {
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                     if (oData.file === null) $(nTd).html("<a id='" + oData.id + "' href='/entity/" + oData.id + "' title='" + oData.main_type + " ' target='_self'>" + oData.name + "</a>");
                     if (oData.file !== null) $(nTd).html("<a id='" + oData.id + "' href='/entity/" + oData.id + "' title='" + oData.main_type + " ' target='_self'>" + oData.name + "</a>" +
-                        "<a class='btn-xs float-end' data-toggle='popover-hover' data-img='" + loc_image + oData.file + "'><i class='fas fa-image'></i></a>"); //create links in rows
+                        "<a class='btn-xs float-end' data-toggle='popover-hover' data-img='" + loc_image + oData.file  + image_suffix + "'><i class='fas fa-image'></i></a>"); //create links in rows
                 }
             },
             {

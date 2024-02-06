@@ -1459,3 +1459,12 @@ input {
     background: white;
     opacity: 0.92;
 }
+
+.pdf-label {
+    color: white;
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 1rem;
+    background: red;
+}
