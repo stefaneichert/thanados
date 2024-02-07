@@ -72,7 +72,7 @@ def get_metadata(id):
 
     crm = g.cursor.fetchone()
 
-    g.cursor.execute("SELECT name,id, description FROM thanados.maintype " \
+    g.cursor.execute("SELECT name,id, description FROM devill.maintype " \
                      "WHERE entity_id = %(id)s", {"id": id})
     result = g.cursor.fetchone()
 
@@ -91,7 +91,7 @@ def get_metadata(id):
 
     }
 
-    g.cursor.execute("SELECT url, skos, prefterm FROM thanados.ext_types " \
+    g.cursor.execute("SELECT url, skos, prefterm FROM devill.ext_types " \
                      "WHERE type_id = %(type_id)s", {"type_id": result.id})
 
     resultExtTypes = g.cursor.fetchall()
@@ -126,7 +126,7 @@ def get_metadata(id):
     metadata.update({"about": about})
     metadata.update({"keywords": keywords})
 
-    g.cursor.execute("SELECT lon, lat FROM thanados.searchdata " \
+    g.cursor.execute("SELECT lon, lat FROM devill.searchdata " \
                      "WHERE child_id = %(id)s LIMIT 1",
                      {"id": id})
     result = g.cursor.fetchone()
@@ -134,8 +134,8 @@ def get_metadata(id):
     sql_geo = """
             SELECT g.*, l.domain_id
             FROM (SELECT t.id, t.name, e.url, e.skos
-                    FROM thanados.types_all t
-                    JOIN thanados.ext_types e ON t.id = e.type_id
+                    FROM devill.types_all t
+                    JOIN devill.ext_types e ON t.id = e.type_id
             WHERE t.id IN %(places)s) g JOIN model.link l 
             ON g.id = l.range_id WHERE l.domain_id = %(id)s LIMIT 1
         """
@@ -162,7 +162,7 @@ def get_metadata(id):
             }}
         )
 
-    g.cursor.execute("SELECT url FROM thanados.extrefs WHERE parent_id = " \
+    g.cursor.execute("SELECT url FROM devill.extrefs WHERE parent_id = " \
                      "%(id)s AND name = 'GeoNames' LIMIT 1", {"id": id})
     resultGN = g.cursor.fetchone()
 
@@ -171,7 +171,7 @@ def get_metadata(id):
 
     metadata.update({"spatialCoverage": spatial})
 
-    g.cursor.execute("SELECT min::INT, max::INT FROM thanados.searchdata " \
+    g.cursor.execute("SELECT min::INT, max::INT FROM devill.searchdata " \
                      "WHERE child_id = %(id)s AND type = 'timespan'",
                      {"id": id})
     result = g.cursor.fetchone()
@@ -182,7 +182,7 @@ def get_metadata(id):
 
     sql_contr = """
         SELECT name, 'http'|| split_part(description, 'http', 2) 
-        as url FROM thanados.types 
+        as url FROM devill.types 
         WHERE id IN %(domainIds)s 
         AND entity_id = %(id)s 
     """
@@ -202,9 +202,9 @@ def get_metadata(id):
 
     sqlCits = """
         SELECT DISTINCT title FROM  
-        (SELECT title FROM thanados.reference WHERE parent_id = %(id)s
+        (SELECT title FROM devill.reference WHERE parent_id = %(id)s
         UNION ALL
-        SELECT title FROM thanados.reference WHERE parent_id = %(place_id)s) g
+        SELECT title FROM devill.reference WHERE parent_id = %(place_id)s) g
     """
 
     from thanados.models.entity import Data

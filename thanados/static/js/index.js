@@ -24,7 +24,7 @@ window.onload = function () {
     $.each(domaintypes, function (i, domain) {
         getProjectData(domain, '#featProj')
     })
-    window.setTimeout(makeMasonrywork, 2000)
+
 };
 
 function makeMasonrywork() {
@@ -59,40 +59,8 @@ if ($('#map').length) {
     loadingControl.addTo(map);
 
 
-    $('#counters').html(
-        '<div class="col-sm">' +
-        '<h4 class="statistic-counter">' + entitycount[0] + '</h4>' +
-        '                                <p>Cemeteries</p>\n' +
-        '                            </div>' +
-        '<div class="col-sm">' +
-        '<h4 class="statistic-counter">' + entitycount[1] + '</h4>' +
-        '                                <p>Graves</p>\n' +
-        '                            </div>' +
-        '<div class="col-sm">' +
-        '<h4 class="statistic-counter">' + entitycount[2] + '</h4>' +
-        '                                <p>Individuals</p>\n' +
-        '                            </div>' +
-        '<div class="col-sm">' +
-        '<h4 class="statistic-counter">' + entitycount[3] + '</h4>' +
-        '                                <p>Finds</p>\n' +
-        '                            </div>' +
-        '<div class="col-sm">' +
-        '<h4 class="statistic-counter">' + entitycount[4] + '</h4>' +
-        '                                <p>Osteology Datasets</p>\n' +
-        '                            </div>'
-    )
 
-    $('.statistic-counter').each(function (i) {
-        $(this).prop('Counter', 0).animate({
-            Counter: $(this).text()
-        }, {
-            duration: 1000,
-            //easing: 'swing',
-            step: function (now) {
-                $(this).text(Math.ceil(now));
-            }
-        });
-    });
+
 
     mymarkers = new L.featureGroup([]).addTo(map);
 

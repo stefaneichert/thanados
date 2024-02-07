@@ -31,7 +31,7 @@ def admin():  # pragma: no cover
     except Exception as e:  # pragma: no cover
         pass
     if not g.site_list:
-        g.cursor.execute('SELECT child_id FROM thanados.sites;')
+        g.cursor.execute('SELECT child_id FROM devill.sites;')
         g.site_list = [row.child_id for row in g.cursor.fetchall()]
 
     if form.validate_on_submit():
@@ -56,9 +56,9 @@ def admin():  # pragma: no cover
                 'type', type,
                 'used', used)) as sites
                 FROM (
-                        SELECT child_id, child_name, type, 1 AS used FROM thanados.searchdata WHERE path LIKE 'Place >%%' AND child_id IN %(site_ids)s
+                        SELECT child_id, child_name, type, 1 AS used FROM devill.searchdata WHERE path LIKE 'Place >%%' AND child_id IN %(site_ids)s
                         UNION all
-                        SELECT child_id, child_name, type, 0 AS used FROM thanados.searchdata WHERE path LIKE 'Place >%%' AND child_id NOT IN %(site_ids)s
+                        SELECT child_id, child_name, type, 0 AS used FROM devill.searchdata WHERE path LIKE 'Place >%%' AND child_id NOT IN %(site_ids)s
                         ) AS allsites 
                     
     """
@@ -72,19 +72,19 @@ def admin():  # pragma: no cover
     sql_missing_refs = """
         
 SELECT jsonb_agg(jsonb_build_object('id', parent_id::TEXT, 'name', child_name)) AS nm FROM (SELECT DISTINCT r.parent_id, e.child_name
-FROM thanados.reference r
-         JOIN thanados.sites e ON e.child_id = r.parent_id
+FROM devill.reference r
+         JOIN devill.sites e ON e.child_id = r.parent_id
 WHERE r.parent_id IN
       (SELECT parent_id
        FROM (SELECT parent_id
-             FROM (SELECT parent_id, COUNT(parent_id) AS number from thanados.reference GROUP BY parent_id) n
+             FROM (SELECT parent_id, COUNT(parent_id) AS number from devill.reference GROUP BY parent_id) n
              WHERE number > 1) d
        WHERE d.parent_id NOT IN
              (SELECT parent_id
-              FROM thanados.reference
+              FROM devill.reference
               WHERE parent_id IN
                     (SELECT parent_id
-                     FROM (SELECT parent_id, COUNT(parent_id) AS number from thanados.reference GROUP BY parent_id) n
+                     FROM (SELECT parent_id, COUNT(parent_id) AS number from devill.reference GROUP BY parent_id) n
                      WHERE number > 1)
                 AND reference LIKE '%%##main')
 ORDER BY parent_id)) nma WHERE nma.parent_id IN %(site_ids)s"""
@@ -100,8 +100,8 @@ ORDER BY parent_id)) nma WHERE nma.parent_id IN %(site_ids)s"""
         missingrefs = []
 
     sql_missing_geonames = """
-    SELECT jsonb_agg(jsonb_build_object('id', child_id::TEXT, 'name', child_name, 'lat', lat, 'lon', lon)) AS ng FROM (SELECT lon::double precision, lat::double precision, child_name, child_id FROM thanados.sites WHERE child_id NOT IN (
-SELECT parent_id FROM thanados.extrefs WHERE name = 'GeoNames')) ng1 WHERE ng1.child_id IN %(site_ids)s AND ng1.child_id NOT IN (SELECT range_id from model.link WHERE property_code = 'P67' AND domain_id = 155980) 
+    SELECT jsonb_agg(jsonb_build_object('id', child_id::TEXT, 'name', child_name, 'lat', lat, 'lon', lon)) AS ng FROM (SELECT lon::double precision, lat::double precision, child_name, child_id FROM devill.sites WHERE child_id NOT IN (
+SELECT parent_id FROM devill.extrefs WHERE name = 'GeoNames')) ng1 WHERE ng1.child_id IN %(site_ids)s AND ng1.child_id NOT IN (SELECT range_id from model.link WHERE property_code = 'P67' AND domain_id = 155980) 
         """
     try:
         g.cursor.execute(sql_missing_geonames, {'site_ids': tuple(g.site_list)})
@@ -132,9 +132,9 @@ FROM (SELECT DISTINCT f.name,
                                     f.filename,
                                     s.site_id,
                                     e.name AS sitename
-                    FROM thanados.files f
+                    FROM devill.files f
 
-                             JOIN thanados.searchdata s ON f.parent_id = s.child_id
+                             JOIN devill.searchdata s ON f.parent_id = s.child_id
                              JOIN (SELECT name, id
                                    FROM model.entity
                                    WHERE id IN %(site_ids)s
@@ -150,7 +150,7 @@ FROM (SELECT DISTINCT f.name,
         missingfileref = []
 
     sql_missing_geo = """
-            SELECT jsonb_agg(jsonb_build_object('id', child_id::TEXT, 'name', child_name)) AS ng FROM (SELECT * FROM thanados.sites WHERE geom IS NULL) a
+            SELECT jsonb_agg(jsonb_build_object('id', child_id::TEXT, 'name', child_name)) AS ng FROM (SELECT * FROM devill.sites WHERE geom IS NULL) a
                 """
     try:
         g.cursor.execute(sql_missing_geo)  # , {'site_ids': tuple(g.site_list)})
@@ -179,17 +179,17 @@ def jsonprepare_execute():  # pragma: no cover
         start.strftime("%H:%M:%S")))
 
     sql_1 = """ 
-DROP SCHEMA IF EXISTS thanados CASCADE;
+DROP SCHEMA IF EXISTS devill CASCADE;
 
-CREATE SCHEMA thanados;
+CREATE SCHEMA devill;
 -- create temp tables
 
-DROP TABLE IF EXISTS thanados.entity;
-CREATE TABLE thanados.entity AS SELECT * FROM model.entity;
+DROP TABLE IF EXISTS devill.entity;
+CREATE TABLE devill.entity AS SELECT * FROM model.entity;
 
 -- all types tree
-DROP TABLE IF EXISTS thanados.types_all;
-CREATE TABLE thanados.types_all AS
+DROP TABLE IF EXISTS devill.types_all;
+CREATE TABLE devill.types_all AS
 WITH RECURSIVE path(id, path, parent, name, description, parent_id, name_path) AS (
     SELECT types_all.child_id,
            ''::text || types_all.child_id::text AS path,
@@ -259,22 +259,22 @@ SELECT path.name,
 FROM path
 ORDER BY path.path;
           
-UPDATE thanados.types_all SET topparent = f.topparent, forms = f.forms
+UPDATE devill.types_all SET topparent = f.topparent, forms = f.forms
     FROM (SELECT tp.id, tp.name_path, tp.topparent, jsonb_agg(DISTINCT f.name) AS forms
         FROM (SELECT id::INTEGER, path, name_path, left(path, strpos(path, ' >') -1)::INTEGER AS
-            topparent FROM thanados.types_all WHERE path LIKE '%>%'
+            topparent FROM devill.types_all WHERE path LIKE '%>%'
                     UNION ALL
             SELECT id::INTEGER, path, name_path, PATH::INTEGER AS topparent FROM
-                thanados.types_all WHERE path NOT LIKE '%>%' ORDER BY name_path) tp JOIN (select openatlas_class_name as name, hierarchy_id FROM
+                devill.types_all WHERE path NOT LIKE '%>%' ORDER BY name_path) tp JOIN (select openatlas_class_name as name, hierarchy_id FROM
 	                web.hierarchy_openatlas_class) f
 	                ON  f.hierarchy_id = tp.topparent
 	                GROUP BY tp.id, tp.name_path, tp.topparent ORDER BY name_path) f
-	WHERE thanados.types_all.id = f.id;
+	WHERE devill.types_all.id = f.id;
 
 
 -- create table with sites to be used
-DROP TABLE IF EXISTS thanados.sites;
-CREATE TABLE thanados.sites AS (
+DROP TABLE IF EXISTS devill.sites;
+CREATE TABLE devill.sites AS (
     SELECT NULL::integer AS parent_id,
            s.name        AS child_name,
            s.id          AS child_id,
@@ -306,12 +306,12 @@ CREATE TABLE thanados.sites AS (
             AND e.openatlas_class_name = 'place'
             )
              AS s
-             JOIN thanados.types_all t ON t.id = s.range_id
-    WHERE t.name_path LIKE 'Place > Burial Site%' OR t.name_path LIKE 'Place > %' AND s.id IN (SELECT domain_id FROM model.link WHERE range_id = 198159 AND property_code = 'P2') -- replace with the top parent of the place category of which you want to show
+             JOIN devill.types_all t ON t.id = s.range_id
+    WHERE t.name_path LIKE 'Place > %' AND s.id IN (SELECT domain_id FROM model.link WHERE range_id = 198159 AND property_code = 'P2') -- replace with the top parent of the place category of which you want to show
 );
 
 -- set polygons as main geometry where available
-UPDATE thanados.sites
+UPDATE devill.sites
 SET geom = poly.geom
 FROM (SELECT ST_AsGeoJSON(pl.geom_polygon) AS geom,
              e.id
@@ -322,7 +322,7 @@ FROM (SELECT ST_AsGeoJSON(pl.geom_polygon) AS geom,
 WHERE child_id = poly.id;
 
 -- get centerpoint data if a point geometry is available
-UPDATE thanados.sites
+UPDATE devill.sites
 SET (lat, lon) = (ST_X(point.geom_point), ST_Y(point.geom_point))
 FROM (SELECT geom_point,
              e.id
@@ -333,7 +333,7 @@ FROM (SELECT geom_point,
 WHERE child_id = point.id;
 
 -- set point as main geometry if no polygon is available
-UPDATE thanados.sites
+UPDATE devill.sites
 SET geom = point.geom
 FROM (SELECT ST_AsGeoJSON(pnt.geom_point) AS geom,
              e.id
@@ -342,10 +342,10 @@ FROM (SELECT ST_AsGeoJSON(pnt.geom_point) AS geom,
                JOIN model.gis pnt ON l.range_id = pnt.entity_id
       WHERE l.property_code = 'P53' AND pnt.geom_point IS NOT NULL) AS point
 WHERE child_id = point.id
-  AND thanados.sites.geom ISNULL;
+  AND devill.sites.geom ISNULL;
 
 -- get centerpoint data of polygons
-UPDATE thanados.sites
+UPDATE devill.sites
 SET (lat, lon) = (ST_X(center), ST_Y(center))
 FROM (SELECT ST_PointOnSurface(geom_polygon) AS center,
              e.id
@@ -357,8 +357,8 @@ WHERE child_id = poly.id;
 
 
 -- graves table with all data on grave level
-DROP TABLE IF EXISTS thanados.graves;
-CREATE TABLE thanados.graves AS
+DROP TABLE IF EXISTS devill.graves;
+CREATE TABLE devill.graves AS
 SELECT parent.id                                    AS parent_id,
        child.name                                   AS child_name,
        child.id                                     AS child_id,
@@ -376,12 +376,12 @@ SELECT parent.id                                    AS parent_id,
 FROM model.entity parent
          JOIN model.link l_p_c ON parent.id = l_p_c.domain_id
          JOIN model.entity child ON l_p_c.range_id = child.id
-WHERE parent.id in (SELECT child_id FROM thanados.sites)
-  AND l_p_c.property_code = 'P46'
+WHERE parent.id in (SELECT child_id FROM devill.sites)
+  AND l_p_c.property_code = 'P46' AND child.openatlas_class_name = 'feature'
 ORDER BY child.openatlas_class_name, parent.id, child.name;
 
 -- if no graves are available create an intermediate feature to be displayed on the map
-INSERT INTO thanados.graves (
+INSERT INTO devill.graves (
 SELECT
     child_id AS parent_id,
     child_name,
@@ -397,9 +397,9 @@ SELECT
     geom,
     NULL as lon,
     NULL as lat
-     FROM thanados.sites WHERE child_id NOT IN (SELECT DISTINCT parent_id FROM thanados.graves));
+     FROM devill.sites WHERE child_id NOT IN (SELECT DISTINCT parent_id FROM devill.graves));
 
-UPDATE thanados.graves
+UPDATE devill.graves
 SET geom = poly.geom
 FROM (SELECT ST_AsGeoJSON(pl.geom_polygon) AS geom,
              e.id
@@ -409,7 +409,7 @@ FROM (SELECT ST_AsGeoJSON(pl.geom_polygon) AS geom,
       WHERE l.property_code = 'P53' AND pl.geom_polygon IS NOT NULL) AS poly
 WHERE child_id = poly.id;
 
-UPDATE thanados.graves
+UPDATE devill.graves
 SET geom = point.geom
 FROM (SELECT ST_AsGeoJSON(pnt.geom_point) AS geom,
              e.id
@@ -418,15 +418,15 @@ FROM (SELECT ST_AsGeoJSON(pnt.geom_point) AS geom,
                JOIN model.gis pnt ON l.range_id = pnt.entity_id
       WHERE l.property_code = 'P53' AND pnt.geom_point IS NOT NULL) AS point
 WHERE child_id = point.id
-  AND thanados.graves.geom ISNULL;
+  AND devill.graves.geom ISNULL;
 
---UPDATE thanados.graves g
+--UPDATE devill.graves g
 --SET geom = a.geom
---FROM (SELECT s.child_id, s.geom FROM thanados.sites s JOIN thanados.graves g ON g.parent_id = s.child_id WHERE g.geom IS NULL) a WHERE a.child_id = g.parent_id AND g.geom IS NULL;
+--FROM (SELECT s.child_id, s.geom FROM devill.sites s JOIN devill.graves g ON g.parent_id = s.child_id WHERE g.geom IS NULL) a WHERE a.child_id = g.parent_id AND g.geom IS NULL;
 
 --burials
-DROP TABLE IF EXISTS thanados.burials;
-CREATE TABLE thanados.burials AS
+DROP TABLE IF EXISTS devill.burials;
+CREATE TABLE devill.burials AS
 SELECT parent.id                                    AS parent_id,
        child.name                                   AS child_name,
        child.id                                     AS child_id,
@@ -444,12 +444,12 @@ SELECT parent.id                                    AS parent_id,
 FROM model.entity parent
          JOIN model.link l_p_c ON parent.id = l_p_c.domain_id
          JOIN model.entity child ON l_p_c.range_id = child.id
-WHERE parent.id in (SELECT child_id FROM thanados.graves)
+WHERE parent.id in (SELECT child_id FROM devill.graves)
   AND l_p_c.property_code = 'P46'
 ORDER BY child.openatlas_class_name, parent.id, child.name;
 
 
-UPDATE thanados.burials
+UPDATE devill.burials
 SET geom = poly.geom
 FROM (SELECT ST_AsGeoJSON(pl.geom_polygon) AS geom,
              e.id
@@ -459,7 +459,7 @@ FROM (SELECT ST_AsGeoJSON(pl.geom_polygon) AS geom,
       WHERE l.property_code = 'P53' AND pl.geom_polygon IS NOT NULL) AS poly
 WHERE child_id = poly.id;
 
-UPDATE thanados.burials
+UPDATE devill.burials
 SET geom = point.geom
 FROM (SELECT ST_AsGeoJSON(pnt.geom_point) AS geom,
              e.id
@@ -468,11 +468,11 @@ FROM (SELECT ST_AsGeoJSON(pnt.geom_point) AS geom,
                JOIN model.gis pnt ON l.range_id = pnt.entity_id
       WHERE l.property_code = 'P53' AND pnt.geom_point IS NOT NULL) AS point
 WHERE child_id = point.id
-  AND thanados.burials.geom ISNULL;
+  AND devill.burials.geom ISNULL;
 
 --finds
-DROP TABLE IF EXISTS thanados.finds;
-CREATE TABLE thanados.finds AS
+DROP TABLE IF EXISTS devill.finds;
+CREATE TABLE devill.finds AS
 SELECT parent.id                                    AS parent_id,
        child.name                                   AS child_name,
        child.id                                     AS child_id,
@@ -490,12 +490,12 @@ SELECT parent.id                                    AS parent_id,
 FROM model.entity parent
          JOIN model.link l_p_c ON parent.id = l_p_c.domain_id
          JOIN model.entity child ON l_p_c.range_id = child.id
-WHERE parent.id in (SELECT child_id FROM thanados.burials)
+WHERE parent.id in (SELECT child_id FROM devill.burials)
   AND l_p_c.property_code = 'P46' AND child.openatlas_class_name = 'artifact'
 ORDER BY child.openatlas_class_name, parent.id, child.name;
 
 
-UPDATE thanados.finds
+UPDATE devill.finds
 SET geom = poly.geom
 FROM (SELECT ST_AsGeoJSON(pl.geom_polygon) AS geom,
              e.id
@@ -505,7 +505,7 @@ FROM (SELECT ST_AsGeoJSON(pl.geom_polygon) AS geom,
       WHERE l.property_code = 'P53' AND pl.geom_polygon IS NOT NULL) AS poly
 WHERE child_id = poly.id;
 
-UPDATE thanados.finds
+UPDATE devill.finds
 SET geom = point.geom
 FROM (SELECT ST_AsGeoJSON(pnt.geom_point) AS geom,
              e.id
@@ -514,11 +514,11 @@ FROM (SELECT ST_AsGeoJSON(pnt.geom_point) AS geom,
                JOIN model.gis pnt ON l.range_id = pnt.entity_id
       WHERE l.property_code = 'P53' AND pnt.geom_point IS NOT NULL) AS point
 WHERE child_id = point.id
-  AND thanados.finds.geom ISNULL;
+  AND devill.finds.geom ISNULL;
   
 --humanremains
-DROP TABLE IF EXISTS thanados.humanremains;
-CREATE TABLE thanados.humanremains AS
+DROP TABLE IF EXISTS devill.humanremains;
+CREATE TABLE devill.humanremains AS
 SELECT parent.id                                    AS parent_id,
        child.name                                   AS child_name,
        child.id                                     AS child_id,
@@ -536,12 +536,12 @@ SELECT parent.id                                    AS parent_id,
 FROM model.entity parent
          JOIN model.link l_p_c ON parent.id = l_p_c.domain_id
          JOIN model.entity child ON l_p_c.range_id = child.id
-WHERE parent.id in (SELECT child_id FROM thanados.burials)
+WHERE parent.id in (SELECT child_id FROM devill.burials)
   AND l_p_c.property_code = 'P46' AND child.openatlas_class_name = 'human_remains'
 ORDER BY child.openatlas_class_name, parent.id, child.name;
 
 
-UPDATE thanados.humanremains
+UPDATE devill.humanremains
 SET geom = poly.geom
 FROM (SELECT ST_AsGeoJSON(pl.geom_polygon) AS geom,
              e.id
@@ -551,7 +551,7 @@ FROM (SELECT ST_AsGeoJSON(pl.geom_polygon) AS geom,
       WHERE l.property_code = 'P53' AND pl.geom_polygon IS NOT NULL) AS poly
 WHERE child_id = poly.id;
 
-UPDATE thanados.humanremains
+UPDATE devill.humanremains
 SET geom = point.geom
 FROM (SELECT ST_AsGeoJSON(pnt.geom_point) AS geom,
              e.id
@@ -560,48 +560,48 @@ FROM (SELECT ST_AsGeoJSON(pnt.geom_point) AS geom,
                JOIN model.gis pnt ON l.range_id = pnt.entity_id
       WHERE l.property_code = 'P53' AND pnt.geom_point IS NOT NULL) AS point
 WHERE child_id = point.id
-  AND thanados.humanremains.geom ISNULL;
+  AND devill.humanremains.geom ISNULL;
 
 -- all entities union
-CREATE TABLE thanados.entitiestmp AS
+CREATE TABLE devill.entitiestmp AS
 SELECT *
-FROM thanados.sites
+FROM devill.sites
 UNION ALL
 SELECT *
-FROM thanados.graves
+FROM devill.graves
 UNION ALL
 SELECT *
-FROM thanados.burials
+FROM devill.burials
 UNION ALL
 SELECT *
-FROM thanados.finds
+FROM devill.finds
 UNION ALL
 SELECT *
-FROM thanados.humanremains
+FROM devill.humanremains
 ORDER BY parent_id, child_name;
 
-UPDATE thanados.entitiestmp
+UPDATE devill.entitiestmp
 SET begin_comment = NULL
 WHERE begin_comment = '';
-UPDATE thanados.entitiestmp
+UPDATE devill.entitiestmp
 SET end_comment = NULL
 WHERE end_comment = '';
-UPDATE thanados.entitiestmp
+UPDATE devill.entitiestmp
 SET begin_comment = NULL
 WHERE begin_comment = 'None';
-UPDATE thanados.entitiestmp
+UPDATE devill.entitiestmp
 SET end_comment = NULL
 WHERE end_comment = 'None';
-UPDATE thanados.entitiestmp
+UPDATE devill.entitiestmp
 SET description = NULL
 WHERE description = '';
 
 
 -- fill timespan dates if NULL with from_values
-UPDATE thanados.entitiestmp SET begin_to = begin_from WHERE begin_from IS NOT NULL and begin_to IS NULL;
-UPDATE thanados.entitiestmp SET begin_from = begin_to WHERE begin_to IS NOT NULL and begin_from IS NULL;
-UPDATE thanados.entitiestmp SET end_to = end_from WHERE end_from IS NOT NULL and end_to IS NULL;
-UPDATE thanados.entitiestmp SET end_from = end_to WHERE end_to IS NOT NULL and end_from IS NULL;
+UPDATE devill.entitiestmp SET begin_to = begin_from WHERE begin_from IS NOT NULL and begin_to IS NULL;
+UPDATE devill.entitiestmp SET begin_from = begin_to WHERE begin_to IS NOT NULL and begin_from IS NULL;
+UPDATE devill.entitiestmp SET end_to = end_from WHERE end_from IS NOT NULL and end_to IS NULL;
+UPDATE devill.entitiestmp SET end_from = end_to WHERE end_to IS NOT NULL and end_from IS NULL;
 """
     g.cursor.execute(sql_1)
 
@@ -612,8 +612,8 @@ UPDATE thanados.entitiestmp SET end_from = end_to WHERE end_to IS NOT NULL and e
     nntime = datetime.now()
 
     sql = """
-                    DROP TABLE IF EXISTS thanados.knn;
-                    CREATE TABLE thanados.knn AS
+                    DROP TABLE IF EXISTS devill.knn;
+                    CREATE TABLE devill.knn AS
 
                     SELECT DISTINCT
                            g.parent_id,
@@ -627,13 +627,13 @@ UPDATE thanados.entitiestmp SET end_from = end_to WHERE end_to IS NOT NULL and e
 
                           FROM model.entity e
                                    JOIN model.link l ON e.id = l.domain_id
-                                    JOIN thanados.graves g ON e.id = g.child_id
+                                    JOIN devill.graves g ON e.id = g.child_id
                                    JOIN model.gis pl ON l.range_id = pl.entity_id
                           WHERE l.property_code = 'P53' AND pl.geom_polygon IS NOT NULL
                           AND g.child_id != 0;
 
                           --delete sites with  only one grave
-                          DELETE FROM thanados.knn WHERE parent_id IN (
+                          DELETE FROM devill.knn WHERE parent_id IN (
                           SELECT parent_id FROM (SELECT parent_id, COUNT(parent_id) FROM (SELECT DISTINCT
                            g.parent_id,
                            e.name,
@@ -646,27 +646,27 @@ UPDATE thanados.entitiestmp SET end_from = end_to WHERE end_to IS NOT NULL and e
 
                           FROM model.entity e
                                    JOIN model.link l ON e.id = l.domain_id
-                                    JOIN thanados.graves g ON e.id = g.child_id
+                                    JOIN devill.graves g ON e.id = g.child_id
                                    JOIN model.gis pl ON l.range_id = pl.entity_id
                           WHERE l.property_code = 'P53' AND pl.geom_polygon IS NOT NULL) a GROUP BY parent_id) b WHERE b.count <= 1 ORDER BY b.count ASC);
 
-                    SELECT * FROM thanados.knn;
+                    SELECT * FROM devill.knn;
                     """
     g.cursor.execute(sql)
     result = g.cursor.fetchall()
 
     sql2 = """
-                    UPDATE thanados.knn ok SET nid=n.id, nname=n.name, npoint=n.npoint FROM 
+                    UPDATE devill.knn ok SET nid=n.id, nname=n.name, npoint=n.npoint FROM 
                     (SELECT 
                         id,
                         name,
                         parent_id,
                         centerpoint AS npoint
                     FROM
-                      thanados.knn WHERE id != %(polyId)s 
+                      devill.knn WHERE id != %(polyId)s 
                     ORDER BY
                       knn.centerpoint <->
-                      (SELECT DISTINCT centerpoint FROM thanados.knn WHERE id = %(polyId)s AND parent_id = %(parentId)s AND id NOT IN (SELECT id FROM (SELECT id, count(centerpoint) FROM thanados.knn GROUP BY id ORDER BY count DESC) a WHERE count > 1))
+                      (SELECT DISTINCT centerpoint FROM devill.knn WHERE id = %(polyId)s AND parent_id = %(parentId)s AND id NOT IN (SELECT id FROM (SELECT id, count(centerpoint) FROM devill.knn GROUP BY id ORDER BY count DESC) a WHERE count > 1))
                     LIMIT 1) n WHERE ok.id = %(polyId)s AND n.parent_id = %(parentId)s;
             """
     nearestneighbour = 0
@@ -676,9 +676,9 @@ UPDATE thanados.entitiestmp SET end_from = end_to WHERE end_to IS NOT NULL and e
         g.cursor.execute(sql2, {'polyId': row.id, 'parentId': row.parent_id})
         nearestneighbour = nearestneighbour + 1
 
-    g.cursor.execute("DELETE FROM thanados.knn WHERE nid ISNULL")
+    g.cursor.execute("DELETE FROM devill.knn WHERE nid ISNULL")
     g.cursor.execute(
-        "UPDATE thanados.knn SET distance = ROUND(st_distancesphere(st_astext(centerpoint), st_astext(npoint))::numeric, 2)")
+        "UPDATE devill.knn SET distance = ROUND(st_distancesphere(st_astext(centerpoint), st_astext(npoint))::numeric, 2)")
 
     print("")
     nntimeend = datetime.now()
@@ -686,8 +686,8 @@ UPDATE thanados.entitiestmp SET end_from = end_to WHERE end_to IS NOT NULL and e
 
     sqlTypes = """
             --types
-DROP TABLE IF EXISTS thanados.types_main;
-CREATE TABLE thanados.types_main AS
+DROP TABLE IF EXISTS devill.types_main;
+CREATE TABLE devill.types_main AS
 SELECT DISTINCT types_all.id,
                 types_all.parent_id,
                 entitiestmp.child_id AS entity_id,
@@ -695,23 +695,23 @@ SELECT DISTINCT types_all.id,
                 types_all.description,
                 link.description     AS value,
                 types_all.name_path  AS path
-FROM thanados.types_all,
-     thanados.entitiestmp,
+FROM devill.types_all,
+     devill.entitiestmp,
      model.link
 WHERE entitiestmp.child_id = link.domain_id
   AND link.range_id = types_all.id
-  AND thanados.entitiestmp.child_id != 0
+  AND devill.entitiestmp.child_id != 0
 ORDER BY entity_id, types_all.name_path;
 
-UPDATE thanados.types_main
+UPDATE devill.types_main
 SET description = NULL
 WHERE description = '';
 
 --types main
-DROP TABLE IF EXISTS thanados.maintype;
-CREATE TABLE thanados.maintype AS
+DROP TABLE IF EXISTS devill.maintype;
+CREATE TABLE devill.maintype AS
 SELECT *
-FROM thanados.types_main
+FROM devill.types_main
 WHERE path LIKE 'Place >%'
    OR path LIKE 'Feature >%'
    OR path LIKE 'Stratigraphic unit >%'
@@ -720,29 +720,29 @@ WHERE path LIKE 'Place >%'
 ORDER BY entity_id, path;
 
 --types dimensions
-DROP TABLE IF EXISTS thanados.dimensiontypes;
-CREATE TABLE thanados.dimensiontypes AS
+DROP TABLE IF EXISTS devill.dimensiontypes;
+CREATE TABLE devill.dimensiontypes AS
 SELECT *
-FROM thanados.types_main
+FROM devill.types_main
 WHERE path LIKE 'Dimensions >%'
 ORDER BY entity_id, path;
 
 -- HACK: set orientation of grave to burial because some did enter the orientation on the grave level and not at the burial level
-DROP TABLE IF EXISTS thanados.graveDeg;
-CREATE TABLE thanados.graveDeg AS
+DROP TABLE IF EXISTS devill.graveDeg;
+CREATE TABLE devill.graveDeg AS
 SELECT 
 	d.*,
 	e.openatlas_class_name,
 	b.child_id AS burial_id
-	FROM thanados.dimensiontypes d JOIN model.entity e ON d.entity_id = e.id JOIN thanados.burials b ON e.id = b.parent_id WHERE d.id = 26192 AND b.child_id NOT IN 
+	FROM devill.dimensiontypes d JOIN model.entity e ON d.entity_id = e.id JOIN devill.burials b ON e.id = b.parent_id WHERE d.id = 26192 AND b.child_id NOT IN 
 		(SELECT 
 			d.entity_id
-			FROM thanados.dimensiontypes d JOIN model.entity e ON d.entity_id = e.id JOIN thanados.burials b ON e.id = b.child_id WHERE d.id = 26192);
+			FROM devill.dimensiontypes d JOIN model.entity e ON d.entity_id = e.id JOIN devill.burials b ON e.id = b.child_id WHERE d.id = 26192);
 
-INSERT INTO thanados.dimensiontypes SELECT id, parent_id, burial_id, name, description, value, path FROM thanados.graveDeg;
+INSERT INTO devill.dimensiontypes SELECT id, parent_id, burial_id, name, description, value, path FROM devill.graveDeg;
 
-DROP TABLE IF EXISTS thanados.giscleanup2;
-CREATE TABLE thanados.giscleanup2 AS
+DROP TABLE IF EXISTS devill.giscleanup2;
+CREATE TABLE devill.giscleanup2 AS
  (
 SELECT 	e.openatlas_class_name,
 	e.child_name,
@@ -752,47 +752,47 @@ SELECT 	e.openatlas_class_name,
 	l.range_id,
 	g.id,
 	g.geom_polygon AS geom
-	FROM thanados.graves e JOIN model.link l ON e.child_id = l.domain_id JOIN model.gis g ON l.range_id = g.entity_id WHERE l.property_code = 'P53' AND g.geom_polygon IS NOT NULL);
+	FROM devill.graves e JOIN model.link l ON e.child_id = l.domain_id JOIN model.gis g ON l.range_id = g.entity_id WHERE l.property_code = 'P53' AND g.geom_polygon IS NOT NULL);
 
-DROP TABLE IF EXISTS thanados.derivedDegtmp;
-CREATE TABLE thanados.derivedDegtmp AS
+DROP TABLE IF EXISTS devill.derivedDegtmp;
+CREATE TABLE devill.derivedDegtmp AS
 (SELECT 
 	ST_StartPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS startP,
 	ST_EndPoint(ST_LineMerge(ST_ApproximateMedialAxis(ST_OrientedEnvelope(g.geom)))) AS endP,
-	child_id FROM thanados.giscleanup2 g WHERE openatlas_class_name = 'feature');
+	child_id FROM devill.giscleanup2 g WHERE openatlas_class_name = 'feature');
 
 
 -- Get azimuth of grave if a polygon is known
-DROP TABLE IF EXISTS thanados.derivedDeg;
-CREATE TABLE thanados.derivedDeg AS
+DROP TABLE IF EXISTS devill.derivedDeg;
+CREATE TABLE devill.derivedDeg AS
 (SELECT 
     ST_X(startP) AS onePoint,
     ST_X(endP) AS otherPoint,
 	degrees(ST_Azimuth(startP, endP)) AS degA_B,
 	degrees(ST_Azimuth(endP, startP)) AS degB_A,
-	child_id FROM thanados.derivedDegtmp);
+	child_id FROM devill.derivedDegtmp);
 	--41sec before, 14sec after... 
 
-DROP TABLE IF EXISTS thanados.giscleanup2;
-DROP TABLE IF EXISTS thanados.derivedDegtmp;
+DROP TABLE IF EXISTS devill.giscleanup2;
+DROP TABLE IF EXISTS devill.derivedDegtmp;
 
 -- get lower value of azimuth
-DROP TABLE IF EXISTS thanados.azimuth;
-CREATE TABLE thanados.azimuth AS (
+DROP TABLE IF EXISTS devill.azimuth;
+CREATE TABLE devill.azimuth AS (
 SELECT 
 	g.*,
 	g.degA_B::integer AS Azimuth
-	FROM thanados.derivedDeg g WHERE degA_B <= degB_A
+	FROM devill.derivedDeg g WHERE degA_B <= degB_A
 UNION ALL
 	SELECT 
 	g.*,
 	g.degB_A::integer AS Azimuth
-	FROM thanados.derivedDeg g WHERE degB_A <= degA_B);
+	FROM devill.derivedDeg g WHERE degB_A <= degA_B);
 	
-DROP TABLE IF EXISTS thanados.derivedDeg;
+DROP TABLE IF EXISTS devill.derivedDeg;
 	
 --insert azimuth into dimensiontypes
-INSERT INTO thanados.dimensiontypes 
+INSERT INTO devill.dimensiontypes 
     SELECT
         118730,
         15678,
@@ -801,12 +801,12 @@ INSERT INTO thanados.dimensiontypes
         '°',
         Azimuth::integer,
         'Dimensions > Azimuth'
-        FROM thanados.azimuth;
+        FROM devill.azimuth;
          
-DROP TABLE IF EXISTS thanados.azimuth;
+DROP TABLE IF EXISTS devill.azimuth;
 
 --hack for setting burial orientation to grave orientation if grave does not have any. Comment/Uncomment depending on your preferences
-INSERT INTO thanados.dimensiontypes (id, parent_id, entity_id, name, description, value, path)
+INSERT INTO devill.dimensiontypes (id, parent_id, entity_id, name, description, value, path)
 SELECT id, 15678, domain, name, description, orientation::Text, path FROM
 (SELECT
 26192 AS id,
@@ -820,9 +820,9 @@ SELECT id, 15678, domain, name, description, orientation::Text, path FROM
                    d.value    AS orientation,
                    d.name,
                    d.id       AS range
-            FROM thanados.graves g
-                     JOIN thanados.burials b ON g.child_id = b.parent_id
-                     JOIN thanados.dimensiontypes d ON b.child_id = d.entity_id
+            FROM devill.graves g
+                     JOIN devill.burials b ON g.child_id = b.parent_id
+                     JOIN devill.dimensiontypes d ON b.child_id = d.entity_id
             WHERE d.name = 'Degrees') AS l) AS d
 WHERE DOMAIN || ':' || range NOT IN
       (SELECT domain_id || ':' || range_id
@@ -833,13 +833,13 @@ WHERE DOMAIN || ':' || range NOT IN
       (SELECT parent_id
        from (SELECT parent_id,
                     count(parent_id) as count
-             FROM thanados.burials
+             FROM devill.burials
              GROUP BY parent_id) c
        WHERE c.count > 1);
        
        
 --hack for getting graves azimuth from polygon orientation. Comment/Uncomment depending on your preferences
-/*INSERT INTO thanados.dimensiontypes (id, parent_id, entity_id, name, description, value, path)
+/*INSERT INTO devill.dimensiontypes (id, parent_id, entity_id, name, description, value, path)
 SELECT id, 15678, domain, name, description, orientation::Text, path FROM
 (SELECT
 26192 AS id,
@@ -853,9 +853,9 @@ SELECT id, 15678, domain, name, description, orientation::Text, path FROM
                    d.value    AS orientation,
                    d.name,
                    d.id       AS range
-            FROM thanados.graves g
-                     JOIN thanados.burials b ON g.child_id = b.parent_id
-                     JOIN thanados.dimensiontypes d ON b.child_id = d.entity_id
+            FROM devill.graves g
+                     JOIN devill.burials b ON g.child_id = b.parent_id
+                     JOIN devill.dimensiontypes d ON b.child_id = d.entity_id
             WHERE d.name = 'Degrees') AS l) AS d
 WHERE DOMAIN || ':' || range NOT IN
       (SELECT domain_id || ':' || range_id
@@ -866,12 +866,12 @@ WHERE DOMAIN || ':' || range NOT IN
       (SELECT parent_id
        from (SELECT parent_id,
                     count(parent_id) as count
-             FROM thanados.burials
+             FROM devill.burials
              GROUP BY parent_id) c
        WHERE c.count > 1);*/
 
 --insert nearest neighbour distance 
-INSERT INTO thanados.dimensiontypes 
+INSERT INTO devill.dimensiontypes 
     SELECT
         148713,
         15678,
@@ -880,32 +880,32 @@ INSERT INTO thanados.dimensiontypes
         'm',
         distance,
         'Dimensions > Distance > Nearest Neighbour'
-        FROM thanados.knn;
+        FROM devill.knn;
          
---DROP TABLE IF EXISTS thanados.azimuth;
+--DROP TABLE IF EXISTS devill.azimuth;
 
 
 --types material
-DROP TABLE IF EXISTS thanados.materialtypes;
-CREATE TABLE thanados.materialtypes AS
+DROP TABLE IF EXISTS devill.materialtypes;
+CREATE TABLE devill.materialtypes AS
 SELECT *
-FROM thanados.types_main
+FROM devill.types_main
 WHERE path LIKE 'Material >%'
 ORDER BY entity_id, path;
 
-DROP TABLE IF EXISTS thanados.radiocarbon;
-CREATE TABLE thanados.radiocarbon AS
+DROP TABLE IF EXISTS devill.radiocarbon;
+CREATE TABLE devill.radiocarbon AS
 SELECT *, 'unique' AS rc_type
-FROM thanados.types_main
+FROM devill.types_main
 WHERE path LIKE 'Radiocarbon Dating >%'
 ORDER BY entity_id, path;
 
 
 --other types
-DROP TABLE IF EXISTS thanados.types;
-CREATE TABLE thanados.types AS
+DROP TABLE IF EXISTS devill.types;
+CREATE TABLE devill.types AS
 SELECT *
-FROM thanados.types_main
+FROM devill.types_main
 WHERE path NOT LIKE 'Dimensions >%'
   AND path NOT LIKE 'Place >%'
   AND path NOT LIKE 'Feature >%'
@@ -917,24 +917,24 @@ WHERE path NOT LIKE 'Dimensions >%'
 ORDER BY entity_id, path;
 
 --entities with maintypes
-CREATE TABLE thanados.entities AS
+CREATE TABLE devill.entities AS
 SELECT e.*,
        t.id        AS type_id,
        t.parent_id AS parenttype_id,
        t.name      AS typename,
        t.path
-FROM thanados.entitiestmp e
-         LEFT JOIN thanados.maintype t ON e.child_id = t.entity_id;
+FROM devill.entitiestmp e
+         LEFT JOIN devill.maintype t ON e.child_id = t.entity_id;
 
 --update timespan where values are missing
-UPDATE thanados.entities
+UPDATE devill.entities
 SET begin_to = begin_from
 WHERE begin_to IS NULL;
-UPDATE thanados.entities
+UPDATE devill.entities
 SET end_to = end_from
 WHERE end_to IS NULL;
 
-DROP TABLE IF EXISTS thanados.entitiestmp
+DROP TABLE IF EXISTS devill.entitiestmp
             """
     startnext = datetime.now()
     print("Adding types and values")
@@ -944,13 +944,13 @@ DROP TABLE IF EXISTS thanados.entitiestmp
 
     print("processing files")
     sql_2 = """
-    DROP TABLE IF EXISTS thanados.files;
-CREATE TABLE thanados.files AS
+    DROP TABLE IF EXISTS devill.files;
+CREATE TABLE devill.files AS
 SELECT entities.child_id AS parent_id,
        entity.name,
        entity.id, 
        entity.description
-FROM thanados.entities,
+FROM devill.entities,
      model.link,
      model.entity
 WHERE entities.child_id = link.range_id
@@ -959,10 +959,10 @@ WHERE entities.child_id = link.range_id
   AND entity.openatlas_class_name ~~ 'file'::text
 ORDER BY entities.child_id;
 
-UPDATE thanados.files SET description = NULL WHERE description = '';
+UPDATE devill.files SET description = NULL WHERE description = '';
 
-DROP TABLE IF EXISTS thanados.filestmp;
-CREATE TABLE thanados.filestmp AS
+DROP TABLE IF EXISTS devill.filestmp;
+CREATE TABLE devill.filestmp AS
     (SELECT files.*,
         NULL::TEXT AS filename,
             fe.description AS Source,
@@ -977,17 +977,17 @@ CREATE TABLE thanados.filestmp AS
                           FROM model.link l
                                    JOIN model.entity e ON l.range_id = e.id
                           WHERE l.property_code = 'P2') AS license
-                             LEFT JOIN thanados.types_all t ON t.id = license.range_id
+                             LEFT JOIN devill.types_all t ON t.id = license.range_id
                     WHERE t.name_path LIKE 'License%') AS lic
-                       RIGHT JOIN thanados.files f ON f.id = lic.domain_id) as files
+                       RIGHT JOIN devill.files f ON f.id = lic.domain_id) as files
               LEFT JOIN model.link fl ON files.id = fl.range_id
               LEFT JOIN model.entity fe ON fl.domain_id = fe.id);
 
 
-DROP TABLE thanados.files;
-CREATE TABLE thanados.files AS
+DROP TABLE devill.files;
+CREATE TABLE devill.files AS
     (SELECT *
-     FROM thanados.filestmp);
+     FROM devill.filestmp);
     """
     g.cursor.execute(sql_2)
     filesfound = 0
@@ -999,8 +999,8 @@ CREATE TABLE thanados.files AS
         import urllib, json
         print("creating filelist via API")
         sql1 = """
-                DROP TABLE IF EXISTS thanados.filelist;
-                CREATE TABLE thanados.filelist (id INT, extension TEXT, filename TEXT, mimetype TEXT);
+                DROP TABLE IF EXISTS devill.filelist;
+                CREATE TABLE devill.filelist (id INT, extension TEXT, filename TEXT, mimetype TEXT);
         """
         g.cursor.execute(sql1)
 
@@ -1023,12 +1023,12 @@ CREATE TABLE thanados.files AS
                     if extension == '.pdf':
                         mimetype = 'pdf'
                     sql = """
-                            INSERT INTO thanados.filelist (id, extension, filename, mimetype) VALUES (%(file_id)s, %(extension)s, %(filename)s, %(mimetype)s)
+                            INSERT INTO devill.filelist (id, extension, filename, mimetype) VALUES (%(file_id)s, %(extension)s, %(filename)s, %(mimetype)s)
                     """
                     g.cursor.execute(sql, {'file_id': file_id, 'extension': extension,
                                            'filename': str(file_id) + extension, 'mimetype': mimetype})
 
-    sql_3 = 'SELECT id FROM thanados.files'
+    sql_3 = 'SELECT id FROM devill.files'
     g.cursor.execute(sql_3)
     result = g.cursor.fetchall()
     missingids = []
@@ -1041,7 +1041,7 @@ CREATE TABLE thanados.files AS
             filesmissing = filesmissing + 1
             missingids.append(row_id)
         g.cursor.execute(
-            "UPDATE thanados.files SET filename = %(file_name)s WHERE id = %(row_id)s",
+            "UPDATE devill.files SET filename = %(file_name)s WHERE id = %(row_id)s",
             {'file_name': file_name, 'row_id': row_id})
         sys.stdout.write(
             "\rfiles found: " + str(filesfound) + " files missing: " + str(
@@ -1049,8 +1049,8 @@ CREATE TABLE thanados.files AS
         sys.stdout.flush()
 
     print(missingids)
-    g.cursor.execute('DELETE FROM thanados.files WHERE filename = NULL')
-    g.cursor.execute("DELETE FROM thanados.files WHERE filename = ''")
+    g.cursor.execute('DELETE FROM devill.files WHERE filename = NULL')
+    g.cursor.execute("DELETE FROM devill.files WHERE filename = ''")
 
     print("")
     filesdone = datetime.now()
@@ -1059,14 +1059,14 @@ CREATE TABLE thanados.files AS
 
     sql_4 = """
     --references
-DROP TABLE IF EXISTS thanados.reference;
-CREATE TABLE thanados.reference AS
+DROP TABLE IF EXISTS devill.reference;
+CREATE TABLE devill.reference AS
 SELECT entities.child_id  AS parent_id,
        entity.name        as abbreviation,
        entity.description AS title,
        link.description   AS reference,
        entity.id
-FROM thanados.entities,
+FROM devill.entities,
      model.link,
      model.entity
 WHERE entities.child_id = link.range_id
@@ -1076,25 +1076,25 @@ WHERE entities.child_id = link.range_id
 ORDER BY entities.child_id;
 
 
-UPDATE thanados.reference
+UPDATE devill.reference
 SET abbreviation = NULL
 WHERE abbreviation = '';
-UPDATE thanados.reference
+UPDATE devill.reference
 SET title = NULL
 WHERE title = '';
-UPDATE thanados.reference
+UPDATE devill.reference
 SET reference = NULL
 WHERE reference = '';
 
 --external references/urls
-DROP TABLE IF EXISTS thanados.extrefs;
-CREATE TABLE thanados.extrefs AS
+DROP TABLE IF EXISTS devill.extrefs;
+CREATE TABLE devill.extrefs AS
 SELECT entities.child_id  AS parent_id,
        entity.name        as url,
        link.description   AS name,
        entity.description AS description,
        entity.id
-FROM thanados.entities,
+FROM devill.entities,
      model.link,
      model.entity
 WHERE entities.child_id = link.range_id
@@ -1103,13 +1103,13 @@ WHERE entities.child_id = link.range_id
   AND entity.openatlas_class_name ~~ 'external_reference'::text
 ORDER BY entities.child_id;
 
-INSERT INTO thanados.extrefs 
+INSERT INTO devill.extrefs 
 SELECT entities.child_id  AS parent_id,
        reference_system.resolver_url || link.description   AS url,
        entity.name  AS name,
        entity.description AS description,
        entity.id
-FROM thanados.entities,
+FROM devill.entities,
      model.link,
      model.entity,
      web.reference_system
@@ -1121,15 +1121,15 @@ WHERE entities.child_id = link.range_id
 ORDER BY entities.child_id;
        
 
-UPDATE thanados.extrefs
+UPDATE devill.extrefs
 SET description = NULL
 WHERE description = '';
-UPDATE thanados.extrefs
+UPDATE devill.extrefs
 SET name = NULL
 WHERE name = '';
 
-DROP TABLE IF EXISTS thanados.refsys;
-    CREATE TABLE thanados.refsys AS
+DROP TABLE IF EXISTS devill.refsys;
+    CREATE TABLE devill.refsys AS
     SELECT entity_id, name, website_url, '' AS icon_url FROM web.reference_system;
     """
 
@@ -1138,14 +1138,14 @@ DROP TABLE IF EXISTS thanados.refsys;
     from thanados.models.entity import RCData
 
     sql_rc = """
-            CREATE TABLE thanados.radiocarbon_tmp AS (SELECT NULL::INTEGER AS entity_id, NULL AS sample);
+            CREATE TABLE devill.radiocarbon_tmp AS (SELECT NULL::INTEGER AS entity_id, NULL AS sample);
             
             SELECT 
                     r.entity_id::TEXT,
                     split_part(r.value::numeric(10,2)::TEXT,'.',1) AS "date",
                     split_part(r.value::numeric(10,2)::TEXT,'.',2) AS "range",
                     split_part(e.description,'##RCD ',2) AS "sample"
-            FROM thanados.radiocarbon r JOIN thanados.entities e ON e.child_id = r.entity_id; 
+            FROM devill.radiocarbon r JOIN devill.entities e ON e.child_id = r.entity_id; 
         """
     try:
         g.cursor.execute(sql_rc)
@@ -1170,91 +1170,91 @@ DROP TABLE IF EXISTS thanados.refsys;
                 RCData.radiocarbon(row.entity_id, int(row.date), int(row.range),
                                    'ad', sample, 'intcal20.14c', False))
             g.cursor.execute(
-                'UPDATE thanados.radiocarbon SET description = %(RCdata)s WHERE entity_id = %(entid)s',
+                'UPDATE devill.radiocarbon SET description = %(RCdata)s WHERE entity_id = %(entid)s',
                 {'RCdata': RCData_, 'entid': row.entity_id})
 
         sql_stacked = """
-                        DROP TABLE IF EXISTS thanados.rc_parents;
-                        CREATE TABLE thanados.rc_parents AS
+                        DROP TABLE IF EXISTS devill.rc_parents;
+                        CREATE TABLE devill.rc_parents AS
                         SELECT r.entity_id, e.parent_id, 'rc' AS rc
-                        FROM thanados.radiocarbon r
-                                 JOIN thanados.entities e ON r.entity_id = e.child_id
+                        FROM devill.radiocarbon r
+                                 JOIN devill.entities e ON r.entity_id = e.child_id
                         ORDER BY e.parent_id;
 
-                        DROP TABLE IF EXISTS thanados.rc_tree;
-                        CREATE TABLE thanados.rc_tree AS
+                        DROP TABLE IF EXISTS devill.rc_tree;
+                        CREATE TABLE devill.rc_tree AS
                         WITH RECURSIVE superents AS (
                             SELECT entity_id,
                                    parent_id,
                                    0  AS count,
                                    '' AS sample
-                            FROM thanados.rc_parents
+                            FROM devill.rc_parents
                             UNION
                             SELECT l.child_id,
                                    l.parent_id,
                                    0  as count,
                                    '' AS sample
-                            FROM thanados.entities l
+                            FROM devill.entities l
                                      JOIN superents s ON s.parent_id = l.child_id
                         )
                         SELECT *
                         FROM superents;
 
-                        UPDATE thanados.rc_tree t
-                        SET sample = (SELECT description::JSONB -> 'sample' FROM thanados.radiocarbon r WHERE r.entity_id = t.entity_id);
+                        UPDATE devill.rc_tree t
+                        SET sample = (SELECT description::JSONB -> 'sample' FROM devill.radiocarbon r WHERE r.entity_id = t.entity_id);
 
-                        DROP TABLE IF EXISTS thanados.RC_stacked;
-                        CREATE TABLE thanados.RC_stacked AS
+                        DROP TABLE IF EXISTS devill.RC_stacked;
+                        CREATE TABLE devill.RC_stacked AS
                         SELECT entity_id, jsonb_agg(sample::JSONB) AS sample FROM
                         (WITH RECURSIVE superents AS (
                         SELECT entity_id,
                             parent_id,
                             sample AS sample
-                        FROM thanados.rc_tree WHERE sample IS NOT NULL
+                        FROM devill.rc_tree WHERE sample IS NOT NULL
                         UNION
                         SELECT t.entity_id,
                             t.parent_id, s.sample AS sample
-                        FROM thanados.rc_tree t JOIN superents s ON s.parent_id = t.entity_id
+                        FROM devill.rc_tree t JOIN superents s ON s.parent_id = t.entity_id
                         )
                         SELECT *
                         FROM superents) se GROUP BY entity_id;
                         
-                        DROP TABLE IF EXISTS thanados.rc_stacked_final;
-                        CREATE TABLE thanados.rc_stacked_final AS
+                        DROP TABLE IF EXISTS devill.rc_stacked_final;
+                        CREATE TABLE devill.rc_stacked_final AS
                         SELECT 
                             entity_id, sample, 
                             jsonb_array_length(sample) 
-                            FROM thanados.RC_stacked 
-                            WHERE entity_id NOT IN (SELECT entity_id from thanados.radiocarbon)
+                            FROM devill.RC_stacked 
+                            WHERE entity_id NOT IN (SELECT entity_id from devill.radiocarbon)
                         UNION ALL
                         
                         SELECT 
                             entity_id, 
                             sample, jsonb_array_length(sample) 
-                            FROM thanados.RC_stacked WHERE entity_id IN (SELECT entity_id from thanados.radiocarbon) 
+                            FROM devill.RC_stacked WHERE entity_id IN (SELECT entity_id from devill.radiocarbon) 
                                 AND jsonb_array_length(sample) > 1;
                     
                     
-                    DROP TABLE IF EXISTS thanados.radiocarbon_tmp;
+                    DROP TABLE IF EXISTS devill.radiocarbon_tmp;
 
-CREATE TABLE thanados.radiocarbon_tmp AS
+CREATE TABLE devill.radiocarbon_tmp AS
     SELECT
            entity_id,
            jsonb_build_object('child_sample', sample) AS sample
-FROM thanados.rc_stacked_final WHERE entity_id NOT IN (SELECT entity_id FROM thanados.radiocarbon) AND jsonb_array_length(sample) = 1
+FROM devill.rc_stacked_final WHERE entity_id NOT IN (SELECT entity_id FROM devill.radiocarbon) AND jsonb_array_length(sample) = 1
 UNION ALL
     SELECT
            entity_id,
            jsonb_build_object('combined_children_samples', sample) AS sample
-FROM thanados.rc_stacked_final WHERE entity_id NOT IN (SELECT entity_id FROM thanados.radiocarbon) AND jsonb_array_length(sample) > 1
+FROM devill.rc_stacked_final WHERE entity_id NOT IN (SELECT entity_id FROM devill.radiocarbon) AND jsonb_array_length(sample) > 1
 UNION ALL
     SELECT
            f.entity_id,
            jsonb_build_object('combined_samples', f.sample,
                                 'sample', s.description::JSONB -> 'sample') AS sample
-FROM thanados.rc_stacked_final f JOIN thanados.radiocarbon s ON s.entity_id = f.entity_id WHERE f.entity_id IN (SELECT entity_id FROM thanados.radiocarbon) AND jsonb_array_length(sample) > 1;
+FROM devill.rc_stacked_final f JOIN devill.radiocarbon s ON s.entity_id = f.entity_id WHERE f.entity_id IN (SELECT entity_id FROM devill.radiocarbon) AND jsonb_array_length(sample) > 1;
 
-INSERT INTO thanados.radiocarbon_tmp SELECT r.entity_id, r.description::JSONB FROM thanados.radiocarbon r WHERE r.entity_id NOT IN (SELECT entity_id FROM thanados.radiocarbon_tmp);
+INSERT INTO devill.radiocarbon_tmp SELECT r.entity_id, r.description::JSONB FROM devill.radiocarbon r WHERE r.entity_id NOT IN (SELECT entity_id FROM devill.radiocarbon_tmp);
                     """
         g.cursor.execute(sql_stacked)
 
@@ -1264,8 +1264,8 @@ INSERT INTO thanados.radiocarbon_tmp SELECT r.entity_id, r.description::JSONB FR
 
     sql_5 = """
 -- create table with types and files of all entities
-DROP TABLE IF EXISTS thanados.types_and_files;
-CREATE TABLE thanados.types_and_files
+DROP TABLE IF EXISTS devill.types_and_files;
+CREATE TABLE devill.types_and_files
 (
     entity_id  integer,
     types      jsonb,
@@ -1279,8 +1279,8 @@ CREATE TABLE thanados.types_and_files
 );
 
 --external gazetteers for types
-DROP TABLE IF EXISTS thanados.ext_types;
-CREATE TABLE thanados.ext_types AS
+DROP TABLE IF EXISTS devill.ext_types;
+CREATE TABLE devill.ext_types AS
 SELECT types_all.id                                      AS type_id,
        reference_system.resolver_url || link.description AS url,
        reference_system.website_url                      AS website,
@@ -1290,7 +1290,7 @@ SELECT types_all.id                                      AS type_id,
        link.description                                  AS identifier,
        entitysk.name                                     AS SKOS,
        NULL                                              AS prefTerm
-FROM thanados.types_all,
+FROM devill.types_all,
      model.link,
      model.entity,
      web.reference_system,
@@ -1303,14 +1303,14 @@ WHERE types_all.id = link.range_id
   AND entity.id IN (SELECT entity_id from web.reference_system)
 ORDER BY types_all.id;
 
-UPDATE thanados.ext_types
+UPDATE devill.ext_types
 SET description = NULL
 WHERE description = '';
 
 -- insert type data
-INSERT INTO thanados.types_and_files (entity_id, types)
+INSERT INTO devill.types_and_files (entity_id, types)
 SELECT e.child_id, types
-FROM thanados.entities e
+FROM devill.entities e
          LEFT JOIN
      (SELECT t.entity_id,
              jsonb_agg(jsonb_build_object(
@@ -1319,22 +1319,22 @@ FROM thanados.entities e
                      'description', t.description,
                      'value', t.value,
                      'path', t.path)) AS types
-      FROM thanados.types t
+      FROM devill.types t
       GROUP BY entity_id) AS irgendwas
      ON e.child_id = irgendwas.entity_id WHERE e.child_id != 0;
 
 
 -- insert radiocarbon
-UPDATE thanados.types_and_files t SET radiocarbon = r.sample::JSONB
-FROM thanados.radiocarbon_tmp r WHERE t.entity_id = r.entity_id;
+UPDATE devill.types_and_files t SET radiocarbon = r.sample::JSONB
+FROM devill.radiocarbon_tmp r WHERE t.entity_id = r.entity_id;
          
 -- insert file data
-DROP TABLE IF EXISTS thanados.testins;
-CREATE TABLE thanados.testins AS
+DROP TABLE IF EXISTS devill.testins;
+CREATE TABLE devill.testins AS
 SELECT t.entity_id, f.files
              FROM (
                       SELECT e.child_id, files
-                      FROM thanados.entities e
+                      FROM devill.entities e
                                INNER JOIN
                            (SELECT t.parent_id,
                                    jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
@@ -1346,21 +1346,21 @@ SELECT t.entity_id, f.files
                                            'reference', t.reference,
                                            'description', t.description
                                        ))) AS files
-                            FROM thanados.files t
+                            FROM devill.files t
                             GROUP BY parent_id) AS irgendwas
-                           ON e.child_id = irgendwas.parent_id) f JOIN thanados.types_and_files t ON f.child_id = t.entity_id;
+                           ON e.child_id = irgendwas.parent_id) f JOIN devill.types_and_files t ON f.child_id = t.entity_id;
 
-UPDATE thanados.types_and_files f SET files = t.files FROM thanados.testins t WHERE f.entity_id = t.entity_id;
+UPDATE devill.types_and_files f SET files = t.files FROM devill.testins t WHERE f.entity_id = t.entity_id;
              --1:45min before after: 4,3s
 
 
 -- insert bibliography data
-DROP TABLE IF EXISTS thanados.testins;
-CREATE TABLE thanados.testins AS
+DROP TABLE IF EXISTS devill.testins;
+CREATE TABLE devill.testins AS
 (SELECT child_id, reference
                  FROM (
                           SELECT e.child_id, reference
-                          FROM thanados.entities e
+                          FROM devill.entities e
                                    INNER JOIN
                                (SELECT t.parent_id,
                                        jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
@@ -1369,21 +1369,21 @@ CREATE TABLE thanados.testins AS
                                                'title', t.title,
                                                'reference', t.reference
                                            ))) AS reference
-                                FROM thanados.reference t
+                                FROM devill.reference t
                                 GROUP BY parent_id) AS irgendwas
                                ON e.child_id = irgendwas.parent_id) f
                  );
 
-UPDATE thanados.types_and_files
-SET reference = (SELECT reference from thanados.testins f
+UPDATE devill.types_and_files
+SET reference = (SELECT reference from devill.testins f
                  WHERE entity_id = f.child_id);
                  --1:35 min before, 5sec after
 
 --insert external refs data
-DROP TABLE IF EXISTS thanados.testins;
-CREATE TABLE thanados.testins AS
+DROP TABLE IF EXISTS devill.testins;
+CREATE TABLE devill.testins AS
 (SELECT e.child_id, extref
-         FROM thanados.entities e
+         FROM devill.entities e
                   INNER JOIN
               (SELECT t.parent_id,
                       jsonb_agg(jsonb_strip_nulls(jsonb_build_object(
@@ -1392,24 +1392,24 @@ CREATE TABLE thanados.testins AS
                               'name', t.name,
                               'description', t.description
                           ))) AS extref
-               FROM thanados.extrefs t
+               FROM devill.extrefs t
                GROUP BY parent_id) AS irgendwas
               ON e.child_id = irgendwas.parent_id);
 
-UPDATE thanados.types_and_files
-SET extrefs = (SELECT extref from thanados.testins f
+UPDATE devill.types_and_files
+SET extrefs = (SELECT extref from devill.testins f
                  WHERE entity_id = f.child_id);
-                 --DROP TABLE IF EXISTS thanados.extrefs;
+                 --DROP TABLE IF EXISTS devill.extrefs;
                  
-DROP TABLE IF EXISTS thanados.testins;                 
+DROP TABLE IF EXISTS devill.testins;                 
 --31ms
 
 -- insert dimension data
-UPDATE thanados.types_and_files
+UPDATE devill.types_and_files
 SET dimensions = dimtypes
 FROM (
          SELECT e.child_id, dimtypes
-         FROM thanados.entities e
+         FROM devill.entities e
                   INNER JOIN
               (SELECT t.entity_id,
                       jsonb_agg(jsonb_build_object(
@@ -1418,18 +1418,18 @@ FROM (
                               'value', t.value,
                               'unit', t.description,
                               'path', t.path)) AS dimtypes
-               FROM thanados.dimensiontypes t
+               FROM devill.dimensiontypes t
                GROUP BY entity_id) AS irgendwas
               ON e.child_id = irgendwas.entity_id) f
 WHERE entity_id = f.child_id;
 --354ms
 
 -- insert material data
-UPDATE thanados.types_and_files
+UPDATE devill.types_and_files
 SET material = mattypes
 FROM (
          SELECT e.child_id, mattypes
-         FROM thanados.entities e
+         FROM devill.entities e
                   INNER JOIN
               (SELECT t.entity_id,
                       jsonb_agg(jsonb_build_object(
@@ -1437,16 +1437,16 @@ FROM (
                               'name', t.name,
                               'value', t.value,
                               'path', t.path)) AS mattypes
-               FROM thanados.materialtypes t
+               FROM devill.materialtypes t
                GROUP BY entity_id) AS irgendwas
               ON e.child_id = irgendwas.entity_id) f
 WHERE entity_id = f.child_id;
 
-DROP TABLE IF EXISTS thanados.materialtypes;
+DROP TABLE IF EXISTS devill.materialtypes;
 --172 ms
 
 -- insert timespan data
-UPDATE thanados.types_and_files
+UPDATE devill.types_and_files
 SET timespan = time
 FROM (
          SELECT child_id,
@@ -1457,37 +1457,37 @@ FROM (
                         'end_from', f.end_from,
                         'end_to', f.end_to,
                         'end_comment', f.end_comment)) AS time
-         FROM thanados.entities f) AS irgendwas
+         FROM devill.entities f) AS irgendwas
 WHERE entity_id = irgendwas.child_id;
 --344ms
 
 
 --temp table with all info
-DROP TABLE IF EXISTS thanados.tmp;
-CREATE TABLE thanados.tmp AS
+DROP TABLE IF EXISTS devill.tmp;
+CREATE TABLE devill.tmp AS
     (SELECT *
-     FROM thanados.entities e
-              LEFT JOIN thanados.types_and_files t ON e.child_id = t.entity_id ORDER BY parent_id, child_name);
+     FROM devill.entities e
+              LEFT JOIN devill.types_and_files t ON e.child_id = t.entity_id ORDER BY parent_id, child_name);
 
---DROP TABLE IF EXISTS thanados.types_and_files;
+--DROP TABLE IF EXISTS devill.types_and_files;
 
-UPDATE thanados.tmp
+UPDATE devill.tmp
 SET timespan = NULL
 WHERE timespan = '{}';
-UPDATE thanados.tmp
+UPDATE devill.tmp
 SET description = NULL
 WHERE description = '';
-UPDATE thanados.tmp
+UPDATE devill.tmp
 SET begin_comment = NULL
 WHERE begin_comment = '';
-UPDATE thanados.tmp
+UPDATE devill.tmp
 SET end_comment = NULL
 WHERE end_comment = '';
-UPDATE thanados.tmp SET description = (SELECT split_part(description, '##German', 1)); --hack to remove German descriptions
-UPDATE thanados.tmp SET description = (SELECT split_part(description, '##german', 1)); --hack to remove German descriptions
-UPDATE thanados.tmp SET description = (SELECT split_part(description, '##Deutsch', 1)); --hack to remove German descriptions
-UPDATE thanados.tmp SET description = (SELECT split_part(description, '##deutsch', 1)); --hack to remove German descriptions
-UPDATE thanados.tmp SET description = (SELECT split_part(description, '##RCD', 1)); --hack to remove Radiocarbon string
+UPDATE devill.tmp SET description = (SELECT split_part(description, '##German', 1)); --hack to remove German descriptions
+UPDATE devill.tmp SET description = (SELECT split_part(description, '##german', 1)); --hack to remove German descriptions
+UPDATE devill.tmp SET description = (SELECT split_part(description, '##Deutsch', 1)); --hack to remove German descriptions
+UPDATE devill.tmp SET description = (SELECT split_part(description, '##deutsch', 1)); --hack to remove German descriptions
+UPDATE devill.tmp SET description = (SELECT split_part(description, '##RCD', 1)); --hack to remove Radiocarbon string
 --1,4s
 """
 
@@ -1498,8 +1498,8 @@ UPDATE thanados.tmp SET description = (SELECT split_part(description, '##RCD', 1
 
     sql_6 = """
 ---finds json
-DROP TABLE IF EXISTS thanados.tbl_finds;
-CREATE TABLE thanados.tbl_finds
+DROP TABLE IF EXISTS devill.tbl_finds;
+CREATE TABLE devill.tbl_finds
 (
     id         integer,
     parent_id  integer,
@@ -1507,7 +1507,7 @@ CREATE TABLE thanados.tbl_finds
     files      jsonb
 );
 
-INSERT INTO thanados.tbl_finds (id, parent_id, files, properties)
+INSERT INTO devill.tbl_finds (id, parent_id, files, properties)
 SELECT f.child_id,
        f.parent_id,
        f.files,
@@ -1529,20 +1529,20 @@ SELECT f.child_id,
                'externalreference', f.extrefs,
                'radiocarbon', f.radiocarbon
            )) AS finds
-FROM (SELECT * FROM thanados.tmp WHERE openatlas_class_name LIKE 'artifact') f
+FROM (SELECT * FROM devill.tmp WHERE openatlas_class_name LIKE 'artifact') f
 ORDER BY f.child_name;
 
 
 
-DROP TABLE IF EXISTS thanados.tbl_findscomplete;
-CREATE TABLE thanados.tbl_findscomplete
+DROP TABLE IF EXISTS devill.tbl_findscomplete;
+CREATE TABLE devill.tbl_findscomplete
 (
     id        integer,
     parent_id integer,
     find      jsonb
 );
 
-INSERT INTO thanados.tbl_findscomplete (id, parent_id, find)
+INSERT INTO devill.tbl_findscomplete (id, parent_id, find)
 SELECT id,
        parent_id,
        jsonb_strip_nulls(jsonb_build_object(
@@ -1550,14 +1550,14 @@ SELECT id,
                'properties', f.properties,
                'files', f.files
            )) AS finds
-FROM thanados.tbl_finds f;
+FROM devill.tbl_finds f;
 --ORDER BY f.properties -> 'name' asc;
 
-DROP TABLE IF EXISTS thanados.tbl_finds;
+DROP TABLE IF EXISTS devill.tbl_finds;
 
 ---humanremains json
-DROP TABLE IF EXISTS thanados.tbl_humanremains;
-CREATE TABLE thanados.tbl_humanremains
+DROP TABLE IF EXISTS devill.tbl_humanremains;
+CREATE TABLE devill.tbl_humanremains
 (
     id         integer,
     parent_id  integer,
@@ -1565,7 +1565,7 @@ CREATE TABLE thanados.tbl_humanremains
     files      jsonb
 );
 
-INSERT INTO thanados.tbl_humanremains (id, parent_id, files, properties)
+INSERT INTO devill.tbl_humanremains (id, parent_id, files, properties)
 SELECT f.child_id,
        f.parent_id,
        f.files,
@@ -1587,20 +1587,20 @@ SELECT f.child_id,
                'externalreference', f.extrefs,
                'radiocarbon', f.radiocarbon
            )) AS humanremains
-FROM (SELECT * FROM thanados.tmp WHERE openatlas_class_name LIKE 'human_remains') f
+FROM (SELECT * FROM devill.tmp WHERE openatlas_class_name LIKE 'human_remains') f
 ORDER BY f.child_name;
 
 
 
-DROP TABLE IF EXISTS thanados.tbl_humanremainscomplete;
-CREATE TABLE thanados.tbl_humanremainscomplete
+DROP TABLE IF EXISTS devill.tbl_humanremainscomplete;
+CREATE TABLE devill.tbl_humanremainscomplete
 (
     id        integer,
     parent_id integer,
     humanremains      jsonb
 );
 
-INSERT INTO thanados.tbl_humanremainscomplete (id, parent_id, humanremains)
+INSERT INTO devill.tbl_humanremainscomplete (id, parent_id, humanremains)
 SELECT id,
        parent_id,
        jsonb_strip_nulls(jsonb_build_object(
@@ -1608,14 +1608,14 @@ SELECT id,
                'properties', f.properties,
                'files', f.files
            )) AS humanremains
-FROM thanados.tbl_humanremains f;
+FROM devill.tbl_humanremains f;
 --ORDER BY f.properties -> 'name' asc;
 
-DROP TABLE IF EXISTS thanados.tbl_humanremains;
+DROP TABLE IF EXISTS devill.tbl_humanremains;
 
 --burial
-DROP TABLE IF EXISTS thanados.tbl_burials;
-CREATE TABLE thanados.tbl_burials
+DROP TABLE IF EXISTS devill.tbl_burials;
+CREATE TABLE devill.tbl_burials
 (
     id                integer,
     parent_id         integer,
@@ -1625,7 +1625,7 @@ CREATE TABLE thanados.tbl_burials
     files             jsonb
 );
 
-INSERT INTO thanados.tbl_burials (id, parent_id, files, properties, finds)
+INSERT INTO devill.tbl_burials (id, parent_id, files, properties, finds)
 SELECT f.child_id AS id,
        f.parent_id,
        f.files,
@@ -1649,38 +1649,38 @@ SELECT f.child_id AS id,
 
            ))     AS burials,
        jsonb_strip_nulls(jsonb_agg(fi.find))--,
-FROM (SELECT * FROM thanados.tmp WHERE openatlas_class_name LIKE 'stratigraphic_unit') f
-         LEFT JOIN thanados.tbl_findscomplete fi ON f.child_id = fi.parent_id         
+FROM (SELECT * FROM devill.tmp WHERE openatlas_class_name LIKE 'stratigraphic_unit') f
+         LEFT JOIN devill.tbl_findscomplete fi ON f.child_id = fi.parent_id         
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.typename, f.path,
          f.radiocarbon, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files, f.openatlas_class_name, f.reference, f.extrefs
 ORDER BY f.child_name;
 
-DROP TABLE IF EXISTS thanados.tbl_findscomplete;
+DROP TABLE IF EXISTS devill.tbl_findscomplete;
 
-UPDATE thanados.tbl_burials f
+UPDATE devill.tbl_burials f
 SET finds = NULL
 WHERE f.finds = '[null]';
 
-UPDATE thanados.tbl_burials f
+UPDATE devill.tbl_burials f
 SET humanremains = hr.humanremains FROM (SELECT parent_id,
                                                 jsonb_strip_nulls(jsonb_agg(humanremains)) AS humanremains
-                                                    FROM thanados.tbl_humanremainscomplete GROUP BY parent_id) hr WHERE f.id = hr.parent_id;
+                                                    FROM devill.tbl_humanremainscomplete GROUP BY parent_id) hr WHERE f.id = hr.parent_id;
 
-DROP TABLE IF EXISTS thanados.tbl_humanremainscomplete;
+DROP TABLE IF EXISTS devill.tbl_humanremainscomplete;
 
-UPDATE thanados.tbl_burials f
+UPDATE devill.tbl_burials f
 SET humanremains = NULL
 WHERE f.humanremains = '[null]';
 
-DROP TABLE IF EXISTS thanados.tbl_burialscomplete;
-CREATE TABLE thanados.tbl_burialscomplete
+DROP TABLE IF EXISTS devill.tbl_burialscomplete;
+CREATE TABLE devill.tbl_burialscomplete
 (
     id        integer,
     parent_id integer,
     burial    jsonb
 );
 
-INSERT INTO thanados.tbl_burialscomplete (id, parent_id, burial)
+INSERT INTO devill.tbl_burialscomplete (id, parent_id, burial)
 SELECT id,
        parent_id,
        jsonb_strip_nulls(jsonb_build_object(
@@ -1690,14 +1690,14 @@ SELECT id,
                'finds', f.finds,
                'humanremains', f.humanremains
            )) AS burials
-FROM thanados.tbl_burials f;
+FROM devill.tbl_burials f;
 --ORDER BY f.properties -> 'name' asc;
 
-DROP TABLE IF EXISTS thanados.tbl_burials;
+DROP TABLE IF EXISTS devill.tbl_burials;
 
 --graves
-DROP TABLE IF EXISTS thanados.tbl_graves;
-CREATE TABLE thanados.tbl_graves
+DROP TABLE IF EXISTS devill.tbl_graves;
+CREATE TABLE devill.tbl_graves
 (
     id         integer,
     parent_id  integer,
@@ -1708,7 +1708,7 @@ CREATE TABLE thanados.tbl_graves
     burials    jsonb
 );
 
-INSERT INTO thanados.tbl_graves (id, parent_id, name, files, geom, properties, burials)
+INSERT INTO devill.tbl_graves (id, parent_id, name, files, geom, properties, burials)
 SELECT f.child_id,
        f.parent_id,
        f.child_name,
@@ -1733,28 +1733,28 @@ SELECT f.child_id,
                'radiocarbon', f.radiocarbon
            )) AS graves,
        jsonb_strip_nulls(jsonb_agg(fi.burial))
-FROM (SELECT * FROM thanados.tmp WHERE openatlas_class_name LIKE 'feature') f
-         LEFT JOIN thanados.tbl_burialscomplete fi ON f.child_id = fi.parent_id
+FROM (SELECT * FROM devill.tmp WHERE openatlas_class_name LIKE 'feature') f
+         LEFT JOIN devill.tbl_burialscomplete fi ON f.child_id = fi.parent_id
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.reference, f.extrefs,
          f.radiocarbon, f.geom, f.typename, f.path, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files,
          f.openatlas_class_name
 ORDER BY f.child_name;
 
-DROP TABLE IF EXISTS thanados.tbl_burialscomplete;
+DROP TABLE IF EXISTS devill.tbl_burialscomplete;
 
-UPDATE thanados.tbl_graves f
+UPDATE devill.tbl_graves f
 SET burials = NULL
 WHERE f.burials = '[
   null
 ]';
 
-UPDATE thanados.tbl_graves f
+UPDATE devill.tbl_graves f
 SET burials = NULL
 WHERE id = 0;
 
 
-DROP TABLE IF EXISTS thanados.tbl_gravescomplete;
-CREATE TABLE thanados.tbl_gravescomplete
+DROP TABLE IF EXISTS devill.tbl_gravescomplete;
+CREATE TABLE devill.tbl_gravescomplete
 (
     id        integer,
     parent_id integer,
@@ -1762,7 +1762,7 @@ CREATE TABLE thanados.tbl_gravescomplete
     grave     jsonb
 );
 
-INSERT INTO thanados.tbl_gravescomplete (id, parent_id, name, grave)
+INSERT INTO devill.tbl_gravescomplete (id, parent_id, name, grave)
 SELECT id,
        parent_id,
        name,
@@ -1775,14 +1775,14 @@ SELECT id,
                'files', f.files,
                'burials', f.burials
            )) AS graves
-FROM thanados.tbl_graves f
+FROM devill.tbl_graves f
 ORDER BY f.parent_id, f.name;
 
-DROP TABLE IF EXISTS thanados.tbl_graves;
+DROP TABLE IF EXISTS devill.tbl_graves;
 
 -- get data for sites
-DROP TABLE IF EXISTS thanados.tbl_sites;
-CREATE TABLE thanados.tbl_sites
+DROP TABLE IF EXISTS devill.tbl_sites;
+CREATE TABLE devill.tbl_sites
 (
     id      integer,
     name    text,
@@ -1790,46 +1790,46 @@ CREATE TABLE thanados.tbl_sites
     point   text
 );
 
-INSERT INTO thanados.tbl_sites (id, name)
+INSERT INTO devill.tbl_sites (id, name)
 SELECT child_id,
        child_name
-FROM thanados.sites;
+FROM devill.sites;
 
-UPDATE thanados.tbl_sites
+UPDATE devill.tbl_sites
 SET polygon = geom
 FROM (SELECT ST_AsGeoJSON(geom_polygon) AS geom,
              domain_id
       FROM model.gis p
                JOIN model.link l ON p.entity_id = l.range_id 
                WHERE p.geom_polygon IS NOT NULL) g
-WHERE thanados.tbl_sites.id = g.domain_id;
+WHERE devill.tbl_sites.id = g.domain_id;
 
-UPDATE thanados.tbl_sites
+UPDATE devill.tbl_sites
 SET point = geom
 FROM (SELECT ST_AsGeoJSON(geom_point) AS geom,
              domain_id
       FROM model.gis p
                JOIN model.link l ON p.entity_id = l.range_id
                WHERE p.geom_point IS NOT NULL) g
-WHERE thanados.tbl_sites.id = g.domain_id;
+WHERE devill.tbl_sites.id = g.domain_id;
 
-UPDATE thanados.tbl_sites
+UPDATE devill.tbl_sites
 SET point = geom
 FROM (SELECT ST_AsGeoJSON(ST_PointOnSurface(geom_polygon)) AS geom,
              domain_id
       FROM model.gis p
                JOIN model.link l ON p.entity_id = l.range_id
                WHERE p.geom_polygon IS NOT NULL) g
-WHERE thanados.tbl_sites.id = g.domain_id AND tbl_sites.point ISNULL;
+WHERE devill.tbl_sites.id = g.domain_id AND tbl_sites.point ISNULL;
 
-DROP TABLE IF EXISTS thanados.tbl_sitescomplete;
-CREATE TABLE thanados.tbl_sitescomplete
+DROP TABLE IF EXISTS devill.tbl_sitescomplete;
+CREATE TABLE devill.tbl_sitescomplete
 (
     id         integer,
     name       text,
     properties jsonb
 );
-INSERT INTO thanados.tbl_sitescomplete (id, name, properties)
+INSERT INTO devill.tbl_sitescomplete (id, name, properties)
 SELECT s.id,
        s.name,
        jsonb_strip_nulls(jsonb_build_object(
@@ -1852,26 +1852,26 @@ SELECT s.id,
                'shape', s.polygon::jsonb,
                'radiocarbon', f.radiocarbon
            )) AS sites
-FROM (SELECT * FROM thanados.tmp WHERE openatlas_class_name LIKE 'place') f
-         LEFT JOIN thanados.tbl_sites s ON f.child_id = s.id
+FROM (SELECT * FROM devill.tmp WHERE openatlas_class_name LIKE 'place') f
+         LEFT JOIN devill.tbl_sites s ON f.child_id = s.id
 GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.reference, f.extrefs,
          f.geom, f.typename, f.path, f.type_id, f.parenttype_id, f.types, f.dimensions, f.material, f.files,
          f.radiocarbon, f.openatlas_class_name, s.id, s.name,
          s.point, s.polygon
 ORDER BY f.child_name;
 
-DROP TABLE IF EXISTS thanados.tmp;
+DROP TABLE IF EXISTS devill.tmp;
 
 
-DROP TABLE IF EXISTS thanados.tbl_thanados_data;
-CREATE TABLE thanados.tbl_thanados_data
+DROP TABLE IF EXISTS devill.tbl_thanados_data;
+CREATE TABLE devill.tbl_thanados_data
 (
     id   integer,
     name text,
     data jsonb
 );
 
-INSERT INTO thanados.tbl_thanados_data (id, name, data)
+INSERT INTO devill.tbl_thanados_data (id, name, data)
 SELECT s.id   AS id,
        s.name AS name,
        (jsonb_strip_nulls(jsonb_build_object(
@@ -1881,12 +1881,12 @@ SELECT s.id   AS id,
                'properties', s.properties,
                'features', jsonb_strip_nulls(jsonb_agg(f.grave ORDER BY f.name))
            )))
-FROM thanados.tbl_sitescomplete s
-         LEFT JOIN (SELECT * FROM thanados.tbl_gravescomplete ORDER BY parent_id, name) f
+FROM devill.tbl_sitescomplete s
+         LEFT JOIN (SELECT * FROM devill.tbl_gravescomplete ORDER BY parent_id, name) f
                    ON s.id = f.parent_id
 GROUP BY s.id, s.name, s.properties;
 
-DROP TABLE IF EXISTS thanados.tbl_sitescomplete;
+DROP TABLE IF EXISTS devill.tbl_sitescomplete;
 """
     g.cursor.execute(sql_6)
     jsonsdone = datetime.now()
@@ -1896,10 +1896,10 @@ DROP TABLE IF EXISTS thanados.tbl_sitescomplete;
 
     sql7 = """
 -- create table with all types for json
-DROP TABLE IF EXISTS thanados.typesforjson;
-CREATE TABLE thanados.typesforjson AS
+DROP TABLE IF EXISTS devill.typesforjson;
+CREATE TABLE devill.typesforjson AS
 SELECT DISTINCT 'type' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
-FROM thanados.types_all
+FROM devill.types_all
 WHERE --set types to display in jstree
     name_path LIKE 'Anthropology%'
    OR name_path LIKE 'Grave Construction%'
@@ -1921,15 +1921,15 @@ WHERE --set types to display in jstree
    OR name_path LIKE 'Count%'
 UNION ALL
 SELECT DISTINCT 'dimensions' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
-FROM thanados.types_all
+FROM devill.types_all
 WHERE name_path LIKE 'Dimensions%'
 UNION ALL
 SELECT DISTINCT 'material' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
-FROM thanados.types_all
+FROM devill.types_all
 WHERE name_path LIKE 'Material%'
 UNION ALL
 SELECT DISTINCT 'value' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
-FROM thanados.types_all
+FROM devill.types_all
 WHERE name_path LIKE 'Body Height%' OR
 name_path LIKE 'Isotopic Analyses%' OR
 name_path LIKE 'Count%' OR
@@ -1937,40 +1937,40 @@ name_path LIKE 'Bone measurements%' OR
 name_path LIKE 'Absolute Age%'
 UNION ALL
 SELECT DISTINCT 'find' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
-FROM thanados.types_all
+FROM devill.types_all
 WHERE name_path LIKE 'Artifact%'
 UNION ALL
 SELECT DISTINCT 'osteology' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
-FROM thanados.types_all
+FROM devill.types_all
 WHERE name_path LIKE 'Human remains%'
 UNION ALL
 SELECT DISTINCT 'strat' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
-FROM thanados.types_all
+FROM devill.types_all
 WHERE name_path LIKE 'Stratigraphic unit%'
 UNION ALL
 SELECT DISTINCT 'burial_site' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
-FROM thanados.types_all
+FROM devill.types_all
 WHERE name_path LIKE '%Burial Site%'
 UNION ALL
 SELECT DISTINCT 'feature' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
-FROM thanados.types_all
+FROM devill.types_all
 WHERE name_path LIKE 'Feature%'
 
 ORDER BY level, name_path;
 
-UPDATE thanados.typesforjson
+UPDATE devill.typesforjson
 SET parent = '#'
 WHERE parent ISNULL; --necessary for jstree
-UPDATE thanados.typesforjson
+UPDATE devill.typesforjson
 SET parent = '#'
 WHERE parent = '73'; --necessary for jstree (removes parent from burial site type)
---INSERT INTO thanados.typesforjson (level, id, text, parent, path, name_path, forms, topparent)
+--INSERT INTO devill.typesforjson (level, id, text, parent, path, name_path, forms, topparent)
 --VALUES ('find', '157754', 'Artifact', '#', '157754', 'Artifact', '["artifact", "find"]', 157754);
 --hack because find has no parent
 
 -- create table with all types as json
-DROP TABLE IF EXISTS thanados.typesjson;
-CREATE TABLE thanados.typesjson AS (
+DROP TABLE IF EXISTS devill.typesjson;
+CREATE TABLE devill.typesjson AS (
     SELECT jsonb_agg(jsonb_build_object('id', id,
                                         'text', text,
                                         'parent', parent,
@@ -1980,14 +1980,14 @@ CREATE TABLE thanados.typesjson AS (
                                         'forms', forms
         )) as types
     FROM (SELECT *
-          FROM thanados.typesforjson AS types
+          FROM devill.typesforjson AS types
           GROUP BY types.level, types.id, types.text, types.parent, types.name_path, types.path, types.forms, types.topparent
           ORDER BY name_path) as u);
           
 -- prepare data for charts
 
-DROP TABLE IF EXISTS thanados.chart_data;
-CREATE TABLE thanados.chart_data
+DROP TABLE IF EXISTS devill.chart_data;
+CREATE TABLE devill.chart_data
 (
     depth       JSONB,
     bodyheight  JSONB,
@@ -1998,8 +1998,8 @@ CREATE TABLE thanados.chart_data
 );
 
 
-DROP TABLE IF EXISTS thanados.depth_labels;
-CREATE TABLE thanados.depth_labels AS (
+DROP TABLE IF EXISTS devill.depth_labels;
+CREATE TABLE devill.depth_labels AS (
 -- get labels for depth of graves
     SELECT jsonb_agg(js.json_object_keys)
                AS labels
@@ -2042,9 +2042,9 @@ CREATE TABLE thanados.depth_labels AS (
                                   SELECT g.parent_id,
                                          s.name AS site_name,
                                          d.value::double precision
-                                  FROM thanados.tbl_sites s
-                                           JOIN thanados.graves g ON g.parent_id = s.id
-                                           JOIN thanados.dimensiontypes d ON g.child_id = d.entity_id
+                                  FROM devill.tbl_sites s
+                                           JOIN devill.graves g ON g.parent_id = s.id
+                                           JOIN devill.dimensiontypes d ON g.child_id = d.entity_id
                                   WHERE d.name = 'Height'
                               ) v
 
@@ -2053,8 +2053,8 @@ CREATE TABLE thanados.depth_labels AS (
                 LIMIT 1) AS ok) AS js);
 
 --get values
-DROP TABLE IF EXISTS thanados.depth;
-CREATE TABLE thanados.depth AS (
+DROP TABLE IF EXISTS devill.depth;
+CREATE TABLE devill.depth AS (
     SELECT parent_id                                  AS "site_id",
            site_name                                  AS "label",
            '[' ||
@@ -2094,9 +2094,9 @@ CREATE TABLE thanados.depth AS (
              SELECT g.parent_id,
                     s.name AS site_name,
                     d.value::double precision
-             FROM thanados.tbl_sites s
-                      JOIN thanados.graves g ON g.parent_id = s.id
-                      JOIN thanados.dimensiontypes d ON g.child_id = d.entity_id
+             FROM devill.tbl_sites s
+                      JOIN devill.graves g ON g.parent_id = s.id
+                      JOIN devill.dimensiontypes d ON g.child_id = d.entity_id
              WHERE d.name = 'Height'
          ) v
 
@@ -2104,37 +2104,37 @@ CREATE TABLE thanados.depth AS (
 
 
 
-DROP TABLE IF EXISTS thanados.chart_depth;
-CREATE TABLE thanados.chart_depth
+DROP TABLE IF EXISTS devill.chart_depth;
+CREATE TABLE devill.chart_depth
 (
     depth TEXT
 );
-INSERT INTO thanados.chart_depth (depth)
+INSERT INTO devill.chart_depth (depth)
 SELECT jsonb_build_object(
                'labels', dl.labels,
                'datasets', jsonb_agg(d)
            )
-FROM thanados.depth_labels dl,
-     thanados.depth d
+FROM devill.depth_labels dl,
+     devill.depth d
 GROUP BY dl.labels;
 
-DROP TABLE IF EXISTS thanados.depth;
-DROP TABLE IF EXISTS thanados.depth_labels;
+DROP TABLE IF EXISTS devill.depth;
+DROP TABLE IF EXISTS devill.depth_labels;
 
-UPDATE thanados.chart_depth
+UPDATE devill.chart_depth
 SET depth = REPLACE(depth, '"[', '[');
-UPDATE thanados.chart_depth
+UPDATE devill.chart_depth
 SET depth = REPLACE(depth, ']"', ']');
 
-INSERT INTO thanados.chart_data (depth)
+INSERT INTO devill.chart_data (depth)
 SELECT depth::JSONB
-FROM thanados.chart_depth;
+FROM devill.chart_depth;
 
-DROP TABLE IF EXISTS thanados.chart_depth;
+DROP TABLE IF EXISTS devill.chart_depth;
 
 
-DROP TABLE IF EXISTS thanados.orientation_labels;
-CREATE TABLE thanados.orientation_labels AS (
+DROP TABLE IF EXISTS devill.orientation_labels;
+CREATE TABLE devill.orientation_labels AS (
 -- get labels for orientation of graves
     SELECT jsonb_agg(js.json_object_keys)
                AS labels
@@ -2163,9 +2163,9 @@ CREATE TABLE thanados.orientation_labels AS (
                                   SELECT g.parent_id,
                                          s.name AS site_name,
                                          d.value::double precision
-                                  FROM thanados.tbl_sites s
-                                           JOIN thanados.graves g ON g.parent_id = s.id
-                                           JOIN thanados.dimensiontypes d ON g.child_id = d.entity_id
+                                  FROM devill.tbl_sites s
+                                           JOIN devill.graves g ON g.parent_id = s.id
+                                           JOIN devill.dimensiontypes d ON g.child_id = d.entity_id
                                   WHERE d.name = 'Degrees'
                               ) v
 
@@ -2174,8 +2174,8 @@ CREATE TABLE thanados.orientation_labels AS (
                 LIMIT 1) AS ok) AS js);
 
 --get values
-DROP TABLE IF EXISTS thanados.orientation;
-CREATE TABLE thanados.orientation AS (
+DROP TABLE IF EXISTS devill.orientation;
+CREATE TABLE devill.orientation AS (
     SELECT parent_id                                                   AS "site_id",
            site_name                                                   AS "label",
            '[' ||
@@ -2201,39 +2201,39 @@ CREATE TABLE thanados.orientation AS (
              SELECT g.parent_id,
                     s.name AS site_name,
                     d.value::double precision
-             FROM thanados.tbl_sites s
-                      JOIN thanados.graves g ON g.parent_id = s.id
-                      JOIN thanados.dimensiontypes d ON g.child_id = d.entity_id
+             FROM devill.tbl_sites s
+                      JOIN devill.graves g ON g.parent_id = s.id
+                      JOIN devill.dimensiontypes d ON g.child_id = d.entity_id
              WHERE d.name = 'Degrees'
          ) v
     GROUP BY parent_id, site_name);
 
-DROP TABLE IF EXISTS thanados.chart_orientation;
-CREATE TABLE thanados.chart_orientation(orientation TEXT);
-INSERT INTO thanados.chart_orientation (orientation)
+DROP TABLE IF EXISTS devill.chart_orientation;
+CREATE TABLE devill.chart_orientation(orientation TEXT);
+INSERT INTO devill.chart_orientation (orientation)
 SELECT jsonb_build_object(
                'labels', dl.labels,
                'datasets', jsonb_agg(d)
            )
-FROM thanados.orientation_labels dl,
-     thanados.orientation d
+FROM devill.orientation_labels dl,
+     devill.orientation d
 GROUP BY dl.labels;
 
-DROP TABLE IF EXISTS thanados.orientation_labels;
-DROP TABLE IF EXISTS thanados.orientation;
+DROP TABLE IF EXISTS devill.orientation_labels;
+DROP TABLE IF EXISTS devill.orientation;
 
-UPDATE thanados.chart_orientation
+UPDATE devill.chart_orientation
 SET orientation = REPLACE(orientation, '"[', '[');
-UPDATE thanados.chart_orientation
+UPDATE devill.chart_orientation
 SET orientation = REPLACE(orientation, ']"', ']');
 
-UPDATE thanados.chart_data
-SET orientation = (SELECT orientation::JSONB FROM thanados.chart_orientation);
+UPDATE devill.chart_data
+SET orientation = (SELECT orientation::JSONB FROM devill.chart_orientation);
 
-DROP TABLE IF EXISTS thanados.chart_orientation;
+DROP TABLE IF EXISTS devill.chart_orientation;
 
-DROP TABLE IF EXISTS thanados.azimuth_labels;
-CREATE TABLE thanados.azimuth_labels AS (
+DROP TABLE IF EXISTS devill.azimuth_labels;
+CREATE TABLE devill.azimuth_labels AS (
 -- get labels for azimuth of graves
     SELECT jsonb_agg(js.json_object_keys)
                AS labels
@@ -2262,9 +2262,9 @@ CREATE TABLE thanados.azimuth_labels AS (
                                   SELECT g.parent_id,
                                          s.name AS site_name,
                                          d.value::double precision
-                                  FROM thanados.tbl_sites s
-                                           JOIN thanados.graves g ON g.parent_id = s.id
-                                           JOIN thanados.dimensiontypes d ON g.child_id = d.entity_id
+                                  FROM devill.tbl_sites s
+                                           JOIN devill.graves g ON g.parent_id = s.id
+                                           JOIN devill.dimensiontypes d ON g.child_id = d.entity_id
                                   WHERE d.name = 'Azimuth'
                               ) v
 
@@ -2273,8 +2273,8 @@ CREATE TABLE thanados.azimuth_labels AS (
                 LIMIT 1) AS ok) AS js);
 
 --get values
-DROP TABLE IF EXISTS thanados.azimuth;
-CREATE TABLE thanados.azimuth AS (
+DROP TABLE IF EXISTS devill.azimuth;
+CREATE TABLE devill.azimuth AS (
     SELECT parent_id                                                   AS "site_id",
            site_name                                                   AS "label",
            '[' ||
@@ -2299,41 +2299,41 @@ CREATE TABLE thanados.azimuth AS (
              SELECT g.parent_id,
                     s.name AS site_name,
                     d.value::double precision
-             FROM thanados.tbl_sites s
-                      JOIN thanados.graves g ON g.parent_id = s.id
-                      JOIN thanados.dimensiontypes d ON g.child_id = d.entity_id
+             FROM devill.tbl_sites s
+                      JOIN devill.graves g ON g.parent_id = s.id
+                      JOIN devill.dimensiontypes d ON g.child_id = d.entity_id
              WHERE d.name = 'Azimuth'
          ) v
     GROUP BY parent_id, site_name);
 
-DROP TABLE IF EXISTS thanados.chart_azimuth;
-CREATE TABLE thanados.chart_azimuth(azimuth TEXT);
-INSERT INTO thanados.chart_azimuth (azimuth)
+DROP TABLE IF EXISTS devill.chart_azimuth;
+CREATE TABLE devill.chart_azimuth(azimuth TEXT);
+INSERT INTO devill.chart_azimuth (azimuth)
 SELECT jsonb_build_object(
                'labels', dl.labels,
                'datasets', jsonb_agg(d)
            )
-FROM thanados.azimuth_labels dl,
-     thanados.azimuth d
+FROM devill.azimuth_labels dl,
+     devill.azimuth d
 GROUP BY dl.labels;
 
-DROP TABLE IF EXISTS thanados.azimuth_labels;
-DROP TABLE IF EXISTS thanados.azimuth;
+DROP TABLE IF EXISTS devill.azimuth_labels;
+DROP TABLE IF EXISTS devill.azimuth;
 
-UPDATE thanados.chart_azimuth
+UPDATE devill.chart_azimuth
 SET azimuth = REPLACE(azimuth, '"[', '[');
-UPDATE thanados.chart_azimuth
+UPDATE devill.chart_azimuth
 SET azimuth = REPLACE(azimuth, ']"', ']');
 
-UPDATE thanados.chart_data
-SET azimuth = (SELECT azimuth::JSONB FROM thanados.chart_azimuth);
+UPDATE devill.chart_data
+SET azimuth = (SELECT azimuth::JSONB FROM devill.chart_azimuth);
 
-DROP TABLE IF EXISTS thanados.chart_azimuth;
+DROP TABLE IF EXISTS devill.chart_azimuth;
 
 -- gender start
 
-DROP TABLE IF EXISTS thanados.gender;
-CREATE TABLE thanados.gender AS (
+DROP TABLE IF EXISTS devill.gender;
+CREATE TABLE devill.gender AS (
     SELECT s.parent_id AS site_id,
            s.site_name AS "label",
            '[' ||
@@ -2346,49 +2346,49 @@ CREATE TABLE thanados.gender AS (
              SELECT g.parent_id,
                     s.name AS site_name,
                     d.name
-             FROM thanados.tbl_sites s
-                      JOIN thanados.graves g ON g.parent_id = s.id
-                      JOIN thanados.burials b ON g.child_id = b.parent_id
-                      JOIN thanados.types d ON b.child_id = d.entity_id
+             FROM devill.tbl_sites s
+                      JOIN devill.graves g ON g.parent_id = s.id
+                      JOIN devill.burials b ON g.child_id = b.parent_id
+                      JOIN devill.types d ON b.child_id = d.entity_id
              WHERE d.path LIKE 'Gender >%') s
              JOIN (
         SELECT g.parent_id        AS site_id,
                count(g.parent_id) AS burialcount
-        FROM thanados.tbl_sites s
-                 JOIN thanados.graves g ON g.parent_id = s.id
-                 JOIN thanados.burials b ON g.child_id = b.parent_id
+        FROM devill.tbl_sites s
+                 JOIN devill.graves g ON g.parent_id = s.id
+                 JOIN devill.burials b ON g.child_id = b.parent_id
         GROUP by g.parent_id
     ) bc ON s.parent_id = bc.site_id
     GROUP BY site_name, parent_id, burialcount);
 
-DROP TABLE IF EXISTS thanados.chart_gender;
-CREATE TABLE thanados.chart_gender
+DROP TABLE IF EXISTS devill.chart_gender;
+CREATE TABLE devill.chart_gender
 (
     gender TEXT
 );
 
-INSERT INTO thanados.chart_gender (gender)
+INSERT INTO devill.chart_gender (gender)
     (SELECT jsonb_build_object(
                     'labels', array_to_json('{"male", "female", "unknown"}'::TEXT[]),
                     'datasets', jsonb_agg(d)
                 )
-     FROM thanados.gender d);
+     FROM devill.gender d);
      
-DROP TABLE IF EXISTS thanados.gender;     
+DROP TABLE IF EXISTS devill.gender;     
 
-UPDATE thanados.chart_gender
+UPDATE devill.chart_gender
 SET gender = REPLACE(gender, '"[', '[');
-UPDATE thanados.chart_gender
+UPDATE devill.chart_gender
 SET gender = REPLACE(gender, ']"', ']');
 
-UPDATE thanados.chart_data
-SET gender = (SELECT gender::JSONB FROM thanados.chart_gender);
-DROP TABLE IF EXISTS thanados.chart_gender;
+UPDATE devill.chart_data
+SET gender = (SELECT gender::JSONB FROM devill.chart_gender);
+DROP TABLE IF EXISTS devill.chart_gender;
 
 -- gender end
 
-DROP TABLE IF EXISTS thanados.sex;
-CREATE TABLE thanados.sex AS (
+DROP TABLE IF EXISTS devill.sex;
+CREATE TABLE devill.sex AS (
     SELECT s.parent_id AS site_id,
            s.site_name AS "label",
            '[' ||
@@ -2401,48 +2401,48 @@ CREATE TABLE thanados.sex AS (
              SELECT g.parent_id,
                     s.name AS site_name,
                     d.name
-             FROM thanados.tbl_sites s
-                      JOIN thanados.graves g ON g.parent_id = s.id
-                      JOIN thanados.burials b ON g.child_id = b.parent_id
-                      JOIN thanados.types d ON b.child_id = d.entity_id
+             FROM devill.tbl_sites s
+                      JOIN devill.graves g ON g.parent_id = s.id
+                      JOIN devill.burials b ON g.child_id = b.parent_id
+                      JOIN devill.types d ON b.child_id = d.entity_id
              WHERE d.path LIKE 'Sex >%') s
              JOIN (
         SELECT g.parent_id        AS site_id,
                count(g.parent_id) AS burialcount
-        FROM thanados.tbl_sites s
-                 JOIN thanados.graves g ON g.parent_id = s.id
-                 JOIN thanados.burials b ON g.child_id = b.parent_id
+        FROM devill.tbl_sites s
+                 JOIN devill.graves g ON g.parent_id = s.id
+                 JOIN devill.burials b ON g.child_id = b.parent_id
         GROUP by g.parent_id
     ) bc ON s.parent_id = bc.site_id
     GROUP BY site_name, parent_id, burialcount);
 
-DROP TABLE IF EXISTS thanados.chart_sex;
-CREATE TABLE thanados.chart_sex
+DROP TABLE IF EXISTS devill.chart_sex;
+CREATE TABLE devill.chart_sex
 (
     sex TEXT
 );
 
-INSERT INTO thanados.chart_sex (sex)
+INSERT INTO devill.chart_sex (sex)
     (SELECT jsonb_build_object(
                     'labels', array_to_json('{"male", "female", "unknown"}'::TEXT[]),
                     'datasets', jsonb_agg(d)
                 )
-     FROM thanados.sex d);
+     FROM devill.sex d);
      
-DROP TABLE IF EXISTS thanados.sex;     
+DROP TABLE IF EXISTS devill.sex;     
 
-UPDATE thanados.chart_sex
+UPDATE devill.chart_sex
 SET sex = REPLACE(sex, '"[', '[');
-UPDATE thanados.chart_sex
+UPDATE devill.chart_sex
 SET sex = REPLACE(sex, ']"', ']');
 
-UPDATE thanados.chart_data
-SET sex = (SELECT sex::JSONB FROM thanados.chart_sex);
-DROP TABLE IF EXISTS thanados.chart_sex;
+UPDATE devill.chart_data
+SET sex = (SELECT sex::JSONB FROM devill.chart_sex);
+DROP TABLE IF EXISTS devill.chart_sex;
 
 --age at death estimation for boxplot/violin plot
-DROP TABLE IF EXISTS thanados.ageatdeath;
-CREATE TABLE thanados.ageatdeath AS (
+DROP TABLE IF EXISTS devill.ageatdeath;
+CREATE TABLE devill.ageatdeath AS (
         SELECT ar.sitename,
            ar.site_id,
            jsonb_build_object(
@@ -2465,10 +2465,10 @@ CREATE TABLE thanados.ageatdeath AS (
                 FROM (SELECT s.child_name  AS sitename,
                              s.child_id AS site_id,
                              t.description AS age
-                      FROM thanados.sites s
-                               JOIN thanados.graves g ON s.child_id = g.parent_id
-                               JOIN thanados.burials b ON b.parent_id = g.child_id
-                               JOIN thanados.types t ON t.entity_id = b.child_id
+                      FROM devill.sites s
+                               JOIN devill.graves g ON s.child_id = g.parent_id
+                               JOIN devill.burials b ON b.parent_id = g.child_id
+                               JOIN devill.types t ON t.entity_id = b.child_id
                       WHERE t.path LIKE '%> Age >%'
                       ORDER BY sitename) AS a) age
           GROUP BY sitename, site_id) ar ORDER BY site_id);
@@ -2476,16 +2476,16 @@ CREATE TABLE thanados.ageatdeath AS (
             
 
           
-    DROP TABLE IF EXISTS thanados.searchData;
-    CREATE TABLE thanados.searchData AS
-    SELECT e.child_id, e.child_name, 'timespan' AS type, NULL AS path, 0 AS type_id, e.begin_from AS min, e.end_to AS max, e.openatlas_class_name FROM thanados.entities e WHERE e.child_id != 0
+    DROP TABLE IF EXISTS devill.searchData;
+    CREATE TABLE devill.searchData AS
+    SELECT e.child_id, e.child_name, 'timespan' AS type, NULL AS path, 0 AS type_id, e.begin_from AS min, e.end_to AS max, e.openatlas_class_name FROM devill.entities e WHERE e.child_id != 0
     UNION ALL
-    SELECT e.child_id, e.child_name, t.name AS type, t.path AS path, t.id AS type_id, t.value::double precision AS min, t.value::double precision AS max, e.openatlas_class_name FROM thanados.entities e LEFT JOIN thanados.types_main t ON e.child_id = t.entity_id
+    SELECT e.child_id, e.child_name, t.name AS type, t.path AS path, t.id AS type_id, t.value::double precision AS min, t.value::double precision AS max, e.openatlas_class_name FROM devill.entities e LEFT JOIN devill.types_main t ON e.child_id = t.entity_id
     WHERE e.child_id != 0
     ORDER BY child_id;
 
-DROP TABLE IF EXISTS thanados.searchData_tmp;
-    CREATE TABLE thanados.searchData_tmp AS (
+DROP TABLE IF EXISTS devill.searchData_tmp;
+    CREATE TABLE devill.searchData_tmp AS (
 
 SELECT
 	se.*,
@@ -2497,12 +2497,12 @@ SELECT
 	s.lat,
 	s.child_name || ' > ' || g.child_name || ' > ' || b.child_name || ' > ' || se.child_name AS context
 
-	FROM thanados.searchData se
-		JOIN thanados.maintype mt ON se.child_id = mt.entity_id
-		JOIN thanados.finds f ON se.child_id = f.child_id
-		JOIN thanados.burials b ON f.parent_id = b.child_id
-		JOIN thanados.graves g ON b.parent_id = g.child_id
-		JOIN thanados.sites s ON g.parent_id = s.child_id
+	FROM devill.searchData se
+		JOIN devill.maintype mt ON se.child_id = mt.entity_id
+		JOIN devill.finds f ON se.child_id = f.child_id
+		JOIN devill.burials b ON f.parent_id = b.child_id
+		JOIN devill.graves g ON b.parent_id = g.child_id
+		JOIN devill.sites s ON g.parent_id = s.child_id
 		WHERE se.openatlas_class_name = 'artifact' AND s.lon != ''
 
 UNION ALL
@@ -2517,12 +2517,12 @@ SELECT
 	s.lat,
 	s.child_name || ' > ' || g.child_name || ' > ' || b.child_name || ' > ' || se.child_name AS context
 
-	FROM thanados.searchData se
-		JOIN thanados.maintype mt ON se.child_id = mt.entity_id
-		JOIN thanados.humanremains f ON se.child_id = f.child_id
-		JOIN thanados.burials b ON f.parent_id = b.child_id
-		JOIN thanados.graves g ON b.parent_id = g.child_id
-		JOIN thanados.sites s ON g.parent_id = s.child_id
+	FROM devill.searchData se
+		JOIN devill.maintype mt ON se.child_id = mt.entity_id
+		JOIN devill.humanremains f ON se.child_id = f.child_id
+		JOIN devill.burials b ON f.parent_id = b.child_id
+		JOIN devill.graves g ON b.parent_id = g.child_id
+		JOIN devill.sites s ON g.parent_id = s.child_id
 		WHERE se.openatlas_class_name = 'human_remains' AND s.lon != ''
 
 UNION ALL
@@ -2537,11 +2537,11 @@ SELECT
 	s.lat,
 	s.child_name || ' > ' || g.child_name || ' > ' || b.child_name AS context
 	
-	FROM thanados.searchData se
-		JOIN thanados.maintype mt ON se.child_id = mt.entity_id
-		JOIN thanados.burials b ON se.child_id = b.child_id 
-		JOIN thanados.graves g ON b.parent_id = g.child_id 
-		JOIN thanados.sites s ON g.parent_id = s.child_id 
+	FROM devill.searchData se
+		JOIN devill.maintype mt ON se.child_id = mt.entity_id
+		JOIN devill.burials b ON se.child_id = b.child_id 
+		JOIN devill.graves g ON b.parent_id = g.child_id 
+		JOIN devill.sites s ON g.parent_id = s.child_id 
 		WHERE se.openatlas_class_name = 'stratigraphic_unit' AND s.lon != ''
 
 UNION ALL		
@@ -2556,10 +2556,10 @@ SELECT
 	s.lat,
 	s.child_name || ' > ' || g.child_name AS context
 
-	FROM thanados.searchData se
-		JOIN thanados.maintype mt ON se.child_id = mt.entity_id
-		JOIN thanados.graves g ON se.child_id = g.child_id 
-		JOIN thanados.sites s ON g.parent_id = s.child_id 
+	FROM devill.searchData se
+		JOIN devill.maintype mt ON se.child_id = mt.entity_id
+		JOIN devill.graves g ON se.child_id = g.child_id 
+		JOIN devill.sites s ON g.parent_id = s.child_id 
 		WHERE se.openatlas_class_name = 'feature' AND s.lon != ''
 
 UNION ALL		
@@ -2574,19 +2574,19 @@ SELECT
 	s.lat,
 	s.child_name AS context
 
-	FROM thanados.searchData se
-		JOIN thanados.maintype mt ON se.child_id = mt.entity_id
-		JOIN thanados.sites s ON se.child_id = s.child_id 
+	FROM devill.searchData se
+		JOIN devill.maintype mt ON se.child_id = mt.entity_id
+		JOIN devill.sites s ON se.child_id = s.child_id 
 		WHERE se.openatlas_class_name = 'place' AND s.lon != ''); 
 
-DROP TABLE IF EXISTS thanados.searchData;
-    CREATE TABLE thanados.searchData AS SELECT * FROM thanados.searchData_tmp;
-DROP TABLE IF EXISTS thanados.searchData_tmp;
+DROP TABLE IF EXISTS devill.searchData;
+    CREATE TABLE devill.searchData AS SELECT * FROM devill.searchData_tmp;
+DROP TABLE IF EXISTS devill.searchData_tmp;
 
-DELETE FROM thanados.searchData WHERE type_id = 0 AND min ISNULL AND max ISNULL;
+DELETE FROM devill.searchData WHERE type_id = 0 AND min ISNULL AND max ISNULL;
 
-DROP TABLE IF EXISTS thanados.searchData_tmp;
-CREATE TABLE thanados.searchData_tmp AS (
+DROP TABLE IF EXISTS devill.searchData_tmp;
+CREATE TABLE devill.searchData_tmp AS (
 
 SELECT
 d.*,
@@ -2595,17 +2595,17 @@ fi.filename
 
 (select distinct on (f.parent_id)
     f.parent_id, f.filename
-from thanados.files f WHERE filename != ''   
-order by f.parent_id) fi RIGHT JOIN thanados.searchData d ON d.child_id = fi.parent_id ORDER BY child_id, type);
+from devill.files f WHERE filename != ''   
+order by f.parent_id) fi RIGHT JOIN devill.searchData d ON d.child_id = fi.parent_id ORDER BY child_id, type);
 
-DROP TABLE thanados.searchData;
-CREATE TABLE thanados.searchData AS (
-SELECT * FROM thanados.searchData_tmp);
-DROP TABLE thanados.searchData_tmp;
+DROP TABLE devill.searchData;
+CREATE TABLE devill.searchData AS (
+SELECT * FROM devill.searchData_tmp);
+DROP TABLE devill.searchData_tmp;
 
 
-DROP TABLE IF EXISTS thanados.valueageatdeath;
-CREATE TABLE thanados.valueageatdeath AS (
+DROP TABLE IF EXISTS devill.valueageatdeath;
+CREATE TABLE devill.valueageatdeath AS (
             SELECT ar.sitename,
            ar.site_id,
            jsonb_build_object(
@@ -2622,11 +2622,11 @@ CREATE TABLE thanados.valueageatdeath AS (
           FROM (
                     SELECT a.site_id, c.name AS sitename, a.avg AS agemin, b.avg AS agemax, (a.avg + b.avg)/2 AS average FROM
 
-(SELECT site_id, child_id, child_name, avg(min) AS avg FROM thanados.searchdata
+(SELECT site_id, child_id, child_name, avg(min) AS avg FROM devill.searchdata
 WHERE type_id IN (117199)
 GROUP BY site_id, child_id, child_name ORDER BY avg desc) a JOIN
 
-(SELECT site_id, child_id, child_name, avg(min) AS avg FROM thanados.searchdata
+(SELECT site_id, child_id, child_name, avg(min) AS avg FROM devill.searchdata
 WHERE type_id IN (117200)
 GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.child_id
                         JOIN model.entity c ON a.site_id = c.id
@@ -2634,13 +2634,13 @@ GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.ch
           GROUP BY sitename, site_id) ar ORDER BY site_id);
 
 
-DROP TABLE IF EXISTS thanados.bodyheight_labels;
-CREATE TABLE thanados.bodyheight_labels AS (
+DROP TABLE IF EXISTS devill.bodyheight_labels;
+CREATE TABLE devill.bodyheight_labels AS (
     SELECT '["0-10", "11-20", "21-30", "31-40", "41-50", "51-60", "61-70", "71-80", "81-90", "91-100", "101-110", "111-120", "121-130", "131-140", "141-150", "151-160", "161-170", "171-180", "181-190", "191-200", "over 200"]'::JSONB AS labels
 );
 
-DROP TABLE IF EXISTS thanados.bodyheight;
-CREATE TABLE thanados.bodyheight AS (
+DROP TABLE IF EXISTS devill.bodyheight;
+CREATE TABLE devill.bodyheight AS (
 
 SELECT b.name                                       AS "label",
        b.id                                         AS "site_id",
@@ -2667,37 +2667,37 @@ SELECT b.name                                       AS "label",
        count(*) FILTER (WHERE a.VALUE > 200) || ']' AS data
 FROM (
          SELECT site_id, child_id, (avg(min)::int) AS VALUE
-         FROM thanados.searchdata
-         WHERE type_id IN (SELECT id FROM thanados.types_all WHERE path LIKE '118155%')
+         FROM devill.searchdata
+         WHERE type_id IN (SELECT id FROM devill.types_all WHERE path LIKE '118155%')
          GROUP BY site_id, child_id) a
          JOIN model.entity b on a.site_id = b.id
 GROUP BY b.name, b.id);
 
-DROP TABLE IF EXISTS thanados.chart_bodyheight;
-CREATE TABLE thanados.chart_bodyheight(bodyheight TEXT);
-INSERT INTO thanados.chart_bodyheight (bodyheight)
+DROP TABLE IF EXISTS devill.chart_bodyheight;
+CREATE TABLE devill.chart_bodyheight(bodyheight TEXT);
+INSERT INTO devill.chart_bodyheight (bodyheight)
 SELECT jsonb_build_object(
                'labels', dl.labels,
                'datasets', jsonb_agg(d)
            )
-FROM thanados.bodyheight_labels dl,
-     thanados.bodyheight d
+FROM devill.bodyheight_labels dl,
+     devill.bodyheight d
 GROUP BY dl.labels;
 
-DROP TABLE IF EXISTS thanados.bodyheight_labels;
-DROP TABLE IF EXISTS thanados.bodyheight;
+DROP TABLE IF EXISTS devill.bodyheight_labels;
+DROP TABLE IF EXISTS devill.bodyheight;
 
-UPDATE thanados.chart_bodyheight
+UPDATE devill.chart_bodyheight
 SET bodyheight = REPLACE(bodyheight, '"[', '[');
-UPDATE thanados.chart_bodyheight
+UPDATE devill.chart_bodyheight
 SET bodyheight = REPLACE(bodyheight, ']"', ']');
 
-UPDATE thanados.chart_data
-SET bodyheight = (SELECT bodyheight::JSONB FROM thanados.chart_bodyheight);
+UPDATE devill.chart_data
+SET bodyheight = (SELECT bodyheight::JSONB FROM devill.chart_bodyheight);
 
-DROP TABLE IF EXISTS thanados.EntCount;
-CREATE TABLE thanados.EntCount AS
-    SELECT * FROM thanados.searchdata WHERE site_id IN (SELECT child_id from thanados.sites);
+DROP TABLE IF EXISTS devill.EntCount;
+CREATE TABLE devill.EntCount AS
+    SELECT * FROM devill.searchdata WHERE site_id IN (SELECT child_id from devill.sites);
     """
 
     g.cursor.execute(sql7)
@@ -2751,11 +2751,11 @@ def geoclean_execute():  # pragma: no cover
 
     Data.get_ext_type_data()
 
-    g.cursor.execute('SELECT * FROM thanados.ext_types ORDER BY type_id')
+    g.cursor.execute('SELECT * FROM devill.ext_types ORDER BY type_id')
     types = g.cursor.fetchall()
 
     sqlPrefs = """
-                            UPDATE thanados.ext_types SET prefterm = %(prefTerm)s 
+                            UPDATE devill.ext_types SET prefterm = %(prefTerm)s 
                             WHERE type_id = %(type_id)s AND name = %(vocab)s
                 """
 
@@ -2781,7 +2781,7 @@ def geoclean_execute():  # pragma: no cover
                              {'prefTerm': prefTerm, 'type_id': row.type_id,
                               'vocab': vocab})
 
-    g.cursor.execute("SELECT * FROM thanados.refsys")
+    g.cursor.execute("SELECT * FROM devill.refsys")
     resultRefs = g.cursor.fetchall()
 
     # -*- coding: utf-8 -*-
@@ -2984,7 +2984,7 @@ def geoclean_execute():  # pragma: no cover
                                 ref_id) + '.' + icons[0].format
 
                         g.cursor.execute(
-                            "UPDATE thanados.refsys SET icon_url = %(favicon_)s WHERE entity_id = %(ref_id)s",
+                            "UPDATE devill.refsys SET icon_url = %(favicon_)s WHERE entity_id = %(ref_id)s",
                             {'favicon_': fav_filename, 'ref_id': ref_id})
                     except Exception:
                         print('Error downloading ' + row.website_url)

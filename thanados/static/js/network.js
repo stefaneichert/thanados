@@ -42,7 +42,7 @@ $('#mybreadcrumb').append(
 subLabel = 'Subunits'
 
 if (systemtype == 'place') {
-    subLabel = 'Graves';
+    subLabel = 'Features';
     //getEntityData(sitename, jsonmysite.id, jsonmysite);
     mycitation = '"' + sitename + '".';
     myjson = jsonmysite;
@@ -50,7 +50,7 @@ if (systemtype == 'place') {
 }
 
 if (systemtype == 'feature') {
-    subLabel = 'Burials';
+    subLabel = 'Strat. Units';
     $.each(jsonmysite.features, function (f, feature) {
         if (entity_id == feature.id) {
             graveName = feature.properties.name;

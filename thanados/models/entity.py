@@ -11,8 +11,8 @@ class Data:
     def get_list():
         # noinspection SqlIdentifier
         sql_sites = """
-        DROP TABLE IF EXISTS thanados.tmpsites;
-CREATE TABLE thanados.tmpsites AS (
+        DROP TABLE IF EXISTS devill.tmpsites;
+CREATE TABLE devill.tmpsites AS (
     SELECT s.child_name                                           AS name,
            REPLACE(split_part(s.description, '##', 1), '"', '``') AS description,
            s.begin_from                                           AS begin,
@@ -24,8 +24,8 @@ CREATE TABLE thanados.tmpsites AS (
            s.lon,
            COUNT(s.child_id)::TEXT                                AS graves           
 
-    FROM thanados.entities s
-             LEFT JOIN thanados.graves g ON s.child_id = g.parent_id             
+    FROM devill.entities s
+             LEFT JOIN devill.graves g ON s.child_id = g.parent_id             
     WHERE s.openatlas_class_name = 'place'
       AND s.lat IS NOT NULL
       AND s.child_id IN  %(sites)s
@@ -33,7 +33,7 @@ CREATE TABLE thanados.tmpsites AS (
                      ORDER BY s.child_name);"""
 
         sql_sites2 = """
-        UPDATE thanados.tmpsites SET (graves) = (SELECT graves FROM ( 
+        UPDATE devill.tmpsites SET (graves) = (SELECT graves FROM ( 
             SELECT              
                     s.name,
                     s.description,
@@ -47,11 +47,11 @@ CREATE TABLE thanados.tmpsites AS (
                     COUNT(mt.path) FILTER (WHERE mt.path LIKE 'Feature%')::TEXT AS graves
                                              
 
-                     FROM thanados.tmpsites s LEFT JOIN thanados.graves g ON s.id = g.parent_id LEFT JOIN thanados.maintype mt ON g.child_id = mt.entity_id 
-                     GROUP BY s.name, s.description, s.begin, s.end, s.id, s.type, s.path, s.lat, s.lon) a WHERE id = thanados.tmpsites.id);
-                     UPDATE thanados.tmpsites SET graves = NULL WHERE graves = '0';     
+                     FROM devill.tmpsites s LEFT JOIN devill.graves g ON s.id = g.parent_id LEFT JOIN devill.maintype mt ON g.child_id = mt.entity_id 
+                     GROUP BY s.name, s.description, s.begin, s.end, s.id, s.type, s.path, s.lat, s.lon) a WHERE id = devill.tmpsites.id);
+                     UPDATE devill.tmpsites SET graves = NULL WHERE graves = '0';     
                      
-            SELECT jsonb_agg(a) as sitelist FROM thanados.tmpsites a;"""
+            SELECT jsonb_agg(a) as sitelist FROM devill.tmpsites a;"""
         g.cursor.execute(sql_sites, {"sites": tuple(g.site_list),
                                      "domains": app.config["DOMAIN_TYPES"]})
         g.cursor.execute(sql_sites2)
@@ -60,9 +60,9 @@ CREATE TABLE thanados.tmpsites AS (
     @staticmethod
     def get_ext_type_data():
         sql = """
-                SELECT id FROM thanados.types_all 
+                SELECT id FROM devill.types_all 
                     WHERE id NOT IN 
-                        (SELECT DISTINCT type_id FROM thanados.ext_types) 
+                        (SELECT DISTINCT type_id FROM devill.ext_types) 
                 """
         g.cursor.execute(sql)
         result = g.cursor.fetchall()
@@ -76,7 +76,7 @@ CREATE TABLE thanados.tmpsites AS (
 
         def getBroadMatch(type_id, refId):
             g.cursor.execute(
-                'SELECT parent_id FROM thanados.types_all WHERE id = %(type_id)s',
+                'SELECT parent_id FROM devill.types_all WHERE id = %(type_id)s',
                 {'type_id': type_id})
             parent = g.cursor.fetchone()
 
@@ -90,7 +90,7 @@ CREATE TABLE thanados.tmpsites AS (
                                 id,
                                 identifier,
                                 skos
-                            FROM thanados.ext_types WHERE type_id = %(parent_id)s AND id = %(refId)s
+                            FROM devill.ext_types WHERE type_id = %(parent_id)s AND id = %(refId)s
                         """
 
             if parent.parent_id:
@@ -100,7 +100,7 @@ CREATE TABLE thanados.tmpsites AS (
                 print(broadresult)
                 if broadresult:
                     insertbroad = """
-                                        INSERT INTO thanados.ext_types (
+                                        INSERT INTO devill.ext_types (
                                         type_id, 
                                         url,
                                         website,
@@ -148,7 +148,7 @@ CREATE TABLE thanados.tmpsites AS (
     def get_file_path(id_: int):
 
         if app.config['USE_IIIF']:
-            g.cursor.execute(f'SELECT id::TEXT || extension AS filename FROM thanados.filelist WHERE id = {id_}')
+            g.cursor.execute(f'SELECT id::TEXT || extension AS filename FROM devill.filelist WHERE id = {id_}')
             file = g.cursor.fetchone()
 
             if file:
@@ -172,7 +172,7 @@ CREATE TABLE thanados.tmpsites AS (
 
     @staticmethod
     def get_data(place_id):
-        sql = 'SELECT data FROM thanados.tbl_thanados_data WHERE id = %(place_id)s AND id IN %(sites)s;'
+        sql = 'SELECT data FROM devill.tbl_thanados_data WHERE id = %(place_id)s AND id IN %(sites)s;'
         g.cursor.execute(sql,
                          {'place_id': place_id, 'sites': tuple(g.site_list)})
         return g.cursor.fetchall()
@@ -185,7 +185,7 @@ CREATE TABLE thanados.tmpsites AS (
                      'weight', t.weight,
                      'text', t.type)) AS types FROM
                         (SELECT type, COUNT(type) AS weight 
-                            FROM thanados.searchdata 
+                            FROM devill.searchdata 
                             WHERE site_id = %(place_id)s AND site_id IN %(sites)s 
                             GROUP BY type order by weight desc) t) w
                 """
@@ -202,36 +202,36 @@ CREATE TABLE thanados.tmpsites AS (
 
     @staticmethod
     def get_depth():
-        g.cursor.execute('SELECT depth FROM thanados.chart_data;')
+        g.cursor.execute('SELECT depth FROM devill.chart_data;')
         return g.cursor.fetchall()
 
     @staticmethod
     def get_orientation():
-        sql = 'SELECT orientation FROM thanados.chart_data;'
+        sql = 'SELECT orientation FROM devill.chart_data;'
         g.cursor.execute(sql)
         return g.cursor.fetchall()
 
     @staticmethod
     def get_azimuth():
-        sql = 'SELECT azimuth FROM thanados.chart_data;'
+        sql = 'SELECT azimuth FROM devill.chart_data;'
         g.cursor.execute(sql)
         return g.cursor.fetchall()
 
     @staticmethod
     def get_sex():
-        sql = 'SELECT sex FROM thanados.chart_data;'
+        sql = 'SELECT sex FROM devill.chart_data;'
         g.cursor.execute(sql)
         return g.cursor.fetchall()
 
     @staticmethod
     def get_gender():
-        sql = 'SELECT gender FROM thanados.chart_data;'
+        sql = 'SELECT gender FROM devill.chart_data;'
         g.cursor.execute(sql)
         return g.cursor.fetchall()
 
     @staticmethod
     def get_bodyheight():
-        sql = 'SELECT bodyheight FROM thanados.chart_data;'
+        sql = 'SELECT bodyheight FROM devill.chart_data;'
         g.cursor.execute(sql)
         return g.cursor.fetchall()
 
@@ -301,8 +301,8 @@ CREATE TABLE thanados.tmpsites AS (
 		        t.name AS type,
 		        count(t.name) 
 		        FROM model.entity m 
-		        JOIN thanados.entities e ON e.parent_id = m.id 
-		        JOIN thanados.types_main t ON e.child_id = t.entity_id
+		        JOIN devill.entities e ON e.parent_id = m.id 
+		        JOIN devill.types_main t ON e.child_id = t.entity_id
 		        WHERE t.path LIKE %(term)s AND m.id IN %(site_ids)s
 		        GROUP BY m.id, sitename, type
 		        ORDER BY 1) as t;"""
@@ -322,7 +322,7 @@ CREATE TABLE thanados.tmpsites AS (
             		        t.name AS type,
             		        count(t.name) 
             		        FROM model.entity m 
-            		        JOIN thanados.entities e ON e.parent_id = m.id
+            		        JOIN devill.entities e ON e.parent_id = m.id
             		        JOIN thanados.entities e1 ON e1.parent_id = e.child_id
             		        JOIN thanados.types_main t ON e1.child_id = t.entity_id
             		        WHERE t.path LIKE %(term)s AND m.id IN %(site_ids)s

@@ -71,14 +71,14 @@ def sites(domain_=None, date_=None):
 
         sql = """
             SELECT * FROM (SELECT site_id, MAX(timestamp) AS date from
-                (SELECT s.site_id, b.timestamp FROM thanados.searchdata s JOIN
-                (SELECT id, created AS timestamp from thanados.entity 
+                (SELECT s.site_id, b.timestamp FROM devill.searchdata s JOIN
+                (SELECT id, created AS timestamp from devill.entity 
                     WHERE id IN 
-                    (SELECT DISTINCT child_id from thanados.searchdata)
+                    (SELECT DISTINCT child_id from devill.searchdata)
                 UNION ALL
-                SELECT id, modified AS timestamp from thanados.entity 
+                SELECT id, modified AS timestamp from devill.entity 
                 WHERE id IN 
-                (SELECT DISTINCT child_id from thanados.searchdata)) b
+                (SELECT DISTINCT child_id from devill.searchdata)) b
             ON s.child_id = b.id) c 
             GROUP BY site_id ORDER BY date) d 
             WHERE date >= %(date_)s::timestamp AND site_id IN %(site_list)s
@@ -98,14 +98,14 @@ def sites(domain_=None, date_=None):
                     SELECT MAX(date) AS latest
                     FROM (SELECT site_id, MAX(timestamp) AS date from
                         (SELECT s.site_id, b.timestamp 
-                        FROM thanados.searchdata s JOIN
-                        (SELECT id, created AS timestamp from thanados.entity 
+                        FROM devill.searchdata s JOIN
+                        (SELECT id, created AS timestamp from devill.entity 
                             WHERE id IN 
-                            (SELECT DISTINCT child_id from thanados.searchdata)
+                            (SELECT DISTINCT child_id from devill.searchdata)
                         UNION ALL
-                        SELECT id, modified AS timestamp from thanados.entity 
+                        SELECT id, modified AS timestamp from devill.entity 
                         WHERE id IN 
-                        (SELECT DISTINCT child_id from thanados.searchdata)) b
+                        (SELECT DISTINCT child_id from devill.searchdata)) b
                     ON s.child_id = b.id) c 
                     GROUP BY site_id ORDER BY date) d 
                     WHERE site_id IN %(site_list)s

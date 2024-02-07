@@ -21,10 +21,10 @@ def vocabulary(format_=None):
     sql_list = """
                    SELECT name, id, name_path FROM (
                     SELECT name, id::INTEGER, path, name_path, left(path, strpos(path, ' >') -1)::INTEGER AS 
-                    topparent FROM thanados.types_all WHERE path LIKE '%%>%%'
+                    topparent FROM devill.types_all WHERE path LIKE '%%>%%'
                     UNION ALL 
                     SELECT name, id::INTEGER, path, name_path, PATH::INTEGER AS topparent FROM 
-                    thanados.types_all WHERE path NOT LIKE '%%>%%' ORDER BY name_path) tp
+                    devill.types_all WHERE path NOT LIKE '%%>%%' ORDER BY name_path) tp
                     WHERE topparent IN %(list)s 
                     """
 
@@ -37,7 +37,7 @@ def vocabulary(format_=None):
 
     def makeparents(typelist, typeClass):
         for id in typelist:
-            sql_tree = "SELECT name, id FROM thanados.types_all WHERE id = %(id)s ORDER BY name"
+            sql_tree = "SELECT name, id FROM devill.types_all WHERE id = %(id)s ORDER BY name"
             g.cursor.execute(sql_tree, {'id': id})
             results = g.cursor.fetchone()
             if results:
@@ -52,7 +52,7 @@ def vocabulary(format_=None):
 
     def maketree(id, node, typeClass):
         sql_tree = """
-            SELECT name, id FROM thanados.types_all WHERE parent_id = %(id)s ORDER BY name
+            SELECT name, id FROM devill.types_all WHERE parent_id = %(id)s ORDER BY name
         """
         g.cursor.execute(sql_tree, {'id': id})
         results = g.cursor.fetchall()
@@ -79,8 +79,8 @@ def vocabulary(format_=None):
         gaz_data = []
         typesSql = """
         SELECT e.*, t.name as tname 
-            FROM thanados.ext_types e 
-            JOIN thanados.types_all t ON e.type_id = t.id 
+            FROM devill.ext_types e 
+            JOIN devill.types_all t ON e.type_id = t.id 
             ORDER BY type_id
         """
         g.cursor.execute(typesSql)
@@ -158,7 +158,7 @@ def vocabulary_view(object_id: int, format_=None):
         'url', t.url,
         'icon', r.icon_url
     ))) AS ext_types
-    FROM thanados.ext_types t JOIN thanados.refsys r ON t.id = r.entity_id  
+    FROM devill.ext_types t JOIN devill.refsys r ON t.id = r.entity_id  
     WHERE t.type_id = %(object_id)s;
             """
     g.cursor.execute(extrefs, {'object_id': object_id})
@@ -168,10 +168,10 @@ def vocabulary_view(object_id: int, format_=None):
     sql_topparent = """
         SELECT topparent FROM (
             SELECT id::INTEGER, path, name_path, left(path, strpos(path, ' >') -1)::INTEGER AS 
-            topparent FROM thanados.types_all WHERE path LIKE '%%>%%'
+            topparent FROM devill.types_all WHERE path LIKE '%%>%%'
             UNION ALL 
             SELECT id::INTEGER, path, name_path, PATH::INTEGER AS topparent FROM 
-            thanados.types_all WHERE path NOT LIKE '%%>%%' ORDER BY name_path) tp
+            devill.types_all WHERE path NOT LIKE '%%>%%' ORDER BY name_path) tp
             WHERE id = %(object_id)s"""
     g.cursor.execute(sql_topparent, {'object_id': object_id})
     topparent = g.cursor.fetchone().topparent
@@ -223,12 +223,12 @@ def vocabulary_view(object_id: int, format_=None):
         topparent['forms'].append(row.name)
 
     # get parent and path
-    sql_path_parent = 'SELECT name_path, parent_id FROM thanados.types_all WHERE id = %(object_id)s;'
+    sql_path_parent = 'SELECT name_path, parent_id FROM devill.types_all WHERE id = %(object_id)s;'
     g.cursor.execute(sql_path_parent, {'object_id': object_id})
     output_path_parent = g.cursor.fetchone()
 
     # get name of parent
-    sql_parentname = 'SELECT name FROM thanados.types_all WHERE id = %(object_id)s;'
+    sql_parentname = 'SELECT name FROM devill.types_all WHERE id = %(object_id)s;'
     g.cursor.execute(sql_parentname, {'object_id': output_path_parent.parent_id})
     output_parentname = g.cursor.fetchone()
 
@@ -318,7 +318,7 @@ def vocabulary_view(object_id: int, format_=None):
 
 
     # get subtypes
-    sql_children = 'SELECT id, name FROM thanados.types_all WHERE parent_id = %(object_id)s;'
+    sql_children = 'SELECT id, name FROM devill.types_all WHERE parent_id = %(object_id)s;'
     g.cursor.execute(sql_children, {'object_id': object_id})
     output_children = g.cursor.fetchall()
 
@@ -341,7 +341,7 @@ def vocabulary_view(object_id: int, format_=None):
     sql_filelicense = """
             SELECT 
                 name AS license, name_path::TEXT, t.id::INTEGER AS licId, domain_id::INTEGER
-                FROM thanados.types_all t JOIN model.link l ON t.id = l.range_id WHERE l.domain_id = 
+                FROM devill.types_all t JOIN model.link l ON t.id = l.range_id WHERE l.domain_id = 
                 %(file_id)s AND l.property_code = 'P2' AND t.name_path LIKE 'License >%%'  
         """
     # define files
@@ -381,7 +381,7 @@ def vocabulary_view(object_id: int, format_=None):
 
     # get all subtypes recursively
     sql_subtypesrec = """
-        SELECT id from thanados.types_all WHERE path LIKE %(type_name)s OR path LIKE 
+        SELECT id from devill.types_all WHERE path LIKE %(type_name)s OR path LIKE 
         %(type_name2)s OR id = %(type_id)s
     """
 
@@ -403,7 +403,7 @@ def vocabulary_view(object_id: int, format_=None):
     sql_entities = """
         SELECT child_id, child_name, maintype, type, type_id, min, lon, lat, context, 
         filename, openatlas_class_name FROM 
-        thanados.searchdata s
+        devill.searchdata s
         WHERE type_id IN %(type_id)s AND s.site_id IN %(site_ids)s  
     """
     g.cursor.execute(sql_entities, {'type_id': tuple([object_id]), 'site_ids': tuple(g.site_list)})
@@ -436,7 +436,7 @@ def vocabulary_view(object_id: int, format_=None):
     # get type tree
     def getchildren(id, node):
         sql_getChildren = """
-            SELECT name, id FROM thanados.types_all WHERE parent_id = %(id)s ORDER BY name
+            SELECT name, id FROM devill.types_all WHERE parent_id = %(id)s ORDER BY name
         """
         g.cursor.execute(sql_getChildren, {'id': id})
         results = g.cursor.fetchall()
@@ -468,7 +468,7 @@ def vocabulary_view(object_id: int, format_=None):
 
     def getTree(id):
         sql_getChildren = """
-            SELECT DISTINCT name, id FROM thanados.types_all WHERE parent_id = %(id)s ORDER BY name
+            SELECT DISTINCT name, id FROM devill.types_all WHERE parent_id = %(id)s ORDER BY name
         """
         g.cursor.execute(sql_getChildren, {'id': id})
         results = g.cursor.fetchall()

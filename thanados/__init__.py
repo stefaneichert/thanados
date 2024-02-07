@@ -10,7 +10,7 @@ csrf = CSRFProtect(app)  # Make sure all forms are CSRF protected
 csrf.init_app(app)
 
 app.config.from_object('config.default')  # Load config/INSTANCE_NAME.py
-app.config.from_pyfile('production.py')  # Load instance/INSTANCE_NAME.py
+app.config.from_pyfile('devill.py')  # Load instance/INSTANCE_NAME.py
 
 thunderforest_API_key = app.config["THUNDERFOREST_API_KEY"]
 openatlas_url = app.config["OPENATLAS_URL"]
@@ -69,7 +69,7 @@ def before_request():
     # Get site ids of site to be shown, default or if error show all
     g.site_list = []
     if current_user.is_authenticated:
-        g.cursor.execute('SELECT child_id FROM thanados.sites;')
+        g.cursor.execute('SELECT child_id FROM devill.sites;')
         g.site_list = [row.child_id for row in g.cursor.fetchall()]
     else:
         try:
@@ -78,7 +78,7 @@ def before_request():
         except Exception as e:  # pragma: no cover
             pass
         if not g.site_list:
-            g.cursor.execute('SELECT child_id FROM thanados.sites;')
+            g.cursor.execute('SELECT child_id FROM devill.sites;')
             g.site_list = [row.child_id for row in g.cursor.fetchall()]
 
 @app.teardown_request

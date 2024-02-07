@@ -95,7 +95,7 @@ function setmap(myjson) {
         popupAnchor: [0, -34]
     });
 
-    allsitesStyle ={
+    allsitesStyle = {
         "color": "#000000",
         "weight": 1,
         "fillOpacity": 0.8,
@@ -105,8 +105,9 @@ function setmap(myjson) {
 
     //markers for all sites
     mymarkers = L.markerGroup();
-    $.each(sitelist[0].sitelist, function (i, site) {
+    $.each(sitelist[0][0], function (i, site) {
         if (site.id !== myjson.site_id) {
+            console.log(site)
             var marker = L.circleMarker([((site.lon)), ((site.lat))], allsitesStyle).addTo(mymarkers).bindPopup('<a href="/entity/' + site.id + '" title="' + site.description + '"><b>' + site.name + '</b></a><br><br>' + site.type);
         }
     })
@@ -143,8 +144,8 @@ function setmap(myjson) {
         }
         $('#accordion1').append(
             '<div style="display: inline-block; vertical-align: bottom; padding: 1em 0.5em 0.1em 1em;">' +
-            'No graves available'
-            + '</div><i title="For this site there are no graves available. This might result ' +
+            'No features available'
+            + '</div><i title="For this site there are no features available. This might result ' +
             'for example from missing documentation."' +
             ' style="font-size: 1.3em; color: #696969" class="fas fa-info-circle"></i>'
         )
@@ -274,9 +275,14 @@ function setmap(myjson) {
         filter: polygonFilter,
         style: myStyle,
         shapetype: 'single',
-        legendTitle: 'Graves',
+        legendTitle: 'Features',
         layername: 'graves'
     });
+
+    if (myjson.features[0].id === 0 && myjson.features[0].geometry.type === 'Polygon') {
+        graves.addTo(map)
+        map.fitBounds(graves.getBounds())
+    }
 
     //add graves with legend
     var currentGraves =
@@ -290,6 +296,7 @@ function setmap(myjson) {
         graves.addTo(map);
         legendlayers.push(graves)
     }
+
 
     //if geometry is point create a rectangle around that point
     pointgraves = L.geoJSON(myjson, {
@@ -338,7 +345,7 @@ function setmap(myjson) {
 
     if (setJson(myjson)) {
         map.fitBounds(graves.getBounds());
-    } else {
+    } else if (myjson.features[0].geometry.type !== 'Polygon') {
         var popupLine =
             '<a id="' + myjson.site_id + '" onclick="modalsetsite()" href="#">' +
             '<b>' + myjson.name + ' </b></a><br>(' + myjson.properties.maintype.name + ')';
@@ -359,7 +366,7 @@ function setmap(myjson) {
     choroplethLayer.addTo(map);
 
     //initiate selection of clicked polygons
-    polygonSelect();
+    //polygonSelect();
 
 
     //initiate map attribution
@@ -490,6 +497,7 @@ function isMarkerInsidePolygon(checkmarker, poly) {
                     ', "name":"' + poly.feature.properties.name + '"' +
                     ', "type":"' + poly.feature.properties.maintype.name + '"}');
             selectedIDs.push(mypopupLine);
+            if (myjson.features[0].id !== 0) {
             var popupLine =
                 '<a id="' + poly.feature.id + '"' +
                 ' onclick="modalset(this.id)" ' +
@@ -497,7 +505,16 @@ function isMarkerInsidePolygon(checkmarker, poly) {
                 ' onmouseover="HoverId = this.id; hoverPoly()"' +
                 ' href="#"><p><b>' + poly.feature.properties.name + ' </b>' +
                 '(' + poly.feature.properties.maintype.name + ')</p></a>';
+            popupContent += popupLine;} else {
+                var popupLine =
+                '<span id="' + poly.feature.id + '"' +
+                ' ><p><b>' + poly.feature.properties.name + ' </b>' +
+                '(' + myjson.properties.maintype.name + ')</p></span>';
             popupContent += popupLine;
+            }
+
+
+
             var selectedpoly = L.polygon(polyPoints, SelectionStyle);
             selectedpolys.addLayer(selectedpoly);
         }

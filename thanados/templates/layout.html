@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
-    <title>THANADOS</title>
+    <title>DeVill</title>
 
     <link rel="icon" href="/static/favicon.ico">
     <link href="/static/vendor/node_modules/bootstrap/dist/css/bootstrap.css"
@@ -115,14 +115,14 @@
                 <a id="nav-sites" class="nav-link"
                    href="{{ url_for('sites') }}">Sites</a>
             </li>
-            <li class="nav-item">
+            {#<li class="nav-item">
                 <a id="nav-charts" class="nav-link"
                    href="{{ url_for('charts') }}">Charts</a>
             </li>
             <li class="nav-item">
                 <a id="nav-search" class="nav-link"
                    href="{{ url_for('search') }}">Search</a>
-            </li>
+            </li>#}
             <li class="nav-item">
                 <a id="nav-vocabulary" class="nav-link"
                    href="{{ url_for('vocabulary') }}">Vocabulary</a>
@@ -131,16 +131,16 @@
                 <a id="nav-about" class="nav-link"
                    href="{{ url_for('about') }}">About</a>
             </li>
-            <li class="nav-item">
+           {# <li class="nav-item">
                 <a id="nav-manual" class="nav-link"
                    href="{{ url_for('manual') }}"><i
                         title="Help/Manual"
                         class="fas fa-question"></i></a>
-            </li>
+            </li>#}
         </ul>
         <ul class="navbar-nav ms-auto">
             {% if isIndex %}
-                <li class="nav-item" style="margin-right: 2em">
+                {#<li class="nav-item" style="margin-right: 2em">
                     <a id="nav-projects" class="ms-2 nav-link scroll-link"
                        href="#projects">Projects</a>
                 </li>
@@ -148,7 +148,7 @@
                 <li class="nav-item" style="margin-right: 2em">
                     <a id="nav-news" class="ms-2 nav-link scroll-link"
                        href="#news">News</a>
-                </li>
+                </li>#}
 
             {% endif %}
             {% if current_user.is_authenticated %}

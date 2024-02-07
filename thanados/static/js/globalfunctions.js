@@ -1508,8 +1508,8 @@ function printMapbutton(id, position) {
 //set attribution title
 function getBasemaps() {
     mywindowtitle = 'THANADOS';
-    if (typeof (myjson) != "undefined") mywindowtitle = 'THANADOS: ' + myjson.name;
-    if (typeof (jsonmysite) != "undefined") mywindowtitle = 'THANADOS: ' + jsonmysite.name;
+    if (typeof (myjson) != "undefined") mywindowtitle = 'DeVill: ' + myjson.name;
+    if (typeof (jsonmysite) != "undefined") mywindowtitle = 'DeVill: ' + jsonmysite.name;
 
 
     OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -2150,7 +2150,7 @@ $.featherlight.prototype.afterContent = function () {
 thisUrl = window.location.href;
 if (thisUrl.includes('#')) thisUrl = thisUrl.substring(0, thisUrl.indexOf('#'));
 
-mycitation1 = ' From: <a href="/about" target="_blank">THANADOS:</a> <a' +
+mycitation1 = ' From: <a href="/about" target="_blank">DeVill:</a> <a' +
     ' href="' + thisUrl + '">' + thisUrl + '</a> [Accessed: ' + today() + ']<br>' +
     'Licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a><br> After: ';
 

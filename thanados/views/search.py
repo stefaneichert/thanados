@@ -22,6 +22,6 @@ def search():
         g.cursor.execute(form.term.data)
         for row in g.cursor.fetchall():
             search_result += row.child_name + '<br>'
-    g.cursor.execute('SELECT * FROM thanados.typesjson;')
+    g.cursor.execute('SELECT * FROM devill.typesjson;')
     types = g.cursor.fetchall()
     return render_template('search/search.html', form=form, search_result=search_result, typesjson=types[0].types, sitelist=site_list[0].sitelist)

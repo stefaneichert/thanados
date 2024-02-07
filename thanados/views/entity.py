@@ -45,15 +45,15 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
 
         # prepare AgeData
         sqlAge = """
-        DROP TABLE IF EXISTS thanados.valueages;
-CREATE TABLE thanados.valueages AS
+        DROP TABLE IF EXISTS devill.valueages;
+CREATE TABLE devill.valueages AS
 SELECT a.child_name, a.child_id AS burial_id, a.avg AS min, b.avg AS max FROM
 
-(SELECT site_id, child_id, child_name, avg(min)::numeric(10,2) AS avg FROM thanados.searchdata
+(SELECT site_id, child_id, child_name, avg(min)::numeric(10,2) AS avg FROM devill.searchdata
 WHERE type_id IN (118152, 144521, 118134, 117199)
 GROUP BY site_id, child_id, child_name ORDER BY avg desc) a JOIN
 
-(SELECT site_id, child_id, child_name, avg(min)::numeric(10,2) AS avg FROM thanados.searchdata
+(SELECT site_id, child_id, child_name, avg(min)::numeric(10,2) AS avg FROM devill.searchdata
 WHERE type_id IN (118151, 118132, 117200, 144520)
 GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.child_id WHERE a.site_id = %(place_id)s
         
@@ -75,8 +75,8 @@ GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.ch
                      ) as datasets
                 FROM (
          SELECT b.child_name, a.min AS xaxe, b.min AS yaxe
-         FROM thanados.searchdata a
-                  JOIN (SELECT child_id, child_name, min FROM thanados.searchdata WHERE type_id = %(yval)s AND site_id = %(site_id)s) b
+         FROM devill.searchdata a
+                  JOIN (SELECT child_id, child_name, min FROM devill.searchdata WHERE type_id = %(yval)s AND site_id = %(site_id)s) b
                        ON a.child_id = b.child_id
          WHERE a.type_id = %(xarrval)s) f
                 """
@@ -101,8 +101,8 @@ GROUP BY site_id, child_id, child_name ORDER BY avg desc) b ON a.child_id = b.ch
     'datasets', jsonb_agg(f.avg),
     'tooltips', jsonb_agg(f.label)
         ) as values FROM
-(SELECT child_name, array_agg(type || ': ' || min || 'cm') AS label, avg(min)::int AS avg FROM thanados.searchdata
-WHERE type_id IN (SELECT id FROM thanados.types_all WHERE path LIKE %(topparent)s AND site_id = %(site_id)s)
+(SELECT child_name, array_agg(type || ': ' || min || 'cm') AS label, avg(min)::int AS avg FROM devill.searchdata
+WHERE type_id IN (SELECT id FROM devill.types_all WHERE path LIKE %(topparent)s AND site_id = %(site_id)s)
 GROUP BY site_id, child_id, child_name ORDER BY avg) f
             """
             g.cursor.execute(sql, {'site_id': place_id, 'topparent': str(topparent) + ' >%', 'label': label})
@@ -118,8 +118,8 @@ GROUP BY site_id, child_id, child_name ORDER BY avg) f
             }]
 
             sqlBubblePrepare = """
-                DROP TABLE IF EXISTS thanados.typeBubble;
-                CREATE TABLE thanados.typeBubble AS
+                DROP TABLE IF EXISTS devill.typeBubble;
+                CREATE TABLE devill.typeBubble AS
                 WITH RECURSIVE supertypes AS (
                         	SELECT
                         		name,
@@ -128,9 +128,9 @@ GROUP BY site_id, child_id, child_name ORDER BY avg) f
                         		id,
                         		0 as count
                         	FROM
-                        		thanados.types_all
+                        		devill.types_all
                         	WHERE
-                        		id IN (SELECT id from thanados.types_all t JOIN thanados.searchdata s ON t.id = s.type_id WHERE t.topparent = %(topId)s AND s.site_id = %(site_id)s GROUP BY name, id, parent_id)
+                        		id IN (SELECT id from devill.types_all t JOIN devill.searchdata s ON t.id = s.type_id WHERE t.topparent = %(topId)s AND s.site_id = %(site_id)s GROUP BY name, id, parent_id)
                         	UNION
                         		SELECT
                         	    l.name,
@@ -139,22 +139,22 @@ GROUP BY site_id, child_id, child_name ORDER BY avg) f
                         		l.id,
                         		0 as count
                         	FROM
-                        		thanados.types_all l JOIN supertypes s ON s.parent_id = l.id
+                        		devill.types_all l JOIN supertypes s ON s.parent_id = l.id
                         ) SELECT
                         	*
                         FROM
                         	supertypes ORDER BY name_path;
 
-                UPDATE thanados.typeBubble t SET count = l.size 
+                UPDATE devill.typeBubble t SET count = l.size 
                 FROM (SELECT name, id, COUNT(type_id) AS size 
-                    FROM thanados.types_all t LEFT JOIN thanados.searchdata s ON t.id = s.type_id 
+                    FROM devill.types_all t LEFT JOIN devill.searchdata s ON t.id = s.type_id 
                     WHERE s.site_id = %(site_id)s GROUP BY name, id) l WHERE t.id = l.id;
                 """
             g.cursor.execute(sqlBubblePrepare, {'topId': topId, 'site_id': place_id})
 
             def getBubblechildren(id, node, prefix):
                 sql_getChildren = """
-                                    SELECT name, id, count AS size FROM thanados.typeBubble t WHERE t.parent_id = %(id)s;
+                                    SELECT name, id, count AS size FROM devill.typeBubble t WHERE t.parent_id = %(id)s;
                                 """
                 g.cursor.execute(sql_getChildren, {'id': str(id)[1:], 'site_id': place_id})
                 results = g.cursor.fetchall()
@@ -236,7 +236,7 @@ GROUP BY site_id, child_id, child_name ORDER BY avg) f
                 ROUND(COALESCE((avg(finds) FILTER (WHERE VALUE > 500)),  0)::numeric, 2), ',')::numeric[] AS data
             FROM
 
-            (SELECT d.value::DOUBLE PRECISION AS value, COALESCE(s.count, 0) AS finds  FROM thanados.graves g JOIN thanados.maintype t ON g.child_id = t.entity_id LEFT JOIN (
+            (SELECT d.value::DOUBLE PRECISION AS value, COALESCE(s.count, 0) AS finds  FROM devill.graves g JOIN thanados.maintype t ON g.child_id = t.entity_id LEFT JOIN (
                 SELECT grave_id, count(grave_id) FROM thanados.searchdata WHERE path LIKE %(term)s AND site_id = %(place_id)s GROUP BY grave_id) s ON g.child_id = s.grave_id
                 LEFT JOIN thanados.dimensiontypes d ON g.child_id = d.entity_id
                 WHERE g.parent_id = %(place_id)s  AND t.path LIKE 'Feature > Grave%%' AND d.name = %(dim)s ORDER BY value) v

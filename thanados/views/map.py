@@ -9,11 +9,11 @@ from thanados.models.entity import Data
 @app.route('/map/<int:object_id>')
 def map(object_id: int):
     myjson = Data.get_data(object_id)
-    g.cursor.execute('SELECT * FROM thanados.typesjson;')
+    g.cursor.execute('SELECT * FROM devill.typesjson;')
     types = g.cursor.fetchall()
 
     g.cursor.execute(
-        'SELECT DISTINCT t.id, s.openatlas_class_name FROM thanados.typesforjson t LEFT JOIN thanados.searchdata s ON t.id::INT = s.type_id::INT WHERE s.site_id = %(id)s',
+        'SELECT DISTINCT t.id, s.openatlas_class_name FROM devill.typesforjson t LEFT JOIN devill.searchdata s ON t.id::INT = s.type_id::INT WHERE s.site_id = %(id)s',
         {'id': object_id})
     jsontypes = g.cursor.fetchall()
     availabletypes = {

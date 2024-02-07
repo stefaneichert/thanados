@@ -79,7 +79,7 @@ $('#mybreadcrumb').append(
 subLabel = 'Subunits'
 
 if (systemtype == 'place') {
-    subLabel = 'Graves';
+    subLabel = 'Features';
     getEntityData(sitename, jsonmysite.id, jsonmysite);
     mycitation = '"' + sitename + '".';
     myjson = jsonmysite;
@@ -109,7 +109,7 @@ window.addEventListener('load', function () {
 
 
 if (systemtype == 'feature') {
-    subLabel = 'Burials';
+    subLabel = 'Strat. Units';
     $.each(jsonmysite.features, function (f, feature) {
         if (entity_id == feature.id) {
             graveName = feature.properties.name;
@@ -128,7 +128,7 @@ if (systemtype == 'feature') {
         }
 
     });
-    $('#mybreadcrumbs').append('<div class="ms-3 text-muted"> (Feature/Grave) </div>');
+    $('#mybreadcrumbs').append('<div class="ms-3 text-muted"> (Feature) </div>');
 }
 
 
@@ -306,7 +306,6 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<h4 id="myname_' + entId + '" title="Name of entity">' + entName + '&nbsp;</h4>' +
         '<div id="entbuttons">' +
         '<button type="button" onclick="this.blur()" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#citeModal" title="How to cite this"><i class="fas fa-quote-right"></i></button>' +
-        ((showDashboard) ? '<a style="margin-left: 0.2em" onclick="this.blur();" href="/entity/' + place_id + '/dashboard" class="btn btn-sm btn-secondary" title="Dashboard"><i class="fas fa-chart-line"></i></a>' : '') +
         '<button type="button" style="margin-left: 0.2em" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" class="btn btn-sm btn-secondary" title="Open detailed map of this site"><i class="fas fa-map-marked-alt"></i></button>' +
 
         '<a style="margin-left: 0.2em" onclick="this.blur();" href="' + openAtlasUrl + entId + '" target="_blank" class="backendlink d-none btn btn-sm btn-secondary" title="Backend link"><i class="fas fa-database"></i></a>' +
@@ -336,7 +335,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         '<div id="myMaterialcontainer' + entId + '"></div>' +
         '<div id="myParentcontainer' + entId + '"></div>' +
         '</div>' +
-        '<div id="myImagecontainer' + entId + '" class="col-lg-auto" style="margin-top: 4em" ></div>' +
+        '<div id="myImagecontainer' + entId + '" class="col-lg" style="margin-top: 4em" ></div>' +
         '<div id="myMapcontainer" onclick="this.blur(); openInNewTab(\'/map/\' + place_id)" title="Click to open detailed map" class="col-lg" style="border: 1px solid rgba(0, 0, 0, 0.125); margin-top: 5.35em; margin-left: 1em; margin-right: 1em; width: 100%; height: 400px; cursor: pointer"></div>' +
         '</div>' +
         '<div id="myChildrencontainer' + entId + '">' +
@@ -640,7 +639,7 @@ function getEntityData(parentName, parentId, currentfeature) {
             '<thead class="table-light">' +
             '<tr>' +
             '<th scope="col">#</th>' +
-            '<th scope="col">URL</th>' +
+            '<th scope="col">Identifier/URL</th>' +
             '<th scope="col">Name</th>' +
             '<th scope="col">Description</th>' +
             '</tr>' +
@@ -662,10 +661,14 @@ function getEntityData(parentName, parentId, currentfeature) {
             description = ref.description
         } else
             description = '';
+
+        let urlString = '<td><span style="word-break: break-all;">' + url + '</span></td>'
+        if (url.startsWith('http')) urlString = '<td><a style="word-break: break-all;" href="' + url + '">' + url + '</a></td>'
+
         $('#myexttablebody').append(
             '<tr>' +
             '<th scope="row">' + (t + 1) + '</th>' +
-            '<td><a style="word-break: break-all;" href="' + url + '">' + url + '</a></td>' +
+            urlString +
             '<td>' + name + '</td>' +
             '<td>' + description + '</td>' +
             '</tr>');
@@ -684,7 +687,7 @@ function getEntityData(parentName, parentId, currentfeature) {
             '<thead class="table-light">' +
             '<tr>' +
             '<th scope="col">#</th>' +
-            '<th scope="col">ID</th>' +
+            '<th scope="col">Format</th>' +
             '<th scope="col">Name</th>' +
             '<th scope="col">Source</th>' +
             '<th scope="col">Ref.</th>' +
@@ -712,7 +715,7 @@ function getEntityData(parentName, parentId, currentfeature) {
         $('#myfiletablebody').append(
             '<tr>' +
             '<th scope="row">' + (t + 1) + '</th>' +
-            '<td>' + file.id + '</td>' +
+            '<td>' + file.file_name.split(".").pop()    + '</td>' +
             '<td><a style="word-break: break-all;" href="' + file.file_name + '">' + file.name + '</a></td>' +
             '<td>' + source + '</td>' +
             '<td>' + reference + '</td>' +
@@ -1322,8 +1325,8 @@ $('#myattr').toggle();
 eval('DescSummary = $(\'#myDescr' + jsonmysite.site_id + '\')')
 $(DescSummary).prepend(
     '<div style="margin-top: 0.5em;">' +
-    '<b>Graves/Features:</b> ' + descriptionSummary.graves + '<br>' +
-    '<b>Burials/Stratigraphic Units: </b>' + descriptionSummary.burials + '<br>' +
+    '<b>Features:</b> ' + descriptionSummary.graves + '<br>' +
+    '<b>Stratigraphic Units: </b>' + descriptionSummary.burials + '<br>' +
     '<b>Finds:</b> ' + descriptionSummary.finds + '<br><br>' +
     '</div>'
 );

@@ -20,9 +20,9 @@ def charts():
     site_list = Data.get_list()
     orientation = Data.get_orientation()
     azimuth = Data.get_azimuth()
-    g.cursor.execute('select JSONB_agg(age) as age FROM thanados.ageatdeath as age;')
+    g.cursor.execute('select JSONB_agg(age) as age FROM devill.ageatdeath as age;')
     age = g.cursor.fetchall()
-    g.cursor.execute('select JSONB_agg(age) as age FROM thanados.valueageatdeath as age;')
+    g.cursor.execute('select JSONB_agg(age) as age FROM devill.valueageatdeath as age;')
     valueage = g.cursor.fetchall()
 
     sql_finds = """
@@ -58,10 +58,10 @@ SELECT '{"types": [' || string_agg (jsonstring, ', ') || ']}' AS mydata FROM
     t.name AS type,
     t.path
     FROM model.entity m 
-    JOIN thanados.entities e ON e.parent_id = m.id
-    JOIN thanados.entities e1 ON e1.parent_id = e.child_id
-    JOIN thanados.entities e2 ON e2.parent_id = e1.child_id
-    JOIN thanados.types_main t ON e2.child_id = t.entity_id
+    JOIN devill.entities e ON e.parent_id = m.id
+    JOIN devill.entities e1 ON e1.parent_id = e.child_id
+    JOIN devill.entities e2 ON e2.parent_id = e1.child_id
+    JOIN devill.types_main t ON e2.child_id = t.entity_id
     WHERE t.path LIKE 'Artifact%'
     --GROUP BY m.id, sitename, type, t.path
     ORDER BY 1, 4) t GROUP BY t.sitename, t.id) j)j

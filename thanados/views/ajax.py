@@ -31,7 +31,7 @@ def ajax_test() -> str:
                     'file', d.filename
                 )
             ) AS result FROM ( 
-                SELECT * FROM thanados.searchData
+                SELECT * FROM devill.searchData
                 WHERE site_id IN %(site_ids)s 
                     AND openatlas_class_name = %(openatlas_class_name)s 
                     AND type_id IN %(type_ids)s) d"""
@@ -58,7 +58,7 @@ def ajax_test() -> str:
                    'file', d.filename
                 )
             ) AS result FROM (
-                SELECT * FROM thanados.searchData 
+                SELECT * FROM devill.searchData 
                 WHERE site_id IN %(site_ids)s 
                     AND openatlas_class_name = %(openatlas_class_name)s 
                     AND type_id = 0 
@@ -87,7 +87,7 @@ def ajax_test() -> str:
                     'file', d.filename
                 )
             ) AS result FROM (
-                SELECT * FROM thanados.searchData 
+                SELECT * FROM devill.searchData 
                 WHERE site_id IN %(site_ids)s 
                     AND openatlas_class_name = %(openatlas_class_name)s 
                     AND type_id IN %(type_ids)s
@@ -140,8 +140,8 @@ def ajax_test() -> str:
                 s.lat,
                 s.context,
                 s.filename
-            FROM thanados.searchdata s 
-            JOIN thanados.entities e ON s.child_id = e.child_id
+            FROM devill.searchdata s 
+            JOIN devill.entities e ON s.child_id = e.child_id
             WHERE s.maintype = s.path
         ) d 
         WHERE d.site_id IN %(site_ids)s AND (
@@ -159,7 +159,7 @@ def ajax_test() -> str:
 def ajax_feature_collection() -> str:
     sql = """
         SELECT g.parent_id AS site_id, e.name as site_name, g.grave
-        FROM thanados.tbl_gravescomplete g
+        FROM devill.tbl_gravescomplete g
         JOIN model.entity e ON g.parent_id = e.id
         WHERE g.id IN %(ids)s"""
     geojson = {
@@ -178,7 +178,7 @@ def ajax_feature_collection() -> str:
 def ajax_get_all_graves() -> str:
     sql = """
         SELECT g.parent_id AS site_id, e.name as site_name, g.grave
-        FROM thanados.tbl_gravescomplete g
+        FROM devill.tbl_gravescomplete g
         JOIN model.entity e ON g.parent_id = e.id
         WHERE g.parent_id IN %(site_ids)s"""
     geojson = {

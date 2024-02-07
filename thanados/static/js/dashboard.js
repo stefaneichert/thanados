@@ -258,11 +258,11 @@ function loadOverview() {
         $('#counters').html(
             '<div class="col-sm">' +
             '<h4 class="statistic-counter">' + descriptionSummary.graves + '</h4>' +
-            '                                <p>Graves/Features</p>\n' +
+            '                                <p>Features</p>\n' +
             '                            </div>' +
             '<div class="col-sm">' +
             '<h4 class="statistic-counter">' + descriptionSummary.burials + '</h4>' +
-            '                                <p>Burials/Strat. Units</p>\n' +
+            '                                <p>Strat. Units</p>\n' +
             '                            </div>' +
             '<div class="col-sm">' +
             '<h4 class="statistic-counter">' + descriptionSummary.finds + '</h4>' +

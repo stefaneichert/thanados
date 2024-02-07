@@ -20,7 +20,7 @@ def api_download():
             AND id IN (
                 SELECT domain_id FROM model.link 
                 WHERE range_id IN 
-                (SELECT id FROM thanados.types_all WHERE topparent = '12935')
+                (SELECT id FROM devill.types_all WHERE topparent = '12935')
                 AND property_code = 'P2')
             """
     g.cursor.execute(sql_files)
