@@ -2709,6 +2709,12 @@ function getImageHtml(files) {
         return imageHtml
     }
 
+     if (hasVectorExtension) {
+        files.file_name = web_folder + files.file_name;
+        imageHtml = '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" alt="' + myImgSource + '"></a>'
+        return imageHtml
+    }
+
     return imageHtml
 }
 
