@@ -1,0 +1,52 @@
+{
+  "name": "icomcom-react",
+  "version": "1.0.1",
+  "description": "Iframe communication layer",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "babel lib --out-dir dist/",
+    "test": "jest",
+    "lint": "eslint ./lib/ ./tests/",
+    "tdd": "jest --watch",
+    "precommit": "yarn run lint && yarn run test",
+    "prepublish": "yarn run precommit && yarn run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/infinum/icomcom-react.git"
+  },
+  "keywords": [
+    "iframe",
+    "react",
+    "postMessage"
+  ],
+  "author": "Andrei Zvonimir Crnkovic <andrei@infinum.co>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/infinum/icomcom-react/issues"
+  },
+  "homepage": "https://github.com/infinum/icomcom-react#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.0.1",
+    "babel-jest": "^21.2.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-react": "^6.24.1",
+    "eslint": "^4.8.0",
+    "eslint-plugin-jest": "^21.2.0",
+    "eslint-plugin-react": "^7.4.0",
+    "husky": "^0.14.3",
+    "jest": "^21.2.1",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-test-renderer": "^16.0.0"
+  },
+  "dependencies": {
+    "prop-types": "^15.6.0"
+  },
+  "peerDependencies": {
+    "react": "^16.0.0"
+  }
+}

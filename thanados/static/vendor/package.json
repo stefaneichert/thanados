@@ -33,6 +33,7 @@
     "leaflet.markercluster": "^1.5.0",
     "leaflet1.4": "npm:leaflet@^1.4.0",
     "masonry-layout": "^4.2.2",
+    "mirador": "^3.3.0",
     "shave": "^2.5.10",
     "vanilla-lazyload": "^17.4.0",
     "vis-network": "^8.3.1",

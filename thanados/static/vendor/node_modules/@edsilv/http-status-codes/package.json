@@ -1,0 +1,38 @@
+{
+  "name": "@edsilv/http-status-codes",
+  "version": "1.0.3",
+  "main": "./dist-commonjs/index.js",
+  "module": "./dist-esmodule/index.js",
+  "browser": "./dist-umd/httpstatuscodes.js",
+  "types": "./types/index.d.ts",
+  "scripts": {
+    "clean": "rimraf -rf dist-umd dist-commonjs dist-esmodule dist-var types",
+    "build:commonjs": "tsc",
+    "build:esmodule": "tsc -m es6 --outDir dist-esmodule",
+    "build:umd": "webpack",
+    "build:var": "cross-env NODE_WEBPACK_LIBRARY_PATH=dist-var NODE_WEBPACK_LIBRARY_TARGET=var webpack",
+    "build:types": "npx dts-bundle-generator --umd-module-name httpstatuscodes -o types/index.d.ts dist-esmodule/index.d.ts",
+    "build:docs": "rimraf -rf docs && typedoc --out docs --name httpstatuscodes --theme default --ignoreCompilerErrors --experimentalDecorators --emitDecoratorMetadata --target ES6 --moduleResolution node --preserveConstEnums --stripInternal --suppressExcessPropertyErrors --suppressImplicitAnyIndexErrors --module commonjs src/ && touch docs/.nojekyll",
+    "build": "npm run clean && npm run build:commonjs && npm run build:esmodule && npm run build:umd && npm run build:var && npm run build:types",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/edsilv/http-status-codes.git"
+  },
+  "keywords": [],
+  "author": "@edsilv",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/edsilv/http-status-codes/issues"
+  },
+  "homepage": "https://github.com/edsilv/http-status-codes",
+  "devDependencies": {
+    "awesome-typescript-loader": "^5.2.1",
+    "cross-env": "^5.2.0",
+    "rimraf": "^2.6.2",
+    "typescript": "^3.1.3",
+    "webpack": "^4.28.3",
+    "webpack-cli": "^3.1.2"
+  }
+}

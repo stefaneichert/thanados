@@ -1,0 +1,36 @@
+{
+  "name": "react-dnd",
+  "version": "10.0.2",
+  "description": "Drag and Drop for React",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "lib/index.d.ts",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/react-dnd/react-dnd.git"
+  },
+  "license": "MIT",
+  "scripts": {
+    "clean": "../../../scripts/clean_package.sh",
+    "build": "../../../scripts/build_package.sh",
+    "start": "../../../scripts/watch_package.sh"
+  },
+  "dependencies": {
+    "@react-dnd/shallowequal": "^2.0.0",
+    "@types/hoist-non-react-statics": "^3.3.1",
+    "dnd-core": "^10.0.2",
+    "hoist-non-react-statics": "^3.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.13",
+    "@types/react-dom": "^16.9.4",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
+  },
+  "peerDependencies": {
+    "react": ">= 16.8",
+    "react-dom": ">= 16.8"
+  },
+  "gitHead": "5d16ab043eb83d49c5b6964ce276d0a6c15210d5"
+}

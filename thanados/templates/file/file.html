@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block content %}
+    <style>
+    .MuiAppBar-positionAbsolute, .mirador-viewer {
+    top: 0px;
+}
+
+.mosaic-tile {
+    margin: 0;
+}
+
+.mirador-viewer  {
+    max-height: calc(100vh - 56px);
+}
+
+.mosaic-root {
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    position: absolute;
+}
+
+.mirador-canvas-nav {
+    display: none;
+}
+    </style>
+    <script src="/static/vendor/node_modules/mirador/dist/mirador.min.js"></script>
+{#    <link rel="stylesheet" href="/static/css/file.css"/>#}
+
+    <main>
+        <div id="fileContainer" style="height: calc(100vh - 56px)">
+            <object data="/static/images/entities/{{ filename|safe }}" type="application/pdf" width="100%" height="100%">
+        <p>It appears you don't have a PDF plugin for this browser.
+           No biggie... you can <a href="https://thanados.openatlas.eu/api/display/207673.pdf">click here to download the PDF file.</a></p>
+    </object>
+
+        </div>
+    </main>
+    <script>filename = "{{filename|safe}}"</script>
+    <script>mimetype = "{{mimetype|safe}}"</script>
+    <script>img_manifest = "{{manifest|safe}}"</script>
+    <script src="/static/js/file.js"></script>
+
+{% endblock %}

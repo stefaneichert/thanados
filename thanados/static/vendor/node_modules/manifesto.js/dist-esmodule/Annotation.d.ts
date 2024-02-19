@@ -1,0 +1,10 @@
+import { AnnotationMotivation } from "@iiif/vocabulary/dist-commonjs";
+import { AnnotationBody, IManifestoOptions, ManifestResource, Resource } from "./internal";
+export declare class Annotation extends ManifestResource {
+    constructor(jsonld: any, options: IManifestoOptions);
+    getBody(): AnnotationBody[];
+    getMotivation(): AnnotationMotivation | null;
+    getOn(): string;
+    getTarget(): string | null;
+    getResource(): Resource;
+}

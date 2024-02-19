@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`component should render 1`] = `
+<iframe
+  frameBorder={0}
+/>
+`;

@@ -1,0 +1,1 @@
+//# sourceMappingURL=IExternalResourceData.js.map

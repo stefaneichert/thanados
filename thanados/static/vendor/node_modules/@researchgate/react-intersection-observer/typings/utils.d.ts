@@ -1,0 +1,10 @@
+import React from 'react';
+import { Options } from './types';
+export declare function parseRootMargin(rootMargin?: string): string;
+declare type ValueOf<T> = T[keyof T];
+declare type ObserverProp = ValueOf<IntersectionObserverInit> | boolean;
+export declare function shallowCompare(next: ObserverProp, prev: ObserverProp): boolean;
+export declare const hasOwnProperty: (v: string | number | symbol) => boolean, toString: () => string;
+export declare function isChildrenWithRef<T>(children: unknown): children is React.RefAttributes<T>;
+export declare function thresholdCacheKey(threshold: Options['threshold']): string | number | undefined;
+export {};

@@ -1,0 +1,1 @@
+//# sourceMappingURL=IManifestoOptions.js.map

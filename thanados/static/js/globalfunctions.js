@@ -2689,8 +2689,9 @@ function getImageHtml(files) {
     var imageHtml = '<h3>This file cannot be displayed: ' + files.file_name + '</h3><img src="/static/images/icons/loading.gif">'
 
     if (hasImgExtension) {
-        files.file_name = loc_image + files.file_name + image_suffix;
-        imageHtml = '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_name + '" class="modalimg lazy" alt="' + myImgSource + '"></a>'
+
+        files.file_nameDisplay = loc_image + files.file_name + image_suffix;
+        imageHtml = '<a href="/file/' + files.file_name + '" title="' + myImgSource + '"><img title="' + myImgSource + '" src="/static/images/icons/loading.gif" data-src="' + files.file_nameDisplay + '" class="modalimg lazy" alt="' + myImgSource + '"></a>'
         return imageHtml
     }
 

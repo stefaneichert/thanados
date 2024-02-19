@@ -43,7 +43,7 @@ if use_iiif:
 
 from thanados.views import (
     index, map, about, entity, charts, login, manual, sites, admin, search,
-    ajax, vocabulary, error)
+    ajax, vocabulary, error, file)
 
 
 def connect():
