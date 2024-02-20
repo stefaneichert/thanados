@@ -79,7 +79,7 @@ if (mimetype === "vector") {
     window.onload = function() {
         svgPanZoom('#currentSvg', {
         zoomEnabled: true,
-        controlIconsEnabled: true
+        controlIconsEnabled: false
     });
       };
 

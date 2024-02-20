@@ -26,7 +26,7 @@
     color: whitesmoke;
     position: fixed;
     right: 2rem;
-    top: calc(1rem + 56px);
+    bottom: 2rem;
     width: 3rem;
     height: 3rem;
     border-radius: 50%;
