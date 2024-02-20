@@ -2705,8 +2705,7 @@ function getImageHtml(files) {
 
     if (hasDocExtension) {
         files.file_nameDisplay = loc_image + files.file_name + image_suffix;
-        files.file_name = web_folder + files.file_name
-        imageHtml = '<a href="' + files.file_name + '" title="' + myImgSource + '"><span class="pdf-label">PDF</span><img title="' + myImgSource + '" src="' + files.file_nameDisplay +'" class="modalimg" alt="' + myImgSource + '"></a>'
+        imageHtml = '<a href="/file/' + files.file_name + '" title="' + myImgSource + '"><span class="pdf-label">PDF</span><img title="' + myImgSource + '" src="' + files.file_nameDisplay +'" class="modalimg" alt="' + myImgSource + '"></a>'
         return imageHtml
     }
 

@@ -1,0 +1,73 @@
+.MuiAppBar-positionAbsolute, .mirador-viewer {
+    top: 0px;
+}
+
+.mosaic-tile {
+    margin: 0;
+}
+
+.mirador-viewer {
+    max-height: calc(100vh - 56px);
+}
+
+.mosaic-root {
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    position: absolute;
+}
+
+.mirador-canvas-nav {
+    display: none;
+}
+
+.infoCircle {
+    color: whitesmoke;
+    position: fixed;
+    right: 2rem;
+    bottom: 1rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: rgba(13, 110, 253, 0.42);
+}
+
+#metadataInfo {
+    position: fixed;
+    height: calc(100vh - 56px);
+    bottom: 0;
+    right: 0;
+    background: #696969;
+    opacity: 0.99;
+    border-left: 1px solid whitesmoke;
+    z-index: 1070;
+    color: whitesmoke;
+    overflow: auto;
+}
+
+#metadataInfo a {
+    color: #a6bcff;
+}
+
+#metadataInfo a:hover {
+    color: #6299ff;
+}
+
+.metadata-info {
+    display: none;
+    width: 0;
+}
+
+.metadata-info.show {
+    display: block;
+    width: 50vw;
+}
+
+#attribution {
+    margin: 2rem;
+}
+
+h5 {
+    margin-top: 1rem;
+}

@@ -712,11 +712,12 @@ function getEntityData(parentName, parentId, currentfeature) {
         } else
             license = '';
 
+        console.log(file)
         $('#myfiletablebody').append(
             '<tr>' +
             '<th scope="row">' + (t + 1) + '</th>' +
             '<td>' + file.file_name.split(".").pop()    + '</td>' +
-            '<td><a style="word-break: break-all;" href="' + file.file_name + '">' + file.name + '</a></td>' +
+            '<td><a style="word-break: break-all;" href="/file/' + file.file_name + '">' + file.name + '</a></td>' +
             '<td>' + source + '</td>' +
             '<td>' + reference + '</td>' +
             '<td>' + license + '</td>' +
