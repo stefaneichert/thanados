@@ -31,11 +31,47 @@ if (mimetype === 'img') {
             enabled: false,
         }
     });
+} else {
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const metadataInfo = document.getElementById('metadataInfo');
+        const infoBtn = document.getElementById('infoBtn');
+        const infoButtons = document.querySelectorAll('.infoCircle');
+
+        infoButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                metadataInfo.classList.toggle('show');
+            });
+        });
+    });
+
+    getImageExt(fileid)
+        .then(data => {
+            // Handle the JSON data here
+            console.log(data)
+            let attrContainer = document.getElementById('attribution')
+            attrContainer.innerHTML += '<h5>Resource</h5>' + data.label.none[0]
+            attrContainer.innerHTML += '<h5>File</h5><a href="'+downloadUrl+'" target="_blank">'+filename+'</a>'
+            attrContainer.innerHTML += '<h5>Attribution</h5>' + data.requiredStatement.value['none'][0]
+            attrContainer.innerHTML += '<h5>License</h5><a href="' + data.rights + '" target="_blank">' + data.rights + '</a>'
+            if (data.entities) {
+                if (data.entities.length > 0) {
+                    attrContainer.innerHTML += '<h5>Entities</h5>'
+                    data.entities.forEach(dataset => attrContainer.innerHTML += dataset + '<br>')
+                }
+                infoBtn.innerHTML = 'Info'
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+
 }
 
-if (mimetype === 'pdf') {
-    console.log(mimetype)
-    console.log(filename)
-    console.log(fileContainer)
-
+async function getImageExt(id) {
+    const response = await fetch("/file/" + id + ".json");
+    const message = await response.json();
+    return (message)
 }
+

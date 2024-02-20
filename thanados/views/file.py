@@ -123,10 +123,23 @@ def getManifest(img_id):
                       "format": "text/html",
                       "value": url},
                 target=canvas.id)
+        manifest_json = json.loads(manifest.json())
+        return manifest_json
+    else:
+        manifest_json = json.loads(manifest.json())
+        manifest_json['entities'] = []
+        for row in linkedEnts:
+            url = "<a href=" + request.url_root + 'entity/' + str(
+                row.id) + ">" + row.ents + "</a>"
+            manifest_json['entities'].append(url)
 
 
 
-    manifest_json = json.loads(manifest.json())
+
+
+
+
+
     return manifest_json
 
 
@@ -159,5 +172,7 @@ def file(file_=None):
 
     manifest = request.url_root + 'file/' + id + '.json'
 
-    return render_template('file/file.html', mimetype=mimetype,
-                           filename=filename, manifest=manifest)
+    downloadUrl = app.config['API_FILE_DISPLAY']+ filename
+
+    return render_template('file/file.html', id=id, mimetype=mimetype,
+                           filename=filename, manifest=manifest, downloadUrl=downloadUrl)
