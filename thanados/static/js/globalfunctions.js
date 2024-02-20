@@ -2710,8 +2710,8 @@ function getImageHtml(files) {
     }
 
      if (hasVectorExtension) {
-        files.file_name = web_folder + files.file_name;
-        imageHtml = '<a href="' + files.file_name + '" title="' + myImgSource + '" data-featherlight><img title="' + myImgSource + '" src="' + files.file_name + '" class="modalimg" alt="' + myImgSource + '"></a>'
+        files.file_nameDisplay = web_folder + files.file_name;
+        imageHtml = '<a href="/file/'+ files.file_name + '" title="' + myImgSource + '"><img title="' + myImgSource + '" src="' + files.file_nameDisplay + '" class="modalimg" alt="' + myImgSource + '"></a>'
         return imageHtml
     }
 

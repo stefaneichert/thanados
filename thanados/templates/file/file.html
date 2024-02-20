@@ -31,21 +31,32 @@
 
         </main>
     {% endif %}
-     {% if mimetype == 'threedee' %}
+    {% if mimetype == 'threedee' %}
         <main>
             <div id="fileContainer" style="height: calc(100vh - 56px)">
-            <model-viewer
-                    class="fullscreen-model"
-                    alt="3d-Model"
-                    src="{{ downloadUrl }}"
-                    shadow-intensity="1"
-                    loading="lazy"
-                    camera-controls
-            ></model-viewer>
+                <model-viewer
+                        class="fullscreen-model"
+                        alt="3d-Model"
+                        src="{{ downloadUrl }}"
+                        shadow-intensity="1"
+                        loading="lazy"
+                        camera-controls
+                ></model-viewer>
             </div>
 
         </main>
     {% endif %}
+     {% if mimetype == 'vector' %}
+         <script src="/static/vendor/svg-pan-zoom-master/dist/svg-pan-zoom.min.js"></script>
+        <main>
+            <div id="fileContainer" style="height: calc(100vh - 56px)">
+                <object id="currentSvg" type="image/svg+xml" data="/static/images/entities/{{ filename|safe }}" style="width: 100%; height: 100%;"><p>This SVG cannot be displayed on your device. You can download it <a
+                            href="{{ downloadUrl|safe }}">here</a></p></object>
+            </div>
+
+        </main>
+    {% endif %}
+
 
     <script>filename = "{{filename|safe}}"</script>
     <script>fileid = "{{id}}"</script>

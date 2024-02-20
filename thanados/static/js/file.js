@@ -52,7 +52,7 @@ if (mimetype === 'img') {
             console.log(data)
             let attrContainer = document.getElementById('attribution')
             attrContainer.innerHTML += '<h5>Resource</h5>' + data.label.none[0]
-            attrContainer.innerHTML += '<h5>File</h5><a href="'+downloadUrl+'" target="_blank">'+filename+'</a>'
+            attrContainer.innerHTML += '<h5>File</h5><a href="' + downloadUrl + '" target="_blank">' + filename + '</a>'
             attrContainer.innerHTML += '<h5>Attribution</h5>' + data.requiredStatement.value['none'][0]
             attrContainer.innerHTML += '<h5>License</h5><a href="' + data.rights + '" target="_blank">' + data.rights + '</a>'
             if (data.entities) {
@@ -73,5 +73,15 @@ async function getImageExt(id) {
     const response = await fetch("/file/" + id + ".json");
     const message = await response.json();
     return (message)
+}
+
+if (mimetype === "vector") {
+    window.onload = function() {
+        svgPanZoom('#currentSvg', {
+        zoomEnabled: true,
+        controlIconsEnabled: true
+    });
+      };
+
 }
 
