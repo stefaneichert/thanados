@@ -2697,9 +2697,9 @@ function getImageHtml(files) {
 
 
     if (hasThreeDeeExtension) {
-        files.file_name = web_folder + files.file_name
-        imageHtml = '<model-viewer class="modalimg" style="min-height: 400px;" src="' + files.file_name + '" alt="3d" auto-rotate camera-controls>' +
-            '<div class="annotation" title="enlarge" data-file="' + filestring + '" onclick="current3dFile = $(this).data(\'file\'); set3D(\'' + files.file_name + '\')"><i class="fas fa-expand" style="margin-right: 3em""></i></div></model-viewer>'
+        files.file_nameDisplay = web_folder + files.file_name
+        imageHtml = '<model-viewer class="modalimg" style="min-height: 400px;" src="' + files.file_nameDisplay + '" alt="3d" auto-rotate camera-controls>' +
+            '<a class="annotation" title="enlarge" href="/file/'+files.file_name+'"><i class="fas fa-expand" style="margin-right: 3em""></i></a></model-viewer>'
         return imageHtml
     }
 

@@ -31,6 +31,21 @@
 
         </main>
     {% endif %}
+     {% if mimetype == 'threedee' %}
+        <main>
+            <div id="fileContainer" style="height: calc(100vh - 56px)">
+            <model-viewer
+                    class="fullscreen-model"
+                    alt="3d-Model"
+                    src="{{ downloadUrl }}"
+                    shadow-intensity="1"
+                    loading="lazy"
+                    camera-controls
+            ></model-viewer>
+            </div>
+
+        </main>
+    {% endif %}
 
     <script>filename = "{{filename|safe}}"</script>
     <script>fileid = "{{id}}"</script>

@@ -1359,6 +1359,8 @@ input {
     margin-top: 0.5em;
     margin-right: 0.5em;
     margin-left: auto !important;
+    position: absolute;
+    right: 0;
 }
 
 /* This keeps child nodes hidden while the element loads */
