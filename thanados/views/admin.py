@@ -604,8 +604,11 @@ UPDATE devill.entitiestmp SET end_to = end_from WHERE end_from IS NOT NULL and e
 UPDATE devill.entitiestmp SET end_from = end_to WHERE end_to IS NOT NULL and end_from IS NULL;
 
 
-CREATE TABLE devill.entitiestmp2 AS SELECT
-e.*, l.range_id AS place_id FROM devill.entitiestmp e JOIN model.link l ON e.child_id = l.domain_id WHERE l.property_code = 'P53';
+CREATE TABLE devill.entitiestmp2 AS 
+SELECT
+e.*, l.range_id AS place_id FROM devill.entitiestmp e LEFT JOIN model.link l ON e.child_id = l.domain_id WHERE l.property_code = 'P53'
+UNION ALL
+SELECT e.*, NULL AS place_id FROM devill.entitiestmp e WHERE e.child_id = 0;
 
 DROP TABLE devill.entitiestmp;
 CREATE TABLE devill.entitiestmp AS SELECT * FROM devill.entitiestmp2;
@@ -929,6 +932,9 @@ WHERE path NOT LIKE 'Dimensions >%'
 ORDER BY entity_id, path;
 
 --entities with maintypes
+
+
+
 CREATE TABLE devill.entities AS
 SELECT e.*,
        t.id        AS type_id,
@@ -1790,7 +1796,7 @@ SELECT id,
 FROM devill.tbl_graves f
 ORDER BY f.parent_id, f.name;
 
-DROP TABLE IF EXISTS devill.tbl_graves;
+--DROP TABLE IF EXISTS devill.tbl_graves;
 
 -- get data for sites
 DROP TABLE IF EXISTS devill.tbl_sites;
@@ -1872,7 +1878,7 @@ GROUP BY f.child_id, f.parent_id, f.child_name, f.description, f.timespan, f.ref
          s.point, s.polygon
 ORDER BY f.child_name;
 
-DROP TABLE IF EXISTS devill.tmp;
+--DROP TABLE IF EXISTS devill.tmp;
 
 
 DROP TABLE IF EXISTS devill.tbl_thanados_data;

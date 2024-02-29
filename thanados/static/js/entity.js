@@ -968,9 +968,8 @@ function getEntityData(parentName, parentId, currentfeature) {
 
 
     if (children !== '') {
-        if (children[0].id == 0) {
+        if (children[0].id == 0 && jsonmysite.properties.center) {
             graves = L.marker([jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]]).addTo(map);
-
         }
     }
 
@@ -988,13 +987,13 @@ function getEntityData(parentName, parentId, currentfeature) {
 
     if (setJson(jsonmysite)) {
         mapcenter = map.getCenter();
-    } else {
-        mapcenter = [jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]]
+    } else if (jsonmysite.properties.center) {
+         mapcenter = [jsonmysite.properties.center.coordinates[1], jsonmysite.properties.center.coordinates[0]]
     }
-    map.panTo(mapcenter);
+    if (jsonmysite.properties.center) map.panTo(mapcenter);
     if ((map.getZoom()) > 20) map.setZoom(20);
 
-
+    if (jsonmysite.properties.center) {
     var miniMap = new L.Control.MiniMap(osm2,
         {
             centerFixed: mapcenter,
@@ -1007,7 +1006,12 @@ function getEntityData(parentName, parentId, currentfeature) {
 
 
     $('.leaflet-control-attribution').html('&copy; OpenStreetMap')
+    }
 
+    if (!jsonmysite.properties.center) {
+        const mapcont = document.getElementById('myMapcontainer')
+        mapcont.classList.add('d-none')
+    }
 }
 
 
