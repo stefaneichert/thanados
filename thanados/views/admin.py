@@ -210,7 +210,7 @@ WITH RECURSIVE path(id, path, parent, name, description, parent_id, name_path) A
                        link.property_code
                 FROM model.entity
                          LEFT JOIN model.link ON entity.id = link.domain_id
-                WHERE openatlas_class_name = 'type') x
+                WHERE openatlas_class_name = 'type' OR openatlas_class_name = 'administrative_unit') x
                    LEFT JOIN model.entity e ON x.parent_id = e.id
           ORDER BY e.name) types_all
     WHERE types_all.parent_name IS NULL
@@ -242,7 +242,7 @@ WITH RECURSIVE path(id, path, parent, name, description, parent_id, name_path) A
                        link.property_code
                 FROM model.entity
                          LEFT JOIN model.link ON entity.id = link.domain_id
-                WHERE openatlas_class_name LIKE 'type'::text  AND link.property_code = 'P127') x
+                WHERE openatlas_class_name LIKE 'type'::text  AND link.property_code = 'P127' OR openatlas_class_name LIKE 'administrative_unit'::text  AND link.property_code = 'P89') x
                    LEFT JOIN model.entity e ON x.parent_id = e.id
           ORDER BY e.name) types_all,
          path parentpath
@@ -602,6 +602,17 @@ UPDATE devill.entitiestmp SET begin_to = begin_from WHERE begin_from IS NOT NULL
 UPDATE devill.entitiestmp SET begin_from = begin_to WHERE begin_to IS NOT NULL and begin_from IS NULL;
 UPDATE devill.entitiestmp SET end_to = end_from WHERE end_from IS NOT NULL and end_to IS NULL;
 UPDATE devill.entitiestmp SET end_from = end_to WHERE end_to IS NOT NULL and end_from IS NULL;
+
+
+CREATE TABLE devill.entitiestmp2 AS SELECT
+e.*, l.range_id AS place_id FROM devill.entitiestmp e JOIN model.link l ON e.child_id = l.domain_id WHERE l.property_code = 'P53';
+
+DROP TABLE devill.entitiestmp;
+CREATE TABLE devill.entitiestmp AS SELECT * FROM devill.entitiestmp2;
+DROP TABLE devill.entitiestmp2;
+
+
+
 """
     g.cursor.execute(sql_1)
 
@@ -698,7 +709,7 @@ SELECT DISTINCT types_all.id,
 FROM devill.types_all,
      devill.entitiestmp,
      model.link
-WHERE entitiestmp.child_id = link.domain_id
+WHERE (entitiestmp.child_id = link.domain_id OR entitiestmp.place_id = link.domain_id)
   AND link.range_id = types_all.id
   AND devill.entitiestmp.child_id != 0
 ORDER BY entity_id, types_all.name_path;
@@ -914,6 +925,7 @@ WHERE path NOT LIKE 'Dimensions >%'
   AND path NOT LIKE 'Artifact >%'
   AND path NOT LIKE 'Material >%'
   AND path NOT LIKE 'Radiocarbon Dating >%'
+  --AND path NOT LIKE 'Administrative unit >%'
 ORDER BY entity_id, path;
 
 --entities with maintypes
@@ -934,7 +946,7 @@ UPDATE devill.entities
 SET end_to = end_from
 WHERE end_to IS NULL;
 
-DROP TABLE IF EXISTS devill.entitiestmp
+--DROP TABLE IF EXISTS devill.entitiestmp
             """
     startnext = datetime.now()
     print("Adding types and values")
@@ -2577,7 +2589,7 @@ SELECT
 	FROM devill.searchData se
 		JOIN devill.maintype mt ON se.child_id = mt.entity_id
 		JOIN devill.sites s ON se.child_id = s.child_id 
-		WHERE se.openatlas_class_name = 'place' AND s.lon != ''); 
+		WHERE se.openatlas_class_name = 'place'); 
 
 DROP TABLE IF EXISTS devill.searchData;
     CREATE TABLE devill.searchData AS SELECT * FROM devill.searchData_tmp;

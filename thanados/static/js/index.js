@@ -59,19 +59,18 @@ if ($('#map').length) {
     loadingControl.addTo(map);
 
 
-
-
-
     mymarkers = new L.featureGroup([]).addTo(map);
 
     $.each(sitelist, function (e, dataset) {
-        marker = L.circleMarker([((dataset.lon)), ((dataset.lat))], {
-            radius: 7,
-            weight: 0,
-            fillOpacity: 0,
-            fillColor: "#ff3636"
-        });//.bindPopup('<a href="/entity/' + dataset.id + '" title="' + dataset.description + '"><b>' + dataset.name + '</b></a><br><br>' + dataset.type);
-        marker.addTo(mymarkers);
+        if (dataset.lon) {
+            marker = L.circleMarker([((dataset.lon)), ((dataset.lat))], {
+                radius: 7,
+                weight: 0,
+                fillOpacity: 0,
+                fillColor: "#ff3636"
+            });//.bindPopup('<a href="/entity/' + dataset.id + '" title="' + dataset.description + '"><b>' + dataset.name + '</b></a><br><br>' + dataset.type);
+            marker.addTo(mymarkers);
+        }
     })
 
     //heat = L.heatLayer(heatmarkers, {radius: 40, minOpacity: 0.2, blur: 40}).addTo(map);
@@ -130,7 +129,7 @@ function getProjectData(id, container) {
             var label = ''
             $.each(domains, function (i, proj_) {
                 if (id === proj_.id) label = '/' + proj_.name
-            } )
+            })
 
             var ProjName = data.name
             if (typeof (data.description) !== 'undefined') {
@@ -162,7 +161,7 @@ function getProjectData(id, container) {
                     '</figure>' : '') +
                 '                    <div class="card-body">\n' +
                 '                        <p class="card-text"><small>' + ProjDescr + '</small></p>\n' +
-                '                        <h6 class="card-subtitle mt-2 mb-2"><a href="/sites'+label+'">' + sitecount + ' site(s)</a></h6>\n' +
+                '                        <h6 class="card-subtitle mt-2 mb-2"><a href="/sites' + label + '">' + sitecount + ' site(s)</a></h6>\n' +
                 ((Linkthere) ? projLink : '') +
                 '                    </div>\n' +
                 '                </div>\n' +

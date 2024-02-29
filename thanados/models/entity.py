@@ -27,7 +27,7 @@ CREATE TABLE devill.tmpsites AS (
     FROM devill.entities s
              LEFT JOIN devill.graves g ON s.child_id = g.parent_id             
     WHERE s.openatlas_class_name = 'place'
-      AND s.lat IS NOT NULL
+      --AND s.lat IS NOT NULL
       AND s.child_id IN  %(sites)s
                      GROUP BY s.child_name, s.description, s.begin_from, s.end_to, s.child_id, s.typename, s.path, s.lat, s.lon
                      ORDER BY s.child_name);"""

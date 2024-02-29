@@ -144,23 +144,25 @@ def get_metadata(id):
                      {"id": id, "places": app.config['COUNTRY_TYPES']})
     resultGeo = g.cursor.fetchone()
 
-    spatial = {
-        "@type": "Place",
-        "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": float(result.lat),
-            "longitude": float(result.lon)
-        }
-    }
+    spatial = {}
 
     if resultGeo:
-        spatial.update(
-            {"containedInPlace": {
-                "@type": "Place",
-                "name": resultGeo.name,
-                "sameAs": resultGeo.url
-            }}
-        )
+        spatial = {"containedInPlace": {
+            "@type": "Place",
+            "name": resultGeo.name,
+            "sameAs": resultGeo.url
+        }}
+
+
+    if result.lat:
+        spatial.update({
+            "@type": "Place",
+            "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": float(result.lat),
+                "longitude": float(result.lon)
+            }
+        })
 
     g.cursor.execute("SELECT url FROM devill.extrefs WHERE parent_id = " \
                      "%(id)s AND name = 'GeoNames' LIMIT 1", {"id": id})

@@ -73,7 +73,12 @@ $(document).ready(function () {
     hoverMarkers.addTo(map);
     InvMarkergroup.addTo(map);
 
-    if ((sitelist).length > 1000) {
+    let locSites = 0
+    for (const site of sitelist) {
+        if (site.lon) locSites += 1
+    }
+
+    if (locSites > 1000) {
         clustermarkers.addTo(map)
     } else {
         markergroup.addTo(map)
@@ -149,11 +154,18 @@ $(document).ready(function () {
             {
                 data: "name",
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                    if (oData.lon) {
                     $(nTd).html(
                         "<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + ")' class='hovermarker' data-type='" + oData.type + "' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" +
                         '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + oData.id + '" target="_blank"><i class="float-end text-secondary fas fa-database"></i></a>' +
                         "<a href='/map/" + oData.id + "' title='open map' class='btn-xs float-end'><i class=\"fas fa-map-marked-alt\"></i></a>" +
                         ((oData.online) ? '<i class="backendlink d-none float-end me-1 text-secondary fas fa-check"></i>' : '') ); //create links in rows
+                        } else {
+                        $(nTd).html(
+                        "<a id='" + oData.id + "' class='hovermarker' data-type='" + oData.type + "' href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" +
+                        '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + oData.id + '" target="_blank"><i class="float-end text-secondary fas fa-database"></i></a>' +
+                        ((oData.online) ? '<i class="backendlink d-none float-end me-1 text-secondary fas fa-check"></i>' : '') ); //create links in rows
+                    }
                 }
             },
             {
