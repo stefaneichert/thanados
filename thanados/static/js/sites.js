@@ -10,15 +10,19 @@ $(window).resize(function () {
 });
 
 
-
 AccRemove();
 
 $(document).ready(function () {
 
     $.each(sitelist, function (e, data) {
-    if (data.description !== null) data.description = ((data.description).replace(/'/g, ""));
-    if (online_sites.includes(data.id)) {data.online = true} else {data.online = false};
-});
+        if (data.description !== null) data.description = ((data.description).replace(/'/g, ""));
+        if (online_sites.includes(data.id)) {
+            data.online = true
+        } else {
+            data.online = false
+        }
+        ;
+    });
 
     maximumHeight = ($(window).height() - $('#mynavbar').height())
     $('#mycontent').css('max-height', (maximumHeight - 16) + 'px');
@@ -155,16 +159,16 @@ $(document).ready(function () {
                 data: "name",
                 "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
                     if (oData.lon) {
-                    $(nTd).html(
-                        "<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + ")' class='hovermarker' data-type='" + oData.type + "' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" +
-                        '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + oData.id + '" target="_blank"><i class="float-end text-secondary fas fa-database"></i></a>' +
-                        "<a href='/map/" + oData.id + "' title='open map' class='btn-xs float-end'><i class=\"fas fa-map-marked-alt\"></i></a>" +
-                        ((oData.online) ? '<i class="backendlink d-none float-end me-1 text-secondary fas fa-check"></i>' : '') ); //create links in rows
-                        } else {
                         $(nTd).html(
-                        "<a id='" + oData.id + "' class='hovermarker' data-type='" + oData.type + "' href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" +
-                        '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + oData.id + '" target="_blank"><i class="float-end text-secondary fas fa-database"></i></a>' +
-                        ((oData.online) ? '<i class="backendlink d-none float-end me-1 text-secondary fas fa-check"></i>' : '') ); //create links in rows
+                            "<a id='" + oData.id + "' onmouseover='hoverMarker(this.id, " + 'map' + ")' class='hovermarker' data-type='" + oData.type + "' data-latlng='[" + ([((oData.lon)), ((oData.lat))]) + "]' href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" +
+                            '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + oData.id + '" target="_blank"><i class="float-end text-secondary fas fa-database"></i></a>' +
+                            "<a href='/map/" + oData.id + "' title='open map' class='btn-xs float-end'><i class=\"fas fa-map-marked-alt\"></i></a>" +
+                            ((oData.online) ? '<i class="backendlink d-none float-end me-1 text-secondary fas fa-check"></i>' : '')); //create links in rows
+                    } else {
+                        $(nTd).html(
+                            "<a id='" + oData.id + "' class='hovermarker' data-type='" + oData.type + "' href='/entity/" + oData.id + "' title='" + oData.description + "'>" + oData.name + "</a>" +
+                            '<a title="Link to backend" class="backendlink d-none" href="' + openAtlasUrl + oData.id + '" target="_blank"><i class="float-end text-secondary fas fa-database"></i></a>' +
+                            ((oData.online) ? '<i class="backendlink d-none float-end me-1 text-secondary fas fa-check"></i>' : '')); //create links in rows
                     }
                 }
             },
@@ -291,11 +295,12 @@ $(document).ready(function () {
         table.rows({search: 'applied'}).every(function (rowIdx, tableLoop, rowLoop) {
             var data = this.data();
             resultLenght.push(data.id);
-            heatmarkers.push([JSON.parse(data.lon) + ',' + JSON.parse(data.lat)]);
-            var marker = L.circleMarker([((data.lon)), ((data.lat))], myInvCircleStyle).addTo(myinvisiblemarkers);
-            var marker = L.circleMarker([((data.lon)), ((data.lat))], myCircleStyle).addTo(mymarkers).bindPopup('<a href="/entity/' + data.id + '" title="' + data.description + '"><b>' + data.name + '</b></a><br><br>' + data.type);
-            var marker = L.marker([((data.lon)), ((data.lat))], {title: data.name}).addTo(clustermarkers).bindPopup('<a href="/entity/' + data.id + '" title="' + data.description + '"><b>' + data.name + '</b></a><br><br>' + data.type);
-
+            if (data.lon) {
+                heatmarkers.push([JSON.parse(data.lon) + ',' + JSON.parse(data.lat)]);
+                var marker = L.circleMarker([((data.lon)), ((data.lat))], myInvCircleStyle).addTo(myinvisiblemarkers);
+                var marker = L.circleMarker([((data.lon)), ((data.lat))], myCircleStyle).addTo(mymarkers).bindPopup('<a href="/entity/' + data.id + '" title="' + data.description + '"><b>' + data.name + '</b></a><br><br>' + data.type);
+                var marker = L.marker([((data.lon)), ((data.lat))], {title: data.name}).addTo(clustermarkers).bindPopup('<a href="/entity/' + data.id + '" title="' + data.description + '"><b>' + data.name + '</b></a><br><br>' + data.type);
+            }
         });
         mymarkers.addTo(markergroup);
         myinvisiblemarkers.addTo(InvMarkergroup);
@@ -310,7 +315,7 @@ $(document).ready(function () {
 
     $('input[type="search"]').addClass('w-75')
 
-    if(domain != 0) filterTable(domain)
+    if (domain != 0) filterTable(domain)
 
 
 })
