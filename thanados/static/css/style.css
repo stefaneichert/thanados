@@ -636,6 +636,7 @@ a:hover {
 .footerimg {
     padding: 1em;
     max-width: 100%;
+    max-height: 110px;
 }
 
 .aboutimage {
@@ -1463,7 +1464,7 @@ input {
 }
 
 .pdf-label {
-    display: none;
+    display: block;
     color: white;
     position: absolute;
     left: 0;

@@ -131,6 +131,7 @@ def get_metadata(id):
                      {"id": id})
     result = g.cursor.fetchone()
 
+
     sql_geo = """
             SELECT g.*, l.domain_id
             FROM (SELECT t.id, t.name, e.url, e.skos
@@ -153,16 +154,16 @@ def get_metadata(id):
             "sameAs": resultGeo.url
         }}
 
-
-    if result.lat:
-        spatial.update({
-            "@type": "Place",
-            "geo": {
-                "@type": "GeoCoordinates",
-                "latitude": float(result.lat),
-                "longitude": float(result.lon)
-            }
-        })
+    if result:
+        if result.lat:
+            spatial.update({
+                "@type": "Place",
+                "geo": {
+                    "@type": "GeoCoordinates",
+                    "latitude": float(result.lat),
+                    "longitude": float(result.lon)
+                }
+            })
 
     g.cursor.execute("SELECT url FROM devill.extrefs WHERE parent_id = " \
                      "%(id)s AND name = 'GeoNames' LIMIT 1", {"id": id})
