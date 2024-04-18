@@ -1,6 +1,6 @@
 //initiate map with certain json
 $(document).ready(function () {
-    $("#sidebarTitle").text(myjson.name);
+    $("#sidebarTitle").html("<a href=\"/entity/" + myjson.site_id + "\">" + myjson.name + "</a>");
     markerset = false;
     getBasemaps();
     myjson = repairJson(myjson);
@@ -108,7 +108,9 @@ function setmap(myjson) {
     $.each(sitelist[0][0], function (i, site) {
         if (site.id !== myjson.site_id) {
             console.log(site)
-            var marker = L.circleMarker([((site.lon)), ((site.lat))], allsitesStyle).addTo(mymarkers).bindPopup('<a href="/entity/' + site.id + '" title="' + site.description + '"><b>' + site.name + '</b></a><br><br>' + site.type);
+            if (site.lon) {
+                var marker = L.circleMarker([((site.lon)), ((site.lat))], allsitesStyle).addTo(mymarkers).bindPopup('<a href="/entity/' + site.id + '" title="' + site.description + '"><b>' + site.name + '</b></a><br><br>' + site.type);
+            }
         }
     })
 
@@ -345,7 +347,7 @@ function setmap(myjson) {
 
     if (setJson(myjson)) {
         map.fitBounds(graves.getBounds());
-    } else if (myjson.features[0].geometry.type !== 'Polygon') {
+    } else {
         var popupLine =
             '<a id="' + myjson.site_id + '" onclick="modalsetsite()" href="#">' +
             '<b>' + myjson.name + ' </b></a><br>(' + myjson.properties.maintype.name + ')';
@@ -366,7 +368,7 @@ function setmap(myjson) {
     choroplethLayer.addTo(map);
 
     //initiate selection of clicked polygons
-    //polygonSelect();
+    polygonSelect();
 
 
     //initiate map attribution
@@ -498,21 +500,21 @@ function isMarkerInsidePolygon(checkmarker, poly) {
                     ', "type":"' + poly.feature.properties.maintype.name + '"}');
             selectedIDs.push(mypopupLine);
             if (myjson.features[0].id !== 0) {
-            var popupLine =
-                '<a id="' + poly.feature.id + '"' +
-                ' onclick="modalset(this.id)" ' +
-                ' onmouseout="hoverPolys.clearLayers()"' +
-                ' onmouseover="HoverId = this.id; hoverPoly()"' +
-                ' href="#"><p><b>' + poly.feature.properties.name + ' </b>' +
-                '(' + poly.feature.properties.maintype.name + ')</p></a>';
-            popupContent += popupLine;} else {
                 var popupLine =
-                '<span id="' + poly.feature.id + '"' +
-                ' ><p><b>' + poly.feature.properties.name + ' </b>' +
-                '(' + myjson.properties.maintype.name + ')</p></span>';
-            popupContent += popupLine;
+                    '<a id="' + poly.feature.id + '"' +
+                    ' onclick="modalset(this.id)" ' +
+                    ' onmouseout="hoverPolys.clearLayers()"' +
+                    ' onmouseover="HoverId = this.id; hoverPoly()"' +
+                    ' href="#"><p><b>' + poly.feature.properties.name + ' </b>' +
+                    '(' + poly.feature.properties.maintype.name + ')</p></a>';
+                popupContent += popupLine;
+            } else {
+                var popupLine =
+                    '<span id="' + poly.feature.id + '"' +
+                    ' ><p><b>' + poly.feature.properties.name + ' </b>' +
+                    '(' + myjson.properties.maintype.name + ')</p></span>';
+                popupContent += popupLine;
             }
-
 
 
             var selectedpoly = L.polygon(polyPoints, SelectionStyle);
