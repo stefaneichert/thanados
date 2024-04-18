@@ -34,10 +34,32 @@ def map(object_id: int):
 
     site_list = Data.get_list()
 
+    sql = """
+        SELECT JSONB_AGG(jsonb_strip_nulls(JSONB_BUILD_OBJECT(
+        'place_id', l.range_id,
+        'name', e.name,
+        'image_id', m.image_id,
+        'bounding_box', m.bounding_box::jsonb
+                 ))) as bbox
+        FROM web.map_overlay m
+                 JOIN model.entity e ON m.image_id = e.id JOIN model.link l ON l.domain_id = m.image_id
+        AND e.openatlas_class_name = 'file' AND  l.property_code = 'P67' AND l.range_id =  %(id)s
+                 """
+
+    g.cursor.execute(sql, {'id': object_id})
+    result = g.cursor.fetchone()
+    overlays = []
+
+    if result.bbox:
+        overlays = result.bbox
+
+    print(overlays)
+
     return render_template('map/map.html',
                            myjson=myjson[0].data,
                            object_id=object_id,
                            typesjson=types[0].types,
                            availables=availabletypes,
                            site_list=site_list,
+                           overlays=overlays,
                            leafletVersion="1.4")

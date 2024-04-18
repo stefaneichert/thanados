@@ -1,0 +1,18 @@
+{
+  "name": "leaflet-imageoverlay-rotated",
+  "version": "0.2.1",
+  "description": "Displays rotated/slanted image overlays in Leaflet",
+  "main": "Leaflet.ImageOverlay.Rotated.js",
+  "dependencies": {
+    "leaflet": "^1.0.0"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "leaflet"
+  ],
+  "authors": [
+    "Iván Sánchez Ortega <ivan@mazemap.com>",
+    "Julius Buset Asplin <julius@mazemap.com>"
+  ],
+  "license": "Beerware"
+}

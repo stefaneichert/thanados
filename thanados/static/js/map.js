@@ -114,9 +114,11 @@ function setmap(myjson) {
         }
     })
 
-    var overlays = {
+    overlays = {
         "All sites": mymarkers,
     };
+
+    addOverlaymap(overlaymaps)
 
 
     //set sidebar to current json
@@ -1145,4 +1147,28 @@ function getCitation() {
     $('#mycitation').html('<div style="border: 1px solid #dee2e6; border-radius: 5px; padding: 0.5em; color: #495057; font-size: 0.9em;" id="Textarea1">' + mysource + '</div>');
     var citemodal = new bootstrap.Modal(document.getElementById('citeModal'))
     citemodal.show();
+}
+
+
+function addOverlaymap(data) {
+    if (data.length > 0) {
+        let overlayMapsControl = {};
+        for (const bbox of data) {
+            console.log(bbox)
+            bbox.bounding_box.length
+            let imageUrl = web_folder + bbox.image_id
+            console.log(imageUrl)
+            if (bbox.bounding_box.length === 3) {
+                var topleft = L.latLng(bbox.bounding_box[0][0],bbox.bounding_box[0][1]),
+                    topright = L.latLng(bbox.bounding_box[1][0],bbox.bounding_box[1][1]),
+                    bottomleft = L.latLng(bbox.bounding_box[2][0],bbox.bounding_box[2][1]);
+                var overlay = L.imageOverlay.rotated(imageUrl, topleft, topright, bottomleft, {
+                    interactive: true,
+                });
+            } else if (bbox.bounding_box.length === 2) {
+                var overlay =  L.imageOverlay(imageUrl, bbox.bounding_box)
+            }
+            overlays[bbox.name] = overlay;
+        }
+    }
 }

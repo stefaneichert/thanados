@@ -3659,3 +3659,4 @@ if ($(window).width() <= 990) mobileMap = true
 function removeHoverMarker() {
     if (typeof (hovermarker) !== 'undefined') hovermarker.removeFrom(map);
 }
+
