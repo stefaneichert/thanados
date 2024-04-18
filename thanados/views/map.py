@@ -42,7 +42,7 @@ def map(object_id: int):
         'bounding_box', m.bounding_box::jsonb
                  ))) as bbox
         FROM web.map_overlay m
-                 JOIN model.entity e ON m.image_id = e.id JOIN model.link l ON l.domain_id = m.image_id
+                 JOIN model.entity e ON m.image_id = e.id JOIN model.link l ON l.domain_id = m.image_id JOIN devill.files f ON f.id = e.id
         AND e.openatlas_class_name = 'file' AND  l.property_code = 'P67' AND l.range_id =  %(id)s
                  """
 
