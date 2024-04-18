@@ -1467,8 +1467,6 @@ input {
     display: block;
     color: white;
     position: absolute;
-    left: 0;
-    top: 0;
     padding: 1rem;
     background: red;
 }
