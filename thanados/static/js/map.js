@@ -200,9 +200,6 @@ function setmap(myjson) {
     //add filter/Search button
     addFilterSearch();
 
-    //add layer control
-    baseControl = L.control.layers(baseLayers, overlays).addTo(map);
-
     //add scalebar
     L.control.scale({imperial: false}).addTo(map);
 
@@ -282,6 +279,8 @@ function setmap(myjson) {
         legendTitle: 'Features',
         layername: 'graves'
     });
+
+    overlays["Polygons"] = graves
 
     if (myjson.features[0].id === 0 && myjson.features[0].geometry.type === 'Polygon') {
         graves.addTo(map)
@@ -382,6 +381,8 @@ function setmap(myjson) {
     Sitemarker = L.marker([myjson.properties.center.coordinates[1], myjson.properties.center.coordinates[0]]).addTo(map)
     Sitemarker.setOpacity(0)
 
+
+
     map.on('zoom', function (e) {
         if (map.getZoom() > 18) {
             Sitemarker.setOpacity(0)
@@ -400,6 +401,10 @@ function setmap(myjson) {
 
     //set THANADOS style for layer control (see style.css)
     $('.leaflet-control-layers-toggle').css({'background-image': ''});
+
+    //add layer control
+    baseControl = L.control.layers(baseLayers, overlays).addTo(map);
+
 
 }
 
