@@ -1329,7 +1329,7 @@ $('#myattr').toggle();
 
 eval('DescSummary = $(\'#myDescr' + jsonmysite.site_id + '\')')
 $(DescSummary).prepend(
-    '<div style="margin-top: 0.5em;">' +
+    '<div style="margin-top: 0.5em; display: none">' +
     '<b>Features:</b> ' + descriptionSummary.graves + '<br>' +
     '<b>Stratigraphic Units: </b>' + descriptionSummary.burials + '<br>' +
     '<b>Finds:</b> ' + descriptionSummary.finds + '<br><br>' +
