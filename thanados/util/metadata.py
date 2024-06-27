@@ -31,7 +31,8 @@ def get_metadata(id):
             "contentUrl": app.config["META_RESOLVE_URL"] + '/entity/' + str(
                 id) + '/json',
             "encodingFormat": ["text/javascript", "text/html"],
-            "license": "https://creativecommons.org/licenses/by/4.0/"
+            "license": "https://creativecommons.org/licenses/by/4.0/",
+            "mimeType": "text/javascript"
         },
         "isAccessibleForFree": "true",
         "accessMode": ["textual", "visual"],
