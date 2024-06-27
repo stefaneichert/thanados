@@ -35,6 +35,7 @@ def entity_view(object_id: int, format_=None, api_=None, type_=None):
     entity['description'] = result.description
 
     if format_ == 'json':
+        data['mimeType'] = 'application/json'
         return json.dumps(data)
 
     if format_ == 'network':
