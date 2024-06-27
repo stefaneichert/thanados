@@ -40,11 +40,11 @@ DOMAIN_TYPES = 128051, 158220, 181731, 181740, 185538, 199939
 PERIOD_TYPES = 158070, 161611, 127472, 161610, 161603, 142302, 155395
 COUNTRY_TYPES = 184895,
 
-META_RESOLVE_URL = 'https://thanados.net'
-META_PUBLISHER = 'THANADOS'
-META_ORGANISATION = 'Natural History Museum Vienna'
-META_ORG_URL = 'https://nhm-wien.ac.at'
-META_ORG_WD = 'https://www.wikidata.org/wiki/Q688704'
+META_RESOLVE_URL = 'https://devill.oegmn.or.at'
+META_PUBLISHER = 'DeVILL'
+META_ORGANISATION = 'Österreichische Gesellschaft für Mittelalter- und Neuzeitarchäologie'
+META_ORG_URL = 'https://oegmn.or.at'
+META_ORG_WD = 'https://www.wikidata.org/wiki/Q121069858'
 META_LICENSE = 'https://creativecommons.org/licenses/by/4.0/'
 
 IIIF_BASE = 'https://iiif.bitem.at/iiif/'

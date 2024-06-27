@@ -11,7 +11,7 @@ def get_metadata(id):
         "@context": {
             "@vocab": "https://schema.org/",
             "skos": "http://www.w3.org/2004/02/skos/core#",
-            "tha": "https://thanados.net/entity/",
+            "dev": "https://devill.oegmn.or.at/entity/",
             "loud": "https://linked.art/ns/v1/linked-art.json",
             "dct": "http://purl.org/dc/terms/",
             "aat": "http://vocab.getty.edu/aat/",
@@ -22,7 +22,7 @@ def get_metadata(id):
             "tgn": "http://vocab.getty.edu/tgn/",
             "crm": "http://erlangen-crm.org/current/",
         },
-        "@id": 'tha:' + str(id),
+        "@id": 'dev:' + str(id),
         "url": app.config["META_RESOLVE_URL"] + '/entity/' + str(id),
         "@type": "Dataset",
         "license": "https://creativecommons.org/licenses/by/4.0/",
