@@ -1863,23 +1863,19 @@ CREATE TABLE thanados.typesforjson AS
 SELECT DISTINCT 'type' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
 WHERE --set types to display in jstree
-    name_path LIKE 'Anthropology%'
-   OR name_path LIKE 'Grave Construction%'
-   OR name_path LIKE 'Gender%'
+    name_path LIKE 'Burial Characteristics %'
+   OR name_path LIKE 'Grave Characteristics > Grave Construction%'
+   OR name_path LIKE 'Sex and Gender%'
    OR name_path LIKE 'Pathologies and Non-metric traits%'
    OR name_path LIKE 'Bone measurements%'
    OR name_path LIKE 'Siding%'
-   OR name_path LIKE 'Animals%'
-   OR name_path LIKE 'Body posture%'
+   OR name_path LIKE 'Biology Properties%'
    OR name_path LIKE 'Case Study%'
-   OR name_path LIKE 'Grave Shape%'
+   OR name_path LIKE 'Grave Characteristics%'
    OR name_path LIKE 'Position of Find in Grave%'
-   OR name_path LIKE 'Sex%'
-   OR name_path LIKE 'Stylistic Classification%'
+   OR name_path LIKE 'Chronology%'
    OR name_path LIKE 'Color%'
-   OR name_path LIKE 'Condition of Burial%'
    OR name_path LIKE 'Discoloration Staining Adhesion%'
-   OR name_path LIKE 'Stylistic Classification%'
    OR name_path LIKE 'Count%'
 UNION ALL
 SELECT DISTINCT 'dimensions' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
@@ -1892,7 +1888,7 @@ WHERE name_path LIKE 'Material%'
 UNION ALL
 SELECT DISTINCT 'value' AS level, id::text, name AS text, parent_id::text AS parent, path, name_path, topparent, forms
 FROM thanados.types_all
-WHERE name_path LIKE 'Body Height%' OR
+WHERE name_path LIKE '%Body Height%' OR
 name_path LIKE 'Isotopic Analyses%' OR
 name_path LIKE 'Count%' OR
 name_path LIKE 'Bone measurements%' OR
@@ -2312,7 +2308,7 @@ CREATE TABLE thanados.gender AS (
                       JOIN thanados.graves g ON g.parent_id = s.id
                       JOIN thanados.burials b ON g.child_id = b.parent_id
                       JOIN thanados.types d ON b.child_id = d.entity_id
-             WHERE d.path LIKE 'Gender >%') s
+             WHERE d.path LIKE 'Sex and Gender > Gender >%') s
              JOIN (
         SELECT g.parent_id        AS site_id,
                count(g.parent_id) AS burialcount
@@ -2367,7 +2363,7 @@ CREATE TABLE thanados.sex AS (
                       JOIN thanados.graves g ON g.parent_id = s.id
                       JOIN thanados.burials b ON g.child_id = b.parent_id
                       JOIN thanados.types d ON b.child_id = d.entity_id
-             WHERE d.path LIKE 'Sex >%') s
+             WHERE d.path LIKE 'Sex and Gender > Sex >%') s
              JOIN (
         SELECT g.parent_id        AS site_id,
                count(g.parent_id) AS burialcount
@@ -2630,7 +2626,7 @@ SELECT b.name                                       AS "label",
 FROM (
          SELECT site_id, child_id, (avg(min)::int) AS VALUE
          FROM thanados.searchdata
-         WHERE type_id IN (SELECT id FROM thanados.types_all WHERE path LIKE '118155%')
+         WHERE type_id IN (SELECT id FROM thanados.types_all WHERE path LIKE '% 218968 %')
          GROUP BY site_id, child_id) a
          JOIN model.entity b on a.site_id = b.id
 GROUP BY b.name, b.id);
