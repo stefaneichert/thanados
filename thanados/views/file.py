@@ -36,7 +36,7 @@ def getManifest(img_id):
         from devill.entity e
                  LEFT JOIN devill.link l ON e.id IN (l.domain_id, l.range_id)
                  LEFT JOIN devill.entity e2 ON e2.id IN (l.domain_id, l.range_id)
-                 JOIN devill.property p ON l.property_code = p.code
+                 JOIN model.property p ON l.property_code = p.code
         WHERE e.id = %(id)s
           AND e2.id != e.id;
     """
@@ -439,7 +439,7 @@ def edm(img_id=None):
            from devill.entity e
                     LEFT JOIN devill.link l ON e.id IN (l.domain_id, l.range_id)
                     LEFT JOIN devill.entity e2 ON e2.id IN (l.domain_id, l.range_id)
-                    JOIN devill.property p ON l.property_code = p.code
+                    JOIN model.property p ON l.property_code = p.code
            WHERE e.id = %(id)s
              AND e2.id != e.id;
        """
