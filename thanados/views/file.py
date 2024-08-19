@@ -33,10 +33,10 @@ def getManifest(img_id):
                e2.id,
                e2.name,
                e2.description AS info
-        from model.entity e
-                 LEFT JOIN model.link l ON e.id IN (l.domain_id, l.range_id)
-                 LEFT JOIN model.entity e2 ON e2.id IN (l.domain_id, l.range_id)
-                 JOIN model.property p ON l.property_code = p.code
+        from devill.entity e
+                 LEFT JOIN devill.link l ON e.id IN (l.domain_id, l.range_id)
+                 LEFT JOIN devill.entity e2 ON e2.id IN (l.domain_id, l.range_id)
+                 JOIN devill.property p ON l.property_code = p.code
         WHERE e.id = %(id)s
           AND e2.id != e.id;
     """
@@ -45,7 +45,7 @@ def getManifest(img_id):
     result = g.cursor.fetchall()
 
     g.cursor.execute(
-        f'SELECT description FROM model.entity WHERE id = {img_id}')
+        f'SELECT description FROM devill.entity WHERE id = {img_id}')
     filedescription = g.cursor.fetchone()
 
     image_name = result[0].image
@@ -108,7 +108,7 @@ def getManifest(img_id):
     )
 
     sql = f"""
-        SELECT child_id AS id, child_name || ' (' || typename || ')' AS ents FROM devill.entities WHERE child_id IN (SELECT range_id FROM model.link WHERE domain_id = {img_id} AND property_code = 'P67')     
+        SELECT child_id AS id, child_name || ' (' || typename || ')' AS ents FROM devill.entities WHERE child_id IN (SELECT range_id FROM devill.link WHERE domain_id = {img_id} AND property_code = 'P67')     
     """
     g.cursor.execute(sql)
     linkedEnts = g.cursor.fetchall()
@@ -300,7 +300,7 @@ def edm(img_id=None):
         for id in ids:
             g.cursor.execute(f"""
                 SELECT r.resolver_url || l.description AS url, l.range_id AS type_id 
-                FROM web.reference_system r JOIN model.link l 
+                FROM web.reference_system r JOIN devill.link l 
                 ON r.entity_id = l.domain_id 
                 WHERE r.resolver_url != '' AND l.range_id = {id}
             """)
@@ -346,7 +346,7 @@ def edm(img_id=None):
             s.lat, 
             e.child_id
         FROM devill.entities e
-                 JOIN model.link l ON e.child_id = l.range_id
+                 JOIN devill.link l ON e.child_id = l.range_id
                  JOIN devill.entity e1 ON e1.id = l.domain_id
         JOIN devill.searchdata s ON s.child_id = e.child_id
         WHERE l.property_code = 'P67'
@@ -436,10 +436,10 @@ def edm(img_id=None):
                   e2.id,
                   e2.name,
                   e2.description AS info
-           from model.entity e
-                    LEFT JOIN model.link l ON e.id IN (l.domain_id, l.range_id)
-                    LEFT JOIN model.entity e2 ON e2.id IN (l.domain_id, l.range_id)
-                    JOIN model.property p ON l.property_code = p.code
+           from devill.entity e
+                    LEFT JOIN devill.link l ON e.id IN (l.domain_id, l.range_id)
+                    LEFT JOIN devill.entity e2 ON e2.id IN (l.domain_id, l.range_id)
+                    JOIN devill.property p ON l.property_code = p.code
            WHERE e.id = %(id)s
              AND e2.id != e.id;
        """
@@ -448,7 +448,7 @@ def edm(img_id=None):
     result = g.cursor.fetchall()
 
     g.cursor.execute(
-        f'SELECT description FROM model.entity WHERE id = {img_id}')
+        f'SELECT description FROM devill.entity WHERE id = {img_id}')
     filedescription = g.cursor.fetchone()
 
     if license:
