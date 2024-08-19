@@ -187,6 +187,10 @@ CREATE SCHEMA devill;
 DROP TABLE IF EXISTS devill.entity;
 CREATE TABLE devill.entity AS SELECT * FROM model.entity;
 
+
+DROP TABLE IF EXISTS devill.link;
+CREATE TABLE devill.link AS SELECT * FROM model.link;
+
 -- all types tree
 DROP TABLE IF EXISTS devill.types_all;
 CREATE TABLE devill.types_all AS
