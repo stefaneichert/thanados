@@ -168,12 +168,28 @@ def file(file_=None):
                            downloadUrl=downloadUrl)
 
 
+@app.route('/edm/')
 @app.route('/edm/<img_id>')
 @app.route('/edm/<img_id>/<direct>')
 def edm(img_id=None, direct=False):
     from flask import Response, abort
     import xml.etree.ElementTree as ET
     import urllib, json, re
+
+    if not img_id:
+        g.cursor.execute(f"""
+        SELECT JSONB_AGG(jsonb_build_object(
+                 'id', id,
+                 'filename', filename,
+                 'extension', extension,
+                 'mimetype', mimetype,
+                 'updated', last_update,
+                 'metadata', '{app.config["META_RESOLVE_URL"]}/edm/'|| id))  AS data FROM devill_meta.xml_data
+        """)
+
+    result = g.cursor.fetchone().data
+    if result:
+        return json.dumps(result)
 
     if not direct:
         try:
