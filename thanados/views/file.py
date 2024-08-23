@@ -187,9 +187,9 @@ def edm(img_id=None, direct=False):
                  'metadata', '{app.config["META_RESOLVE_URL"]}/edm/'|| id))  AS data FROM devill_meta.xml_data
         """)
 
-    result = g.cursor.fetchone().data
-    if result:
-        return json.dumps(result)
+        result = g.cursor.fetchone().data
+        if result:
+            return json.dumps(result)
 
     if not direct:
         try:
