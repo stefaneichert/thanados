@@ -3262,8 +3262,8 @@ def set_edm():
                 raise Exception(
                     f"Failed to fetch XML data. HTTP Status Code: {response.status_code}")
         else:
-            print('New file detected for id: ' + row.id)
-            g.cursor.execute(f"""INSERT INTO devill_meta.xml_data (id, filename, extension, mimetype) (SELECT DISTINCT
+            print('New file detected for id: ' + str(row.id))
+            g.cursor.execute(f"""INSERT INTO devill_meta.xml_data (id, filename, extension, mimetype, last_update) (SELECT DISTINCT
                 fl.id,
                 fl.filename,
                 fl.extension,
@@ -3272,14 +3272,13 @@ def set_edm():
             response = requests.get(
                 app.config['META_RESOLVE_URL'] + '/edm/' + str(row.id) + '/True')
             if response.status_code == 200:
-                if saved_edm != current_xml:
-                    print('making EDM for new file')
-                    current_xml = current_xml.replace("'", "''")
-                    g.cursor.execute(
-                        f"UPDATE devill_meta.xml_data SET edm = '{current_xml}' WHERE id = {row.id}")
-                    g.cursor.execute(
-                        f'UPDATE devill_meta.xml_data SET last_update = NOW() WHERE id = {row.id}')
-                    print('EDM for id' + row.id + ' created')
+                print('making EDM for new file')
+                current_xml = current_xml.replace("'", "''")
+                g.cursor.execute(
+                    f"UPDATE devill_meta.xml_data SET edm = '{current_xml}' WHERE id = {row.id}")
+                g.cursor.execute(
+                    f'UPDATE devill_meta.xml_data SET last_update = NOW() WHERE id = {row.id}')
+                print('EDM for id ' + str(row.id) + ' created')
             else:
                 print('did not work with: ' + str(row.id))
                 raise Exception(
