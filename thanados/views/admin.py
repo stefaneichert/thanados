@@ -3272,6 +3272,7 @@ def set_edm():
             response = requests.get(
                 app.config['META_RESOLVE_URL'] + '/edm/' + str(row.id) + '/True')
             if response.status_code == 200:
+                current_xml = response.text
                 print('making EDM for new file')
                 current_xml = current_xml.replace("'", "''")
                 g.cursor.execute(
