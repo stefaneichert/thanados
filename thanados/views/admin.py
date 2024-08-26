@@ -3222,7 +3222,7 @@ def set_edm():
     if current_user.group != 'admin':
         abort(403)
 
-    g.cursor.execute('SELECT DISTINCT id FROM devill.files ORDER BY id DESC')
+    g.cursor.execute('SELECT DISTINCT id FROM devill.files WHERE id IN (207673, 207672) ORDER BY id DESC')
 
     result=g.cursor.fetchall()
     i = 1
@@ -3242,7 +3242,7 @@ def set_edm():
             else:
                 print('Yes, there is one, checking if it is up to date...')
 
-            response = requests.get(app.config['META_RESOLVE_URL'] + '/edm/' + str(entry.id) + '/True')
+            response = requests.get(app.config['META_RESOLVE_URL'] + '/edm/' + str(entry.id) + '/True', timeout=600)
             if response.status_code == 200:
                 current_xml = response.text
                 if saved_edm != current_xml:
@@ -3259,8 +3259,7 @@ def set_edm():
                     else: print('something went wrong with ' + entry.filename)
             else:
                 print('did not work with: ' + str(row.id))
-                raise Exception(
-                    f"Failed to fetch XML data. HTTP Status Code: {response.status_code}")
+                print(f"Failed to fetch XML data. HTTP Status Code: {response.status_code}")
         else:
             print('New file detected for id: ' + str(row.id))
             g.cursor.execute(f"""INSERT INTO devill_meta.xml_data (id, filename, extension, mimetype, last_update) (SELECT DISTINCT
@@ -3270,7 +3269,7 @@ def set_edm():
                 fl.mimetype,
                 now()::timestamp AS last_update FROM devill.filelist fl WHERE id = {row.id} LIMIT 1) """)
             response = requests.get(
-                app.config['META_RESOLVE_URL'] + '/edm/' + str(row.id) + '/True')
+                app.config['META_RESOLVE_URL'] + '/edm/' + str(row.id) + '/True', timeout=600)
             if response.status_code == 200:
                 current_xml = response.text
                 print('making EDM for new file')
@@ -3282,7 +3281,5 @@ def set_edm():
                 print('EDM for id ' + str(row.id) + ' created')
             else:
                 print('did not work with: ' + str(row.id))
-                raise Exception(
-                    f"Failed to fetch XML data. HTTP Status Code: {response.status_code}")
-
+                print(f"Failed to fetch XML data. HTTP Status Code: {response.status_code}")
     return redirect(url_for('admin'))
