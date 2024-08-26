@@ -3222,7 +3222,7 @@ def set_edm():
     if current_user.group != 'admin':
         abort(403)
 
-    g.cursor.execute('SELECT DISTINCT id FROM devill.files WHERE id IN (207673, 207672) ORDER BY id DESC')
+    g.cursor.execute('SELECT DISTINCT id FROM devill.files ORDER BY id DESC')
 
     result=g.cursor.fetchall()
     i = 1
