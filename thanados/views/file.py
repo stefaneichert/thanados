@@ -462,9 +462,18 @@ def edm(img_id=None, direct=False):
             'provider': 'Kulturpool',
             'isShownAt': identifier + '#object',
             'isShownBy': app.config['API_FILE_DISPLAY'] + img_id,
-            'rights': None
+            'rights': None,
+            'creator': None,
+            'rightsholder': app.config['META_ORGANISATION']
         }
 
+        g.cursor.execute(f'SELECT creator, license_holder FROM model.file_info WHERE entity_id = {img_id}')
+        result = g.cursor.fetchone()
+        if result:
+            if result.creator:
+                data.creator = result.creator
+            if result.license_holder:
+                data.rightsholder = result.license_holder
 
 
         data['description'] = get_lan_text(img_id)
@@ -670,6 +679,12 @@ def edm(img_id=None, direct=False):
         # - edm:type
         if data['edm_type']:
             create_subelement(provided_cho, 'edm:type', data.get('edm_type'))
+
+        if data['rightsholder']:
+            create_subelement(provided_cho, 'dc:rights', data.get('rightsholder'))
+
+        if data['creator']:
+            create_subelement(provided_cho, 'dc:creator', data.get('creator'))
 
         # ore_Aggregation
         aggregation = ET.SubElement(root, 'ore:Aggregation')
