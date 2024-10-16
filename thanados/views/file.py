@@ -530,7 +530,6 @@ def edm(img_id=None, direct=False):
                         except Exception:
                             pass
                     else:
-                        data['rights'] = app.config["META_RESOLVE_URL"] + '/vocabulary/' + str(row.id)
                         attribution = row.name
                         if row.info:
                             attribution += ': ' + row.info
@@ -542,6 +541,9 @@ def edm(img_id=None, direct=False):
                 attribution += str(' - ' + filedescription.description)
             if attribution.startswith(' - '):
                 attribution = attribution[3:]
+            if not license_uri:
+                data['rights'] = attribution
+
 
             data['source'] = attribution
 
@@ -586,18 +588,29 @@ def edm(img_id=None, direct=False):
             'xmlns:ore': 'http://www.openarchives.org/ore/terms/',
             'xmlns:cc': 'http://creativecommons.org/ns#',
             'xmlns:odrl': 'http://www.w3.org/ns/odrl/2/',
-            'xmlns:svcs' : 'http://rdfs.org/sioc/services#'
+            'xmlns:svcs' : 'http://rdfs.org/sioc/services#',
+            'xmlns:doap' : 'http://usefulinc.com/ns/doap#'
         })
 
         # edm_ProvidedCHO
         provided_cho = ET.SubElement(root, 'edm:ProvidedCHO', {
-            'rdf:about': f'{identifier}#'
+            'rdf:about': f'{identifier}#cho'
         })
 
         if iiif:
             web_resource = ET.SubElement(root, 'edm:WebResource', {
-                'rdf:about': f'{identifier}#iiif'
+                'rdf:about': data.get('isShownBy')
             })
+
+            iiif_level = ET.SubElement(root, 'svcs:Service', {
+                'rdf:about': app.config["IIIF_URL"] + str(img_id) + extension[0]})
+
+            create_subelement(iiif_level, 'dcterms:conformsTo',
+                              attrib={'rdf:resource': 'http://iiif.io/api/image'})
+
+            create_subelement(iiif_level, 'doap:implements',
+                              attrib={'rdf:resource': 'http://iiif.io/api/image/2/level2.json'})
+
 
             create_subelement(web_resource, 'dcterms:isReferencedBy',
                               attrib={'rdf:resource': app.config["META_RESOLVE_URL"] + '/file/' + str(img_id) + '.json' })
@@ -640,10 +653,10 @@ def edm(img_id=None, direct=False):
                     tag = 'dcterms:spatial'
                     create_subelement(provided_cho, tag, item, key)
 
-        if data['spatial']:
-            for spatial_entry in sorted(data.get('spatial', [])):
-                create_subelement(provided_cho, 'dcterms:spatial',
-                                  attrib={'rdf:resource': spatial_entry})
+        #if data['spatial']:
+        #    for spatial_entry in sorted(data.get('spatial', [])):
+        #        create_subelement(provided_cho, 'edm:place',
+        #                          attrib={'rdf:resource': spatial_entry})
 
         # - dc:type
         dc_type_value = data.get('type')
@@ -687,10 +700,10 @@ def edm(img_id=None, direct=False):
             create_subelement(provided_cho, 'dc:creator', data.get('creator'))
 
         # ore_Aggregation
-        aggregation = ET.SubElement(root, 'ore:Aggregation')
+        aggregation = ET.SubElement(root, 'ore:Aggregation', {'rdf:about': f'{identifier}#agg'})
 
         # - edm:aggregatedCHO
-        create_subelement(aggregation, 'edm:aggregatedCHO', attrib={'rdf:resource': data.get('identifier')})
+        create_subelement(aggregation, 'edm:aggregatedCHO', attrib={'rdf:resource': f'{identifier}#cho'})
 
         # - edm:dataProvider
         create_subelement(aggregation, 'edm:dataProvider', data.get('dataProvider'))
@@ -706,9 +719,11 @@ def edm(img_id=None, direct=False):
         # - edm:provider
         create_subelement(aggregation, 'edm:provider', data.get('provider'))
 
-        # - edm:rights
-        if data['rights']:
-            create_subelement(aggregation, 'edm:rights', attrib={'rdf:resource': data.get('rights')})
+        if data['rights']:# - edm:rights
+            if data['rights'].startswith('http://'):
+                create_subelement(aggregation, 'edm:rights', attrib={'rdf:resource': data.get('rights')})
+            else:
+                create_subelement(aggregation, 'edm:rights', data.get('rights'))
 
         # Generate the XML string
         xml_str = ET.tostring(root, encoding='unicode')
