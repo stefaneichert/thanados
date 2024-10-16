@@ -460,7 +460,7 @@ def edm(img_id=None, direct=False):
             'edm_type': get_edm_type(img_id),
             'dataProvider': app.config['META_ORGANISATION'],
             'provider': 'Kulturpool',
-            'isShownAt': identifier + '#object',
+            'isShownAt': identifier,
             'isShownBy': app.config['API_FILE_DISPLAY'] + img_id,
             'rights': None,
             'creator': None,
